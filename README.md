@@ -28,7 +28,7 @@ __Notes for AD:__
 * `vr_floor_offset` - -16: height (in Quake units) of the player's origin off the ground (probably not useful to change)
 * `vr_snap_turn` - 0: If 0, smooth turning, otherwise the size in degrees of each snap turn.
 ---
-__New cvars for analog stick tuning (and touchpad?) tuning on VR controllers.__ Default values should behave the same as before, but note that this version has not been tested with snap turning enabled. These have only been tested with analog sticks (Oculus Touch and Index Controllers), no idea how they behave with Vive touchpads.
+__New cvars for analog stick (and touchpad?) tuning on VR controllers.__ Default values should behave the same as before, but note that this version has not been tested with snap turning enabled. These have only been tested with analog sticks (Oculus Touch and Index Controllers), no idea how they behave with Vive touchpads.
 * `vr_joystick_yaw_multi` - 1.0: Adjusts turn speed when using VR controllers, suggested 2.0-3.0
 * `vr_joystick_axis_deadzone` - 0.25: Deadzone value for joysticks, suggested 0.1-0.2
 * `vr_joystick_axis_exponent` - 1.0: Exponent for axis input, suggested 2.0. Larger numbers increase the 'low speed' portion of the movement range, numbers under 1.0: decrease it, 1.0 is linear response. 2.0 makes it easier to make fine adjustments at low speed
