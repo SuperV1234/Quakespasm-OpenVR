@@ -106,6 +106,8 @@ static float vrYaw;
 static bool readbackYaw;
 
 vec3_t vr_viewOffset;
+vec3_t lastHudPosition{ 0.0, 0.0, 0.0 };
+vec3_t lastMenuPosition{ 0.0, 0.0, 0.0 };
 
 IVRSystem *ovrHMD;
 TrackedDevicePose_t ovr_DevicePose[16]; //k_unMaxTrackedDeviceCount
@@ -136,30 +138,38 @@ extern int glwidth, glheight;
 extern void SCR_UpdateScreenContent();
 extern refdef_t r_refdef;
 
-cvar_t vr_enabled = { "vr_enabled", "0", CVAR_NONE };
-cvar_t vr_crosshair = { "vr_crosshair","1", CVAR_ARCHIVE };
-cvar_t vr_crosshair_depth = { "vr_crosshair_depth","0", CVAR_ARCHIVE };
-cvar_t vr_crosshair_size = { "vr_crosshair_size","3.0", CVAR_ARCHIVE };
-cvar_t vr_crosshair_alpha = { "vr_crosshair_alpha","0.25", CVAR_ARCHIVE };
-cvar_t vr_aimmode = { "vr_aimmode","7", CVAR_ARCHIVE };
-cvar_t vr_deadzone = { "vr_deadzone","30",CVAR_ARCHIVE };
-cvar_t vr_viewkick = { "vr_viewkick", "0", CVAR_NONE };
-cvar_t vr_lefthanded = { "vr_lefthanded", "0", CVAR_NONE };
-cvar_t vr_gunangle = { "vr_gunangle", "32", CVAR_ARCHIVE };
-cvar_t vr_gunmodelpitch = { "vr_gunmodelpitch", "0", CVAR_ARCHIVE };
-cvar_t vr_gunmodelscale = { "vr_gunmodelscale", "1.0", CVAR_ARCHIVE };
-cvar_t vr_gunmodely = { "vr_gunmodely", "0", CVAR_ARCHIVE };
-cvar_t vr_crosshairy = { "vr_crosshairy", "0", CVAR_ARCHIVE };
-cvar_t vr_world_scale = { "vr_world_scale", "1.0", CVAR_ARCHIVE };
-cvar_t vr_floor_offset = { "vr_floor_offset", "-16", CVAR_ARCHIVE };
-cvar_t vr_snap_turn = { "vr_snap_turn", "0", CVAR_ARCHIVE };
-cvar_t vr_turn_speed = { "vr_turn_speed", "1", CVAR_ARCHIVE };
-cvar_t vr_msaa = { "vr_msaa", "4", CVAR_ARCHIVE };
-cvar_t vr_movement_mode = { "vr_movement_mode", "0", CVAR_ARCHIVE };
-cvar_t vr_joystick_yaw_multi = { "vr_joystick_yaw_multi", "1.0", CVAR_ARCHIVE };
-cvar_t vr_joystick_axis_deadzone = { "vr_joystick_axis_deadzone", "0.25", CVAR_ARCHIVE };
-cvar_t vr_joystick_axis_exponent = { "vr_joystick_axis_exponent", "1.0", CVAR_ARCHIVE };
-cvar_t vr_joystick_deadzone_trunc = { "vr_joystick_deadzone_trunc", "1", CVAR_ARCHIVE };
+#define DEFINE_CVAR(name, defaultValue, type) \
+    cvar_t name = { #name, #defaultValue, type }
+
+DEFINE_CVAR(vr_enabled, 0, CVAR_NONE);
+DEFINE_CVAR(vr_viewkick, 0, CVAR_NONE);
+DEFINE_CVAR(vr_lefthanded, 0, CVAR_NONE);
+
+DEFINE_CVAR(vr_crosshair, 1, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_crosshair_depth, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_crosshair_size, 3.0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_crosshair_alpha, 0.25, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_aimmode, 7, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_deadzone, 30, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_gunangle, 32, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_gunmodelpitch, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_gunmodelscale, 1.0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_gunmodely, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_projectilespawn_z_offset, 24, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_crosshairy, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_world_scale, 1.0, CVAR_ARCHIVE); 
+DEFINE_CVAR(vr_floor_offset, -16, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_snap_turn, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_turn_speed, 1, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_msaa, 4, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_movement_mode, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_joystick_yaw_multi, 1.0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_joystick_axis_deadzone, 0.25, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_joystick_axis_menu_deadzone_extra, 0.25, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_joystick_axis_exponent, 1.0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_joystick_deadzone_trunc, 1, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_hud_scale, 0.025, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_menu_scale, 0.13, CVAR_ARCHIVE);
 
 static qboolean InitOpenGLExtensions()
 {
@@ -274,10 +284,10 @@ void DeleteFBO(fbo_t fbo) {
 }
 
 void QuatToYawPitchRoll(HmdQuaternion_t q, vec3_t out) {
-    float sqw = q.w*q.w;
-    float sqx = q.x*q.x;
-    float sqy = q.y*q.y;
-    float sqz = q.z*q.z;
+    auto sqw = q.w*q.w;
+    auto sqx = q.x*q.x;
+    auto sqy = q.y*q.y;
+    auto sqz = q.z*q.z;
 
     out[ROLL] = -atan2(2 * (q.x*q.y + q.w*q.z), sqw - sqx + sqy - sqz) / M_PI_DIV_180;
     out[PITCH] = -asin(-2 * (q.y*q.z - q.w*q.x)) / M_PI_DIV_180;
@@ -364,13 +374,13 @@ HmdQuaternion_t Matrix34ToQuaternion(HmdMatrix34_t in)
 {
     HmdQuaternion_t q;
 
-    q.w = sqrt(fmax(0, 1 + in.m[0][0] + in.m[1][1] + in.m[2][2])) / 2;
-    q.x = sqrt(fmax(0, 1 + in.m[0][0] - in.m[1][1] - in.m[2][2])) / 2;
-    q.y = sqrt(fmax(0, 1 - in.m[0][0] + in.m[1][1] - in.m[2][2])) / 2;
-    q.z = sqrt(fmax(0, 1 - in.m[0][0] - in.m[1][1] + in.m[2][2])) / 2;
-    q.x = copysign(q.x, in.m[2][1] - in.m[1][2]);
-    q.y = copysign(q.y, in.m[0][2] - in.m[2][0]);
-    q.z = copysign(q.z, in.m[1][0] - in.m[0][1]);
+    q.w = sqrt(fmax(0, 1.0 + in.m[0][0] + in.m[1][1] + in.m[2][2])) / 2.0;
+    q.x = sqrt(fmax(0, 1.0 + in.m[0][0] - in.m[1][1] - in.m[2][2])) / 2.0;
+    q.y = sqrt(fmax(0, 1.0 - in.m[0][0] + in.m[1][1] - in.m[2][2])) / 2.0;
+    q.z = sqrt(fmax(0, 1.0 - in.m[0][0] - in.m[1][1] + in.m[2][2])) / 2.0;
+    q.x = copysign(q.x, static_cast<double>(in.m[2][1]) - static_cast<double>(in.m[1][2]));
+    q.y = copysign(q.y, static_cast<double>(in.m[0][2]) - static_cast<double>(in.m[2][0]));
+    q.z = copysign(q.z, static_cast<double>(in.m[1][0]) - static_cast<double>(in.m[0][1]));
     return q;
 }
 
@@ -440,9 +450,9 @@ void Mod_Weapon(const char* name, aliashdr_t* hdr)
         float scaleCorrect = (vr_world_scale.value / 0.75f) * vr_gunmodelscale.value; //initial version had 0.75 default world scale, so weapons reflect that
         VectorScale(hdr->original_scale, vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 3].value * scaleCorrect, hdr->scale);
 
-        vec3_t ofs = { 
-            vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON].value, 
-            vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 1].value, 
+        vec3_t ofs = {
+            vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON].value,
+            vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 1].value,
             vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 2].value + vr_gunmodely.value
         };
 
@@ -561,12 +571,16 @@ void VID_VR_Init()
     Cvar_RegisterVariable(&vr_joystick_axis_exponent);
     Cvar_RegisterVariable(&vr_joystick_deadzone_trunc);
     Cvar_RegisterVariable(&vr_joystick_yaw_multi);
+    Cvar_RegisterVariable(&vr_joystick_axis_menu_deadzone_extra);
     Cvar_RegisterVariable(&vr_lefthanded);
     Cvar_RegisterVariable(&vr_movement_mode);
     Cvar_RegisterVariable(&vr_msaa);
     Cvar_RegisterVariable(&vr_snap_turn);
     Cvar_RegisterVariable(&vr_turn_speed);
     Cvar_RegisterVariable(&vr_world_scale);
+    Cvar_RegisterVariable(&vr_projectilespawn_z_offset);
+    Cvar_RegisterVariable(&vr_hud_scale);
+    Cvar_RegisterVariable(&vr_menu_scale);
     Cvar_SetCallback(&vr_deadzone, VR_Deadzone_f);
 
     InitAllWeaponCVars();
@@ -645,7 +659,6 @@ void VID_VR_Shutdown() {
 
 void VID_VR_Disable()
 {
-    int i;
     if (!vr_initialized)
         return;
 
@@ -1015,7 +1028,7 @@ void VR_ShowCrosshair()
     if (vr_aimmode.value == VR_AIMMODE_CONTROLLER)
     {
         VectorCopy(cl.handpos[1], start);
-        
+
         vec3_t ofs = {
             vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON].value,
             vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 1].value,
@@ -1024,9 +1037,9 @@ void VR_ShowCrosshair()
 
         AngleVectors(cl.handrot[1], forward, right, up);
         vec3_t fwd2; VectorCopy(forward, fwd2);
-        fwd2[0] *=  vr_gunmodelscale.value * ofs[2];
-        fwd2[1] *=  vr_gunmodelscale.value * ofs[2];
-        fwd2[2] *=  vr_gunmodelscale.value * ofs[2];
+        fwd2[0] *= vr_gunmodelscale.value * ofs[2];
+        fwd2[1] *= vr_gunmodelscale.value * ofs[2];
+        fwd2[2] *= vr_gunmodelscale.value * ofs[2];
         VectorAdd(start, fwd2, start);
     }
     else
@@ -1044,7 +1057,7 @@ void VR_ShowCrosshair()
         if (vr_crosshair_depth.value <= 0) {
             // trace to first wall
             VectorMA(start, 4096, forward, end);
-            
+
             end[2] += vr_crosshairy.value;
             TraceLine(start, end, impact);
         }
@@ -1067,7 +1080,7 @@ void VR_ShowCrosshair()
         // trace to first entity
         VectorMA(start, 4096, forward, end);
         TraceLineToEntity(start, end, impact, sv_player);
-        
+
         glColor4f(1, 0, 0, alpha);
         glLineWidth(size * glwidth / vid.width);
         glBegin(GL_LINES);
@@ -1088,11 +1101,24 @@ void VR_ShowCrosshair()
     glEnable(GL_DEPTH_TEST);
 }
 
+
+double lerp(double a, double b, double f)
+{
+    return (a * (1.0 - f)) + (b * f);
+}
+
+void vec3lerp(vec3_t out, vec3_t start, vec3_t end, double f)
+{
+    out[0] = lerp(start[0], end[0], f);
+    out[1] = lerp(start[1], end[1], f);
+    out[2] = lerp(start[2], end[2], f);
+}
+
 void VR_Draw2D()
 {
     qboolean draw_sbar = false;
     vec3_t menu_angles, forward, right, up, target;
-    float scale_hud = 0.13;
+    float scale_hud = vr_menu_scale.value;
 
     int oldglwidth = glwidth,
         oldglheight = glheight,
@@ -1133,7 +1159,12 @@ void VR_Draw2D()
         VectorMA(r_refdef.vieworg, 48, forward, target);
     }
 
-    glTranslatef(target[0], target[1], target[2]);
+    vec3_t smoothedTarget;
+    vec3lerp(smoothedTarget, lastMenuPosition, target, 0.03);
+    VectorCopy(smoothedTarget, lastMenuPosition);
+
+    glTranslatef(smoothedTarget[0], smoothedTarget[1], smoothedTarget[2]);
+
     glRotatef(menu_angles[YAW] - 90, 0, 0, 1); // rotate around z
     glRotatef(90 + menu_angles[PITCH], -1, 0, 0); // keep bar at constant angled pitch towards user
     glTranslatef(-(320.0 * scale_hud / 2), -(200.0 * scale_hud / 2), 0); // center the status bar
@@ -1183,7 +1214,7 @@ void VR_Draw2D()
     glEnable(GL_DEPTH_TEST);
     glPopMatrix();
 
-    if (draw_sbar) 
+    if (draw_sbar)
         VR_DrawSbar();
 
     glwidth = oldglwidth;
@@ -1192,14 +1223,14 @@ void VR_Draw2D()
     vid.conheight = oldconheight;
 }
 
+
 void VR_DrawSbar()
 {
     vec3_t sbar_angles, forward, right, up, target;
-    float scale_hud = 0.025;
+    float scale_hud = vr_hud_scale.value;
 
     glPushMatrix();
     glDisable(GL_DEPTH_TEST); // prevents drawing sprites on sprites from interferring with one another
-
 
     if (vr_aimmode.value == VR_AIMMODE_CONTROLLER)
     {
@@ -1223,7 +1254,12 @@ void VR_DrawSbar()
         VectorMA(cl.viewent.origin, 1.0, forward, target);
     }
 
-    glTranslatef(target[0], target[1], target[2]);
+    vec3_t smoothedTarget;
+    vec3lerp(smoothedTarget, lastHudPosition, target, 1.0);
+    VectorCopy(smoothedTarget, lastHudPosition);
+
+    glTranslatef(smoothedTarget[0], smoothedTarget[1], smoothedTarget[2]);
+
     glRotatef(sbar_angles[YAW] - 90, 0, 0, 1); // rotate around z
     glRotatef(90 + 45 + sbar_angles[PITCH], -1, 0, 0); // keep bar at constant angled pitch towards user
     glTranslatef(-(320.0 * scale_hud / 2), 0, 0); // center the status bar
@@ -1241,7 +1277,7 @@ void VR_SetAngles(vec3_t angles)
     VectorCopy(angles, cl.aimangles);
     VectorCopy(angles, cl.viewangles);
     VectorCopy(angles, lastAim);
-} 
+}
 
 void VR_ResetOrientation()
 {
@@ -1288,7 +1324,7 @@ void IdentifyAxes(int device)
     identified = true;
 }
 
-float GetAxis(VRControllerState_t* state, int axis)
+float GetAxis(VRControllerState_t* state, int axis, double deadzoneExtra)
 {
     float v = 0;
 
@@ -1306,11 +1342,12 @@ float GetAxis(VRControllerState_t* state, int axis)
     int sign = (v > 0) - (v < 0);
     v = fabsf(v);
 
-    if (v < vr_joystick_axis_deadzone.value)
+    if (v < vr_joystick_axis_deadzone.value + deadzoneExtra)
     {
         return 0.0f;
     }
-    else if (vr_joystick_deadzone_trunc.value == 0)
+
+    if (vr_joystick_deadzone_trunc.value == 0)
     {
         v = (v - vr_joystick_axis_deadzone.value) / (1 - vr_joystick_axis_deadzone.value);
     }
@@ -1346,10 +1383,10 @@ void DoTrigger(vr_controller* controller, int quakeKey)
     }
 }
 
-void DoAxis(vr_controller* controller, int axis, int quakeKeyNeg, int quakeKeyPos)
+void DoAxis(vr_controller* controller, int axis, int quakeKeyNeg, int quakeKeyPos, double deadzoneExtra)
 {
-    float lastVal = GetAxis(&controller->lastState, axis);
-    float val = GetAxis(&controller->state, axis);
+    float lastVal = GetAxis(&controller->lastState, axis, deadzoneExtra);
+    float val = GetAxis(&controller->state, axis, deadzoneExtra);
 
     bool posWasDown = lastVal > 0.0f;
     bool posDown = val > 0.0f;
@@ -1388,8 +1425,8 @@ void VR_Move(usercmd_t *cmd)
     {
         for (int i = 0; i < 2; i++)
         {
-            DoAxis(&controllers[i], 0, K_LEFTARROW, K_RIGHTARROW);
-            DoAxis(&controllers[i], 1, K_DOWNARROW, K_UPARROW);
+            DoAxis(&controllers[i], 0, K_LEFTARROW, K_RIGHTARROW, vr_joystick_axis_menu_deadzone_extra.value);
+            DoAxis(&controllers[i], 1, K_DOWNARROW, K_UPARROW, vr_joystick_axis_menu_deadzone_extra.value);
             DoTrigger(&controllers[i], K_ENTER);
         }
     }
@@ -1402,8 +1439,8 @@ void VR_Move(usercmd_t *cmd)
 
         if (vr_movement_mode.value == VR_MOVEMENT_MODE_RAW_INPUT)
         {
-            cmd->forwardmove += cl_forwardspeed.value * GetAxis(&controllers[0].state, 1);
-            cmd->sidemove += cl_forwardspeed.value * GetAxis(&controllers[0].state, 0);
+            cmd->forwardmove += cl_forwardspeed.value * GetAxis(&controllers[0].state, 1, 0.0);
+            cmd->sidemove += cl_forwardspeed.value * GetAxis(&controllers[0].state, 0, 0.0);
         }
         else
         {
@@ -1436,8 +1473,8 @@ void VR_Move(usercmd_t *cmd)
             }
 
             vec3_t move = { 0, 0, 0 };
-            VectorMA(move, GetAxis(&controllers[0].state, 1), lfwd, move);
-            VectorMA(move, GetAxis(&controllers[0].state, 0), lright, move);
+            VectorMA(move, GetAxis(&controllers[0].state, 1, 0.0), lfwd, move);
+            VectorMA(move, GetAxis(&controllers[0].state, 0, 0.0), lright, move);
 
             float fwd = DotProduct(move, vfwd);
             float right = DotProduct(move, vright);
@@ -1448,7 +1485,7 @@ void VR_Move(usercmd_t *cmd)
         }
 
         AngleVectors(cl.handrot[0], lfwd, lright, lup);
-        cmd->upmove += cl_upspeed.value * GetAxis(&controllers[0].state, 1) * lfwd[2];
+        cmd->upmove += cl_upspeed.value * GetAxis(&controllers[0].state, 1, 0.0) * lfwd[2];
 
         if (cl_forwardspeed.value > 200 && cl_movespeedkey.value)
             cmd->forwardmove /= cl_movespeedkey.value;
@@ -1459,7 +1496,7 @@ void VR_Move(usercmd_t *cmd)
             cmd->upmove *= cl_movespeedkey.value;
         }
 
-        float yawMove = GetAxis(&controllers[1].state, 0);
+        float yawMove = GetAxis(&controllers[1].state, 0, 0.0);
 
         if (vr_snap_turn.value != 0)
         {

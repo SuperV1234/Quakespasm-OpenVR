@@ -165,7 +165,6 @@ typedef struct
 	vec3_t		viewangles;
 
 	vec3_t		aimangles;
-    //vec3_t      aimpos;
     vec3_t      vmeshoffset;
     vec3_t      handpos[2];
     vec3_t      handrot[2];

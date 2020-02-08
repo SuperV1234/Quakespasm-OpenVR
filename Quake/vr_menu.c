@@ -3,6 +3,7 @@
 #include "vr_menu.h"
 #include <string>
 #include <array>
+#include "cmd.h"
 
 extern cvar_t vr_enabled;
 extern cvar_t vr_crosshair;
@@ -42,8 +43,14 @@ static void VR_MenuPlaySound(const char *sound, float fvol)
 
 static void VR_MenuPrintOptionValue(int cx, int cy, int option)
 {
-    char value_buffer[16] = {0};
+    char value_buffer[32] = {0};
     const char *value_string = NULL;
+
+    const auto printAsStr = [&](const auto& cvar)
+    {
+        snprintf(value_buffer, sizeof(value_buffer), "%.4f", cvar.value);
+        M_Print(cx, cy, value_buffer);
+    };
 
 #ifdef _MSC_VER
 #define snprintf sprintf_s
@@ -152,30 +159,22 @@ static void VR_MenuPrintOptionValue(int cx, int cy, int option)
             {
                 value_string = "Off";
             }
-            else
+            else 
             {
                 snprintf(value_buffer, sizeof(value_buffer), "%d Samples", (int)vr_msaa.value);
                 value_string = value_buffer;
             }
             break;
-        case VR_OPTION_GUNANGLE:
-            M_DrawSlider(cx, cy, vr_gunangle.value);
-            break;
-        case VR_OPTION_FLOOR_OFFSET:
-            M_DrawSlider(cx, cy, vr_floor_offset.value);
-            break;
-        case VR_OPTION_GUNMODELPITCH:
-            M_DrawSlider(cx, cy, vr_gunmodelpitch.value);
-            break;
-        case VR_OPTION_GUNMODELSCALE:
-            M_DrawSlider(cx, cy, vr_gunmodelscale.value);
-            break;
-        case VR_OPTION_GUNMODELY:
-            M_DrawSlider(cx, cy, vr_gunmodely.value);
-            break;
-        case VR_OPTION_CROSSHAIRY:
-            M_DrawSlider(cx, cy, vr_crosshairy.value);
-            break;
+        case VR_OPTION_GUNANGLE:                 printAsStr(vr_gunangle); break;
+        case VR_OPTION_FLOOR_OFFSET:             printAsStr(vr_floor_offset); break;
+        case VR_OPTION_GUNMODELPITCH:            printAsStr(vr_gunmodelpitch); break;
+        case VR_OPTION_GUNMODELSCALE:            printAsStr(vr_gunmodelscale); break;
+        case VR_OPTION_GUNMODELY:                printAsStr(vr_gunmodely); break;
+        case VR_OPTION_CROSSHAIRY:               printAsStr(vr_crosshairy); break;
+        case VR_OPTION_PROJECTILESPAWN_Z_OFFSET: printAsStr(vr_projectilespawn_z_offset); break;
+        case VR_OPTION_HUD_SCALE:                printAsStr(vr_hud_scale); break;
+        case VR_OPTION_MENU_SCALE:               printAsStr(vr_menu_scale); break;
+        case VR_OPTION_IMPULSE9:                 break;
     }
 #ifdef _MSC_VER
 #undef snprintf
@@ -216,10 +215,10 @@ static void VR_MenuKeyOption(int key, int option)
 
     switch ( option ) {
         case VR_OPTION_ENABLED:
-            //Cvar_SetValue( "vr_enabled", ! (int)vr_enabled.value );
-            if ( (int)vr_enabled.value ) {
-                VR_MenuPlaySound( "items/r_item2.wav", 0.5 );
-            }
+            // Cvar_SetValue( "vr_enabled", ! (int)vr_enabled.value );
+            // if ( (int)vr_enabled.value ) {
+            //    VR_MenuPlaySound( "items/r_item2.wav", 0.5 );
+            // }
             break;
         /*case VR_OPTION_PERFHUD:
             intValue = (int)vr_perfhud.value;
@@ -236,15 +235,12 @@ static void VR_MenuKeyOption(int key, int option)
             adjustF(vr_deadzone, deadzoneDiff, 0.f, 180.f);
             break;
         case VR_OPTION_CROSSHAIR:
-            intValue = (int)vr_crosshair.value;
-            intValue = CLAMP( crosshair[0], isLeft ? intValue - 1 : intValue + 1, crosshair[_maxarray( crosshair) ] );
-            Cvar_SetValue( "vr_crosshair", intValue );
+            adjustI(vr_crosshair, 1, crosshair[0], crosshair[_maxarray( crosshair)  ]);
             break;
         case VR_OPTION_CROSSHAIR_DEPTH:
             adjustF(vr_crosshair_depth, crosshairDepthDiff, 0.f, 4096.f);
             break;
         case VR_OPTION_CROSSHAIR_SIZE:
-            Cvar_SetValue( "vr_crosshair_size", intValue );
             adjustF(vr_crosshair_size, crosshairSizeDiff, 0.f, 32.f);
             break;
         case VR_OPTION_CROSSHAIR_ALPHA:
@@ -252,7 +248,7 @@ static void VR_MenuKeyOption(int key, int option)
             break;
         case VR_OPTION_WORLD_SCALE:
             adjustF(vr_world_scale, crosshairAlphaDiff, 0.f, 2.f);
-            break; 
+            break;
         case VR_OPTION_MOVEMENT_MODE:
             adjustI(vr_movement_mode, 1, 0.f, VR_MAX_MOVEMENT_MODE);
             break;
@@ -263,11 +259,9 @@ static void VR_MenuKeyOption(int key, int option)
             adjustF(vr_turn_speed, 0.25f, 0.f, VR_MAX_TURN_SPEED);
             break;
         case VR_OPTION_MSAA:
-            intValue = (int)vr_msaa.value;
             int max;
             glGetIntegerv(GL_MAX_SAMPLES, &max);
-            intValue = CLAMP(0, isLeft ? intValue - 1 : intValue + 1, max - 1);
-            Cvar_SetValue("vr_msaa", intValue);
+            adjustI(vr_msaa, 1, 0, max);
             break;
         case VR_OPTION_GUNANGLE:
             adjustF(vr_gunangle, 2.5f, -VR_MAX_GUNANGLE, VR_MAX_GUNANGLE);
@@ -286,6 +280,19 @@ static void VR_MenuKeyOption(int key, int option)
             break;
         case VR_OPTION_CROSSHAIRY:
             adjustF(vr_crosshairy, 0.05f, -10.0f, 10.f);
+            break;
+        case VR_OPTION_PROJECTILESPAWN_Z_OFFSET:
+            adjustF(vr_projectilespawn_z_offset, 1.f, -24.0f, 24.f);
+            break;
+        case VR_OPTION_HUD_SCALE:
+            adjustF(vr_hud_scale, 0.005f, 0.01f, 0.1f);
+            break;
+        case VR_OPTION_MENU_SCALE:
+            adjustF(vr_menu_scale, 0.01f, 0.05f, 0.6f);
+            break;
+        case VR_OPTION_IMPULSE9:
+            VR_MenuPlaySound("items/r_item2.wav", 0.5);
+            Cmd_ExecuteString("impulse 9", cmd_source_t::src_command);
             break;
     }
 
@@ -319,10 +326,7 @@ static void VR_MenuKey(int key)
             break;
 
         case K_LEFTARROW:
-            S_LocalSound ("misc/menu3.wav");
-            VR_MenuKeyOption( key, vr_options_cursor );
-            break;
-
+            [[fallthrough]];
         case K_RIGHTARROW:
             S_LocalSound ("misc/menu3.wav");
             VR_MenuKeyOption( key, vr_options_cursor );
@@ -339,25 +343,19 @@ static void VR_MenuKey(int key)
 
 static void VR_MenuDraw (void)
 {
-    int i, y;
-    qpic_t *p;
-    const char *title;
-
-    y = 4;
+    int y = 4;
 
     // plaque
-    p = Draw_CachePic ("gfx/qplaque.lmp");
-    M_DrawTransPic (16, y, p);
-
+    M_DrawTransPic (16, y, Draw_CachePic("gfx/qplaque.lmp"));
 
     // customize header
-    p = Draw_CachePic ("gfx/ttl_cstm.lmp");
+    qpic_t* p = Draw_CachePic ("gfx/ttl_cstm.lmp");
     M_DrawPic ( (320-p->width)/2, y, p);
 
     y += 28;
 
     // title
-    title = "VR/HMD OPTIONS";
+    const char* title = "VR/HMD OPTIONS";
     M_PrintWhite ((320-8*strlen(title))/2, y, title);
 
     y += 16;
@@ -385,7 +383,11 @@ static void VR_MenuDraw (void)
         "Gun Model Pitch",
         "Gun Model Scale",
         "Gun Model Y",
-        "Crosshair Y"
+        "Crosshair Y",
+        "Projectile Spawn Z",
+        "HUD Scale",
+        "Menu Scale",
+        "Impulse 9"
     );
 
     for (const std::string& label : adjustedLabels)

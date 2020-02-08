@@ -1010,7 +1010,9 @@ void SV_Physics_Client (edict_t	*ent, int num)
 	vec3_t restoreOrigin;
 	if (vr_enabled.value)
 	{
-		vec3_t adj; _VectorCopy(cl.handpos[1], adj);
+		vec3_t adj; 
+		_VectorCopy(cl.handpos[1], adj);
+
 		vec3_t ofs = {
 		   vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON].value,
 		   vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 1].value,
@@ -1024,10 +1026,9 @@ void SV_Physics_Client (edict_t	*ent, int num)
 		fwd2[2] *= vr_gunmodelscale.value * ofs[2];
 		VectorAdd(adj, fwd2, adj);
 
-
 		_VectorCopy(ent->v.origin, restoreOrigin);
 		_VectorCopy(adj, ent->v.origin);
-		ent->v.origin[2] -= 16; //quakec assumes 16 offset
+		ent->v.origin[2] -= vr_projectilespawn_z_offset.value; //quakec assumes 16 offset
 	}
 	pr_global_struct->self = EDICT_TO_PROG(ent);
 

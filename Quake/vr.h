@@ -49,11 +49,14 @@ extern cvar_t vr_gunmodelscale;
 extern cvar_t vr_gunmodely;
 extern cvar_t vr_crosshairy;
 extern cvar_t vr_floor_offset;
+extern cvar_t vr_projectilespawn_z_offset;
+extern cvar_t vr_hud_scale;
+extern cvar_t vr_menu_scale;
 
 #define MAX_WEAPONS 20 //not sure what this number should actually be...
 #define VARS_PER_WEAPON 5
 
 extern cvar_t vr_weapon_offset[MAX_WEAPONS * VARS_PER_WEAPON];
-
 extern int weaponCVarEntry;
+
 #endif
