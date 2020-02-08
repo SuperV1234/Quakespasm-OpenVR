@@ -1,5 +1,8 @@
 #include <stdbool.h>
 #include <stdint.h>
+
+extern "C" {
+
 #define VR_INTERFACE
 #define VR_CALLTYPE
 
@@ -1598,3 +1601,5 @@ IVRSettings * VRSettings();
 IVRExtendedDisplay * VRExtendedDisplay();
 VR_INTERFACE uint32_t VR_CALLTYPE VR_InitInternal( EVRInitError *peError, EVRApplicationType eApplicationType );
 VR_INTERFACE void VR_CALLTYPE VR_ShutdownInternal();
+
+}

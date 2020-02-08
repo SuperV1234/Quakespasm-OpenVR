@@ -1,4 +1,6 @@
 # Linux objects
+.vs
+.vscode
 
 Quake/*.o
 Quake/quakespasm

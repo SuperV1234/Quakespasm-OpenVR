@@ -613,7 +613,7 @@ void CalcGunAngle (void)
     if (vr_enabled.value && vr_aimmode.value == VR_AIMMODE_CONTROLLER)
     {
         cl.viewent.angles[YAW] = cl.handrot[1][YAW];
-        cl.viewent.angles[PITCH] = -(cl.handrot[1][PITCH]);
+        cl.viewent.angles[PITCH] = -(cl.handrot[1][PITCH]) + vr_gunmodelpitch.value;
         cl.viewent.angles[ROLL] = cl.handrot[1][ROLL];
         return;
     }
@@ -849,7 +849,7 @@ void V_CalcRefdef (void)
     // VR controller aiming configuration
     if (vr_enabled.value && vr_aimmode.value == VR_AIMMODE_CONTROLLER)
     {
-        VectorAdd(cl.handpos[1], cl.vmeshoffset, view->origin)
+		VectorAdd(cl.handpos[1], cl.vmeshoffset, view->origin);
     }
     else
     {

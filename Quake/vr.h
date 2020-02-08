@@ -29,6 +29,9 @@ void VID_VR_Disable();
 void VR_UpdateScreenContent();
 void VR_ShowCrosshair();
 void VR_Draw2D();
+void VR_Move(usercmd_t *cmd);
+void VR_InitGame();
+void VR_PushYaw();
 void VR_DrawSbar();
 void VR_AddOrientationToViewAngles(vec3_t angles);
 void VR_SetAngles(vec3_t angles);
@@ -40,4 +43,17 @@ extern cvar_t vr_enabled;
 extern cvar_t vr_crosshair;
 extern cvar_t vr_msaa;
 extern cvar_t vr_movement_mode;
+extern cvar_t vr_gunangle;
+extern cvar_t vr_gunmodelpitch;
+extern cvar_t vr_gunmodelscale;
+extern cvar_t vr_gunmodely;
+extern cvar_t vr_crosshairy;
+extern cvar_t vr_floor_offset;
+
+#define MAX_WEAPONS 20 //not sure what this number should actually be...
+#define VARS_PER_WEAPON 5
+
+extern cvar_t vr_weapon_offset[MAX_WEAPONS * VARS_PER_WEAPON];
+
+extern int weaponCVarEntry;
 #endif
