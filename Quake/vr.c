@@ -1,4 +1,4 @@
-
+#include <cassert>
 #include "quakedef.h"
 #include "vr.h"
 #include "vr_menu.h"
@@ -7,7 +7,6 @@
 #include <mmsystem.h>
 #undef UNICODE
 
-// #include "openvr_capi.h"
 #include "openvr.h"
 
 #if SDL_MAJOR_VERSION < 2
@@ -464,8 +463,9 @@ void Mod_Weapon(const char* name, aliashdr_t* hdr)
 
 char* CopyWithNumeral(const char* str, int i)
 {
-    int len = strlen(str);
+    auto len = strlen(str);
     char* ret = (char*) malloc(len + 1);
+    assert(ret != 0);
     strcpy(ret, str);
     ret[len - 1] = '0' + (i % 10);
     ret[len - 2] = '0' + (i / 10);

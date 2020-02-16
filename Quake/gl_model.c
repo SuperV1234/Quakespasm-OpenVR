@@ -2579,6 +2579,7 @@ void Mod_LoadAliasModel (qmodel_t *mod, void *buffer)
 
 	if (pheader->numtris > MAXALIASTRIS)
 		Sys_Error ("model %s has too many triangles (%d; max = %d)", mod->name, pheader->numtris, MAXALIASTRIS);
+
 	pheader->numframes = LittleLong (pinmodel->numframes);
 	numframes = pheader->numframes;
 	if (numframes < 1)

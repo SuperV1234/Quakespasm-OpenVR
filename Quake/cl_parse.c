@@ -1048,6 +1048,8 @@ void CL_ParseServerMessage (void)
 			cl.viewentity = MSG_ReadShort ();
 			VR_PushYaw();
 			break;
+
+		case svc_lightstyle:
 			i = MSG_ReadByte ();
 			if (i >= MAX_LIGHTSTYLES)
 				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES");

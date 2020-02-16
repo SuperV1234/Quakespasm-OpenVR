@@ -665,7 +665,7 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 // put the crosspoint DIST_EPSILON pixels on the near side
 	if (t1 < 0)
 		frac = (t1 + DIST_EPSILON)/(t1-t2);
-	else
+	else 
 		frac = (t1 - DIST_EPSILON)/(t1-t2);
 	if (frac < 0)
 		frac = 0;

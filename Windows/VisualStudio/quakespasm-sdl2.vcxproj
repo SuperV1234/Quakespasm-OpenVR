@@ -315,8 +315,6 @@ copy "$(SolutionDir)\..\SDL2\lib64\*.dll" "$(TargetDir)"</Command>
     <ClInclude Include="..\..\Quake\net_wins.h" />
     <ClInclude Include="..\..\Quake\net_wipx.h" />
     <ClInclude Include="..\..\Quake\openvr.h" />
-    <ClInclude Include="..\..\Quake\openvr_c.h" />
-    <ClInclude Include="..\..\Quake\openvr_capi.h" />
     <ClInclude Include="..\..\Quake\openvr_driver.h" />
     <ClInclude Include="..\..\Quake\platform.h" />
     <ClInclude Include="..\..\Quake\progdefs.h" />
