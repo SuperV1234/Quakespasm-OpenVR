@@ -447,7 +447,7 @@ void CL_RelinkEntities (void)
 	{
 		if (!ent->model)
 		{	// empty slot
-			
+
 			// ericw -- efrags are only used for static entities in GLQuake
 			// ent can't be static, so this is a no-op.
 			//if (ent->forcelink)
@@ -798,7 +798,7 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&lookspring);
 	Cvar_RegisterVariable (&lookstrafe);
 	Cvar_RegisterVariable (&sensitivity);
-	
+
 	Cvar_RegisterVariable (&cl_alwaysrun);
 
 	Cvar_RegisterVariable (&m_pitch);

@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2017 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2019 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -27,13 +27,14 @@
 
 #define SDL_AUDIO_DRIVER_DUMMY 1
 #define SDL_AUDIO_DRIVER_DISK 1
-#define SDL_AUDIO_DRIVER_OS2 1
 
+#define SDL_POWER_DISABLED  1
 #define SDL_JOYSTICK_DISABLED 1
 #define SDL_HAPTIC_DISABLED 1
+/*#undef SDL_JOYSTICK_HIDAPI */
 
+#define SDL_SENSOR_DUMMY 1
 #define SDL_VIDEO_DRIVER_DUMMY 1
-#define SDL_VIDEO_DRIVER_OS2 1
 
 /* Enable OpenGL support */
 /* #undef SDL_VIDEO_OPENGL */
@@ -41,11 +42,10 @@
 /* Enable Vulkan support */
 /* #undef SDL_VIDEO_VULKAN */
 
-#define SDL_THREAD_OS2 1
-#define SDL_LOADSO_OS2 1
-#define SDL_TIMER_OS2 1
-#define SDL_FILESYSTEM_OS2 1
-#define SDL_POWER_OS2 1
+#define SDL_LOADSO_DISABLED 1
+#define SDL_THREADS_DISABLED 1
+#define SDL_TIMERS_DISABLED 1
+#define SDL_FILESYSTEM_DUMMY 1
 
 /* Enable assembly routines */
 #define SDL_ASSEMBLY_ROUTINES 1
@@ -110,6 +110,7 @@
 #define HAVE_STRCHR 1
 #define HAVE_STRRCHR 1
 #define HAVE_STRSTR 1
+/* #undef HAVE_STRTOK_R */
 #define HAVE_ITOA 1
 #define HAVE__LTOA 1
 #define HAVE__ULTOA 1
@@ -122,12 +123,21 @@
 #define HAVE_STRTOD 1
 #define HAVE_ATOI 1
 #define HAVE_ATOF 1
+#define HAVE_WCSLEN 1
+#define HAVE_WCSLCPY 1
+#define HAVE_WCSLCAT 1
+/* #define HAVE_WCSDUP 1 */
+/* #define wcsdup _wcsdup */
+#define HAVE_WCSSTR 1
+#define HAVE_WCSCMP 1
+#define HAVE_WCSNCMP 1
 #define HAVE_STRCMP 1
 #define HAVE_STRNCMP 1
 #define HAVE_STRICMP 1
 #define HAVE_STRCASECMP 1
 #define HAVE_STRNCASECMP 1
-#define HAVE_SSCANF 1
+#define HAVE_SSCANF  1
+#define HAVE_VSSCANF 1
 #define HAVE_SNPRINTF 1
 #define HAVE_VSNPRINTF 1
 #define HAVE_SETJMP 1
@@ -144,6 +154,8 @@
 /* #undef HAVE_COPYSIGNF */
 #define HAVE_COS 1
 /* #undef HAVE_COSF */
+#define HAVE_EXP 1
+/* #undef HAVE_EXPF */
 #define HAVE_FABS 1
 /* #undef HAVE_FABSF */
 #define HAVE_FLOOR 1

@@ -806,7 +806,7 @@ void SCR_ScreenShot_f (void)
 		SCR_ScreenShot_Usage ();
 		return;
 	}
-	
+
 // find a file name to save it to
 	for (i=0; i<10000; i++)
 	{

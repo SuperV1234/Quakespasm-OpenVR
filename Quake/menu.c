@@ -445,7 +445,7 @@ void M_ScanSaves (void)
 			continue;
 		fscanf (f, "%i\n", &version);
 		fscanf (f, "%79s\n", name);
-		strncpy (m_filenames[i], name, sizeof(m_filenames[i])-1);
+		q_strlcpy (m_filenames[i], name, SAVEGAME_COMMENT_LENGTH+1);
 
 	// change _ back to space
 		for (j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
@@ -1095,9 +1095,9 @@ void M_AdjustSliders (int dir)
 			curr_alwaysrun = ALWAYSRUN_VANILLA;
 		else
 			curr_alwaysrun = ALWAYSRUN_OFF;
-			
+
 		target_alwaysrun = (ALWAYSRUN_ITEMS + curr_alwaysrun + dir) % ALWAYSRUN_ITEMS;
-			
+
 		if (target_alwaysrun == ALWAYSRUN_VANILLA)
 		{
 			Cvar_SetValue ("cl_alwaysrun", 0);
@@ -1206,7 +1206,7 @@ void M_Options_Draw (void)
 	M_Print (16, 32 + 8*OPT_CONTRAST,	"              Contrast");
 	r = vid_contrast.value - 1.0;
 	M_DrawSlider (220, 32 + 8*OPT_CONTRAST, r);
-	
+
 	// OPT_MOUSESPEED:
 	M_Print (16, 32 + 8*OPT_MOUSESPEED,	"           Mouse Speed");
 	r = (sensitivity.value - 1)/10;
@@ -1259,7 +1259,7 @@ void M_Options_Draw (void)
 	// OPT_VIDEO:
 	if (vid_menudrawfn)
 		M_Print (16, 32 + 8*OPT_VIDEO,	"         Video Options");
-	
+
 	// OPT_VR:
 	if (vid_menudrawfn)
 		M_Print(16, 32 + 8 * OPT_VR, "         VR Options");
@@ -1726,7 +1726,7 @@ qboolean M_Quit_TextEntry (void)
 void M_Quit_Draw (void) //johnfitz -- modified for new quit message
 {
 	char	msg1[40];
-	char	msg2[] = "by Ozkan, Ericw & Stevenaaus"; /* msg2/msg3 are mostly [40] */
+	char	msg2[] = "by Ozkan Sezer, Eric Wasylishen, others";/* msg2/msg3 are mostly [40] */
 	char	msg3[] = "Press y to quit";
 	int		boxlen;
 
@@ -2755,11 +2755,11 @@ void M_Keydown (int key)
 	case m_video:
 		M_Video_Key (key);
 		return;
-	
+
 	case m_vr:
 		M_VR_Key(key);
 		break;
-	
+
 	case m_help:
 		M_Help_Key (key);
 		return;

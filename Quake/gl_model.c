@@ -194,7 +194,7 @@ byte *Mod_LeafPVS (mleaf_t *leaf, qmodel_t *model)
 byte *Mod_NoVisPVS (qmodel_t *model)
 {
 	int pvsbytes;
- 
+
 	pvsbytes = (model->numleafs+7)>>3;
 	if (mod_novis == NULL || pvsbytes > mod_novis_capacity)
 	{
@@ -202,7 +202,7 @@ byte *Mod_NoVisPVS (qmodel_t *model)
 		mod_novis = (byte *) realloc (mod_novis, mod_novis_capacity);
 		if (!mod_novis)
 			Sys_Error ("Mod_NoVisPVS: realloc() failed on %d bytes", mod_novis_capacity);
-		
+
 		memset(mod_novis, 0xff, mod_novis_capacity);
 	}
 	return mod_novis;
@@ -233,7 +233,7 @@ void Mod_ResetAll (void)
 
 	//ericw -- free alias model VBOs
 	GLMesh_DeleteVertexBuffers ();
-	
+
 	for (i=0 , mod=mod_known ; i<mod_numknown ; i++, mod++)
 	{
 		if (!mod->needload) //otherwise Mod_ClearAll() did it already
@@ -731,9 +731,14 @@ void Mod_LoadLighting (lump_t *l)
 			i = LittleLong(((int *)data)[1]);
 			if (i == 1)
 			{
-				Con_DPrintf2("%s loaded\n", litfilename);
-				loadmodel->lightdata = data + 8;
-				return;
+				if (8+l->filelen*3 == com_filesize)
+				{
+					Con_DPrintf2("%s loaded\n", litfilename);
+					loadmodel->lightdata = data + 8;
+					return;
+				}
+				Hunk_FreeToLowMark(mark);
+				Con_Printf("Outdated .lit file (%s should be %u bytes, not %u)\n", litfilename, 8+l->filelen*3, com_filesize);
 			}
 			else
 			{
@@ -998,7 +1003,7 @@ void CalcSurfaceExtents (msurface_t *s)
 	int		bmins[2], bmaxs[2];
 
 	mins[0] = mins[1] = 999999;
-	maxs[0] = maxs[1] = -99999;
+	maxs[0] = maxs[1] = -999999; // FIXME: change these two to FLT_MAX/-FLT_MAX
 
 	tex = s->texinfo;
 
@@ -2565,17 +2570,18 @@ void Mod_LoadAliasModel (qmodel_t *mod, void *buffer)
 		Sys_Error ("model %s has no vertices", mod->name);
 
 	if (pheader->numverts > MAXALIASVERTS)
-		Sys_Error ("model %s has too many vertices", mod->name);
+		Sys_Error ("model %s has too many vertices (%d; max = %d)", mod->name, pheader->numverts, MAXALIASVERTS);
 
 	pheader->numtris = LittleLong (pinmodel->numtris);
 
 	if (pheader->numtris <= 0)
 		Sys_Error ("model %s has no triangles", mod->name);
 
+	if (pheader->numtris > MAXALIASTRIS)
+		Sys_Error ("model %s has too many triangles (%d; max = %d)", mod->name, pheader->numtris, MAXALIASTRIS);
 	pheader->numframes = LittleLong (pinmodel->numframes);
 	numframes = pheader->numframes;
 	if (numframes < 1)
-		Sys_Error ("Mod_LoadAliasModel: Invalid # of frames: %d\n", numframes);
 
 	pheader->size = LittleFloat (pinmodel->size) * ALIAS_BASE_SIZE_RATIO;
 	mod->synctype = (synctype_t) LittleLong (pinmodel->synctype);

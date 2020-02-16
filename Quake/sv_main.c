@@ -295,13 +295,13 @@ void SV_SendServerinfo (client_t *client)
 
 	MSG_WriteByte (&client->message, svc_serverinfo);
 	MSG_WriteLong (&client->message, sv.protocol); //johnfitz -- sv.protocol instead of PROTOCOL_VERSION
-	
+
 	if (sv.protocol == PROTOCOL_RMQ)
 	{
 		// mh - now send protocol flags so that the client knows the protocol features to expect
 		MSG_WriteLong (&client->message, sv.protocolflags);
 	}
-	
+
 	MSG_WriteByte (&client->message, svs.maxclients);
 
 	if (!coop.value && deathmatch.value)
@@ -518,7 +518,7 @@ byte *SV_FatPVS (vec3_t org, qmodel_t *worldmodel) //johnfitz -- added worldmode
 		if (!fatpvs)
 			Sys_Error ("SV_FatPVS: realloc() failed on %d bytes", fatpvs_capacity);
 	}
-	
+
 	Q_memset (fatpvs, 0, fatbytes);
 	SV_AddToFatPVS (org, worldmodel->nodes, worldmodel); //johnfitz -- worldmodel as a parameter
 	return fatpvs;
@@ -587,7 +587,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 			for (i=0 ; i < ent->num_leafs ; i++)
 				if (pvs[ent->leafnums[i] >> 3] & (1 << (ent->leafnums[i]&7) ))
 					break;
-			
+
 			// ericw -- added ent->num_leafs < MAX_ENT_LEAFS condition.
 			//
 			// if ent->num_leafs == MAX_ENT_LEAFS, the ent is visible from too many leafs
@@ -1366,7 +1366,7 @@ void SV_SpawnServer (const char *server)
 	q_strlcpy (sv.name, server, sizeof(sv.name));
 
 	sv.protocol = sv_protocol; // johnfitz
-	
+
 	if (sv.protocol == PROTOCOL_RMQ)
 	{
 		// set up the protocol flags used by this server

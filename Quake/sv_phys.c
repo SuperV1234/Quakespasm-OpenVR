@@ -983,7 +983,7 @@ void SV_Physics_Client (edict_t	*ent, int num)
 		case MOVETYPE_TOSS:
 		case MOVETYPE_BOUNCE:
 			break;
-		
+
 		case MOVETYPE_FLY:
 			SV_FlyMove(ent, host_frametime, NULL);
 			break;
@@ -1010,7 +1010,7 @@ void SV_Physics_Client (edict_t	*ent, int num)
 	vec3_t restoreOrigin;
 	if (vr_enabled.value)
 	{
-		vec3_t adj; 
+		vec3_t adj;
 		_VectorCopy(cl.handpos[1], adj);
 
 		vec3_t ofs = {
@@ -1244,7 +1244,7 @@ SV_Physics
 void SV_Physics (void)
 {
 	int	i;
-	int	entity_cap; // For sv_freezenonclients 
+	int	entity_cap; // For sv_freezenonclients
 	edict_t	*ent;
 
 // let the progs know that a new frame has started
@@ -1263,7 +1263,7 @@ void SV_Physics (void)
 	if (sv_freezenonclients.value)
 	  entity_cap = svs.maxclients + 1; // Only run physics on clients and the world
 	else
-	  entity_cap = sv.num_edicts; 
+	  entity_cap = sv.num_edicts;
 
 	//for (i=0 ; i<sv.num_edicts ; i++, ent = NEXT_EDICT(ent))
 	for (i=0 ; i<entity_cap ; i++, ent = NEXT_EDICT(ent))
@@ -1298,6 +1298,6 @@ void SV_Physics (void)
 	if (pr_global_struct->force_retouch)
 		pr_global_struct->force_retouch--;
 
-	if (!sv_freezenonclients.value) 
+	if (!sv_freezenonclients.value)
 	  sv.time += host_frametime;
 }

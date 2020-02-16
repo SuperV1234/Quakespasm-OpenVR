@@ -287,17 +287,17 @@ void CL_ParseServerInfo (void)
 	if (cl.protocol == PROTOCOL_RMQ)
 	{
 		const unsigned int supportedflags = (PRFL_SHORTANGLE | PRFL_FLOATANGLE | PRFL_24BITCOORD | PRFL_FLOATCOORD | PRFL_EDICTSCALE | PRFL_INT32COORD);
-		
+
 		// mh - read protocol flags from server so that we know what protocol features to expect
 		cl.protocolflags = (unsigned int) MSG_ReadLong ();
-		
+
 		if (0 != (cl.protocolflags & (~supportedflags)))
 		{
 			Con_Warning("PROTOCOL_RMQ protocolflags %i contains unsupported flags\n", cl.protocolflags);
 		}
 	}
 	else cl.protocolflags = 0;
-	
+
 // parse maxclients
 	cl.maxclients = MSG_ReadByte ();
 	if (cl.maxclients < 1 || cl.maxclients > MAX_SCOREBOARD)
@@ -817,7 +817,7 @@ void CL_ParseClientdata (void)
 	else
 		cl.viewent.alpha = ENTALPHA_DEFAULT;
 	//johnfitz
-    
+
 	//johnfitz -- lerping
 	//ericw -- this was done before the upper 8 bits of cl.stats[STAT_WEAPON] were filled in, breaking on large maps like zendar.bsp
 	if (cl.viewent.model != cl.model_precache[cl.stats[STAT_WEAPON]])
@@ -1048,8 +1048,6 @@ void CL_ParseServerMessage (void)
 			cl.viewentity = MSG_ReadShort ();
 			VR_PushYaw();
 			break;
-
-		case svc_lightstyle:
 			i = MSG_ReadByte ();
 			if (i >= MAX_LIGHTSTYLES)
 				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES");

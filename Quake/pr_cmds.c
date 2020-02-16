@@ -784,7 +784,7 @@ static int PF_newcheckclient (int check)
 	VectorAdd (ent->v.origin, ent->v.view_ofs, org);
 	leaf = Mod_PointInLeaf (org, sv.worldmodel);
 	pvs = Mod_LeafPVS (leaf, sv.worldmodel);
-	
+
 	pvsbytes = (sv.worldmodel->numleafs+7)>>3;
 	if (checkpvs == NULL || pvsbytes > checkpvs_capacity)
 	{
@@ -1365,8 +1365,7 @@ static void PF_aim (void)
 	speed = G_FLOAT(OFS_PARM1);
 	(void) speed; /* variable set but not used */
 
-	VectorCopy (ent->v.origin, start)
-
+	VectorCopy (ent->v.origin, start);
 	start[2] += 20;
 
 // try sending a trace straight

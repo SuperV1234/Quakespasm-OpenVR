@@ -103,6 +103,7 @@ float V_CalcRoll (vec3_t angles, vec3_t velocity)
     else
 		value = cl_rollangle.value;
 
+
 //	if (cl.inwater)
 //		value *= 6;
 
@@ -1004,7 +1005,11 @@ void V_Init (void)
 	Cvar_RegisterVariable (&v_kickroll);
 	Cvar_RegisterVariable (&v_kickpitch);
 	Cvar_RegisterVariable (&v_gunkick); //johnfitz
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> sezero/master
 	Cvar_RegisterVariable (&r_viewmodel_quake); //MarkV
 }
 

@@ -203,7 +203,7 @@ void GLSLGamma_GammaCorrect (void)
 		{
 			glDeleteTextures(1, &r_gamma_texture);
 		}
-		
+
 		glGenTextures (1, &r_gamma_texture);
 		glBindTexture (GL_TEXTURE_2D, r_gamma_texture);
 
@@ -215,7 +215,7 @@ void GLSLGamma_GammaCorrect (void)
 			r_gamma_texture_width = TexMgr_Pad(r_gamma_texture_width);
 			r_gamma_texture_height = TexMgr_Pad(r_gamma_texture_height);
 		}
-	
+
 		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA8, r_gamma_texture_width, r_gamma_texture_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -230,7 +230,7 @@ void GLSLGamma_GammaCorrect (void)
 			Sys_Error("GLSLGamma_CreateShaders failed");
 		}
 	}
-	
+
 // copy the framebuffer to the texture
 	GL_DisableMultitexture();
 	glBindTexture (GL_TEXTURE_2D, r_gamma_texture);
@@ -261,12 +261,10 @@ void GLSLGamma_GammaCorrect (void)
 	glTexCoord2f (0, tmax);
 	glVertex2f (-1, 1);
 	glEnd ();
-	
+
 	glEnable(GL_CULL_FACE);
 
 	GL_UseProgramFunc (0);
-	
-// clear cached binding
 	GL_ClearBindings ();
 }
 
@@ -507,7 +505,7 @@ void R_SetupGL (void)
 	}
 
 //	glCullFace(GL_BACK); //johnfitz -- glquake used CCW with backwards culling -- let's do it right
-	
+
 	glMatrixMode(GL_MODELVIEW);
     glLoadIdentity ();
 
@@ -986,7 +984,7 @@ void R_ScaleView_DeleteTexture (void)
 R_ScaleView
 
 The r_scale cvar allows rendering the 3D view at 1/2, 1/3, or 1/4 resolution.
-This function scales the reduced resolution 3D view back up to fill 
+This function scales the reduced resolution 3D view back up to fill
 r_refdef.vrect. This is for emulating a low-resolution pixellated look,
 or possibly as a perforance boost on slow graphics cards.
 ================

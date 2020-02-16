@@ -354,15 +354,15 @@ static void R_ParseWorldspawn (void)
 		if (com_token[0] == '}')
 			break; // end of worldspawn
 		if (com_token[0] == '_')
-			strcpy(key, com_token + 1);
+			q_strlcpy(key, com_token + 1, sizeof(key));
 		else
-			strcpy(key, com_token);
-		while (key[strlen(key)-1] == ' ') // remove trailing spaces
+			q_strlcpy(key, com_token, sizeof(key));
+		while (key[0] && key[strlen(key)-1] == ' ') // remove trailing spaces
 			key[strlen(key)-1] = 0;
 		data = COM_Parse(data);
 		if (!data)
 			return; // error
-		strcpy(value, com_token);
+		q_strlcpy(value, com_token, sizeof(value));
 
 		if (!strcmp("wateralpha", key))
 			map_wateralpha = atof(value);
@@ -464,7 +464,7 @@ static qboolean GL_CheckShader (GLuint shader)
 
 		memset(infolog, 0, sizeof(infolog));
 		GL_GetShaderInfoLogFunc (shader, sizeof(infolog), NULL, infolog);
-		
+
 		Con_Warning ("GLSL program failed to compile: %s", infolog);
 
 		return false;
@@ -551,12 +551,12 @@ GLuint GL_CreateProgram (const GLchar *vertSource, const GLchar *fragSource, int
 	GL_DeleteShaderFunc (vertShader);
 	GL_AttachShaderFunc (program, fragShader);
 	GL_DeleteShaderFunc (fragShader);
-	
+
 	for (i = 0; i < numbindings; i++)
 	{
 		GL_BindAttribLocationFunc (program, bindings[i].attrib, bindings[i].name);
 	}
-	
+
 	GL_LinkProgramFunc (program);
 
 	if (!GL_CheckProgram (program))
@@ -612,7 +612,7 @@ void GL_BindBuffer (GLenum target, GLuint buffer)
 
 	if (!gl_vbo_able)
 		return;
-	
+
 	switch (target)
 	{
 		case GL_ARRAY_BUFFER:
@@ -625,7 +625,7 @@ void GL_BindBuffer (GLenum target, GLuint buffer)
 			Host_Error("GL_BindBuffer: unsupported target %d", (int)target);
 			return;
 	}
-	
+
 	if (*cache != buffer)
 	{
 		*cache = buffer;
