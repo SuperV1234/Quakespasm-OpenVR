@@ -259,7 +259,11 @@ void Sky_NewMap (void)
 		q_strlcpy(value, com_token, sizeof(value));
 
 		if (!strcmp("sky", key))
+			Sky_LoadSkyBox(value);
+
+		if (!strcmp("skyfog", key))
 			skyfog = atof(value);
+
 #if 1 //also accept non-standard keys
 		else if (!strcmp("skyname", key)) //half-life
 			Sky_LoadSkyBox(value);
