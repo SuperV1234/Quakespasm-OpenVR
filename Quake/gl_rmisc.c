@@ -247,7 +247,7 @@ void R_Init (void)
 
 	Sky_Init (); //johnfitz
 	Fog_Init (); //johnfitz
-    VID_VR_Init(); //phoboslab
+	VID_VR_Init(); //phoboslab
 }
 
 /*

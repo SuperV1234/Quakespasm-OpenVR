@@ -13,10 +13,8 @@
 FILE *__iob_func() {
     FILE result[3] = { *stdin,*stdout,*stderr };
     return result;
-} 
+}
 #endif
-
-extern void VID_Refocus();
 
 typedef struct {
     GLuint framebuffer, depth_texture, texture;
@@ -121,7 +119,6 @@ static vec3_t lastAim = { 0, 0, 0 };
 static qboolean vr_initialized = false;
 static GLuint mirror_texture = 0;
 static GLuint mirror_fbo = 0;
-static int attempt_to_refocus_retry = 0;
 
 static vec3_t headOrigin;
 static vec3_t lastHeadOrigin;
@@ -643,7 +640,6 @@ qboolean VR_Enable()
 
     Cbuf_AddText("exec vr_autoexec.cfg\n"); // Load the vr autosec config file incase the user has settings they want
 
-    attempt_to_refocus_retry = 900; // Try to refocus our for the first 900 frames :/
     vr_initialized = true;
     return true;
 }
@@ -762,7 +758,7 @@ void VR_UpdateScreenContent()
     if (!vr_initialized && !VR_Enable())
     {
         Cvar_Set("vr_enabled", "0");
-        return; 
+        return;
     }
 
     w = glwidth;
@@ -1006,7 +1002,10 @@ void VR_ShowCrosshair()
     vec3_t start, end, impact;
     float size, alpha;
 
-    if ((sv_player && (int)(sv_player->v.weapon) == IT_AXE))
+    if (!sv_player)
+        return;
+
+    if ((int)(sv_player->v.weapon) == IT_AXE)
         return;
 
     size = CLAMP(0.0, vr_crosshair_size.value, 32.0);

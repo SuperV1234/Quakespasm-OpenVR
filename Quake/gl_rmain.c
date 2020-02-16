@@ -265,6 +265,8 @@ void GLSLGamma_GammaCorrect (void)
 	glEnable(GL_CULL_FACE);
 
 	GL_UseProgramFunc (0);
+
+// clear cached binding
 	GL_ClearBindings ();
 }
 

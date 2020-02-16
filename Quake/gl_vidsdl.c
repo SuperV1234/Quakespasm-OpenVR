@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SDL.h"
 #endif
 #include "vr.h"
+#include <cassert>
 
 //ericw -- for putting the driver into multithreaded mode
 #ifdef __APPLE__
@@ -851,7 +852,10 @@ static void VID_Restart (void)
 	}
 
 	if (vr_enabled.value)
-		VR_Enable();
+	{
+		auto rc = VR_Enable();
+		assert(rc);
+	}
 }
 
 /*

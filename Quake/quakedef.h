@@ -41,6 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef	QUAKESPASM_VER_SUFFIX
 #define	QUAKESPASM_VER_SUFFIX		// optional version suffix string literal like "-beta1"
 #endif
+
 #define	QS_STRINGIFY_(x)	#x
 #define	QS_STRINGIFY(x)	QS_STRINGIFY_(x)
 
