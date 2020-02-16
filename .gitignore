@@ -1,3 +1,8 @@
+id1
+Id1
+*.so
+*.dbg
+
 # Linux objects
 .vs
 .vscode
@@ -161,3 +166,8 @@ $RECYCLE.BIN/
 .DS_Store
 /Windows/VisualStudio/id1
 /Windows/VisualStudio/history.txt
+Linux/CodeBlocks/empty.dir
+Linux/CodeBlocks/history.txt
+Linux/CodeBlocks/QuakeSpasm-SDL2.cbp
+Linux/CodeBlocks/QuakeSpasm-SDL2.depend
+Linux/CodeBlocks/QuakeSpasm-SDL2.layout

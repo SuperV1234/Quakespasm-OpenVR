@@ -945,7 +945,8 @@ static char *GL_MakeNiceExtensionsList (const char *in)
 			count++;
 	}
 
-	out = (char *) Z_Malloc (strlen(in) + count*3 + 1); //usually about 1-2k
+	assert(count >= 0);
+	out = (char *) Z_Malloc (strlen(in) + (size_t)count*3 + 1); //usually about 1-2k
 	out[0] = 0;
 
 	copy = (char *) Z_Strdup(in);

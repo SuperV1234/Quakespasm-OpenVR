@@ -23,7 +23,7 @@
 
 void VID_VR_Init();
 void VID_VR_Shutdown();
-qboolean VR_Enable();
+bool VR_Enable();
 void VID_VR_Disable();
 
 void VR_UpdateScreenContent();

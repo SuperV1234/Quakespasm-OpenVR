@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // r_world.c: world model rendering
 
 #include "quakedef.h"
+#include <cassert>
 
 extern cvar_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
 
@@ -145,12 +146,14 @@ void R_MarkSurfaces (void)
 	//need to do it this way if we want to work with tyrann's skip removal tool
 	//becuase his tool doesn't actually remove the surfaces from the bsp surfaces lump
 	//nor does it remove references to them in each leaf's marksurfaces list
-	for (i=0, node = cl.worldmodel->nodes ; i<cl.worldmodel->numnodes ; i++, node++)
-		for (j=0, surf=&cl.worldmodel->surfaces[node->firstsurface] ; j<node->numsurfaces ; j++, surf++)
+	for (i = 0, node = cl.worldmodel->nodes; i < cl.worldmodel->numnodes; i++, node++) {
+		assert(node->numsurfaces < decltype(node->numsurfaces)(INT_MAX));
+		for (j = 0, surf = &cl.worldmodel->surfaces[node->firstsurface]; j < (int)node->numsurfaces; j++, surf++)
 			if (surf->visframe == r_visframecount)
 			{
 				R_ChainSurface(surf, chain_world);
 			}
+	}
 #else
 	//the old way
 	surf = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];

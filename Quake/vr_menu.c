@@ -159,7 +159,7 @@ static void VR_MenuPrintOptionValue(int cx, int cy, int option)
             {
                 value_string = "Off";
             }
-            else 
+            else
             {
                 snprintf(value_buffer, sizeof(value_buffer), "%d Samples", (int)vr_msaa.value);
                 value_string = value_buffer;
@@ -191,13 +191,7 @@ static void VR_MenuKeyOption(int key, int option)
 
     qboolean isLeft = (key == K_LEFTARROW);
     int intValue = 0;
-    float floatValue = 0.0f;
-    int i = 0;
 
-    int debug[] = { 0, 1, 2, 3, 4 };
-    float ipdDiff = 0.2f;
-    int position[] = { 0, 1, 2 };
-    float multisample[] = { 1.0f, 1.25f, 1.50f, 1.75f, 2.0f };
     int aimmode[] = { 1, 2, 3, 4, 5, 6, 7 };
     int deadzoneDiff = 5;
     int crosshair[] = { 0, 1, 2 };
@@ -300,7 +294,7 @@ static void VR_MenuKeyOption(int key, int option)
 #undef _sizeofarray
 }
 
-static void VR_MenuKey(int key)
+void VR_MenuKey(int key)
 {
     switch ( key ) {
         case K_ESCAPE:
@@ -341,7 +335,7 @@ static void VR_MenuKey(int key)
     }
 }
 
-static void VR_MenuDraw (void)
+void VR_MenuDraw (void)
 {
     int y = 4;
 

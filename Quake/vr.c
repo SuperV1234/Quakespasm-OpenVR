@@ -3,9 +3,11 @@
 #include "vr.h"
 #include "vr_menu.h"
 
+#ifdef WIN32
 #define UNICODE 1
 #include <mmsystem.h>
 #undef UNICODE
+#endif
 
 #include "openvr.h"
 
@@ -49,7 +51,7 @@ typedef struct {
 #define GL_FRAMEBUFFER_SRGB_EXT 0x8DB9
 
 typedef void (APIENTRYP PFNGLBLITFRAMEBUFFEREXTPROC) (GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum);
-typedef BOOL(APIENTRYP PFNWGLSWAPINTERVALEXTPROC) (int);
+typedef bool(APIENTRYP PFNWGLSWAPINTERVALEXTPROC) (int);
 
 static PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
 static PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
@@ -62,7 +64,7 @@ static PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 static PFNGLTEXIMAGE2DMULTISAMPLEPROC glTexImage2DMultisampleEXT;
 
 struct {
-    void *func; char *name;
+    void *func; const char *name;
 } gl_extensions[] = {
     { &glBindFramebufferEXT, "glBindFramebufferEXT" },
     { &glBlitFramebufferEXT, "glBlitFramebufferEXT" },
@@ -108,7 +110,7 @@ vec3_t lastHudPosition{ 0.0, 0.0, 0.0 };
 vec3_t lastMenuPosition{ 0.0, 0.0, 0.0 };
 
 vr::IVRSystem *ovrHMD;
-vr::TrackedDevicePose_t ovr_DevicePose[16]; //k_unMaxTrackedDeviceCount
+vr::TrackedDevicePose_t ovr_DevicePose[vr::k_unMaxTrackedDeviceCount];
 
 static vr_eye_t eyes[2];
 static vr_eye_t *current_eye = NULL;
@@ -116,7 +118,7 @@ static vr_controller controllers[2];
 static vec3_t lastOrientation = { 0, 0, 0 };
 static vec3_t lastAim = { 0, 0, 0 };
 
-static qboolean vr_initialized = false;
+static bool vr_initialized = false;
 static GLuint mirror_texture = 0;
 static GLuint mirror_fbo = 0;
 
@@ -602,8 +604,11 @@ void VR_InitGame()
     InitAllWeaponCVars();
 }
 
-qboolean VR_Enable()
+bool VR_Enable()
 {
+    if(vr_initialized)
+        return true;
+
     vr::EVRInitError eInit = vr::VRInitError_None;
     ovrHMD = vr::VR_Init(&eInit, vr::VRApplication_Scene);
 
@@ -672,11 +677,17 @@ void VID_VR_Disable()
 
 static void RenderScreenForCurrentEye_OVR()
 {
+    assert(current_eye != nullptr);
+
     // Remember the current glwidht/height; we have to modify it here for each eye
     int oldglheight = glheight;
     int oldglwidth = glwidth;
 
-    ovrHMD->GetRecommendedRenderTargetSize(reinterpret_cast<uint32_t*>(&glwidth), reinterpret_cast<uint32_t*>(&glheight));
+    uint32_t cglwidth = glwidth;
+    uint32_t cglheight = glheight;
+    ovrHMD->GetRecommendedRenderTargetSize(&cglwidth, &cglheight);
+    glwidth = cglwidth;
+    glheight = cglheight;
 
     bool newTextures = glwidth != current_eye->fbo.size.width || glheight != current_eye->fbo.size.height;
     if (newTextures)
@@ -749,7 +760,6 @@ void IdentifyAxes(int device);
 
 void VR_UpdateScreenContent()
 {
-    int i;
     vec3_t orientation;
     GLint w, h;
 
@@ -835,7 +845,7 @@ void VR_UpdateScreenContent()
                 IdentifyAxes(iDevice);
 
                 controller->lastState = controller->state;
-                vr::VRSystem()->GetControllerState(iDevice, &controller->state, sizeof(vr::VRControllerState_t));
+                vr::VRSystem()->GetControllerState(iDevice, &controller->state, sizeof(controller->state));
                 controller->rawvector = rawControllerPos;
                 controller->raworientation = rawControllerQuat;
                 controller->position[0] = (rawControllerPos.v[2] - lastHeadOrigin[0]) * meters_to_units;
@@ -951,7 +961,7 @@ void VR_UpdateScreenContent()
     VectorCopy(cl.aimangles, r_refdef.aimangles);
 
     // Render the scene for each eye into their FBOs
-    for (i = 0; i < 2; i++) {
+    for (int i = 0; i < 2; i++) {
         current_eye = &eyes[i];
 
         vec3_t temp, orientation;

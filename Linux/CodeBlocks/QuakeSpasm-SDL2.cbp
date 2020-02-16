@@ -11,7 +11,7 @@
 				<Option object_output="obj/Debug/SDL2/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-window -basedir /home/kristian/Desktop/Quake -sndspeed 48000" />
+				<Option parameters="-window -sndspeed 48000" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -21,7 +21,7 @@
 				<Option object_output="obj/Release/SDL2/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
-				<Option parameters="-window -basedir /home/kristian/Desktop/Quake -sndspeed 48000" />
+				<Option parameters="-window -sndspeed 48000" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
@@ -32,19 +32,26 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=c++1z" />
+			<Add option="-g" />
 			<Add option="`sdl2-config --cflags`" />
+			<Add option="-x c++" />
+			<Add option="-fsanitize=address" />
 			<Add option="-DUSE_SDL2" />
 			<Add option="-DUSE_CODEC_MP3" />
 			<Add option="-DUSE_CODEC_VORBIS" />
 			<Add option="-DUSE_CODEC_WAVE" />
 		</Compiler>
 		<Linker>
+			<Add option="-lasan" />
 			<Add option="`sdl2-config --libs`" />
 			<Add option="-lGL" />
 			<Add option="-lvorbisfile" />
 			<Add option="-lvorbis" />
 			<Add option="-logg" />
 			<Add option="-lmad" />
+			<Add option="-lopenvr_api" />
+			<Add directory="/run/media/vittorioromeo/ssd3/stuf/openvr/bin/linux64" />
 		</Linker>
 		<Unit filename="../../Quake/anorm_dots.h" />
 		<Unit filename="../../Quake/anorms.h" />
@@ -196,6 +203,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../Quake/net_udp.h" />
+		<Unit filename="../../Quake/openvr.h" />
 		<Unit filename="../../Quake/pl_linux.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -266,10 +274,10 @@
 		<Unit filename="../../Quake/snd_mp3.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../../Quake/snd_mp3.h" />
 		<Unit filename="../../Quake/snd_mp3tag.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../../Quake/snd_mp3.h" />
 		<Unit filename="../../Quake/snd_opus.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -322,6 +330,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../Quake/view.h" />
+		<Unit filename="../../Quake/vr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Quake/vr.h" />
+		<Unit filename="../../Quake/vr_menu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Quake/vr_menu.h" />
 		<Unit filename="../../Quake/wad.c">
 			<Option compilerVar="CC" />
 		</Unit>

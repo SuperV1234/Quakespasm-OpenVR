@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // sv_edict.c -- entity dictionary
 
+#include <cassert>
 #include "quakedef.h"
 
 dprograms_t		*progs;
@@ -1014,6 +1015,7 @@ void ED_LoadFromFile (const char *data)
 //
 // immediately call spawn function
 //
+		assert(ent != nullptr);
 		if (!ent->v.classname)
 		{
 			Con_SafePrintf ("No classname for:\n"); //johnfitz -- was Con_Printf

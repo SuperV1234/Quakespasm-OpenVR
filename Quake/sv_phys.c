@@ -395,7 +395,7 @@ void SV_AddGravity (edict_t *ent)
 	else
 		ent_gravity = 1.0;
 
-	ent->v.velocity[2] -= ent_gravity * sv_gravity.value * host_frametime;
+	ent->v.velocity[2] -= (double)ent_gravity * (double)sv_gravity.value * host_frametime;
 }
 
 
@@ -690,7 +690,7 @@ qboolean SV_CheckWater (edict_t *ent)
 	{
 		ent->v.watertype = cont;
 		ent->v.waterlevel = 1;
-		point[2] = ent->v.origin[2] + (ent->v.mins[2] + ent->v.maxs[2])*0.5;
+		point[2] = ent->v.origin[2] + (ent->v.mins[2] + ent->v.maxs[2])*0.5f;
 		cont = SV_PointContents (point);
 		if (cont <= CONTENTS_WATER)
 		{
@@ -779,8 +779,8 @@ int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
 		ent->v. velocity[2] = 0;
 		clip = SV_FlyMove (ent, 0.1, &steptrace);
 
-		if ( fabs(oldorg[1] - ent->v.origin[1]) > 4
-		|| fabs(oldorg[0] - ent->v.origin[0]) > 4 )
+		if ( fabs((double)oldorg[1] - (double)ent->v.origin[1]) > 4
+		|| fabs((double)oldorg[0] - (double)ent->v.origin[0]) > 4 )
 		{
 //Con_DPrintf ("unstuck!\n");
 			return clip;
@@ -863,8 +863,8 @@ void SV_WalkMove (edict_t *ent)
 // in the clipping hulls
 	if (clip)
 	{
-		if ( fabs(oldorg[1] - ent->v.origin[1]) < 0.03125
-		&& fabs(oldorg[0] - ent->v.origin[0]) < 0.03125 )
+		if ( fabs((double)oldorg[1] - (double)ent->v.origin[1]) < 0.03125
+		&& fabs((double)oldorg[0] - (double)ent->v.origin[0]) < 0.03125 )
 		{	// stepping up didn't make any progress
 			clip = SV_TryUnstick (ent, oldvel);
 		}
