@@ -1005,11 +1005,6 @@ void V_Init (void)
 	Cvar_RegisterVariable (&v_kickroll);
 	Cvar_RegisterVariable (&v_kickpitch);
 	Cvar_RegisterVariable (&v_gunkick); //johnfitz
-<<<<<<< HEAD
-
-=======
-
->>>>>>> sezero/master
 	Cvar_RegisterVariable (&r_viewmodel_quake); //MarkV
 }
 
