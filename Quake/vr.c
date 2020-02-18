@@ -948,6 +948,7 @@ void VR_UpdateScreenContent()
 		SetHandPos(0, player);
 		SetHandPos(1, player);
 
+		// TODO VR: interpolate based on weapon weight?
 		VectorCopy(cl.handrot[1], cl.aimangles); // Sets the shooting angle
 		// TODO: what sets the shooting origin?
 

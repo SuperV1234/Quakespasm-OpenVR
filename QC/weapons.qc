@@ -1265,6 +1265,7 @@ void() W_WeaponFrame =
 		ImpulseCommands ();
 
 // check for attack
+// TODO VR: pass controller velocity, check for axe swing or try implementing melee
 	if (self.button0)
 	{
 		SuperDamageSound ();
