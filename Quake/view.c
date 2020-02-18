@@ -98,7 +98,7 @@ float V_CalcRoll (vec3_t angles, vec3_t velocity)
 	side = fabs(side);
 
     // Don't roll view in VR
-    if (vr_enabled.value)
+    if (vr_enabled.value /* TODO VR CVAR */)
         value = 0;
     else
 		value = cl_rollangle.value;
@@ -128,7 +128,7 @@ float V_CalcBob (void)
 	float	cycle;
 
     // Don't bob if we're in VR
-    if (vr_enabled.value)
+    if (vr_enabled.value /* TODO VR CVAR */)
 	{
         return 0.f;
     }
@@ -335,7 +335,7 @@ void V_ParseDamage (void)
 // calculate view angle kicks
 //
     // check if we're out of vr or if vr viewkick is enabled
-    if(!vr_enabled.value || (vr_enabled.value && vr_viewkick.value) )
+    if(!vr_enabled.value || (vr_enabled.value && vr_viewkick.value) /* TODO VR CVAR */)
     {
 		ent = &cl_entities[cl.viewentity];
 
@@ -732,7 +732,7 @@ void V_CalcViewRoll (void)
 		v_dmg_time -= host_frametime;
 	}
 
-	if (cl.stats[STAT_HEALTH] <= 0 && !vr_enabled.value)
+	if (cl.stats[STAT_HEALTH] <= 0 && !vr_enabled.value /* TODO VR CVAR */)
 	{
 		r_refdef.viewangles[ROLL] = 80;	// dead view angle
 		return;
@@ -886,7 +886,7 @@ void V_CalcRefdef (void)
 //johnfitz -- v_gunkick
 	if (v_gunkick.value == 1 && !(vr_enabled.value && !vr_viewkick.value)) //original quake kick
 		VectorAdd (r_refdef.viewangles, cl.punchangle, r_refdef.viewangles);
-	if (v_gunkick.value == 2 && !(vr_enabled.value && !vr_viewkick.value)) //lerped kick
+	if (v_gunkick.value == 2 && !(vr_enabled.value && !vr_viewkick.value)) //lerped kick /* TODO VR CVAR */
 	{
 		for (i=0; i<3; i++)
 			if (punch[i] != v_punchangles[0][i])

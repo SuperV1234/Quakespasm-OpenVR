@@ -853,8 +853,7 @@ static void VID_Restart (void)
 
 	if (vr_enabled.value)
 	{
-		auto rc = VR_Enable();
-		assert(rc);
+		VR_Enable();
 	}
 }
 

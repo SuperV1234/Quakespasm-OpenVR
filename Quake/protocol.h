@@ -246,6 +246,7 @@ typedef struct
 typedef struct
 {
 	vec3_t	viewangles;
+	vec3_t  handpos;
 
 // intended velocities
 	float	forwardmove;

@@ -138,6 +138,7 @@ typedef struct
 	string_t	noise1;
 	string_t	noise2;
 	string_t	noise3;
+	vec3_t	handpos;
 } entvars_t;
 
-#define PROGHEADER_CRC 5927
+#define PROGHEADER_CRC 43046

@@ -339,12 +339,14 @@ CL_SendMove
 */
 void CL_SendMove (const usercmd_t *cmd)
 {
+	constexpr size_t bufsize = 128 + 24;
+
 	int		i;
 	int		bits;
 	sizebuf_t	buf;
-	byte	data[128];
+	byte	data[bufsize];
 
-	buf.maxsize = 128;
+	buf.maxsize = bufsize;
 	buf.cursize = 0;
 	buf.data = data;
 
@@ -364,6 +366,11 @@ void CL_SendMove (const usercmd_t *cmd)
 		else
 			MSG_WriteAngle16 (&buf, cl.aimangles[i], cl.protocolflags);
 		//johnfitz
+
+	// handpos
+	MSG_WriteFloat(&buf, cmd->handpos[0]);
+	MSG_WriteFloat(&buf, cmd->handpos[1]);
+	MSG_WriteFloat(&buf, cmd->handpos[2]);
 
 	MSG_WriteShort (&buf, cmd->forwardmove);
 	MSG_WriteShort (&buf, cmd->sidemove);

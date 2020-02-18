@@ -168,6 +168,8 @@ Two entities have touched, so run their touch functions
 */
 void SV_Impact (edict_t *e1, edict_t *e2)
 {
+	// TODO VR: handtouch?
+
 	int		old_self, old_other;
 
 	old_self = pr_global_struct->self;
@@ -1008,8 +1010,10 @@ void SV_Physics_Client (edict_t	*ent, int num)
 
 	//replace player origin with hand origin for duration of post think (where weapons are done)
 	vec3_t restoreOrigin;
-	if (vr_enabled.value)
+	// TODO VR:
+	if (false && vr_enabled.value)
 	{
+		// TODO VR:
 		vec3_t adj;
 		_VectorCopy(cl.handpos[1], adj);
 
@@ -1034,7 +1038,8 @@ void SV_Physics_Client (edict_t	*ent, int num)
 
 	PR_ExecuteProgram (pr_global_struct->PlayerPostThink);
 
-	if (vr_enabled.value)
+	// TODO VR:
+	if (false && vr_enabled.value)
 	{
 		_VectorCopy(restoreOrigin, ent->v.origin);
 	}

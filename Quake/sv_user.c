@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // sv_user.c -- server code for moving users
 
 #include "quakedef.h"
+#include <iostream>
 
 edict_t	*sv_player;
 
@@ -429,7 +430,6 @@ void SV_ClientThink (void)
 	//johnfitz
 }
 
-
 /*
 ===================
 SV_ReadClientMove
@@ -456,6 +456,19 @@ void SV_ReadClientMove (usercmd_t *move)
 		//johnfitz
 
 	VectorCopy (angle, host_client->edict->v.v_angle);
+
+	// handpos
+	move->handpos[0] = MSG_ReadFloat();
+	move->handpos[1] = MSG_ReadFloat();
+	move->handpos[2] = MSG_ReadFloat();
+
+	// char msgbuf[100];
+	// sprintf(msgbuf, "My variable is %f\n", move->handpos[0]);
+	// OutputDebugStringA(msgbuf);
+
+	// TODO VR: test
+	VectorCopy (move->handpos, host_client->edict->v.handpos);
+	VectorCopy (move->handpos, sv_player->v.handpos);
 
 // read movement
 	move->forwardmove = MSG_ReadShort ();
