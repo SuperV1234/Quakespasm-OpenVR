@@ -66,7 +66,7 @@ extern cvar_t vr_viewkick;
 extern cvar_t vr_world_scale;
 
 #define MAX_WEAPONS 20 //not sure what this number should actually be...
-#define VARS_PER_WEAPON 5
+#define VARS_PER_WEAPON 8
 
 extern cvar_t vr_weapon_offset[MAX_WEAPONS * VARS_PER_WEAPON];
 extern int weaponCVarEntry;

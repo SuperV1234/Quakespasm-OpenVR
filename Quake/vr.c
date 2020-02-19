@@ -3,6 +3,7 @@
 #include "vr.h"
 #include "vr_menu.h"
 #include "wpnoffset_menu.h"
+#include <glm.hpp>
 
 static double lerp(double a, double b, double f)
 {
@@ -505,19 +506,34 @@ void InitWeaponCVar(cvar_t* cvar, const char* name, int i, const char* value)
 	}
 }
 
-void InitWeaponCVars(int i, const char* id, const char* offsetX, const char* offsetY, const char* offsetZ, const char* scale)
+void InitWeaponCVars(
+	int i,
+	const char* id,
+	const char* offsetX,
+	const char* offsetY,
+	const char* offsetZ,
+	const char* scale,
+	const char* roll = "0.0",
+	const char* pitch = "0.0",
+	const char* yaw = "0.0")
 {
-	const char* nameOffsetX = "vr_wofs_x_nn";
-	const char* nameOffsetY = "vr_wofs_y_nn";
-	const char* nameOffsetZ = "vr_wofs_z_nn";
-	const char* nameScale = "vr_wofs_scale_nn";
-	const char* nameID = "vr_wofs_id_nn";
+	constexpr const char* nameOffsetX = "vr_wofs_x_nn";
+	constexpr const char* nameOffsetY = "vr_wofs_y_nn";
+	constexpr const char* nameOffsetZ = "vr_wofs_z_nn";
+	constexpr const char* nameScale = "vr_wofs_scale_nn";
+	constexpr const char* nameID = "vr_wofs_id_nn";
+	constexpr const char* nameRoll = "vr_wofs_roll_nn";
+	constexpr const char* namePitch = "vr_wofs_pitch_nn";
+	constexpr const char* nameYaw = "vr_wofs_yaw_nn";
+
 	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON], nameOffsetX, i, offsetX);
 	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 1], nameOffsetY, i, offsetY);
 	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 2], nameOffsetZ, i, offsetZ);
 	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 3], nameScale, i, scale);
 	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 4], nameID, i, id);
-	// TODO VR: add per weapon angle modifiers
+	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 5], nameRoll, i, roll);
+	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 6], namePitch, i, pitch);
+	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 7], nameYaw, i, yaw);
 }
 
 void InitAllWeaponCVars()
@@ -790,10 +806,16 @@ void SetHandPos(int index, entity_t *player)
 	final[2] = headLocal[2] + player->origin[2] + vr_floor_offset.value + vr_gun_z_offset.value;
 
 	// TODO VR:
-	// vec3lerp(cl.handpos[index], cl.handpos[index], final, 0.5);
+	glm::vec3 a{cl.handpos[index][0], cl.handpos[index][1], cl.handpos[index][2]};
+	glm::vec3 b{final[0], final[1], final[2]};
+	auto fff = glm::mix(a, b, 0.2f);
+	//vec3lerp(cl.handpos[index], cl.handpos[index], final, 0.5);
+	cl.handpos[index][0] = fff.x;
+	cl.handpos[index][1] = fff.y;
+	cl.handpos[index][2] = fff.z;
 
 	// handpos
-	VectorCopy(final, cl.handpos[index]);
+	// VectorCopy(final, cl.handpos[index]);
 
 	// handrot is set with AngleVectorFromRotMat
 
@@ -979,21 +1001,40 @@ void VR_UpdateScreenContent()
 		cl.viewangles[PITCH] = orientation[PITCH];
 		cl.viewangles[YAW] = orientation[YAW];
 
-		vec3_t contMat[3], gunMat[3], gunMatYaw[3];
-		CreateRotMat(0, vr_gunangle.value, gunMat);
-		CreateRotMat(1, vr_gunyaw.value, gunMatYaw);
+		// TODO VR: this affects aim, not just drawing
+		/*
+		vec3_t rotOfs = {
+			vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 5].value + vr_gunangle.value,
+			vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 6].value + vr_gunyaw.value,
+			vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 7].value
+		};
+		*/
+
+		vec3_t rotOfs = {
+			vr_gunangle.value,
+			vr_gunyaw.value,
+			0
+		};
+
+		vec3_t mat[3], matTmp[3], gunMatPitch[3], gunMatYaw[3], gunMatRoll[3];
+		CreateRotMat(0, rotOfs[0], gunMatPitch); // pitch
+		CreateRotMat(1, rotOfs[1], gunMatYaw); // yaw
+		CreateRotMat(2, rotOfs[2], gunMatRoll); // roll
 
 		for (int i = 0; i < 2; i++)
 		{
-			RotMatFromAngleVector(controllers[i].orientation, contMat);
+			RotMatFromAngleVector(controllers[i].orientation, mat);
 
-			vec3_t mat[3];
-			R_ConcatRotations(gunMat, contMat, mat);
+			R_ConcatRotations(gunMatRoll, mat, matTmp);
+			for(int j = 0; j < 3; ++j) { VectorCopy(matTmp[j], mat[j]); }
 
-			vec3_t matFinal[3];
-			R_ConcatRotations(mat, gunMatYaw, matFinal);
+			R_ConcatRotations(gunMatPitch, mat, matTmp);
+			for(int j = 0; j < 3; ++j) { VectorCopy(matTmp[j], mat[j]); }
 
-			AngleVectorFromRotMat(matFinal, cl.handrot[i]);
+			R_ConcatRotations(gunMatYaw, mat, matTmp);
+			for(int j = 0; j < 3; ++j) { VectorCopy(matTmp[j], mat[j]); }
+
+			AngleVectorFromRotMat(mat, cl.handrot[i]);
 		}
 
 		if (cl.viewent.model)

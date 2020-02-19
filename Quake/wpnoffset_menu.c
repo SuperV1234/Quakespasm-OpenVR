@@ -31,10 +31,13 @@ static void WpnOffset_MenuPlaySound(const char *sound, float fvol)
 static auto getCvars()
 {
 	return std::tie(
-		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON],
-		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 1],
-		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 2],
-		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 3]
+		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON],		// OffsetX
+		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 1],	// OffsetY
+		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 2],	// OffsetZ
+		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 3],	// Scale
+		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 7],	// Roll
+		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 5],	// Pitch
+		vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 6]		// Yaw
 	);
 }
 
@@ -48,7 +51,7 @@ static void WpnOffset_MenuPrintOptionValue(int cx, int cy, WpnOffsetMenuOpt opti
 		M_Print(cx, cy, value_buffer);
 	};
 
-	auto [ox, oy, oz, sc] = getCvars();
+	auto [ox, oy, oz, sc, rr, rp, ry] = getCvars();
 
 	switch (option)
 	{
@@ -56,6 +59,9 @@ static void WpnOffset_MenuPrintOptionValue(int cx, int cy, WpnOffsetMenuOpt opti
 		case WpnOffsetMenuOpt::OffsetY:	printAsStr(oy); break;
 		case WpnOffsetMenuOpt::OffsetZ:	printAsStr(oz); break;
 		case WpnOffsetMenuOpt::Scale:	printAsStr(sc); break;
+		case WpnOffsetMenuOpt::Roll:	printAsStr(rr); break;
+		case WpnOffsetMenuOpt::Pitch:	printAsStr(rp); break;
+		case WpnOffsetMenuOpt::Yaw:		printAsStr(ry); break;
 	}
 }
 
@@ -67,10 +73,13 @@ static void WpnOffset_MenuKeyOption(int key, WpnOffsetMenuOpt option)
 		Cvar_SetValue(cvar.name, CLAMP(min, isLeft ? cvar.value - incr : cvar.value + incr, max));
 	};
 
-	auto [ox, oy, oz, sc] = getCvars();
+	auto [ox, oy, oz, sc, rr, rp, ry] = getCvars();
 
-	constexpr float oInc = 0.5f;
+	constexpr float oInc = 0.1f;
 	constexpr float oBound = 100.f;
+
+	constexpr float rInc = 0.5f;
+	constexpr float rBound = 90.f;
 
 	switch (option)
 	{
@@ -78,6 +87,9 @@ static void WpnOffset_MenuKeyOption(int key, WpnOffsetMenuOpt option)
 		case WpnOffsetMenuOpt::OffsetY:	adjustF(oy, oInc, -oBound, oBound); break;
 		case WpnOffsetMenuOpt::OffsetZ:	adjustF(oz, oInc, -oBound, oBound); break;
 		case WpnOffsetMenuOpt::Scale:	adjustF(sc, 0.01f, 0.01f, 2.f); break;
+		case WpnOffsetMenuOpt::Roll:	adjustF(rr, rInc, -rBound, rBound); break;
+		case WpnOffsetMenuOpt::Pitch:	adjustF(rp, rInc, -rBound, rBound); break;
+		case WpnOffsetMenuOpt::Yaw:		adjustF(ry, rInc, -rBound, rBound); break;
 	}
 }
 
@@ -150,7 +162,10 @@ void WpnOffset_MenuDraw (void)
 		"Offset X",
 		"Offset Y",
 		"Offset Z",
-		"Scale"
+		"Scale",
+		"Roll",
+		"Pitch",
+		"Yaw"
 	);
 
 	static_assert(adjustedLabels.size() == (int)WpnOffsetMenuOpt::Max);

@@ -10,6 +10,9 @@ enum class WpnOffsetMenuOpt
     OffsetY,
     OffsetZ,
     Scale,
+    Roll,
+    Pitch,
+    Yaw,
 
 	Max
 };

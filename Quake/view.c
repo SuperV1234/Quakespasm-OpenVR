@@ -95,10 +95,10 @@ float V_CalcRoll (vec3_t angles, vec3_t velocity)
 	sign = side < 0 ? -1 : 1;
 	side = fabs(side);
 
-    // Don't roll view in VR
-    if (vr_enabled.value /* TODO VR CVAR */)
-        value = 0;
-    else
+	// Don't roll view in VR
+	if (vr_enabled.value /* TODO VR CVAR */)
+		value = 0;
+	else
 		value = cl_rollangle.value;
 
 
@@ -125,11 +125,11 @@ float V_CalcBob (void)
 	float	bob;
 	float	cycle;
 
-    // Don't bob if we're in VR
-    if (vr_enabled.value /* TODO VR CVAR */)
+	// Don't bob if we're in VR
+	if (vr_enabled.value /* TODO VR CVAR */)
 	{
-        return 0.f;
-    }
+		return 0.f;
+	}
 
 	cycle = cl.time - (int)(cl.time/cl_bobcycle.value)*cl_bobcycle.value;
 	cycle /= cl_bobcycle.value;
@@ -332,9 +332,9 @@ void V_ParseDamage (void)
 //
 // calculate view angle kicks
 //
-    // check if we're out of vr or if vr viewkick is enabled
-    if(!vr_enabled.value || (vr_enabled.value && vr_viewkick.value) /* TODO VR CVAR */)
-    {
+	// check if we're out of vr or if vr viewkick is enabled
+	if(!vr_enabled.value || (vr_enabled.value && vr_viewkick.value) /* TODO VR CVAR */)
+	{
 		ent = &cl_entities[cl.viewentity];
 
 		VectorSubtract (from, ent->origin, from);
@@ -563,10 +563,10 @@ void V_PolyBlend (void)
 	glEnable (GL_BLEND);
 
 	glMatrixMode(GL_PROJECTION);
-    glLoadIdentity ();
+	glLoadIdentity ();
 	glOrtho (0, 1, 1, 0, -99999, 99999);
 	glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity ();
+	glLoadIdentity ();
 
 	glColor4fv (v_blend);
 
@@ -610,14 +610,20 @@ void CalcGunAngle (void)
 	static float oldyaw = 0;
 	static float oldpitch = 0;
 
-    // Skip everything if we're doing VR Controller aiming.
-    if (vr_enabled.value && vr_aimmode.value == VR_AIMMODE_CONTROLLER)
-    {
-        cl.viewent.angles[YAW] = cl.handrot[1][YAW];
-        cl.viewent.angles[PITCH] = -(cl.handrot[1][PITCH]) + vr_gunmodelpitch.value;
-        cl.viewent.angles[ROLL] = cl.handrot[1][ROLL];
-        return;
-    }
+	// Skip everything if we're doing VR Controller aiming.
+	if (vr_enabled.value && vr_aimmode.value == VR_AIMMODE_CONTROLLER)
+	{
+		vec3_t rotOfs = {
+			vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 5].value + vr_gunmodelpitch.value,	// Pitch
+			vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 6].value,							// Yaw
+			vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 7].value 							// Roll
+		};
+
+		cl.viewent.angles[PITCH] = -(cl.handrot[1][PITCH]) + rotOfs[0];
+		cl.viewent.angles[YAW] = cl.handrot[1][YAW] + rotOfs[1];
+		cl.viewent.angles[ROLL] = cl.handrot[1][ROLL] + rotOfs[2];
+		return;
+	}
 
 	yaw = r_refdef.aimangles[YAW];
 	pitch = -r_refdef.aimangles[PITCH];
@@ -847,21 +853,21 @@ void V_CalcRefdef (void)
 
 	CalcGunAngle ();
 
-    // VR controller aiming configuration
-    if (vr_enabled.value && vr_aimmode.value == VR_AIMMODE_CONTROLLER)
-    {
+	// VR controller aiming configuration
+	if (vr_enabled.value && vr_aimmode.value == VR_AIMMODE_CONTROLLER)
+	{
 		VectorAdd(cl.handpos[1], cl.vmeshoffset, view->origin);
-    }
-    else
-    {
-        VectorCopy(ent->origin, view->origin)
+	}
+	else
+	{
+		VectorCopy(ent->origin, view->origin)
 
 		view->origin[2] += cl.viewheight;
 
 		for (i=0 ; i<3 ; i++)
 			view->origin[i] += forward[i]*bob*0.4;
 		view->origin[2] += bob;
-    }
+	}
 
 	//johnfitz -- removed all gun position fudging code (was used to keep gun from getting covered by sbar)
 	//MarkV -- restored this with r_viewmodel_quake cvar
