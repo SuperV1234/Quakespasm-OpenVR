@@ -168,6 +168,8 @@ typedef struct
 	vec3_t		vmeshoffset;
 	vec3_t		handpos[2];
 	vec3_t		handrot[2];
+	vec3_t		handvel[2];
+	float 		handvelmag[2];
 
 	vec3_t		mvelocity[2];	// update by server, used for lean+bob
 								// (0 is newest)

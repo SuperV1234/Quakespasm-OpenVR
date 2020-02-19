@@ -35,6 +35,7 @@ enum m_state_e {
 	m_options,
 	m_video,
 	m_vr,
+	m_wpn_offset,
 	m_keys,
 	m_help,
 	m_quit,

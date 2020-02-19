@@ -22,6 +22,7 @@ void() W_Precache =
 	precache_sound ("weapons/grenade.wav");	// grenade launcher
 	precache_sound ("weapons/bounce.wav");		// grenade bounce
 	precache_sound ("weapons/shotgn2.wav");	// super shotgun
+	precache_sound ("knight/sword1.wav");	// gun melee
 };
 
 float() crandom =
@@ -38,10 +39,20 @@ void() W_FireAxe =
 {
 	local	vector	source;
 	local	vector	org;
+	local	float	xdmg;
+	// local	string	s;
+
+	// TODO VR: add damage multiplier cvar
+	xdmg = 0.29 * self.handvelmag;
+
+	// s = ftos(xdmg);
+	// sprint (self, "DMG: ");
+	// sprint (self, s);
 
 	makevectors (self.v_angle);
 	source = self.handpos + '0 0 16';
-	traceline (source, source + v_forward*64, FALSE, self);
+	// TODO VR: add range multiplier cvar
+	traceline (source - v_forward*16, source + v_forward*24, FALSE, self);
 	if (trace_fraction == 1.0)
 		return;
 
@@ -50,8 +61,54 @@ void() W_FireAxe =
 	if (trace_ent.takedamage)
 	{
 		trace_ent.axhitme = 1;
-		SpawnBlood (org, '0 0 0', 20);
-		T_Damage (trace_ent, self, self, 20);
+		SpawnBlood (org, '0 0 0', xdmg);
+		T_Damage (trace_ent, self, self, xdmg);
+	}
+	else
+	{	// hit wall
+		sound (self, CHAN_WEAPON, "player/axhit2.wav", 1, ATTN_NORM);
+		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
+		WriteByte (MSG_BROADCAST, TE_GUNSHOT);
+		WriteCoord (MSG_BROADCAST, org_x);
+		WriteCoord (MSG_BROADCAST, org_y);
+		WriteCoord (MSG_BROADCAST, org_z);
+	}
+};
+
+
+//============================================================================
+
+/*
+================
+W_GunMelee
+================
+*/
+void() W_GunMelee =
+{
+	local	vector	source;
+	local	vector	org;
+	local	float	xdmg;
+	// local	string	s;
+
+	xdmg = 0.15 * self.handvelmag;
+
+	// s = ftos(xdmg);
+	// sprint (self, "DMG: ");
+	// sprint (self, s);
+
+	makevectors (self.v_angle);
+	source = self.handpos + '0 0 16';
+	traceline (source - v_forward*16, source + v_forward*18, FALSE, self);
+	if (trace_fraction == 1.0)
+		return;
+
+	org = trace_endpos - v_forward*4;
+
+	if (trace_ent.takedamage)
+	{
+		trace_ent.axhitme = 1;
+		SpawnBlood (org, '0 0 0', xdmg);
+		T_Damage (trace_ent, self, self, xdmg);
 	}
 	else
 	{	// hit wall
@@ -887,6 +944,8 @@ void() W_Attack =
 
 	if (self.weapon == IT_AXE)
 	{
+		// TODO VR:
+		/*
 		sound (self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);
 		r = random();
 		if (r < 0.25)
@@ -898,6 +957,7 @@ void() W_Attack =
 		else
 			player_axed1 ();
 		self.attack_finished = time + 0.5;
+		*/
 	}
 	else if (self.weapon == IT_SHOTGUN)
 	{
@@ -1265,7 +1325,7 @@ void() W_WeaponFrame =
 		ImpulseCommands ();
 
 // check for attack
-// TODO VR: pass controller velocity, check for axe swing or try implementing melee
+
 	if (self.button0)
 	{
 		SuperDamageSound ();

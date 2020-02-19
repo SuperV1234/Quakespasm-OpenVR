@@ -208,6 +208,9 @@ void		end_sys_globals;		// flag for structure dumping
 .string		noise, noise1, noise2, noise3;	// contains names of wavs to play
 
 .vector		handpos;
+.vector		handrot;
+.vector		handvel;
+.float		handvelmag;
 
 //================================================
 void		end_sys_fields;			// flag for structure dumping

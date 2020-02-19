@@ -2,6 +2,19 @@
 #include "quakedef.h"
 #include "vr.h"
 #include "vr_menu.h"
+#include "wpnoffset_menu.h"
+
+static double lerp(double a, double b, double f)
+{
+	return (a * (1.0 - f)) + (b * f);
+}
+
+static void vec3lerp(vec3_t out, vec3_t start, vec3_t end, double f)
+{
+	out[0] = lerp(start[0], end[0], f);
+	out[1] = lerp(start[1], end[1], f);
+	out[2] = lerp(start[2], end[2], f);
+}
 
 #ifdef WIN32
 #define UNICODE 1
@@ -18,32 +31,33 @@ FILE *__iob_func() {
 }
 #endif
 
-typedef struct {
+struct fbo_t {
 	GLuint framebuffer, depth_texture, texture;
 	GLuint msaa_framebuffer, msaa_texture, msaa_depth_texture;
 	int msaa;
 	struct {
 		float width, height;
 	} size;
-} fbo_t;
+};
 
-typedef struct {
+struct vr_eye_t {
 	int index;
 	fbo_t fbo;
 	vr::EVREye eye;
 	vr::HmdVector3_t position;
 	vr::HmdQuaternion_t orientation;
 	float fov_x, fov_y;
-} vr_eye_t;
+};
 
-typedef struct {
+struct vr_controller {
 	vr::VRControllerState_t state;
 	vr::VRControllerState_t lastState;
 	vec3_t position;
 	vec3_t orientation;
+	vec3_t velocity;
 	vr::HmdVector3_t rawvector;
 	vr::HmdQuaternion_t raworientation;
-} vr_controller;
+};
 
 // OpenGL Extensions
 #define GL_READ_FRAMEBUFFER_EXT 0x8CA8
@@ -169,6 +183,9 @@ DEFINE_CVAR(vr_joystick_axis_exponent, 1.0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_joystick_deadzone_trunc, 1, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_hud_scale, 0.025, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_menu_scale, 0.13, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_melee_threshold, 7, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_gunyaw, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_gun_z_offset, 0, CVAR_ARCHIVE);
 
 static qboolean InitOpenGLExtensions()
 {
@@ -479,7 +496,7 @@ void InitWeaponCVar(cvar_t* cvar, const char* name, int i, const char* value)
 	{
 		cvar->name = cvarname;
 		cvar->string = value;
-		cvar->flags = CVAR_NONE;
+		cvar->flags = CVAR_ARCHIVE;
 		Cvar_RegisterVariable(cvar);
 	}
 	else
@@ -500,6 +517,7 @@ void InitWeaponCVars(int i, const char* id, const char* offsetX, const char* off
 	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 2], nameOffsetZ, i, offsetZ);
 	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 3], nameScale, i, scale);
 	InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 4], nameID, i, id);
+	// TODO VR: add per weapon angle modifiers
 }
 
 void InitAllWeaponCVars()
@@ -542,6 +560,15 @@ void InitAllWeaponCVars()
 		InitWeaponCVars(i++, "progs/v_plasma.mdl", "3", "4", "13", "0.5"); //plasma - same as lightning
 	}
 
+	// TODO VR:
+	/*
+	auth_mdl
+		gun
+			vr_wofs_x_02 "-0.5"
+			vr_wofs_y_02 "1.5"
+			vr_wofs_z_02 "14"
+	*/
+
 	while (i < MAX_WEAPONS)
 	{
 		InitWeaponCVars(i++, "-1", "1.5", "1", "10", "0.5");
@@ -582,6 +609,9 @@ void VID_VR_Init()
 	Cvar_RegisterVariable(&vr_projectilespawn_z_offset);
 	Cvar_RegisterVariable(&vr_hud_scale);
 	Cvar_RegisterVariable(&vr_menu_scale);
+	Cvar_RegisterVariable(&vr_melee_threshold);
+	Cvar_RegisterVariable(&vr_gunyaw);
+	Cvar_RegisterVariable(&vr_gun_z_offset);
 	Cvar_SetCallback(&vr_deadzone, VR_Deadzone_f);
 
 	InitAllWeaponCVars();
@@ -590,6 +620,7 @@ void VID_VR_Init()
 	Cvar_RegisterVariable(&vr_viewkick);
 
 	VR_Menu_Init();
+	WpnOffset_Menu_Init();
 
 	// Set the cvar if invoked from a command line parameter
 	{
@@ -752,9 +783,25 @@ void SetHandPos(int index, entity_t *player)
 	Vec3RotateZ(headLocalPreRot, vrYaw * M_PI_DIV_180, headLocal);
 	_VectorAdd(headLocal, headOrigin, headLocal);
 
-	cl.handpos[index][0] = -headLocal[0] + player->origin[0];
-	cl.handpos[index][1] = -headLocal[1] + player->origin[1];
-	cl.handpos[index][2] = headLocal[2] + player->origin[2] + vr_floor_offset.value;
+	vec3_t final;
+
+	final[0] = -headLocal[0] + player->origin[0];
+	final[1] = -headLocal[1] + player->origin[1];
+	final[2] = headLocal[2] + player->origin[2] + vr_floor_offset.value + vr_gun_z_offset.value;
+
+	// TODO VR:
+	// vec3lerp(cl.handpos[index], cl.handpos[index], final, 0.5);
+
+	// handpos
+	VectorCopy(final, cl.handpos[index]);
+
+	// handrot is set with AngleVectorFromRotMat
+
+	// handvel
+	VectorCopy(controllers[index].velocity, cl.handvel[index]);
+
+	// handvelmag
+	cl.handvelmag[index] = VectorLength(controllers[index].velocity);
 }
 
 void IdentifyAxes(int device);
@@ -825,6 +872,7 @@ void VR_UpdateScreenContent()
 		{
 			vr::HmdVector3_t rawControllerPos = Matrix34ToVector(ovr_DevicePose[iDevice].mDeviceToAbsoluteTracking);
 			vr::HmdQuaternion_t rawControllerQuat = Matrix34ToQuaternion(ovr_DevicePose[iDevice].mDeviceToAbsoluteTracking);
+			vr::HmdVector3_t rawControllerVel = ovr_DevicePose[iDevice].vVelocity;
 
 			int controllerIndex = -1;
 
@@ -852,6 +900,11 @@ void VR_UpdateScreenContent()
 				controller->position[0] = (rawControllerPos.v[2] - lastHeadOrigin[0]) * meters_to_units;
 				controller->position[1] = (rawControllerPos.v[0] - lastHeadOrigin[1]) * meters_to_units;
 				controller->position[2] = (rawControllerPos.v[1]) * meters_to_units;
+
+				controller->velocity[0] = rawControllerVel.v[0];
+				controller->velocity[1] = rawControllerVel.v[1];
+				controller->velocity[2] = rawControllerVel.v[2];
+
 				QuatToYawPitchRoll(rawControllerQuat, controller->orientation);
 			}
 		}
@@ -926,8 +979,9 @@ void VR_UpdateScreenContent()
 		cl.viewangles[PITCH] = orientation[PITCH];
 		cl.viewangles[YAW] = orientation[YAW];
 
-		vec3_t contMat[3], gunMat[3];
+		vec3_t contMat[3], gunMat[3], gunMatYaw[3];
 		CreateRotMat(0, vr_gunangle.value, gunMat);
+		CreateRotMat(1, vr_gunyaw.value, gunMatYaw);
 
 		for (int i = 0; i < 2; i++)
 		{
@@ -936,7 +990,10 @@ void VR_UpdateScreenContent()
 			vec3_t mat[3];
 			R_ConcatRotations(gunMat, contMat, mat);
 
-			AngleVectorFromRotMat(mat, cl.handrot[i]);
+			vec3_t matFinal[3];
+			R_ConcatRotations(mat, gunMatYaw, matFinal);
+
+			AngleVectorFromRotMat(matFinal, cl.handrot[i]);
 		}
 
 		if (cl.viewent.model)
@@ -1115,17 +1172,6 @@ void VR_ShowCrosshair()
 }
 
 
-double lerp(double a, double b, double f)
-{
-	return (a * (1.0 - f)) + (b * f);
-}
-
-void vec3lerp(vec3_t out, vec3_t start, vec3_t end, double f)
-{
-	out[0] = lerp(start[0], end[0], f);
-	out[1] = lerp(start[1], end[1], f);
-	out[2] = lerp(start[2], end[2], f);
-}
 
 void VR_Draw2D()
 {
@@ -1438,12 +1484,21 @@ void VR_Move(usercmd_t *cmd)
 	fwd2[2] *= vr_gunmodelscale.value * ofs[2];
 	VectorAdd(adj, fwd2, adj);
 cl.handpos[1][2] -= vr_projectilespawn_z_offset.value;
+
+	// handpos
 	VectorCopy(cl.handpos[1], cmd->handpos);
+
+	// handvel
+	VectorCopy(cl.handvel[1], cmd->handvel);
+
+	// handvelmag
+	cmd->handvelmag = cl.handvelmag[1];
 
 	DoTrigger(&controllers[0], K_SPACE);
 
-	DoKey(&controllers[0], vr::k_EButton_Grip, K_MWHEELUP);
-	DoKey(&controllers[1], vr::k_EButton_Grip, K_MWHEELDOWN);
+	// TODO VR:
+	// DoKey(&controllers[0], vr::k_EButton_Grip, K_MWHEELUP);
+	// DoKey(&controllers[1], vr::k_EButton_Grip, K_MWHEELDOWN);
 
 	DoKey(&controllers[0], vr::k_EButton_SteamVR_Touchpad, K_SHIFT);
 	DoKey(&controllers[1], vr::k_EButton_SteamVR_Touchpad, K_ALT);

@@ -372,6 +372,19 @@ void CL_SendMove (const usercmd_t *cmd)
 	MSG_WriteFloat(&buf, cmd->handpos[1]);
 	MSG_WriteFloat(&buf, cmd->handpos[2]);
 
+	// handrot
+	MSG_WriteFloat(&buf, cmd->handrot[0]);
+	MSG_WriteFloat(&buf, cmd->handrot[1]);
+	MSG_WriteFloat(&buf, cmd->handrot[2]);
+
+	// handvel
+	MSG_WriteFloat(&buf, cmd->handvel[0]);
+	MSG_WriteFloat(&buf, cmd->handvel[1]);
+	MSG_WriteFloat(&buf, cmd->handvel[2]);
+
+	// handvelmag
+	MSG_WriteFloat(&buf, cmd->handvelmag);
+
 	MSG_WriteShort (&buf, cmd->forwardmove);
 	MSG_WriteShort (&buf, cmd->sidemove);
 	MSG_WriteShort (&buf, cmd->upmove);

@@ -39,19 +39,31 @@ void VR_ResetOrientation();
 void VR_SetMatrices();
 void VR_SetTrackingSpace(int n);
 
-extern cvar_t vr_enabled;
+extern cvar_t vr_aimmode;
+extern cvar_t vr_crosshair_alpha;
+extern cvar_t vr_crosshair_depth;
+extern cvar_t vr_crosshair_size;
 extern cvar_t vr_crosshair;
-extern cvar_t vr_msaa;
-extern cvar_t vr_movement_mode;
+extern cvar_t vr_crosshairy;
+extern cvar_t vr_deadzone;
+extern cvar_t vr_enabled;
+extern cvar_t vr_floor_offset;
+extern cvar_t vr_gun_z_offset;
 extern cvar_t vr_gunangle;
 extern cvar_t vr_gunmodelpitch;
 extern cvar_t vr_gunmodelscale;
 extern cvar_t vr_gunmodely;
-extern cvar_t vr_crosshairy;
-extern cvar_t vr_floor_offset;
-extern cvar_t vr_projectilespawn_z_offset;
+extern cvar_t vr_gunyaw;
 extern cvar_t vr_hud_scale;
+extern cvar_t vr_melee_threshold;
 extern cvar_t vr_menu_scale;
+extern cvar_t vr_movement_mode;
+extern cvar_t vr_msaa;
+extern cvar_t vr_projectilespawn_z_offset;
+extern cvar_t vr_snap_turn;
+extern cvar_t vr_turn_speed;
+extern cvar_t vr_viewkick;
+extern cvar_t vr_world_scale;
 
 #define MAX_WEAPONS 20 //not sure what this number should actually be...
 #define VARS_PER_WEAPON 5

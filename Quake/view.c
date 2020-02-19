@@ -74,9 +74,7 @@ extern	int			in_forward, in_forward2, in_back;
 
 vec3_t	v_punchangles[2]; //johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
 
-extern cvar_t vr_enabled;
-extern cvar_t vr_aimmode;
-extern cvar_t vr_viewkick;
+
 
 /*
 ===============
@@ -879,7 +877,8 @@ void V_CalcRefdef (void)
 			view->origin[2] += 0.5;
 	}
 
-	view->model = cl.model_precache[cl.stats[STAT_WEAPON]];
+	view->model = cl.model_precache[cl.stats[STAT_WEAPON]]; // TODO VR: this is where the weapon is rendered? got through .weaponmodel from QC
+	// TODO VR: think about offhand weapon? dual wielding?
 	view->frame = cl.stats[STAT_WEAPONFRAME];
 	view->colormap = vid.colormap;
 
