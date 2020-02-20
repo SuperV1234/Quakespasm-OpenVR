@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "bgmusic.h"
 #include "vr_menu.h"
 #include "wpnoffset_menu.h"
+#include "sbaroffset_menu.h"
 
 void (*vid_menucmdfn)(void); //johnfitz
 void (*vid_menudrawfn)(void);
@@ -32,10 +33,6 @@ void (*vid_menukeyfn)(int key);
 void(*vr_menucmdfn)(void);
 void(*vr_menudrawfn)(void);
 void(*vr_menukeyfn)(int key);
-
-void(*wpnoffset_menucmdfn)(void);
-void(*wpnoffset_menudrawfn)(void);
-void(*wpnoffset_menukeyfn)(int key);
 
 enum m_state_e m_state;
 
@@ -55,6 +52,7 @@ void M_Menu_Main_f (void);
 		void M_Menu_Video_f(void);
 		void M_Menu_VR_f(void);
 		void M_Menu_WpnOffset_f(void);
+		void M_Menu_SbarOffset_f(void);
 	void M_Menu_Help_f (void);
 	void M_Menu_Quit_f (void);
 
@@ -74,6 +72,7 @@ void M_Main_Draw (void);
 		void M_Video_Draw (void);
 		void M_VR_Draw (void);
 		void M_WpnOffset_Draw (void);
+		void M_SbarOffset_Draw (void);
 	void M_Help_Draw (void);
 	void M_Quit_Draw (void);
 
@@ -93,6 +92,7 @@ void M_Main_Key (int key);
 		void M_Video_Key (int key);
 		void M_VR_Key (int key);
 		void M_WpnOffset_Key (int key);
+		void M_SbarOffset_Key (int key);
 	void M_Help_Key (int key);
 	void M_Quit_Key (int key);
 
@@ -1009,6 +1009,7 @@ enum
 	OPT_VIDEO,	// This is the last before OPTIONS_ITEMS
 	OPT_VR,
 	OPT_WPN_OFFSET,
+	OPT_SBAR_OFFSET,
 	OPTIONS_ITEMS
 };
 
@@ -1268,14 +1269,17 @@ void M_Options_Draw (void)
 	// OPT_VIDEO:
 	if (vid_menudrawfn)
 		M_Print (16, 32 + 8*OPT_VIDEO,	"         Video Options");
-
+	 
 	// OPT_VR:
 	if (vid_menudrawfn)
 		M_Print(16, 32 + 8 * OPT_VR, "         VR Options");
 
 	// OPT_WPN_OFFSET:
 	if (vid_menudrawfn)
-		M_Print(16, 32 + 8 * OPT_WPN_OFFSET, "     Weapon Offsets");
+		M_Print(16, 32 + 8 * OPT_WPN_OFFSET, "      Weapon Offset");
+	
+	if (vid_menudrawfn)
+		M_Print(16, 32 + 8 * OPT_SBAR_OFFSET, "  Status Bar Offset");
 
 // cursor
 	M_DrawCharacter (200, 32 + options_cursor*8, 12+((int)(realtime*4)&1));
@@ -1312,15 +1316,10 @@ void M_Options_Key (int k)
 				Cbuf_AddText ("exec default.cfg\n");
 			}
 			break;
-		case OPT_VIDEO:
-			M_Menu_Video_f();
-			break;
-		case OPT_VR:
-			M_Menu_VR_f();
-			break;
-		case OPT_WPN_OFFSET:
-			M_Menu_WpnOffset_f();
-			break;
+		case OPT_VIDEO:			M_Menu_Video_f(); break;
+		case OPT_VR:			M_Menu_VR_f(); break;
+		case OPT_WPN_OFFSET:	M_Menu_WpnOffset_f(); break;
+		case OPT_SBAR_OFFSET:	M_Menu_SbarOffset_f(); break;
 		default:
 			M_AdjustSliders (1);
 			break;
@@ -1334,7 +1333,7 @@ void M_Options_Key (int k)
 			options_cursor = OPTIONS_ITEMS-1;
 		break;
 
-	case K_DOWNARROW:  
+	case K_DOWNARROW:
 		S_LocalSound ("misc/menu1.wav");
 		options_cursor++;
 		if (options_cursor >= OPTIONS_ITEMS)
@@ -1615,28 +1614,39 @@ void M_VR_Key(int key)
 
 void M_Menu_WpnOffset_f(void)
 {
-	if (wpnoffset_menucmdfn)
-	{
-		(*wpnoffset_menucmdfn) ();
-	}
+	WpnOffset_Menu_f();
 }
 
 
 void M_WpnOffset_Draw(void)
 {
-	if (wpnoffset_menudrawfn)
-	{
-		(*wpnoffset_menudrawfn) ();
-	}
+	WpnOffset_MenuDraw();
 }
 
 
 void M_WpnOffset_Key(int key)
 {
-	if (wpnoffset_menukeyfn)
-	{
-		(*wpnoffset_menukeyfn) (key);
-	}
+	WpnOffset_MenuKey(key);
+}
+
+//=============================================================================
+/* SBAR OFFSET MENU */
+
+void M_Menu_SbarOffset_f(void)
+{
+	SbarOffset_Menu_f();
+}
+
+
+void M_SbarOffset_Draw(void)
+{
+	SbarOffset_MenuDraw();
+}
+
+
+void M_SbarOffset_Key(int key)
+{
+	SbarOffset_MenuKey(key);
 }
 
 //=============================================================================
@@ -2679,6 +2689,7 @@ void M_Draw (void)
 		case m_video: M_Video_Draw (); break;
 		case m_vr: M_VR_Draw(); break;
 		case m_wpn_offset: M_WpnOffset_Draw(); return;
+		case m_sbar_offset: M_SbarOffset_Draw(); return;
 		case m_help: M_Help_Draw (); break;
 		case m_lanconfig: M_LanConfig_Draw (); break;
 		case m_gameoptions: M_GameOptions_Draw (); break;
@@ -2723,6 +2734,7 @@ void M_Keydown (int key)
 		case m_video: 			M_Video_Key (key); return;
 		case m_vr: 				M_VR_Key(key); return;
 		case m_wpn_offset:		M_WpnOffset_Key(key); return;
+		case m_sbar_offset:		M_SbarOffset_Key(key); return;
 		case m_help: 			M_Help_Key (key); return;
 		case m_quit: 			M_Quit_Key (key); return;
 		case m_lanconfig: 		M_LanConfig_Key (key); return;

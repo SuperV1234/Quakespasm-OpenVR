@@ -64,11 +64,26 @@ extern cvar_t vr_snap_turn;
 extern cvar_t vr_turn_speed;
 extern cvar_t vr_viewkick;
 extern cvar_t vr_world_scale;
+extern cvar_t vr_sbar_mode;
+extern cvar_t vr_sbar_offset_x;
+extern cvar_t vr_sbar_offset_y;
+extern cvar_t vr_sbar_offset_z;
+extern cvar_t vr_sbar_offset_pitch;
+extern cvar_t vr_sbar_offset_yaw;
+extern cvar_t vr_sbar_offset_roll;
+
+enum class VrSbarMode : int
+{
+    MainHand = 0,
+    OffHand = 1
+};
 
 #define MAX_WEAPONS 20 //not sure what this number should actually be...
 #define VARS_PER_WEAPON 8
 
 extern cvar_t vr_weapon_offset[MAX_WEAPONS * VARS_PER_WEAPON];
 extern int weaponCVarEntry;
+
+// TODO VR:
 
 #endif

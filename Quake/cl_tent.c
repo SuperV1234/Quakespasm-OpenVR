@@ -316,8 +316,11 @@ void CL_UpdateTEnts (void)
 			if (vr_enabled.value)
 			{
 				// TODO VR:
-				cl.handpos[1][2] += vr_projectilespawn_z_offset.value;
-				VectorCopy(cl.handpos[1], b->start);
+				vec3_t adj;
+				VectorCopy(cl.handpos[1], adj);
+
+				// adj[2] += vr_projectilespawn_z_offset.value;
+				VectorCopy(adj, b->start);
 			}
 			else
 			{

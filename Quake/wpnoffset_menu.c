@@ -11,14 +11,6 @@ static int wpnoff_cursor = 0;
 
 extern void M_DrawSlider (int x, int y, float range);
 
-void WpnOffset_Menu_Init()
-{
-	// VR menu function pointers
-	wpnoffset_menucmdfn = WpnOffset_Menu_f;
-	wpnoffset_menudrawfn = WpnOffset_MenuDraw;
-	wpnoffset_menukeyfn = WpnOffset_MenuKey;
-}
-
 static void WpnOffset_MenuPlaySound(const char *sound, float fvol)
 {
 	sfx_t *sfx = S_PrecacheSound( sound );

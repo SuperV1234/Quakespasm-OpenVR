@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <stddef.h>
 #include <limits.h>
+#include <glm.hpp>
 #ifndef _WIN32 /* others we support without sys/param.h? */
 #include <sys/param.h>
 #endif
@@ -141,7 +142,17 @@ COMPILE_TIME_ASSERT(qboolean, sizeof(qboolean) == 4);
 
 /* math */
 typedef float	vec_t;
-typedef vec_t	vec3_t[3];
+using vec3_t = vec_t[3];
+
+// TODO VR:
+/*
+struct vec3_t : glm::vec3
+{
+    using glm::vec3::vec3;
+    operator vec_t* () { return reinterpret_cast<float*>(this); }
+};
+*/
+
 typedef vec_t	vec4_t[4];
 typedef vec_t	vec5_t[5];
 typedef int	fixed4_t;

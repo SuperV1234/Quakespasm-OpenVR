@@ -1,9 +1,16 @@
 #include <cassert>
+#include <vector>
 #include "quakedef.h"
 #include "vr.h"
 #include "vr_menu.h"
-#include "wpnoffset_menu.h"
 #include <glm.hpp>
+#include <gtc/quaternion.hpp>
+#include <gtx/quaternion.hpp>
+#include <gtx/euler_angles.hpp>
+
+[[nodiscard]] constexpr glm::vec3 toVec3(vec3_t v) noexcept {
+	return { v[0], v[1], v[2] };
+}
 
 static double lerp(double a, double b, double f)
 {
@@ -15,6 +22,20 @@ static void vec3lerp(vec3_t out, vec3_t start, vec3_t end, double f)
 	out[0] = lerp(start[0], end[0], f);
 	out[1] = lerp(start[1], end[1], f);
 	out[2] = lerp(start[2], end[2], f);
+}
+
+template <typename _Fp>
+constexpr
+_Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
+	if ((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
+		return __t * __b + (1 - __t) * __a;
+
+	if (__t == 1) return __b;
+	const _Fp __x = __a + __t * (__b - __a);
+	if (__t > 1 == __b > __a)
+		return __b < __x ? __x : __b;
+	else
+		return __x < __b ? __x : __b;
 }
 
 #ifdef WIN32
@@ -121,8 +142,8 @@ static float vrYaw;
 static bool readbackYaw;
 
 vec3_t vr_viewOffset;
-vec3_t lastHudPosition{ 0.0, 0.0, 0.0 };
-vec3_t lastMenuPosition{ 0.0, 0.0, 0.0 };
+glm::vec3 lastHudPosition{};
+glm::vec3 lastMenuPosition{};
 
 vr::IVRSystem *ovrHMD;
 vr::TrackedDevicePose_t ovr_DevicePose[vr::k_unMaxTrackedDeviceCount];
@@ -152,13 +173,19 @@ extern int glwidth, glheight;
 extern void SCR_UpdateScreenContent();
 extern refdef_t r_refdef;
 
+static std::vector<cvar_t*> cvarsToRegister;
+
 #define DEFINE_CVAR(name, defaultValue, type) \
-	cvar_t name = { #name, #defaultValue, type }
+	cvar_t name = { #name, #defaultValue, type }; \
+	static struct _cvar_registrar ## name ## __LINE__ ## _t { \
+		_cvar_registrar ## name ## __LINE__ ## _t() { \
+			cvarsToRegister.emplace_back(&name); \
+		} \
+	} _cvar_registrar ## name ## __LINE__
 
 DEFINE_CVAR(vr_enabled, 0, CVAR_NONE);
 DEFINE_CVAR(vr_viewkick, 0, CVAR_NONE);
 DEFINE_CVAR(vr_lefthanded, 0, CVAR_NONE);
-
 DEFINE_CVAR(vr_crosshair, 1, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_crosshair_depth, 0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_crosshair_size, 3.0, CVAR_ARCHIVE);
@@ -187,6 +214,13 @@ DEFINE_CVAR(vr_menu_scale, 0.13, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_melee_threshold, 7, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_gunyaw, 0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_gun_z_offset, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_sbar_mode, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_sbar_offset_x, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_sbar_offset_y, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_sbar_offset_z, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_sbar_offset_pitch, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_sbar_offset_yaw, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_sbar_offset_roll, 0, CVAR_ARCHIVE);
 
 static qboolean InitOpenGLExtensions()
 {
@@ -597,38 +631,13 @@ void InitAllWeaponCVars()
 void VID_VR_Init()
 {
 	// This is only called once at game start
-	Cvar_RegisterVariable(&vr_enabled);
 	Cvar_SetCallback(&vr_enabled, VR_Enabled_f);
-	Cvar_RegisterVariable(&vr_aimmode);
-	Cvar_RegisterVariable(&vr_crosshair_alpha);
-	Cvar_RegisterVariable(&vr_crosshair_depth);
-	Cvar_RegisterVariable(&vr_crosshair_size);
-	Cvar_RegisterVariable(&vr_crosshair);
-	Cvar_RegisterVariable(&vr_deadzone);
-	Cvar_RegisterVariable(&vr_floor_offset);
-	Cvar_RegisterVariable(&vr_gunangle);
-	Cvar_RegisterVariable(&vr_gunmodelpitch);
-	Cvar_RegisterVariable(&vr_gunmodelscale);
-	Cvar_RegisterVariable(&vr_gunmodely);
-	Cvar_RegisterVariable(&vr_crosshairy);
-	Cvar_RegisterVariable(&vr_joystick_axis_deadzone);
-	Cvar_RegisterVariable(&vr_joystick_axis_exponent);
-	Cvar_RegisterVariable(&vr_joystick_deadzone_trunc);
-	Cvar_RegisterVariable(&vr_joystick_yaw_multi);
-	Cvar_RegisterVariable(&vr_joystick_axis_menu_deadzone_extra);
-	Cvar_RegisterVariable(&vr_lefthanded);
-	Cvar_RegisterVariable(&vr_movement_mode);
-	Cvar_RegisterVariable(&vr_msaa);
-	Cvar_RegisterVariable(&vr_snap_turn);
-	Cvar_RegisterVariable(&vr_turn_speed);
-	Cvar_RegisterVariable(&vr_world_scale);
-	Cvar_RegisterVariable(&vr_projectilespawn_z_offset);
-	Cvar_RegisterVariable(&vr_hud_scale);
-	Cvar_RegisterVariable(&vr_menu_scale);
-	Cvar_RegisterVariable(&vr_melee_threshold);
-	Cvar_RegisterVariable(&vr_gunyaw);
-	Cvar_RegisterVariable(&vr_gun_z_offset);
 	Cvar_SetCallback(&vr_deadzone, VR_Deadzone_f);
+
+	for (cvar_t* c : cvarsToRegister)
+	{
+		Cvar_RegisterVariable(c);
+	}
 
 	InitAllWeaponCVars();
 
@@ -636,7 +645,6 @@ void VID_VR_Init()
 	Cvar_RegisterVariable(&vr_viewkick);
 
 	VR_Menu_Init();
-	WpnOffset_Menu_Init();
 
 	// Set the cvar if invoked from a command line parameter
 	{
@@ -682,8 +690,8 @@ bool VR_Enable()
 
 		eyes[i].index = i;
 		eyes[i].fbo = CreateFBO(vrwidth, vrheight);
-		eyes[i].fov_x = (atan(-LeftTan) + atan(RightTan)) / M_PI_DIV_180;
-		eyes[i].fov_y = (atan(-UpTan) + atan(DownTan)) / M_PI_DIV_180;
+		eyes[i].fov_x = (atan(-LeftTan) + atan(RightTan)) / float(M_PI_DIV_180);
+		eyes[i].fov_y = (atan(-UpTan) + atan(DownTan)) / float(M_PI_DIV_180);
 	}
 
 	VR_SetTrackingSpace(vr::TrackingUniverseStanding);    // Put us into standing tracking position
@@ -793,8 +801,12 @@ static void RenderScreenForCurrentEye_OVR()
 
 void SetHandPos(int index, entity_t *player)
 {
+	static int foo = 0;
+
+
 	vec3_t headLocalPreRot;
 	_VectorSubtract(controllers[index].position, headOrigin, headLocalPreRot);
+
 	vec3_t headLocal;
 	Vec3RotateZ(headLocalPreRot, vrYaw * M_PI_DIV_180, headLocal);
 	_VectorAdd(headLocal, headOrigin, headLocal);
@@ -806,16 +818,36 @@ void SetHandPos(int index, entity_t *player)
 	final[2] = headLocal[2] + player->origin[2] + vr_floor_offset.value + vr_gun_z_offset.value;
 
 	// TODO VR:
-	glm::vec3 a{cl.handpos[index][0], cl.handpos[index][1], cl.handpos[index][2]};
-	glm::vec3 b{final[0], final[1], final[2]};
-	auto fff = glm::mix(a, b, 0.2f);
-	//vec3lerp(cl.handpos[index], cl.handpos[index], final, 0.5);
-	cl.handpos[index][0] = fff.x;
-	cl.handpos[index][1] = fff.y;
-	cl.handpos[index][2] = fff.z;
+	// glm::vec3 a{cl.handpos[index][0], cl.handpos[index][1], cl.handpos[index][2]};
+	// glm::vec3 b{final[0], final[1], final[2]};
+	// auto fff = glm::mix(a, b, 0.99f);
+	// cl.handpos[index][0] = fff.x;
+	// cl.handpos[index][1] = fff.y;
+	// cl.handpos[index][2] = fff.z;
+	//
+	// char msgbuf[100];
+	// sprintf(msgbuf, "%f -> %f\n", cl.handpos[index][0], final[0]);
+	// OutputDebugStringA(msgbuf);
 
 	// handpos
-	// VectorCopy(final, cl.handpos[index]);
+	auto oldx = cl.handpos[index][0];
+	auto oldy = cl.handpos[index][1];
+	auto oldz = cl.handpos[index][2];
+	VectorCopy(final, cl.handpos[index]);
+
+	// char msgbuf[100];
+	// sprintf(msgbuf, "%f -> %f\n", oldz, final[2]);
+	// OutputDebugStringA(msgbuf);
+
+	// TODO VR: adjust weight and add cvar, fix movement
+	if (false && foo > 500)
+	{
+		cl.handpos[index][0] = lerp(oldx, final[0], 0.05f);
+		cl.handpos[index][1] = lerp(oldy, final[1], 0.05f);
+		cl.handpos[index][2] = __lerp(oldz, final[2], 0.05f);
+	}
+	++foo ;
+
 
 	// handrot is set with AngleVectorFromRotMat
 
@@ -1034,7 +1066,63 @@ void VR_UpdateScreenContent()
 			R_ConcatRotations(gunMatYaw, mat, matTmp);
 			for(int j = 0; j < 3; ++j) { VectorCopy(matTmp[j], mat[j]); }
 
-			AngleVectorFromRotMat(mat, cl.handrot[i]);
+			vec3_t handrottemp;
+			AngleVectorFromRotMat(mat, handrottemp);
+
+			// TODO VR:
+			/*
+			auto rads = glm::radians(glm::vec3(handrottemp[0], handrottemp[1], handrottemp[2]));
+			auto quat = glm::fquat(rads);
+
+			// glm::fquat qa = glm::fquat(glm::radians(glm::vec3(cl.handrot[i][0], cl.handrot[i][1], cl.handrot[i][2])));
+			// glm::fquat qb = glm::fquat(glm::radians(glm::vec3(handrottemp[0], handrottemp[1], handrottemp[2])));
+			// auto qc = glm::mix(qa, qb, 0.02f);
+			float t0, t1, t2;
+			glm::extractEulerAngleXYZ(glm::toMat4(quat), t2, t1, t0);
+
+			auto qf = glm::degrees(glm::vec3(t0,t1,t2));
+
+			char msgbuf[100];
+			sprintf(msgbuf, "%f , %f , %f\n", rads[0], rads[1], rads[2]);
+			OutputDebugStringA(msgbuf);
+			*/
+				
+			// glm::fquat a, b;
+			// 
+			// {
+			// 	vec3_t forward, right, up;
+			// 	AngleVectors(handrottemp, forward, right, up);
+			// 	a = glm::conjugate(glm::quatLookAt(toVec3(forward), toVec3(up)));
+			// 	a = glm::normalize(a);
+			// }
+			// 
+			// {
+			// 	vec3_t forward, right, up;
+			// 	AngleVectors(cl.handrot[i], forward, right, up);
+			// 	b = glm::quatLookAt(toVec3(forward), toVec3(up));
+			// 	b = glm::normalize(b);
+			// }
+
+
+			// glm::fquat a(glm::vec3(cl.handrot[i][PITCH], cl.handrot[i][YAW], cl.handrot[i][ROLL]));
+			// glm::fquat b(glm::vec3(handrottemp[PITCH], handrottemp[YAW], handrottemp[ROLL]));
+			// auto c = glm::mix(b, a, 0.1f);
+			// auto ro = controllers[i].raworientation;
+			// auto ca = glm::degrees(glm::eulerAngles(glm::conjugate(glm::quat(ro.w,ro.x,ro.y,ro.z))));
+			//m = glm::quatLookAt(toVec3(forward), toVec3(up));
+			//m = glm::rotate(m, vr_sbar_offset_pitch.value, glm::vec3(1, 0, 0));
+			//m = glm::rotate(m, vr_sbar_offset_yaw.value, glm::vec3(0, 1, 0));
+			//m = glm::rotate(m, vr_sbar_offset_roll.value, glm::vec3(0, 0, 1));
+			//m = glm::normalize(m);
+
+			// 
+			// cl.handrot[i][0] = ca.x;
+			// cl.handrot[i][1] = ca.y;
+			// cl.handrot[i][2] = ca.z;
+
+			VectorCopy(handrottemp, cl.handrot[i]);
+
+			// vec3lerp(cl.handrot[i], cl.handrot[i], handrottemp, 0.02f);
 		}
 
 		if (cl.viewent.model)
@@ -1047,6 +1135,10 @@ void VR_UpdateScreenContent()
 		SetHandPos(1, player);
 
 		// TODO VR: interpolate based on weapon weight?
+
+
+		
+
 		VectorCopy(cl.handrot[1], cl.aimangles); // Sets the shooting angle
 		// TODO: what sets the shooting origin?
 
@@ -1259,9 +1351,8 @@ void VR_Draw2D()
 		VectorMA(r_refdef.vieworg, 48, forward, target);
 	}
 
-	vec3_t smoothedTarget;
-	vec3lerp(smoothedTarget, lastMenuPosition, target, 0.03);
-	VectorCopy(smoothedTarget, lastMenuPosition);
+	const auto smoothedTarget = glm::mix(lastMenuPosition, toVec3(target), 0.03);
+	lastMenuPosition = smoothedTarget;
 
 	glTranslatef(smoothedTarget[0], smoothedTarget[1], smoothedTarget[2]);
 
@@ -1334,36 +1425,69 @@ void VR_DrawSbar()
 
 	if (vr_aimmode.value == VR_AIMMODE_CONTROLLER)
 	{
-		AngleVectors(cl.handrot[1], forward, right, up);
+		const auto mode = static_cast<int>(vr_sbar_mode.value);
 
-		VectorCopy(cl.handrot[1], sbar_angles)
+		if (mode == static_cast<int>(VrSbarMode::MainHand))
+		{
+			AngleVectors(cl.handrot[1], forward, right, up);
+			VectorCopy(cl.handrot[1], sbar_angles);
 
 			AngleVectors(sbar_angles, forward, right, up);
+			VectorMA(cl.handpos[1], -5, right, target);
+		}
+		else
+		{
+			AngleVectors(cl.handrot[0], forward, right, up);
+			VectorCopy(cl.handrot[0], sbar_angles);
 
-		VectorMA(cl.handpos[1], -5, right, target);
+			AngleVectors(sbar_angles, forward, right, up);
+			VectorMA(cl.handpos[0], 0.f, right, target);
+		}
 	}
 	else
 	{
-		VectorCopy(cl.aimangles, sbar_angles)
+		VectorCopy(cl.aimangles, sbar_angles);
 
-			if (vr_aimmode.value == VR_AIMMODE_HEAD_MYAW || vr_aimmode.value == VR_AIMMODE_HEAD_MYAW_MPITCH)
-				sbar_angles[PITCH] = 0;
+		if (vr_aimmode.value == VR_AIMMODE_HEAD_MYAW || vr_aimmode.value == VR_AIMMODE_HEAD_MYAW_MPITCH)
+			sbar_angles[PITCH] = 0;
 
 		AngleVectors(sbar_angles, forward, right, up);
 
 		VectorMA(cl.viewent.origin, 1.0, forward, target);
 	}
 
-	vec3_t smoothedTarget;
-	vec3lerp(smoothedTarget, lastHudPosition, target, 1.0);
-	VectorCopy(smoothedTarget, lastHudPosition);
+	// TODO VR: 1.0? Attach to off hand?
+	const auto smoothedTarget = glm::mix(lastHudPosition, toVec3(target), 1.0);
+	lastHudPosition = smoothedTarget;
 
 	glTranslatef(smoothedTarget[0], smoothedTarget[1], smoothedTarget[2]);
 
-	glRotatef(sbar_angles[YAW] - 90, 0, 0, 1); // rotate around z
-	glRotatef(90 + 45 + sbar_angles[PITCH], -1, 0, 0); // keep bar at constant angled pitch towards user
-	glTranslatef(-(320.0 * scale_hud / 2), 0, 0); // center the status bar
-	glTranslatef(0, 0, 10); // move hud down a bit
+	if (vr_aimmode.value == VR_AIMMODE_CONTROLLER && static_cast<int>(vr_sbar_mode.value) == static_cast<int>(VrSbarMode::OffHand))
+	{
+		glm::fquat m;
+		m = glm::quatLookAt(toVec3(forward), toVec3(up));
+		m = glm::rotate(m, vr_sbar_offset_pitch.value, glm::vec3(1, 0, 0));
+		m = glm::rotate(m, vr_sbar_offset_yaw.value, glm::vec3(0, 1, 0));
+		m = glm::rotate(m, vr_sbar_offset_roll.value, glm::vec3(0, 0, 1));
+		m = glm::normalize(m);
+
+		glMultMatrixf(&glm::mat4_cast(m)[0][0]);
+
+		const auto ox = vr_sbar_offset_x.value;
+		const auto oy = vr_sbar_offset_y.value;
+		const auto oz = vr_sbar_offset_z.value;
+
+		glTranslatef(ox, oy, oz);
+	}
+	else
+	{
+		glRotatef(sbar_angles[YAW] - 90, 0, 0, 1); // rotate around z
+		glRotatef(90 + 45 + sbar_angles[PITCH], -1, 0, 0); // keep bar at constant angled pitch towards user
+
+		glTranslatef(-(320.0 * scale_hud / 2), 0, 0); // center the status bar
+		glTranslatef(0, 0, 10); // move hud down a bit
+	}
+
 	glScalef(scale_hud, scale_hud, scale_hud);
 
 	Sbar_Draw();
@@ -1524,10 +1648,14 @@ void VR_Move(usercmd_t *cmd)
 	fwd2[1] *= vr_gunmodelscale.value * ofs[2];
 	fwd2[2] *= vr_gunmodelscale.value * ofs[2];
 	VectorAdd(adj, fwd2, adj);
-cl.handpos[1][2] -= vr_projectilespawn_z_offset.value;
+
+	// TODO: VR
+	vec3_t adjhandpos;
+	VectorCopy(cl.handpos[1], adjhandpos);
+	adjhandpos[2] -= vr_projectilespawn_z_offset.value;
 
 	// handpos
-	VectorCopy(cl.handpos[1], cmd->handpos);
+	VectorCopy(adjhandpos, cmd->handpos);
 
 	// handvel
 	VectorCopy(cl.handvel[1], cmd->handvel);

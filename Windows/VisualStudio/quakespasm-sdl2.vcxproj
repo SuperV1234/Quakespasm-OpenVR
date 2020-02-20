@@ -256,6 +256,7 @@ copy "$(SolutionDir)\..\SDL2\lib64\*.dll" "$(TargetDir)"</Command>
     <ClCompile Include="..\..\Quake\r_sprite.c" />
     <ClCompile Include="..\..\Quake\r_world.c" />
     <ClCompile Include="..\..\Quake\sbar.c" />
+    <ClCompile Include="..\..\Quake\sbaroffset_menu.c" />
     <ClCompile Include="..\..\Quake\snd_codec.c" />
     <ClCompile Include="..\..\Quake\snd_dma.c" />
     <ClCompile Include="..\..\Quake\snd_flac.c" />
@@ -331,6 +332,7 @@ copy "$(SolutionDir)\..\SDL2\lib64\*.dll" "$(TargetDir)"</Command>
     <ClInclude Include="..\..\Quake\render.h" />
     <ClInclude Include="..\..\Quake\resource.h" />
     <ClInclude Include="..\..\Quake\sbar.h" />
+    <ClInclude Include="..\..\Quake\sbaroffset_menu.h" />
     <ClInclude Include="..\..\Quake\screen.h" />
     <ClInclude Include="..\..\Quake\server.h" />
     <ClInclude Include="..\..\Quake\snd_codec.h" />

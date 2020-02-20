@@ -135,6 +135,12 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
 				value_string = value_buffer;
 			}
 			break;
+		case VRMenuOpt::VR_SBAR_MODE:
+		{
+			static std::array strings{"Main Hand", "Off Hand"};
+			value_string = strings[(int)vr_sbar_mode.value];
+			break;
+		}
 		case VRMenuOpt::VR_GUNANGLE:                 printAsStr(vr_gunangle); break;
 		case VRMenuOpt::VR_FLOOR_OFFSET:             printAsStr(vr_floor_offset); break;
 		case VRMenuOpt::VR_GUNMODELPITCH:            printAsStr(vr_gunmodelpitch); break;
@@ -201,7 +207,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
 		case VRMenuOpt::VR_CROSSHAIR_ALPHA: 			adjustF(vr_crosshair_alpha, crosshairAlphaDiff, 0.f, 1.f); break;
 		case VRMenuOpt::VR_WORLD_SCALE: 				adjustF(vr_world_scale, crosshairAlphaDiff, 0.f, 2.f); break;
 		case VRMenuOpt::VR_MOVEMENT_MODE: 				adjustI(vr_movement_mode, 1, 0, VR_MAX_MOVEMENT_MODE); break;
-		case VRMenuOpt::VR_SNAP_TURN: 					adjustI(vr_snap_turn, 45, 0.f, 90.f); break;
+		case VRMenuOpt::VR_SNAP_TURN: 					adjustI(vr_snap_turn, 45, 0, 90); break;
 		case VRMenuOpt::VR_TURN_SPEED: 					adjustF(vr_turn_speed, 0.25f, 0.f, VR_MAX_TURN_SPEED); break;
 		case VRMenuOpt::VR_MSAA:
 			int max;
@@ -220,6 +226,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
 		case VRMenuOpt::VR_MELEE_THRESHOLD: 			adjustF(vr_melee_threshold, 1.f, 4.f, 18.f); break;
 		case VRMenuOpt::VR_GUNYAW: 						adjustF(vr_gunyaw, 0.25f, -90.f, 90.f); break;
 		case VRMenuOpt::VR_GUN_Z_OFFSET: 				adjustF(vr_gun_z_offset, 0.25f, -30.f, 30.f); break;
+		case VRMenuOpt::VR_SBAR_MODE: 					adjustI(vr_sbar_mode, 1, 0, 1); break;
 		case VRMenuOpt::VR_IMPULSE9:
 			VR_MenuPlaySound("items/r_item2.wav", 0.5);
 			Cmd_ExecuteString("impulse 9", cmd_source_t::src_command);
@@ -320,6 +327,7 @@ void VR_MenuDraw (void)
 		"Melee Threshold",
 		"Gun Yaw",
 		"Gun Z Offset",
+		"Status Bar Mode",
 		"Impulse 9"
 	);
 
