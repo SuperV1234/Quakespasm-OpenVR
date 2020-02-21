@@ -7,6 +7,7 @@
 
 extern snd_codec_t wav_codec;
 
-#endif /* USE_CODEC_WAVE */
+#endif	/* USE_CODEC_WAVE */
 
-#endif /* ! _SND_WAVE_H_ */
+#endif	/* ! _SND_WAVE_H_ */
+

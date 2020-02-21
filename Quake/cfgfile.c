@@ -22,7 +22,7 @@
 #include "quakedef.h"
 
 
-static fshandle_t* cfg_file;
+static fshandle_t		*cfg_file;
 
 /*
 ===================
@@ -35,72 +35,78 @@ the num_vars argument must be the exact number of strings in the
 array, otherwise I have nothing against going out of bounds.
 ===================
 */
-void CFG_ReadCvars(const char** vars, int num_vars)
+void CFG_ReadCvars (const char **vars, int num_vars)
 {
-    char buff[1024], *tmp;
-    int i, j;
+	char	buff[1024], *tmp;
+	int			i, j;
 
-    if(!cfg_file || num_vars < 1) return;
+	if (!cfg_file || num_vars < 1)
+		return;
 
-    j = 0;
+	j = 0;
 
-    do
-    {
-        i = 0;
-        memset(buff, 0, sizeof(buff));
-        // we expect a line in the format that Cvar_WriteVariables
-        // writes to the config file. although I'm trying to be as
-        // much cautious as possible, if the user screws it up by
-        // editing it, it's his fault.
-        if(FS_fgets(buff, sizeof(buff), cfg_file))
-        {
-            // remove end-of-line characters
-            while(buff[i])
-            {
-                if(buff[i] == '\r' || buff[i] == '\n') buff[i] = '\0';
-                // while we're here, replace tabs with spaces
-                if(buff[i] == '\t') buff[i] = ' ';
-                i++;
-            }
-            // go to the last character
-            while(buff[i] == 0 && i > 0) i--;
-            // remove trailing spaces
-            while(i > 0)
-            {
-                if(buff[i] == ' ')
-                {
-                    buff[i] = '\0';
-                    i--;
-                }
-                else
-                    break;
-            }
+	do {
+		i = 0;
+		memset (buff, 0, sizeof(buff));
+		// we expect a line in the format that Cvar_WriteVariables
+		// writes to the config file. although I'm trying to be as
+		// much cautious as possible, if the user screws it up by
+		// editing it, it's his fault.
+		if (FS_fgets(buff, sizeof(buff), cfg_file))
+		{
+			// remove end-of-line characters
+			while (buff[i])
+			{
+				if (buff[i] == '\r' || buff[i] == '\n')
+					buff[i] = '\0';
+				// while we're here, replace tabs with spaces
+				if (buff[i] == '\t')
+					buff[i] = ' ';
+				i++;
+			}
+			// go to the last character
+			while (buff[i] == 0 && i > 0)
+				i--;
+			// remove trailing spaces
+			while (i > 0)
+			{
+				if (buff[i] == ' ')
+				{
+					buff[i] = '\0';
+					i--;
+				}
+				else
+					break;
+			}
 
-            // the line must end with a quotation mark
-            if(buff[i] != '\"') continue;
-            buff[i] = '\0';
+			// the line must end with a quotation mark
+			if (buff[i] != '\"')
+				continue;
+			buff[i] = '\0';
 
-            for(i = 0; i < num_vars && vars[i]; i++)
-            {
-                // look for the cvar name + one space
-                tmp = strstr(buff, va("%s ", vars[i]));
-                if(tmp != buff) continue;
-                // locate the first quotation mark
-                tmp = strchr(buff, '\"');
-                if(tmp)
-                {
-                    Cvar_Set(vars[i], tmp + 1);
-                    j++;
-                    break;
-                }
-            }
-        }
+			for (i = 0; i < num_vars && vars[i]; i++)
+			{
+				// look for the cvar name + one space
+				tmp = strstr(buff, va("%s ",vars[i]));
+				if (tmp != buff)
+					continue;
+				// locate the first quotation mark
+				tmp = strchr(buff, '\"');
+				if (tmp)
+				{
+					Cvar_Set (vars[i], tmp + 1);
+					j++;
+					break;
+				}
+			}
+		}
 
-        if(j == num_vars) break;
+		if (j == num_vars)
+			break;
 
-    } while(!FS_feof(cfg_file) && !FS_ferror(cfg_file));
+	} while (!FS_feof(cfg_file) && !FS_ferror(cfg_file));
 
-    FS_rewind(cfg_file);
+	FS_rewind (cfg_file);
 }
 
 /*
@@ -112,55 +118,58 @@ values of cvars in the given list. doesn't do anything with
 the config file.
 ===================
 */
-void CFG_ReadCvarOverrides(const char** vars, int num_vars)
+void CFG_ReadCvarOverrides (const char **vars, int num_vars)
 {
-    char buff[64];
-    int i, j;
+	char	buff[64];
+	int		i, j;
 
-    if(num_vars < 1) return;
+	if (num_vars < 1)
+		return;
 
-    buff[0] = '+';
+	buff[0] = '+';
 
-    for(i = 0; i < num_vars; i++)
-    {
-        q_strlcpy(&buff[1], vars[i], sizeof(buff) - 1);
-        j = COM_CheckParm(buff);
-        if(j != 0 && j < com_argc - 1)
-        {
-            if(com_argv[j + 1][0] != '-' && com_argv[j + 1][0] != '+')
-                Cvar_Set(vars[i], com_argv[j + 1]);
-        }
-    }
+	for (i = 0; i < num_vars; i++)
+	{
+		q_strlcpy (&buff[1], vars[i], sizeof(buff) - 1);
+		j = COM_CheckParm(buff);
+		if (j != 0 && j < com_argc - 1)
+		{
+			if (com_argv[j + 1][0] != '-' && com_argv[j + 1][0] != '+')
+				Cvar_Set(vars[i], com_argv[j + 1]);
+		}
+	}
 }
 
-void CFG_CloseConfig(void)
+void CFG_CloseConfig (void)
 {
-    if(cfg_file)
-    {
-        FS_fclose(cfg_file);
-        Z_Free(cfg_file);
-        cfg_file = nullptr;
-    }
+	if (cfg_file)
+	{
+		FS_fclose(cfg_file);
+		Z_Free(cfg_file);
+		cfg_file = nullptr;
+	}
 }
 
-int CFG_OpenConfig(const char* cfg_name)
+int CFG_OpenConfig (const char *cfg_name)
 {
-    FILE* f;
-    long length;
-    qboolean pak;
+	FILE	*f;
+	long		length;
+	qboolean	pak;
 
-    CFG_CloseConfig();
+	CFG_CloseConfig ();
 
-    length = (long)COM_FOpenFile(cfg_name, &f, nullptr);
-    pak = file_from_pak;
-    if(length == -1) return -1;
+	length = (long) COM_FOpenFile (cfg_name, &f, nullptr);
+	pak = file_from_pak;
+	if (length == -1)
+		return -1;
 
-    cfg_file = (fshandle_t*)Z_Malloc(sizeof(fshandle_t));
-    cfg_file->file = f;
-    cfg_file->start = ftell(f);
-    cfg_file->pos = 0;
-    cfg_file->length = length;
-    cfg_file->pak = pak;
+	cfg_file = (fshandle_t *) Z_Malloc(sizeof(fshandle_t));
+	cfg_file->file = f;
+	cfg_file->start = ftell(f);
+	cfg_file->pos = 0;
+	cfg_file->length = length;
+	cfg_file->pak = pak;
 
-    return 0;
+	return 0;
 }
+

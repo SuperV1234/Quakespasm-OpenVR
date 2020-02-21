@@ -33,52 +33,45 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #import <Cocoa/Cocoa.h>
 
-void PL_SetWindowIcon(void)
+void PL_SetWindowIcon (void)
 {
-    /* nothing to do on OS X */
+/* nothing to do on OS X */
 }
 
-void PL_VID_Shutdown(void)
+void PL_VID_Shutdown (void)
 {
 }
 
-#define MAX_CLIPBOARDTXT MAXCMDLINE /* 256 */
-char* PL_GetClipboardData(void)
+#define MAX_CLIPBOARDTXT	MAXCMDLINE	/* 256 */
+char *PL_GetClipboardData (void)
 {
-    char* data = nullptr;
-    NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
-    NSArray* types = [pasteboard types];
+    char *data			= nullptr;
+    NSPasteboard* pasteboard	= [NSPasteboard generalPasteboard];
+    NSArray* types		= [pasteboard types];
 
-    if([types containsObject:NSStringPboardType])
-    {
-        NSString* clipboardString =
-            [pasteboard stringForType:NSStringPboardType];
-        if(clipboardString != nullptr && [clipboardString length] > 0)
-        {
-            size_t sz = [clipboardString length] + 1;
-            sz = q_min(MAX_CLIPBOARDTXT, sz);
-            data = (char*)Z_Malloc(sz);
-#if(MAC_OS_X_VERSION_MIN_REQUIRED < \
-    1040) /* for ppc builds targeting 10.3 and older */
-            q_strlcpy(data, [clipboardString cString], sz);
+    if ([types containsObject: NSStringPboardType]) {
+	NSString* clipboardString = [pasteboard stringForType: NSStringPboardType];
+	if (clipboardString != nullptr && [clipboardString length] > 0) {
+		size_t sz = [clipboardString length] + 1;
+		sz = q_min(MAX_CLIPBOARDTXT, sz);
+		data = (char *) Z_Malloc(sz);
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < 1040)	/* for ppc builds targeting 10.3 and older */
+		q_strlcpy (data, [clipboardString cString], sz);
 #else
-            q_strlcpy(data,
-                [clipboardString cStringUsingEncoding:NSASCIIStringEncoding],
-                sz);
+		q_strlcpy (data, [clipboardString cStringUsingEncoding: NSASCIIStringEncoding], sz);
 #endif
-        }
+	}
     }
     return data;
 }
 
-void PL_ErrorDialog(const char* errorMsg)
+void PL_ErrorDialog(const char *errorMsg)
 {
-#if(MAC_OS_X_VERSION_MIN_REQUIRED < \
-    1040) /* ppc builds targeting 10.3 and older */
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < 1040)	/* ppc builds targeting 10.3 and older */
     NSString* msg = [NSString stringWithCString:errorMsg];
 #else
-    NSString* msg = [NSString stringWithCString:errorMsg
-                                       encoding:NSASCIIStringEncoding];
+    NSString* msg = [NSString stringWithCString:errorMsg encoding:NSASCIIStringEncoding];
 #endif
-    NSRunCriticalAlertPanel(@"Quake Error", @"%@", @"OK", nil, nil, msg);
+    NSRunCriticalAlertPanel (@"Quake Error", @"%@", @"OK", nil, nil, msg);
 }
+

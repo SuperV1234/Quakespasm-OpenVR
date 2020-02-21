@@ -6,7 +6,7 @@
 
 enum class SbarOffsetMenuOpt
 {
-    OffsetX,
+	OffsetX,
     OffsetY,
     OffsetZ,
     Scale,
@@ -14,11 +14,11 @@ enum class SbarOffsetMenuOpt
     Pitch,
     Yaw,
 
-    Max
+	Max
 };
 
-void SbarOffset_Menu_f(void);
-void SbarOffset_MenuDraw(void);
-void SbarOffset_MenuKey(int key);
+void SbarOffset_Menu_f (void);
+void SbarOffset_MenuDraw (void);
+void SbarOffset_MenuKey (int key);
 
 #endif

@@ -5,25 +5,17 @@
 #ifndef __R_VR_H
 #define __R_VR_H
 
-#define VR_AIMMODE_HEAD_MYAW \
-    1 // Head Aiming; View YAW is mouse+head, PITCH is head
-#define VR_AIMMODE_HEAD_MYAW_MPITCH \
-    2 // Head Aiming; View YAW and PITCH is mouse+head
-#define VR_AIMMODE_MOUSE_MYAW \
-    3 // Mouse Aiming; View YAW is mouse+head, PITCH is head
-#define VR_AIMMODE_MOUSE_MYAW_MPITCH \
-    4 // Mouse Aiming; View YAW and PITCH is mouse+head
-#define VR_AIMMODE_BLENDED \
-    5 // Blended Aiming; Mouse aims, with YAW decoupled for limited area
-#define VR_AIMMODE_BLENDED_NOPITCH \
-    6 // Blended Aiming; Mouse aims, with YAW decoupled for limited area, pitch
-      // decoupled entirely
+#define VR_AIMMODE_HEAD_MYAW 1 // Head Aiming; View YAW is mouse+head, PITCH is head
+#define VR_AIMMODE_HEAD_MYAW_MPITCH 2 // Head Aiming; View YAW and PITCH is mouse+head
+#define VR_AIMMODE_MOUSE_MYAW 3 // Mouse Aiming; View YAW is mouse+head, PITCH is head
+#define VR_AIMMODE_MOUSE_MYAW_MPITCH 4 // Mouse Aiming; View YAW and PITCH is mouse+head
+#define VR_AIMMODE_BLENDED 5 // Blended Aiming; Mouse aims, with YAW decoupled for limited area
+#define VR_AIMMODE_BLENDED_NOPITCH 6 // Blended Aiming; Mouse aims, with YAW decoupled for limited area, pitch decoupled entirely
 #define VR_AIMMODE_CONTROLLER 7 // Controller Aiming
 
-#define VR_CROSSHAIR_NONE 0 // No crosshair
-#define VR_CROSSHAIR_POINT \
-    1 // Point crosshair projected to depth of object it is in front of
-#define VR_CROSSHAIR_LINE 2 // Line crosshair
+#define	VR_CROSSHAIR_NONE 0 // No crosshair
+#define	VR_CROSSHAIR_POINT 1 // Point crosshair projected to depth of object it is in front of
+#define	VR_CROSSHAIR_LINE 2 // Line crosshair
 
 #define VR_MOVEMENT_MODE_FOLLOW_HAND 0
 #define VR_MOVEMENT_MODE_RAW_INPUT 1
@@ -37,7 +29,7 @@ void VID_VR_Disable();
 void VR_UpdateScreenContent();
 void VR_ShowCrosshair();
 void VR_Draw2D();
-void VR_Move(usercmd_t* cmd);
+void VR_Move(usercmd_t *cmd);
 void VR_InitGame();
 void VR_PushYaw();
 void VR_DrawSbar();
@@ -87,7 +79,7 @@ enum class VrSbarMode : int
     OffHand = 1
 };
 
-#define MAX_WEAPONS 20 // not sure what this number should actually be...
+#define MAX_WEAPONS 20 //not sure what this number should actually be...
 #define VARS_PER_WEAPON 8
 
 extern cvar_t vr_weapon_offset[MAX_WEAPONS * VARS_PER_WEAPON];

@@ -6,7 +6,7 @@
 
 enum class WpnOffsetMenuOpt
 {
-    OffsetX,
+	OffsetX,
     OffsetY,
     OffsetZ,
     Scale,
@@ -14,11 +14,11 @@ enum class WpnOffsetMenuOpt
     Pitch,
     Yaw,
 
-    Max
+	Max
 };
 
-void WpnOffset_Menu_f(void);
-void WpnOffset_MenuDraw(void);
-void WpnOffset_MenuKey(int key);
+void WpnOffset_Menu_f (void);
+void WpnOffset_MenuDraw (void);
+void WpnOffset_MenuKey (int key);
 
 #endif
