@@ -22,6 +22,8 @@
 
 int CDAudio_Play(byte track, qboolean looping)
 {
+	(void) track;
+	(void) looping;
 	return -1;
 }
 

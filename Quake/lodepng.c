@@ -181,7 +181,7 @@ typedef struct uivector {
 static void uivector_cleanup(void* p) {
   ((uivector*)p)->size = ((uivector*)p)->allocsize = 0;
   lodepng_free(((uivector*)p)->data);
-  ((uivector*)p)->data = NULL;
+  ((uivector*)p)->data = nullptr;
 }
 
 /*returns 1 if success, 0 if failure ==> nothing done*/
@@ -214,7 +214,7 @@ static unsigned uivector_resizev(uivector* p, size_t size, unsigned value) {
 }
 
 static void uivector_init(uivector* p) {
-  p->data = NULL;
+  p->data = nullptr;
   p->size = p->allocsize = 0;
 }
 
@@ -262,11 +262,11 @@ static unsigned ucvector_resize(ucvector* p, size_t size) {
 static void ucvector_cleanup(void* p) {
   ((ucvector*)p)->size = ((ucvector*)p)->allocsize = 0;
   lodepng_free(((ucvector*)p)->data);
-  ((ucvector*)p)->data = NULL;
+  ((ucvector*)p)->data = nullptr;
 }
 
 static void ucvector_init(ucvector* p) {
-  p->data = NULL;
+  p->data = nullptr;
   p->size = p->allocsize = 0;
 }
 #endif /*LODEPNG_COMPILE_PNG*/
@@ -295,10 +295,10 @@ static unsigned ucvector_push_back(ucvector* p, unsigned char c) {
 #ifdef LODEPNG_COMPILE_PNG
 #ifdef LODEPNG_COMPILE_ANCILLARY_CHUNKS
 
-/*free string pointer and set it to NULL*/
+/*free string pointer and set it to nullptr*/
 static void string_cleanup(char** out) {
   lodepng_free(*out);
-  *out = NULL;
+  *out = nullptr;
 }
 
 /* dynamically allocates a new string with a copy of the null terminated input text */
@@ -2120,7 +2120,7 @@ unsigned lodepng_zlib_compress(unsigned char** out, size_t* outsize, const unsig
 
   error = deflate(&deflatedata, &deflatesize, in, insize, settings);
 
-  *out = NULL;
+  *out = nullptr;
   *outsize = 0;
   if(!error) {
     *outsize = deflatesize + 6;
@@ -2701,8 +2701,8 @@ static unsigned LodePNGUnknownChunks_copy(LodePNGInfo* dest, const LodePNGInfo* 
 
 static void LodePNGText_init(LodePNGInfo* info) {
   info->text_num = 0;
-  info->text_keys = NULL;
-  info->text_strings = NULL;
+  info->text_keys = nullptr;
+  info->text_strings = nullptr;
 }
 
 static void LodePNGText_cleanup(LodePNGInfo* info) {
@@ -2753,10 +2753,10 @@ unsigned lodepng_add_text(LodePNGInfo* info, const char* key, const char* str) {
 
 static void LodePNGIText_init(LodePNGInfo* info) {
   info->itext_num = 0;
-  info->itext_keys = NULL;
-  info->itext_langtags = NULL;
-  info->itext_transkeys = NULL;
-  info->itext_strings = NULL;
+  info->itext_keys = nullptr;
+  info->itext_langtags = nullptr;
+  info->itext_transkeys = nullptr;
+  info->itext_strings = nullptr;
 }
 
 static void LodePNGIText_cleanup(LodePNGInfo* info) {
@@ -2844,7 +2844,7 @@ unsigned lodepng_set_icc(LodePNGInfo* info, const char* name, const unsigned cha
 void lodepng_clear_icc(LodePNGInfo* info) {
   string_cleanup(&info->iccp_name);
   lodepng_free(info->iccp_profile);
-  info->iccp_profile = NULL;
+  info->iccp_profile = nullptr;
   info->iccp_profile_size = 0;
   info->iccp_defined = 0;
 }
@@ -2869,8 +2869,8 @@ void lodepng_info_init(LodePNGInfo* info) {
   info->chrm_defined = 0;
   info->srgb_defined = 0;
   info->iccp_defined = 0;
-  info->iccp_name = NULL;
-  info->iccp_profile = NULL;
+  info->iccp_name = nullptr;
+  info->iccp_profile = nullptr;
 
   LodePNGUnknownChunks_init(info);
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
@@ -6021,7 +6021,7 @@ unsigned decode(std::vector<unsigned char>& out, unsigned& w, unsigned& h,
 unsigned decode(std::vector<unsigned char>& out, unsigned& w, unsigned& h,
                 State& state,
                 const unsigned char* in, size_t insize) {
-  unsigned char* buffer = NULL;
+  unsigned char* buffer = nullptr;
   unsigned error = lodepng_decode(&buffer, &w, &h, &state, in, insize);
   if(buffer && !error) {
     size_t buffersize = lodepng_get_raw_size(w, h, &state.info_raw);

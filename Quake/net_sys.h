@@ -82,7 +82,7 @@ typedef int	socklen_t;			/* defining as signed int to match the old api */
 #define	socketerror(x)	strerror((x))
 
 /* Verify that we defined HAVE_SA_LEN correctly: */
-COMPILE_TIME_ASSERT(sockaddr, offsetof(struct sockaddr, sa_family) == SA_FAM_OFFSET);
+static_assert(offsetof(struct sockaddr, sa_family) == SA_FAM_OFFSET);
 
 #endif	/* end of unix stuff */
 
@@ -119,7 +119,7 @@ typedef unsigned int	in_addr_t;	/* u_int32_t */
 #define	ioctlsocket	IoctlSocket
 #define	closesocket	CloseSocket
 #define	selectsocket(_N,_R,_W,_E,_T)		\
-	WaitSelect((_N),(_R),(_W),(_E),(_T),NULL)
+	WaitSelect((_N),(_R),(_W),(_E),(_T),nullptr)
 #define	IOCTLARG_P(x)	(char *) x
 #if defined(__amigaos4__) || defined(PLATFORM_AMIGAOS3)
 #define	inet_ntoa(x) Inet_NtoA(x.s_addr) /* Inet_NtoA(*(ULONG*)&x) */
@@ -134,7 +134,7 @@ typedef unsigned int	in_addr_t;	/* u_int32_t */
 #define	hstrerror(x)	strerror((x))
 
 /* Verify that we defined HAVE_SA_LEN correctly: */
-COMPILE_TIME_ASSERT(sockaddr, offsetof(struct sockaddr, sa_family) == SA_FAM_OFFSET);
+static_assert(offsetof(struct sockaddr, sa_family) == SA_FAM_OFFSET);
 
 #endif	/* end of amiga bsdsocket.library stuff */
 
@@ -168,10 +168,12 @@ typedef SOCKET	sys_socket_t;
 #define	NET_EWOULDBLOCK		WSAEWOULDBLOCK
 #define	NET_ECONNREFUSED	WSAECONNREFUSED
 /* must #include "wsaerror.h" for this : */
+
+#include "wsaerror.h"
 #define	socketerror(x)	__WSAE_StrError((x))
 
 /* Verify that we defined HAVE_SA_LEN correctly: */
-COMPILE_TIME_ASSERT(sockaddr, offsetof(struct sockaddr, sa_family) == SA_FAM_OFFSET);
+static_assert(offsetof(struct sockaddr, sa_family) == SA_FAM_OFFSET);
 
 #endif	/* end of windows stuff */
 

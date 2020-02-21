@@ -55,7 +55,7 @@ void CL_StopPlayback (void)
 	fclose (cls.demofile);
 	cls.demoplayback = false;
 	cls.demopaused = false;
-	cls.demofile = NULL;
+	cls.demofile = nullptr;
 	cls.state = ca_disconnected;
 
 	if (cls.timedemo)
@@ -203,10 +203,10 @@ void CL_Stop_f (void)
 
 // finish up
 	fclose (cls.demofile);
-	cls.demofile = NULL;
+	cls.demofile = nullptr;
 	cls.demorecording = false;
 	Con_Printf ("Completed demo\n");
-	
+
 // ericw -- update demo tab-completion list
 	DemoList_Rebuild ();
 }
@@ -403,7 +403,7 @@ void CL_PlayDemo_f (void)
 
 	Con_Printf ("Playing demo from %s.\n", name);
 
-	COM_FOpenFile (name, &cls.demofile, NULL);
+	COM_FOpenFile (name, &cls.demofile, nullptr);
 	if (!cls.demofile)
 	{
 		Con_Printf ("ERROR: couldn't open %s\n", name);
@@ -435,7 +435,7 @@ void CL_PlayDemo_f (void)
 	if (c != '\n')
 	{
 		fclose (cls.demofile);
-		cls.demofile = NULL;
+		cls.demofile = nullptr;
 		cls.demonum = -1;	// stop demo loop
 		Con_Printf ("ERROR: demo \"%s\" is invalid\n", name);
 		return;

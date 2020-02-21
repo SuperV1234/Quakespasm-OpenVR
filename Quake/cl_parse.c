@@ -374,7 +374,7 @@ void CL_ParseServerInfo (void)
 	for (i = 1; i < nummodels; i++)
 	{
 		cl.model_precache[i] = Mod_ForName (model_precache[i], false);
-		if (cl.model_precache[i] == NULL)
+		if (cl.model_precache[i] == nullptr)
 		{
 			Host_Error ("Model %s not found", model_precache[i]);
 		}

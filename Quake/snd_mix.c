@@ -207,8 +207,8 @@ static void S_UpdateFilter(filter_t *filter, int M, float f_c)
 {
 	if (filter->f_c != f_c || filter->M != M)
 	{
-		if (filter->memory != NULL) free(filter->memory);
-		if (filter->kernel != NULL) free(filter->kernel);
+		if (filter->memory != nullptr) free(filter->memory);
+		if (filter->kernel != nullptr) free(filter->kernel);
 
 		filter->M = M;
 		filter->f_c = f_c;
@@ -218,7 +218,7 @@ static void S_UpdateFilter(filter_t *filter, int M, float f_c)
 		filter->kernelsize = (M + 1) + 16 - ((M + 1) % 16);
 		filter->memory = (float *) calloc(filter->kernelsize, sizeof(float));
 		filter->kernel = (float *) calloc(filter->kernelsize, sizeof(float));
-		
+
 		S_MakeBlackmanWindowKernel(filter->kernel, M, f_c);
 	}
 }
@@ -395,7 +395,7 @@ void S_PaintChannels (int endtime)
 					}
 					else
 					{	// channel just stopped
-						ch->sfx = NULL;
+						ch->sfx = nullptr;
 						break;
 					}
 				}

@@ -65,8 +65,8 @@ struct upkg_hdr {
 #define UPKG_HDR_SIZE 64			/* 64 bytes up until here */
 	/*struct _genhist *gen;*/
 };
-/*COMPILE_TIME_ASSERT(upkg_hdr, offsetof(struct upkg_hdr, gen) == UPKG_HDR_SIZE);*/
-COMPILE_TIME_ASSERT(upkg_hdr, sizeof(struct upkg_hdr) == UPKG_HDR_SIZE);
+/*static_assert(offsetof(struct upkg_hdr, gen) == UPKG_HDR_SIZE);*/
+static_assert(sizeof(struct upkg_hdr) == UPKG_HDR_SIZE);
 
 #define UMUSIC_IT	0
 #define UMUSIC_S3M	1
@@ -77,7 +77,7 @@ COMPILE_TIME_ASSERT(upkg_hdr, sizeof(struct upkg_hdr) == UPKG_HDR_SIZE);
 
 static const char *mustype[] = {
 	"IT", "S3M", "XM", "MOD",
-	"WAV", "MP2", NULL
+	"WAV", "MP2", nullptr
 };
 
 /* decode an FCompactIndex.
@@ -260,13 +260,13 @@ static int probe_umx   (fshandle_t *f, const struct upkg_hdr *hdr,
 	if (s <= 0 || s > fsiz - pos) return -1;
 
 	if (read_typname(f, hdr, t, buf) < 0) return -1;
-	for (i = 0; mustype[i] != NULL; i++) {
+	for (i = 0; mustype[i] != nullptr; i++) {
 		if (!q_strcasecmp(buf, mustype[i])) {
 			t = i;
 			break;
 		}
 	}
-	if (mustype[i] == NULL) return -1;
+	if (mustype[i] == nullptr) return -1;
 	if ((t = get_objtype(f, pos, t)) < 0) return -1;
 
 	*ofs = pos;
@@ -400,7 +400,7 @@ snd_codec_t umx_codec =
 	S_UMX_CodecReadStream,
 	S_UMX_CodecRewindStream,
 	S_UMX_CodecCloseStream,
-	NULL
+	nullptr
 };
 
 #endif	/* USE_CODEC_UMX */

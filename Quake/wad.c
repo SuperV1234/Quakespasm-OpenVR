@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int				wad_numlumps;
 lumpinfo_t		*wad_lumps;
-byte			*wad_base = NULL;
+byte			*wad_base = nullptr;
 
 void SwapPic (qpic_t *pic);
 
@@ -77,7 +77,7 @@ void W_LoadWadFile (void) //johnfitz -- filename is now hard-coded for honesty
 	//TODO: use cache_alloc
 	if (wad_base)
 		free (wad_base);
-	wad_base = COM_LoadMallocFile (filename, NULL);
+	wad_base = COM_LoadMallocFile (filename, nullptr);
 	if (!wad_base)
 		Sys_Error ("W_LoadWadFile: couldn't load %s\n\n"
 			   "Basedir is: %s\n\n"
@@ -126,7 +126,7 @@ lumpinfo_t	*W_GetLumpinfo (const char *name)
 	}
 
 	Con_SafePrintf ("W_GetLumpinfo: %s not found\n", name); //johnfitz -- was Sys_Error
-	return NULL;
+	return nullptr;
 }
 
 void *W_GetLumpName (const char *name)
@@ -135,7 +135,7 @@ void *W_GetLumpName (const char *name)
 
 	lump = W_GetLumpinfo (name);
 
-	if (!lump) return NULL; //johnfitz
+	if (!lump) return nullptr; //johnfitz
 
 	return (void *)(wad_base + lump->filepos);
 }

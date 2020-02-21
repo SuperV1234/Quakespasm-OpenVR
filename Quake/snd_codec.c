@@ -45,7 +45,7 @@ static snd_codec_t *codecs;
 S_CodecRegister
 =================
 */
-static void S_CodecRegister(snd_codec_t *codec)
+[[maybe_unused]] static void S_CodecRegister(snd_codec_t *codec)
 {
 	codec->next = codecs;
 	codecs = codec;
@@ -59,7 +59,7 @@ S_CodecInit
 void S_CodecInit (void)
 {
 	snd_codec_t *codec;
-	codecs = NULL;
+	codecs = nullptr;
 
 	/* Register in the inverse order
 	 * of codec choice preference: */
@@ -109,7 +109,7 @@ void S_CodecShutdown (void)
 		codec->shutdown();
 		codec = codec->next;
 	}
-	codecs = NULL;
+	codecs = nullptr;
 }
 
 /*
@@ -125,7 +125,7 @@ snd_stream_t *S_CodecOpenStreamType (const char *filename, unsigned int type)
 	if (type == CODECTYPE_NONE)
 	{
 		Con_Printf("Bad type for %s\n", filename);
-		return NULL;
+		return nullptr;
 	}
 
 	codec = codecs;
@@ -138,7 +138,7 @@ snd_stream_t *S_CodecOpenStreamType (const char *filename, unsigned int type)
 	if (!codec)
 	{
 		Con_Printf("Unknown type for %s\n", filename);
-		return NULL;
+		return nullptr;
 	}
 	stream = S_CodecUtilOpen(filename, codec);
 	if (stream) {
@@ -159,7 +159,7 @@ snd_stream_t *S_CodecOpenStreamExt (const char *filename)
 	if (! *ext)
 	{
 		Con_Printf("No extension for %s\n", filename);
-		return NULL;
+		return nullptr;
 	}
 
 	codec = codecs;
@@ -172,7 +172,7 @@ snd_stream_t *S_CodecOpenStreamExt (const char *filename)
 	if (!codec)
 	{
 		Con_Printf("Unknown extension for %s\n", filename);
-		return NULL;
+		return nullptr;
 	}
 	stream = S_CodecUtilOpen(filename, codec);
 	if (stream) {
@@ -209,7 +209,7 @@ snd_stream_t *S_CodecOpenStreamAny (const char *filename)
 			codec = codec->next;
 		}
 
-		return NULL;
+		return nullptr;
 	}
 	else	/* use the name as is */
 	{
@@ -223,7 +223,7 @@ snd_stream_t *S_CodecOpenStreamAny (const char *filename)
 		if (!codec)
 		{
 			Con_Printf("Unknown extension for %s\n", filename);
-			return NULL;
+			return nullptr;
 		}
 		stream = S_CodecUtilOpen(filename, codec);
 		if (stream) {
@@ -276,12 +276,12 @@ snd_stream_t *S_CodecUtilOpen(const char *filename, snd_codec_t *codec)
 	long length;
 
 	/* Try to open the file */
-	length = (long) COM_FOpenFile(filename, &handle, NULL);
+	length = (long) COM_FOpenFile(filename, &handle, nullptr);
 	pak = file_from_pak;
 	if (length == -1)
 	{
 		Con_DPrintf("Couldn't open %s\n", filename);
-		return NULL;
+		return nullptr;
 	}
 
 	/* Allocate a stream, Z_Malloc zeroes its content */
@@ -301,7 +301,7 @@ void S_CodecUtilClose(snd_stream_t **stream)
 {
 	fclose((*stream)->fh.file);
 	Z_Free(*stream);
-	*stream = NULL;
+	*stream = nullptr;
 }
 
 int S_CodecIsAvailable (unsigned int type)

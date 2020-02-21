@@ -372,6 +372,8 @@ static void CD_f (void)
 
 static qboolean CD_GetVolume (void *unused)
 {
+	(void) unused;
+
 /* FIXME: write proper code in here when SDL
    supports cdrom volume control some day. */
 	return false;
@@ -379,6 +381,8 @@ static qboolean CD_GetVolume (void *unused)
 
 static qboolean CD_SetVolume (void *unused)
 {
+	(void) unused;
+
 /* FIXME: write proper code in here when SDL
    supports cdrom volume control some day. */
 	return false;
@@ -404,7 +408,7 @@ static qboolean CDAudio_SetVolume (float value)
 	{
 /* FIXME: write proper code in here when SDL
    supports cdrom volume control some day. */
-		return CD_SetVolume (NULL);
+		return CD_SetVolume (nullptr);
 	}
 }
 
@@ -441,18 +445,18 @@ static const char *get_cddev_arg (const char *arg)
  * but tolerate args like "D" or "D:", as well. */
 	static char drive[4];
 	if (!arg || ! *arg)
-		return NULL;
+		return nullptr;
 	if (arg[1] != '\0')
 	{
 		if (arg[1] != ':')
-			return NULL;
+			return nullptr;
 		if (arg[2] != '\0')
 		{
 			if (arg[2] != '\\' &&
 			    arg[2] != '/')
-				return NULL;
+				return nullptr;
 			if (arg[3] != '\0')
-				return NULL;
+				return nullptr;
 		}
 	}
 	if (*arg >= 'A' && *arg <= 'Z')
@@ -472,10 +476,10 @@ static const char *get_cddev_arg (const char *arg)
 		drive[3] = '\0';
 		return drive;
 	}
-	return NULL;
+	return nullptr;
 #else
 	if (!arg || ! *arg)
-		return NULL;
+		return nullptr;
 	return arg;
 #endif
 }
@@ -566,7 +570,7 @@ int CDAudio_Init(void)
 
 	Cmd_AddCommand ("cd", CD_f);
 
-	hw_vol_works = CD_GetVolume (NULL); /* no SDL support at present. */
+	hw_vol_works = CD_GetVolume (nullptr); /* no SDL support at present. */
 	if (hw_vol_works)
 		hw_vol_works = CDAudio_SetVolume (bgmvolume.value);
 
@@ -579,12 +583,12 @@ void CDAudio_Shutdown(void)
 		return;
 	CDAudio_Stop();
 	if (hw_vol_works)
-		CD_SetVolume (NULL); /* no SDL support at present. */
+		CD_SetVolume (nullptr); /* no SDL support at present. */
 #ifdef __linux__
 	SDL_CDStop(cd_handle);	/* see CDAudio_Stop() */
 #endif
 	SDL_CDClose(cd_handle);
-	cd_handle = NULL;
+	cd_handle = nullptr;
 	cd_dev = -1;
 	SDL_QuitSubSystem(SDL_INIT_CDROM);
 }

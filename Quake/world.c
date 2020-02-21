@@ -219,7 +219,7 @@ areanode_t *SV_CreateAreaNode (int depth, vec3_t mins, vec3_t maxs)
 	if (depth == AREA_DEPTH)
 	{
 		anode->axis = -1;
-		anode->children[0] = anode->children[1] = NULL;
+		anode->children[0] = anode->children[1] = nullptr;
 		return anode;
 	}
 
@@ -270,7 +270,7 @@ void SV_UnlinkEdict (edict_t *ent)
 	if (!ent->area.prev)
 		return;		// not linked in anywhere
 	RemoveLink (&ent->area);
-	ent->area.prev = ent->area.next = NULL;
+	ent->area.prev = ent->area.next = nullptr;
 }
 
 
@@ -339,10 +339,10 @@ void SV_TouchLinks (edict_t *ent)
 	int		old_self, old_other;
 	int		i, listcount;
 	int		mark;
-	
+
 	mark = Hunk_LowMark ();
 	list = (edict_t **) Hunk_Alloc (sv.num_edicts*sizeof(edict_t *));
-	
+
 	listcount = 0;
 	SV_AreaTriggerEdicts (ent, sv_areanodes, list, &listcount, sv.num_edicts);
 
@@ -585,7 +585,7 @@ edict_t	*SV_TestEntityPosition (edict_t *ent)
 	if (trace.startsolid)
 		return sv.edicts;
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -665,7 +665,7 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 // put the crosspoint DIST_EPSILON pixels on the near side
 	if (t1 < 0)
 		frac = (t1 + DIST_EPSILON)/(t1-t2);
-	else 
+	else
 		frac = (t1 - DIST_EPSILON)/(t1-t2);
 	if (frac < 0)
 		frac = 0;

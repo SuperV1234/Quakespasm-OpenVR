@@ -59,7 +59,7 @@ typedef struct entity_s
 	vec3_t					origin;
 	vec3_t					msg_angles[2];	// last two updates (0 is newest)
 	vec3_t					angles;
-	struct qmodel_s			*model;			// NULL = no model
+	struct qmodel_s			*model;			// nullptr = no model
 	struct efrag_s			*efrag;			// linked list of efrags
 	int						frame;
 	float					syncbase;		// for client-side animations
@@ -75,7 +75,7 @@ typedef struct entity_s
 // FIXME: could turn these into a union
 	int						trivial_accept;
 	struct mnode_s			*topnode;		// for bmodels, first world node
-											//  that splits bmodel, or NULL if
+											//  that splits bmodel, or nullptr if
 											//  not split
 
 	byte					alpha;			//johnfitz -- alpha

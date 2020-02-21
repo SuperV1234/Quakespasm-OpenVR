@@ -205,7 +205,7 @@ char *q_strcasestr(const char *haystack, const char *needle)
 	{
 		c1 = *haystack;
 		if (!c1)
-			return NULL;
+			return nullptr;
 		if (c1 >= 'a' && c1 <= 'z')
 			c1 -= ('a' - 'A');
 		if (c1 == c2f)
@@ -221,14 +221,14 @@ char *q_strcasestr(const char *haystack, const char *needle)
 				if (!c2)
 					return (char*)haystack;	//end of needle means we found a complete match
 				if (!c1)	//end of haystack means we can't possibly find needle in it any more
-					return NULL;
+					return nullptr;
 				if (c1 != c2)	//mismatch means no match starting at haystack[0]
 					break;
 			}
 		}
 		haystack++;
 	}
-	return NULL;	//didn't find it
+	return nullptr;	//didn't find it
 }
 
 char *q_strlwr (char *str)
@@ -373,7 +373,7 @@ char *Q_strrchr(const char *s, char c)
 		if (*--s == c)
 			return (char *)s;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void Q_strcat (char *dest, const char *src)
@@ -939,7 +939,7 @@ void SZ_Alloc (sizebuf_t *buf, int startsize)
 void SZ_Free (sizebuf_t *buf)
 {
 //	Z_Free (buf->data);
-//	buf->data = NULL;
+//	buf->data = nullptr;
 //	buf->maxsize = 0;
 	buf->cursize = 0;
 }
@@ -1042,7 +1042,7 @@ void COM_StripExtension (const char *in, char *out, size_t outsize)
 
 /*
 ============
-COM_FileGetExtension - doesn't return NULL
+COM_FileGetExtension - doesn't return nullptr
 ============
 */
 const char *COM_FileGetExtension (const char *in)
@@ -1057,7 +1057,7 @@ const char *COM_FileGetExtension (const char *in)
 	src = in + len - 1;
 	while (src != in && src[-1] != '.')
 		src--;
-	if (src == in || strchr(src, '/') != NULL || strchr(src, '\\') != NULL)
+	if (src == in || strchr(src, '/') != nullptr || strchr(src, '\\') != nullptr)
 		return "";	/* no extension, or parent directory has a dot */
 
 	return src;
@@ -1090,7 +1090,7 @@ void COM_FileBase (const char *in, char *out, size_t outsize)
 
 	s = in;
 	slash = in;
-	dot = NULL;
+	dot = nullptr;
 	while (*s)
 	{
 		if (*s == '/')
@@ -1099,7 +1099,7 @@ void COM_FileBase (const char *in, char *out, size_t outsize)
 			dot = s;
 		s++;
 	}
-	if (dot == NULL)
+	if (dot == nullptr)
 		dot = s;
 
 	if (dot - slash < 2)
@@ -1170,14 +1170,14 @@ const char *COM_Parse (const char *data)
 	com_token[0] = 0;
 
 	if (!data)
-		return NULL;
+		return nullptr;
 
 // skip whitespace
 skipwhite:
 	while ((c = *data) <= ' ')
 	{
 		if (c == 0)
-			return NULL;	// end of file
+			return nullptr;	// end of file
 		data++;
 	}
 
@@ -1283,7 +1283,7 @@ static void COM_CheckRegistered (void)
 	unsigned short	check[128];
 	int		i;
 
-	COM_OpenFile("gfx/pop.lmp", &h, NULL);
+	COM_OpenFile("gfx/pop.lmp", &h, nullptr);
 
 	if (h == -1)
 	{
@@ -1678,7 +1678,7 @@ static int COM_FindFile (const char *filename, int *handle, FILE **file,
 			else if (file)
 			{
 				*file = fopen (netpath, "rb");
-				com_filesize = (*file == NULL) ? -1 : COM_filelength (*file);
+				com_filesize = (*file == nullptr) ? -1 : COM_filelength (*file);
 				return com_filesize;
 			}
 			else
@@ -1699,7 +1699,7 @@ static int COM_FindFile (const char *filename, int *handle, FILE **file,
 	if (handle)
 		*handle = -1;
 	if (file)
-		*file = NULL;
+		*file = nullptr;
 	com_filesize = -1;
 	return com_filesize;
 }
@@ -1714,7 +1714,7 @@ Returns whether the file is found in the quake filesystem.
 */
 qboolean COM_FileExists (const char *filename, unsigned int *path_id)
 {
-	int ret = COM_FindFile (filename, NULL, NULL, path_id);
+	int ret = COM_FindFile (filename, nullptr, nullptr, path_id);
 	return (ret == -1) ? false : true;
 }
 
@@ -1729,7 +1729,7 @@ it may actually be inside a pak file
 */
 int COM_OpenFile (const char *filename, int *handle, unsigned int *path_id)
 {
-	return COM_FindFile (filename, handle, NULL, path_id);
+	return COM_FindFile (filename, handle, nullptr, path_id);
 }
 
 /*
@@ -1742,7 +1742,7 @@ into the file.
 */
 int COM_FOpenFile (const char *filename, FILE **file, unsigned int *path_id)
 {
-	return COM_FindFile (filename, NULL, file, path_id);
+	return COM_FindFile (filename, nullptr, file, path_id);
 }
 
 /*
@@ -1790,12 +1790,12 @@ byte *COM_LoadFile (const char *path, int usehunk, unsigned int *path_id)
 	char	base[32];
 	int		len;
 
-	buf = NULL;	// quiet compiler warning
+	buf = nullptr;	// quiet compiler warning
 
 // look for it in the filesystem or pack files
 	len = COM_OpenFile (path, &h, path_id);
 	if (h == -1)
-		return NULL;
+		return nullptr;
 
 // extract the filename base name for hunk tag
 	COM_FileBase (path, base, sizeof(base));
@@ -1888,27 +1888,27 @@ byte *COM_LoadMallocFile_TextMode_OSPath (const char *path, long *len_out)
 	// TODO: could handle in a way that allows loading CRLF savegames on mac/linux
 	// without the junk characters appearing.
 	f = fopen (path, "rt");
-	if (f == NULL)
-		return NULL;
+	if (f == nullptr)
+		return nullptr;
 
 	len = COM_filelength (f);
 	if (len < 0)
-		return NULL;
+		return nullptr;
 
 	data = (byte *) malloc (len + 1);
-	if (data == NULL)
-		return NULL;
+	if (data == nullptr)
+		return nullptr;
 
 	// (actuallen < len) if CRLF to LF translation was performed
 	actuallen = fread (data, 1, len, f);
 	if (ferror(f))
 	{
 		free (data);
-		return NULL;
+		return nullptr;
 	}
 	data[actuallen] = '\0';
 
-	if (len_out != NULL)
+	if (len_out != nullptr)
 		*len_out = actuallen;
 	return data;
 }
@@ -1957,7 +1957,7 @@ static pack_t *COM_LoadPackFile (const char *packfile)
 	unsigned short	crc;
 
 	if (Sys_FileOpenRead (packfile, &packhandle) == -1)
-		return NULL;
+		return nullptr;
 
 	Sys_FileRead (packhandle, (void *)&header, sizeof(header));
 	if (header.id[0] != 'P' || header.id[1] != 'A' || header.id[2] != 'C' || header.id[3] != 'K')
@@ -1977,7 +1977,7 @@ static pack_t *COM_LoadPackFile (const char *packfile)
 	{
 		Sys_Printf ("WARNING: %s has no files, ignored\n", packfile);
 		Sys_FileClose (packhandle);
-		return NULL;
+		return nullptr;
 	}
 	if (numpackfiles > MAX_FILES_IN_PACK)
 		Sys_Error ("%s has %i files", packfile, numpackfiles);
@@ -2050,7 +2050,7 @@ _add_path:
 		q_snprintf (pakfile, sizeof(pakfile), "%s/pak%i.pak", com_gamedir, i);
 		pak = COM_LoadPackFile (pakfile);
 		if (i != 0 || path_id != 1 || fitzmode)
-			qspak = NULL;
+			qspak = nullptr;
 		else {
 			qboolean old = com_modified;
 			if (been_here) base = host_parms->userdir;
@@ -2279,10 +2279,10 @@ void COM_InitFilesystem (void) //johnfitz -- modified based on topaz's tutorial
 			Sys_Error ("gamedir should be a single directory name, not a path\n");
 		com_modified = true;
 		// don't load mission packs twice
-		if (COM_CheckParm ("-rogue") && !q_strcasecmp(p, "rogue")) p = NULL;
-		if (COM_CheckParm ("-hipnotic") && !q_strcasecmp(p, "hipnotic")) p = NULL;
-		if (COM_CheckParm ("-quoth") && !q_strcasecmp(p, "quoth")) p = NULL;
-		if (p != NULL) {
+		if (COM_CheckParm ("-rogue") && !q_strcasecmp(p, "rogue")) p = nullptr;
+		if (COM_CheckParm ("-hipnotic") && !q_strcasecmp(p, "hipnotic")) p = nullptr;
+		if (COM_CheckParm ("-quoth") && !q_strcasecmp(p, "quoth")) p = nullptr;
+		if (p != nullptr) {
 			COM_AddGameDirectory (com_basedir, p);
 			// QuakeSpasm extension: treat '-game missionpack' as '-missionpack'
 			if (!q_strcasecmp(p,"rogue")) {
@@ -2449,7 +2449,7 @@ char *FS_fgets(char *s, int size, fshandle_t *fh)
 	char *ret;
 
 	if (FS_feof(fh))
-		return NULL;
+		return nullptr;
 
 	if (size > (fh->length - fh->pos) + 1)
 		size = (fh->length - fh->pos) + 1;

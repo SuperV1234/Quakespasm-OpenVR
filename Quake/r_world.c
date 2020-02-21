@@ -52,11 +52,11 @@ void R_ClearTextureChains (qmodel_t *mod, texchain_t chain)
 	// set all chains to null
 	for (i=0 ; i<mod->numtextures ; i++)
 		if (mod->textures[i])
-			mod->textures[i]->texturechains[chain] = NULL;
+			mod->textures[i]->texturechains[chain] = nullptr;
 
 	// clear lightmap chains
 	for (i=0 ; i<lightmap_count ; i++)
-		lightmap[i].polys = NULL;
+		lightmap[i].polys = nullptr;
 }
 
 /*
@@ -86,7 +86,7 @@ void R_MarkSurfaces (void)
 
 	// clear lightmap chains
 	for (i=0 ; i<lightmap_count ; i++)
-		lightmap[i].polys = NULL;
+		lightmap[i].polys = nullptr;
 
 	// check this leaf for water portals
 	// TODO: loop through all water surfs and use distance to leaf cullbox
@@ -137,7 +137,7 @@ void R_MarkSurfaces (void)
 	// set all chains to null
 	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
 		if (cl.worldmodel->textures[i])
-			cl.worldmodel->textures[i]->texturechains[chain_world] = NULL;
+			cl.worldmodel->textures[i]->texturechains[chain_world] = nullptr;
 
 	// rebuild chains
 
@@ -252,7 +252,7 @@ void R_BuildLightmapChains (qmodel_t *model, texchain_t chain)
 
 	// clear lightmap chains (already done in r_marksurfaces, but clearing them here to be safe becuase of r_stereo)
 	for (i=0 ; i<lightmap_count ; i++)
-		lightmap[i].polys = NULL;
+		lightmap[i].polys = nullptr;
 
 	// now rebuild them
 	for (i=0 ; i<model->numtextures ; i++)
@@ -407,7 +407,7 @@ void R_DrawTextureChains_Glow (qmodel_t *model, entity_t *ent, texchain_t chain)
 	{
 		t = model->textures[i];
 
-		if (!t || !t->texturechains[chain] || !(glt = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright))
+		if (!t || !t->texturechains[chain] || !(glt = R_TextureAnimation(t, ent != nullptr ? ent->frame : 0)->fullbright))
 			continue;
 
 		bound = false;
@@ -534,7 +534,7 @@ void R_DrawTextureChains_Multitexture (qmodel_t *model, entity_t *ent, texchain_
 			{
 				if (!bound) //only bind once we are sure we need this texture
 				{
-					GL_Bind ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
+					GL_Bind ((R_TextureAnimation(t, ent != nullptr ? ent->frame : 0))->gltexture);
 
 					if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
 						glEnable (GL_ALPHA_TEST); // Flip alpha test back on
@@ -624,7 +624,7 @@ void R_DrawTextureChains_TextureOnly (qmodel_t *model, entity_t *ent, texchain_t
 			{
 				if (!bound) //only bind once we are sure we need this texture
 				{
-					GL_Bind ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
+					GL_Bind ((R_TextureAnimation(t, ent != nullptr ? ent->frame : 0))->gltexture);
 
 					if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
 						glEnable (GL_ALPHA_TEST); // Flip alpha test back on
@@ -650,7 +650,7 @@ Returns the water alpha to use for the entity and surface combination.
 float GL_WaterAlphaForEntitySurface (entity_t *ent, msurface_t *s)
 {
 	float entalpha;
-	if (ent == NULL || ent->alpha == ENTALPHA_DEFAULT)
+	if (ent == nullptr || ent->alpha == ENTALPHA_DEFAULT)
 		entalpha = GL_WaterAlphaForSurface(s);
 	else
 		entalpha = ENTALPHA_DECODE(ent->alpha);
@@ -917,10 +917,10 @@ void R_DrawTextureChains_GLSL (qmodel_t *model, entity_t *ent, texchain_t chain)
 	texture_t	*t;
 	qboolean	bound;
 	int		lastlightmap;
-	gltexture_t	*fullbright = NULL;
+	gltexture_t	*fullbright = nullptr;
 	float		entalpha;
 
-	entalpha = (ent != NULL) ? ENTALPHA_DECODE(ent->alpha) : 1.0f;
+	entalpha = (ent != nullptr) ? ENTALPHA_DECODE(ent->alpha) : 1.0f;
 
 // enable blending / disable depth writes
 	if (entalpha < 1)
@@ -961,7 +961,7 @@ void R_DrawTextureChains_GLSL (qmodel_t *model, entity_t *ent, texchain_t chain)
 
 	// Enable/disable TMU 2 (fullbrights)
 	// FIXME: Move below to where we bind GL_TEXTURE0
-		if (gl_fullbrights.value && (fullbright = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright))
+		if (gl_fullbrights.value && (fullbright = R_TextureAnimation(t, ent != nullptr ? ent->frame : 0)->fullbright))
 		{
 			GL_SelectTexture (GL_TEXTURE2);
 			GL_Bind (fullbright);
@@ -980,7 +980,7 @@ void R_DrawTextureChains_GLSL (qmodel_t *model, entity_t *ent, texchain_t chain)
 				if (!bound) //only bind once we are sure we need this texture
 				{
 					GL_SelectTexture (GL_TEXTURE0);
-					GL_Bind ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
+					GL_Bind ((R_TextureAnimation(t, ent != nullptr ? ent->frame : 0))->gltexture);
 
 					if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
 						GL_Uniform1iFunc (useAlphaTestLoc, 1); // Flip alpha test back on
@@ -1030,7 +1030,7 @@ void R_DrawTextureChains (qmodel_t *model, entity_t *ent, texchain_t chain)
 {
 	float entalpha;
 
-	if (ent != NULL)
+	if (ent != nullptr)
 		entalpha = ENTALPHA_DECODE(ent->alpha);
 	else
 		entalpha = 1;
@@ -1213,7 +1213,7 @@ void R_DrawWorld (void)
 	if (!r_drawworld_cheatsafe)
 		return;
 
-	R_DrawTextureChains (cl.worldmodel, NULL, chain_world);
+	R_DrawTextureChains (cl.worldmodel, nullptr, chain_world);
 }
 
 /*
@@ -1226,7 +1226,7 @@ void R_DrawWorld_Water (void)
 	if (!r_drawworld_cheatsafe)
 		return;
 
-	R_DrawTextureChains_Water (cl.worldmodel, NULL, chain_world);
+	R_DrawTextureChains_Water (cl.worldmodel, nullptr, chain_world);
 }
 
 /*

@@ -54,6 +54,7 @@ static void WpnOffset_MenuPrintOptionValue(int cx, int cy, WpnOffsetMenuOpt opti
 		case WpnOffsetMenuOpt::Roll:	printAsStr(rr); break;
 		case WpnOffsetMenuOpt::Pitch:	printAsStr(rp); break;
 		case WpnOffsetMenuOpt::Yaw:		printAsStr(ry); break;
+		default: 						assert(false); break;
 	}
 }
 
@@ -82,6 +83,7 @@ static void WpnOffset_MenuKeyOption(int key, WpnOffsetMenuOpt option)
 		case WpnOffsetMenuOpt::Roll:	adjustF(rr, rInc, -rBound, rBound); break;
 		case WpnOffsetMenuOpt::Pitch:	adjustF(rp, rInc, -rBound, rBound); break;
 		case WpnOffsetMenuOpt::Yaw:		adjustF(ry, rInc, -rBound, rBound); break;
+		default: 						assert(false); break;
 	}
 }
 

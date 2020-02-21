@@ -241,7 +241,7 @@ static qboolean S_FLAC_CodecOpenStream (snd_stream_t *stream)
 	ff = (flacfile_t *) Z_Malloc(sizeof(flacfile_t));
 
 	ff->decoder = FLAC__stream_decoder_new ();
-	if (ff->decoder == NULL)
+	if (ff->decoder == nullptr)
 	{
 		Con_Printf("Unable to create fLaC decoder\n");
 		goto _fail;
@@ -383,7 +383,7 @@ snd_codec_t flac_codec =
 	S_FLAC_CodecReadStream,
 	S_FLAC_CodecRewindStream,
 	S_FLAC_CodecCloseStream,
-	NULL
+	nullptr
 };
 
 #endif	/* USE_CODEC_FLAC */

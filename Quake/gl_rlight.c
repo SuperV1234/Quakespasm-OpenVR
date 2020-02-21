@@ -172,7 +172,7 @@ void R_MarkLights (dlight_t *light, int num, mnode_t *node)
 	msurface_t	*surf;
 	vec3_t		impact;
 	float		dist, l, maxdist;
-	int			i, j, s, t;
+	int			j, s, t;
 
 start:
 
@@ -199,7 +199,7 @@ start:
 	maxdist = light->radius*light->radius;
 // mark the polygons
 	surf = cl.worldmodel->surfaces + node->firstsurface;
-	for (i=0 ; i<node->numsurfaces ; i++, surf++)
+	for (unsigned int i=0 ; i<node->numsurfaces ; i++, surf++)
 	{
 		for (j=0 ; j<3 ; j++)
 			impact[j] = light->origin[j] - surf->plane->normal[j]*dist;
@@ -311,14 +311,14 @@ loc0:
 		return true;	// hit something
 	else
 	{
-		int i, ds, dt;
+		int ds, dt;
 		msurface_t *surf;
 	// check for impact on this node
 		VectorCopy (mid, lightspot);
 		lightplane = node->plane;
 
 		surf = cl.worldmodel->surfaces + node->firstsurface;
-		for (i = 0;i < node->numsurfaces;i++, surf++)
+		for (unsigned int i = 0;i < node->numsurfaces;i++, surf++)
 		{
 			if (surf->flags & SURF_DRAWTILED)
 				continue;	// no lightmaps

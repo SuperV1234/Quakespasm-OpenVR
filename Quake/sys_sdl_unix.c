@@ -122,7 +122,7 @@ int Sys_FileOpenWrite (const char *path)
 void Sys_FileClose (int handle)
 {
 	fclose (sys_handles[handle]);
-	sys_handles[handle] = NULL;
+	sys_handles[handle] = nullptr;
 }
 
 void Sys_FileSeek (int handle, int position)
@@ -182,11 +182,11 @@ static int Sys_NumCPUs (void)
 	len = sizeof(numcpus);
 	mib[0] = CTL_HW;
 	mib[1] = HW_AVAILCPU;
-	sysctl(mib, 2, &numcpus, &len, NULL, 0);
-	if (sysctl(mib, 2, &numcpus, &len, NULL, 0) == -1)
+	sysctl(mib, 2, &numcpus, &len, nullptr, 0);
+	if (sysctl(mib, 2, &numcpus, &len, nullptr, 0) == -1)
 	{
 		mib[1] = HW_NCPU;
-		if (sysctl(mib, 2, &numcpus, &len, NULL, 0) == -1)
+		if (sysctl(mib, 2, &numcpus, &len, nullptr, 0) == -1)
 			return 1;
 	}
 	return (numcpus < 1) ? 1 : numcpus;
@@ -217,7 +217,7 @@ static int Sys_NumCPUs (void)
 	len = sizeof(numcpus);
 	mib[0] = CTL_HW;
 	mib[1] = HW_NCPU;
-	if (sysctl(mib, 2, &numcpus, &len, NULL, 0) == -1)
+	if (sysctl(mib, 2, &numcpus, &len, nullptr, 0) == -1)
 		return 1;
 	return (numcpus < 1) ? 1 : numcpus;
 }
@@ -226,7 +226,7 @@ static int Sys_NumCPUs (void)
 #include <sys/mpctl.h>
 static int Sys_NumCPUs (void)
 {
-	int numcpus = mpctl(MPC_GETNUMSPUS, NULL, NULL);
+	int numcpus = mpctl(MPC_GETNUMSPUS, nullptr, nullptr);
 	return numcpus;
 }
 
@@ -249,17 +249,17 @@ static char	userdir[MAX_OSPATH];
 static void Sys_GetUserdir (char *dst, size_t dstsize)
 {
 	size_t		n;
-	const char	*home_dir = NULL;
+	const char	*home_dir = nullptr;
 	struct passwd	*pwent;
 
 	pwent = getpwuid( getuid() );
-	if (pwent == NULL)
+	if (pwent == nullptr)
 		perror("getpwuid");
 	else
 		home_dir = pwent->pw_dir;
-	if (home_dir == NULL)
+	if (home_dir == nullptr)
 		home_dir = getenv("HOME");
-	if (home_dir == NULL)
+	if (home_dir == nullptr)
 		Sys_Error ("Couldn't determine userspace directory");
 
 /* what would be a maximum path for a file in the user's directory...
@@ -296,10 +296,10 @@ static void Sys_GetBasedir (char *argv0, char *dst, size_t dstsize)
 {
 	char	*tmp;
 
-	if (realpath(argv0, dst) == NULL)
+	if (realpath(argv0, dst) == nullptr)
 	{
 		perror("realpath");
-		if (getcwd(dst, dstsize - 1) == NULL)
+		if (getcwd(dst, dstsize - 1) == nullptr)
 	_fail:		Sys_Error ("Couldn't determine current directory");
 	}
 	else
@@ -317,9 +317,11 @@ static void Sys_GetBasedir (char *argv0, char *dst, size_t dstsize)
 #else
 static void Sys_GetBasedir (char *argv0, char *dst, size_t dstsize)
 {
+	(void) argv0;
+
 	char	*tmp;
 
-	if (getcwd(dst, dstsize - 1) == NULL)
+	if (getcwd(dst, dstsize - 1) == nullptr)
 		Sys_Error ("Couldn't determine current directory");
 
 	tmp = dst;
@@ -426,7 +428,7 @@ const char *Sys_ConsoleInput (void)
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
 
-	while (select (1, &set, NULL, NULL, &timeout))
+	while (select (1, &set, nullptr, nullptr, &timeout))
 	{
 		read (0, &c, 1);
 		if (c == '\n' || c == '\r')
@@ -458,7 +460,7 @@ const char *Sys_ConsoleInput (void)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void Sys_Sleep (unsigned long msecs)

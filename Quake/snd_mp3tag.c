@@ -119,7 +119,7 @@ static inline long get_lyrics3v2_len(const unsigned char *data, long length) {
     /* 6 bytes before the end marker is size in decimal format -
      * does not include the 9 bytes end marker and size field. */
     if (length != 6) return 0;
-    return strtol((const char *)data, NULL, 10) + 15;
+    return strtol((const char *)data, nullptr, 10) + 15;
 }
 static inline qboolean verify_lyrics3v2(const unsigned char *data, long length) {
     if (length < 11) return false;

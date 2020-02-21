@@ -712,16 +712,15 @@ int AllocBlock (int w, int h, int *x, int *y)
 {
 	int		i, j;
 	int		best, best2;
-	int		texnum;
 
 	// ericw -- rather than searching starting at lightmap 0 every time,
 	// start at the last lightmap we allocated a surface in.
 	// This makes AllocBlock much faster on large levels (can shave off 3+ seconds
 	// of load time on a level with 180 lightmaps), at a cost of not quite packing
 	// lightmaps as tightly vs. not doing this (uses ~5% more lightmaps)
-	for (texnum=last_lightmap_allocated ; texnum<MAX_SANITY_LIGHTMAPS ; texnum++)
+	for (decltype(MAX_SANITY_LIGHTMAPS) texnum=last_lightmap_allocated ; texnum<MAX_SANITY_LIGHTMAPS ; texnum++)
 	{
-		if (texnum == lightmap_count)
+		if (texnum == static_cast<GLuint>(lightmap_count))
 		{
 			lightmap_count++;
 			lightmap = (struct lightmap_s *) realloc(lightmap, sizeof(*lightmap)*lightmap_count);
@@ -885,7 +884,7 @@ void GL_BuildLightmaps (void)
 	for (i=0; i < lightmap_count; i++)
 		free(lightmap[i].data);
 	free(lightmap);
-	lightmap = NULL;
+	lightmap = nullptr;
 	last_lightmap_allocated = 0;
 	lightmap_count = 0;
 

@@ -52,7 +52,7 @@ void Cvar_List_f (void)
 	}
 	else
 	{
-		partial = NULL;
+		partial = nullptr;
 		len = 0;
 	}
 
@@ -255,7 +255,7 @@ cvar_t *Cvar_FindVar (const char *var_name)
 			return var;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 cvar_t *Cvar_FindVarAfter (const char *prev_name, unsigned int with_flags)
@@ -266,7 +266,7 @@ cvar_t *Cvar_FindVarAfter (const char *prev_name, unsigned int with_flags)
 	{
 		var = Cvar_FindVar (prev_name);
 		if (!var)
-			return NULL;
+			return nullptr;
 		var = var->next;
 	}
 	else
@@ -355,7 +355,7 @@ const char *Cvar_CompleteVariable (const char *partial)
 
 	len = Q_strlen(partial);
 	if (!len)
-		return NULL;
+		return nullptr;
 
 // check functions
 	for (cvar = cvar_vars ; cvar ; cvar = cvar->next)
@@ -364,7 +364,7 @@ const char *Cvar_CompleteVariable (const char *partial)
 			return cvar->name;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -551,7 +551,7 @@ void Cvar_RegisterVariable (cvar_t *variable)
 
 // link the variable in
 	//johnfitz -- insert each entry in alphabetical order
-	if (cvar_vars == NULL ||
+	if (cvar_vars == nullptr ||
 	    strcmp(variable->name, cvar_vars->name) < 0) // insert at front
 	{
 		variable->next = cvar_vars;
@@ -574,11 +574,11 @@ void Cvar_RegisterVariable (cvar_t *variable)
 
 // copy the value off, because future sets will Z_Free it
 	q_strlcpy (value, variable->string, sizeof(value));
-	variable->string = NULL;
-	variable->default_string = NULL;
+	variable->string = nullptr;
+	variable->default_string = nullptr;
 
 	if (!(variable->flags & CVAR_CALLBACK))
-		variable->callback = NULL;
+		variable->callback = nullptr;
 
 // set it through the function to be consistent
 	set_rom = (variable->flags & CVAR_ROM);

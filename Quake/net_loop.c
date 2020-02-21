@@ -27,8 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "net_loop.h"
 
 static qboolean	localconnectpending = false;
-static qsocket_t	*loop_client = NULL;
-static qsocket_t	*loop_server = NULL;
+static qsocket_t	*loop_client = nullptr;
+static qsocket_t	*loop_server = nullptr;
 
 int Loop_Init (void)
 {
@@ -45,11 +45,14 @@ void Loop_Shutdown (void)
 
 void Loop_Listen (qboolean state)
 {
+	(void) state;
 }
 
 
 void Loop_SearchForHosts (qboolean xmit)
 {
+	(void) xmit;
+
 	if (!sv.active)
 		return;
 
@@ -69,16 +72,16 @@ void Loop_SearchForHosts (qboolean xmit)
 qsocket_t *Loop_Connect (const char *host)
 {
 	if (Q_strcmp(host,"local") != 0)
-		return NULL;
+		return nullptr;
 
 	localconnectpending = true;
 
 	if (!loop_client)
 	{
-		if ((loop_client = NET_NewQSocket ()) == NULL)
+		if ((loop_client = NET_NewQSocket ()) == nullptr)
 		{
 			Con_Printf("Loop_Connect: no qsocket available\n");
-			return NULL;
+			return nullptr;
 		}
 		Q_strcpy (loop_client->address, "localhost");
 	}
@@ -88,10 +91,10 @@ qsocket_t *Loop_Connect (const char *host)
 
 	if (!loop_server)
 	{
-		if ((loop_server = NET_NewQSocket ()) == NULL)
+		if ((loop_server = NET_NewQSocket ()) == nullptr)
 		{
 			Con_Printf("Loop_Connect: no qsocket available\n");
-			return NULL;
+			return nullptr;
 		}
 		Q_strcpy (loop_server->address, "LOCAL");
 	}
@@ -109,7 +112,7 @@ qsocket_t *Loop_Connect (const char *host)
 qsocket_t *Loop_CheckNewConnections (void)
 {
 	if (!localconnectpending)
-		return NULL;
+		return nullptr;
 
 	localconnectpending = false;
 	loop_server->sendMessageLength = 0;
@@ -231,6 +234,8 @@ qboolean Loop_CanSendMessage (qsocket_t *sock)
 
 qboolean Loop_CanSendUnreliableMessage (qsocket_t *sock)
 {
+	(void) sock;
+
 	return true;
 }
 
@@ -238,13 +243,13 @@ qboolean Loop_CanSendUnreliableMessage (qsocket_t *sock)
 void Loop_Close (qsocket_t *sock)
 {
 	if (sock->driverdata)
-		((qsocket_t *)sock->driverdata)->driverdata = NULL;
+		((qsocket_t *)sock->driverdata)->driverdata = nullptr;
 	sock->receiveMessageLength = 0;
 	sock->sendMessageLength = 0;
 	sock->canSend = true;
 	if (sock == loop_client)
-		loop_client = NULL;
+		loop_client = nullptr;
 	else
-		loop_server = NULL;
+		loop_server = nullptr;
 }
 

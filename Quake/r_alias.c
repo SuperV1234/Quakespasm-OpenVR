@@ -262,7 +262,7 @@ void GL_DrawAliasFrame_GLSL (aliashdr_t *paliashdr, lerpdata_t lerpdata, gltextu
 	GL_Uniform4fFunc (lightColorLoc, lightcolor[0], lightcolor[1], lightcolor[2], entalpha);
 	GL_Uniform1iFunc (texLoc, 0);
 	GL_Uniform1iFunc (fullbrightTexLoc, 1);
-	GL_Uniform1iFunc (useFullbrightTexLoc, (fb != NULL) ? 1 : 0);
+	GL_Uniform1iFunc (useFullbrightTexLoc, (fb != nullptr) ? 1 : 0);
 	GL_Uniform1fFunc (useOverbrightLoc, overbright ? 1 : 0);
 	GL_Uniform1iFunc (useAlphaTestLoc, (currententity->model->flags & MF_HOLEY) ? 1 : 0);
 
@@ -706,7 +706,7 @@ void R_DrawAliasModel (entity_t *e)
 		    tx = playertextures[i - 1];
 	}
 	if (!gl_fullbrights.value)
-		fb = NULL;
+		fb = nullptr;
 
 	//
 	// draw it

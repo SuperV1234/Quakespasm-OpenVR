@@ -126,6 +126,8 @@ TexMgr_TextureMode_f -- called when gl_texturemode changes
 */
 static void TexMgr_TextureMode_f (cvar_t *var)
 {
+	(void) var;
+
 	gltexture_t	*glt;
 	int i;
 
@@ -172,6 +174,8 @@ TexMgr_Anisotropy_f -- called when gl_texture_anisotropy changes
 */
 static void TexMgr_Anisotropy_f (cvar_t *var)
 {
+	(void) var;
+
 	if (gl_texture_anisotropy.value < 1)
 	{
 		Cvar_SetQuick (&gl_texture_anisotropy, "1");
@@ -318,7 +322,7 @@ gltexture_t *TexMgr_FindTexture (qmodel_t *owner, const char *name)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -359,8 +363,8 @@ void TexMgr_FreeTexture (gltexture_t *kill)
 
 	if (in_reload_images)
 		return;
-	
-	if (kill == NULL)
+
+	if (kill == nullptr)
 	{
 		Con_Printf ("TexMgr_FreeTexture: NULL texture\n");
 		return;
@@ -464,7 +468,7 @@ void TexMgr_LoadPalette (void)
 	int i, mark;
 	FILE *f;
 
-	COM_FOpenFile ("gfx/palette.lmp", &f, NULL);
+	COM_FOpenFile ("gfx/palette.lmp", &f, nullptr);
 	if (!f)
 		Sys_Error ("Couldn't load gfx/palette.lmp");
 
@@ -573,7 +577,7 @@ void TexMgr_RecalcWarpImageSize (void)
 	// after vid_restart TexMgr_ReloadImage reloads textures
 	// to tx->source_width/source_height, which might not match oldsize.
 	// fixes: https://sourceforge.net/p/quakespasm/bugs/13/
-	
+
 	//
 	// resize the textures in opengl
 	//
@@ -609,10 +613,10 @@ void TexMgr_Init (void)
 
 	// init texture list
 	free_gltextures = (gltexture_t *) Hunk_AllocName (MAX_GLTEXTURES * sizeof(gltexture_t), "gltextures");
-	active_gltextures = NULL;
+	active_gltextures = nullptr;
 	for (i = 0; i < MAX_GLTEXTURES - 1; i++)
 		free_gltextures[i].next = &free_gltextures[i+1];
-	free_gltextures[i].next = NULL;
+	free_gltextures[i].next = nullptr;
 	numgltextures = 0;
 
 	// palette
@@ -633,8 +637,8 @@ void TexMgr_Init (void)
 	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &gl_hardware_maxsize);
 
 	// load notexture images
-	notexture = TexMgr_LoadImage (NULL, "notexture", 2, 2, SRC_RGBA, notexture_data, "", (src_offset_t)notexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
-	nulltexture = TexMgr_LoadImage (NULL, "nulltexture", 2, 2, SRC_RGBA, nulltexture_data, "", (src_offset_t)nulltexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
+	notexture = TexMgr_LoadImage (nullptr, "notexture", 2, 2, SRC_RGBA, notexture_data, "", (src_offset_t)notexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
+	nulltexture = TexMgr_LoadImage (nullptr, "nulltexture", 2, 2, SRC_RGBA, nulltexture_data, "", (src_offset_t)nulltexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
 
 	//have to assign these here becuase Mod_Init is called before TexMgr_Init
 	r_notexture_mip->gltexture = r_notexture_mip2->gltexture = notexture;
@@ -1198,7 +1202,7 @@ gltexture_t *TexMgr_LoadImage (qmodel_t *owner, const char *name, int width, int
 	int mark;
 
 	if (isDedicated)
-		return NULL;
+		return nullptr;
 
 	// cache check
 	switch (format)
@@ -1275,7 +1279,7 @@ TexMgr_ReloadImage -- reloads a texture, and colormaps it if needed
 void TexMgr_ReloadImage (gltexture_t *glt, int shirt, int pants)
 {
 	byte	translation[256];
-	byte	*src, *dst, *data = NULL, *translated;
+	byte	*src, *dst, *data = nullptr, *translated;
 	int	mark, size, i;
 //
 // get source data
@@ -1287,7 +1291,7 @@ void TexMgr_ReloadImage (gltexture_t *glt, int shirt, int pants)
 		//lump inside file
 		long size;
 		FILE *f;
-		COM_FOpenFile(glt->source_file, &f, NULL);
+		COM_FOpenFile(glt->source_file, &f, nullptr);
 		if (!f)
 			goto invalid;
 		fseek (f, glt->source_offset, SEEK_CUR);
@@ -1414,7 +1418,7 @@ void TexMgr_ReloadImages (void)
 		glGenTextures(1, &glt->texnum);
 		TexMgr_ReloadImage (glt, -1, -1);
 	}
-	
+
 	in_reload_images = false;
 }
 
@@ -1453,7 +1457,7 @@ void GL_SelectTexture (GLenum target)
 {
 	if (target == currenttarget)
 		return;
-		
+
 	GL_SelectTextureFunc(target);
 	currenttarget = target;
 }
@@ -1528,7 +1532,7 @@ static void GL_DeleteTexture (gltexture_t *texture)
 /*
 ================
 GL_ClearBindings -- ericw
- 
+
 Invalidates cached bindings, so the next GL_Bind calls for each TMU will
 make real glBindTexture calls.
 Call this after changing the binding outside of GL_Bind.

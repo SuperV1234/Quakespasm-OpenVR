@@ -269,7 +269,7 @@ snd_codec_t wav_codec =
 	S_WAV_CodecReadStream,
 	S_WAV_CodecRewindStream,
 	S_WAV_CodecCloseStream,
-	NULL
+	nullptr
 };
 
 #endif	/* USE_CODEC_WAVE */

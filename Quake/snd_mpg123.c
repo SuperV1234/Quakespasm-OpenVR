@@ -42,14 +42,14 @@ typedef struct _mp3_priv_t
 /* CALLBACKS: libmpg123 expects POSIX read/lseek() behavior! */
 static ssize_t mp3_read (void *f, void *buf, size_t size)
 {
-	ssize_t ret = (ssize_t) FS_fread(buf, 1, size, (fshandle_t *)f);
+	const auto ret = (ssize_t) FS_fread(buf, 1, size, (fshandle_t *)f);
 	if (ret == 0 && errno != 0)
 		return -1;
 	return ret;
 }
 static off_t mp3_seek (void *f, off_t offset, int whence)
 {
-	if (f == NULL) return (-1);
+	if (f == nullptr) return (-1);
 	if (FS_fseek((fshandle_t *)f, (long) offset, whence) < 0)
 		return (off_t)-1;
 	return (off_t) FS_ftell((fshandle_t *)f);
@@ -82,7 +82,7 @@ static qboolean S_MP3_CodecOpenStream (snd_stream_t *stream)
 {
 	long rate = 0;
 	int encoding = 0, channels = 0;
-	mp3_priv_t *priv = NULL;
+	mp3_priv_t *priv = nullptr;
 
 	if (mp3_skiptags(stream) < 0)
 	{
@@ -92,14 +92,14 @@ static qboolean S_MP3_CodecOpenStream (snd_stream_t *stream)
 
 	stream->priv = Z_Malloc(sizeof(mp3_priv_t));
 	priv = (mp3_priv_t *) stream->priv;
-	priv->handle = mpg123_new(NULL, NULL);
-	if (priv->handle == NULL)
+	priv->handle = mpg123_new(nullptr, nullptr);
+	if (priv->handle == nullptr)
 	{
 		Con_Printf("Unable to allocate mpg123 handle\n");
 		goto _fail;
 	}
 
-	if (mpg123_replace_reader_handle(priv->handle, mp3_read, mp3_seek, NULL) != MPG123_OK ||
+	if (mpg123_replace_reader_handle(priv->handle, mp3_read, mp3_seek, nullptr) != MPG123_OK ||
 	    mpg123_open_handle(priv->handle, &stream->fh) != MPG123_OK)
 	{
 		Con_Printf("Unable to open mpg123 handle\n");
@@ -215,7 +215,7 @@ snd_codec_t mp3_codec =
 	S_MP3_CodecReadStream,
 	S_MP3_CodecRewindStream,
 	S_MP3_CodecCloseStream,
-	NULL
+	nullptr
 };
 
 #endif	/* USE_CODEC_MP3 */

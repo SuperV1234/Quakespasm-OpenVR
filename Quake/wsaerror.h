@@ -1,3 +1,5 @@
+#ifndef __WSAERROR_H__
+#define __WSAERROR_H__
 
 /* strings for winsock error codes.
  * from online references, such as
@@ -88,4 +90,6 @@ __wsaerr_static const char *__WSAE_StrError (int err)
 		}
 	}
 }
+
+#endif
 

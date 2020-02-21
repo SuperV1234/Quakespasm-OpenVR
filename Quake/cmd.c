@@ -124,7 +124,7 @@ void Cbuf_InsertText (const char *text)
 		SZ_Clear (&cmd_text);
 	}
 	else
-		temp = NULL;	// shut up compiler
+		temp = nullptr;	// shut up compiler
 
 // add the entire text of the file
 	Cbuf_AddText (text);
@@ -267,7 +267,7 @@ void Cmd_Exec_f (void)
 	}
 
 	mark = Hunk_LowMark ();
-	f = (char *)COM_LoadHunkFile (Cmd_Argv(1), NULL);
+	f = (char *)COM_LoadHunkFile (Cmd_Argv(1), nullptr);
 	if (!f)
 	{
 		Con_Printf ("couldn't exec %s\n",Cmd_Argv(1));
@@ -389,7 +389,7 @@ void Cmd_Unalias_f (void)
 		Con_Printf("unalias <name> : delete alias\n");
 		break;
 	case 2:
-		prev = NULL;
+		prev = nullptr;
 		for (a = cmd_alias; a; a = a->next)
 		{
 			if (!strcmp(Cmd_Argv(1), a->name))
@@ -449,7 +449,7 @@ typedef struct cmd_function_s
 static	int			cmd_argc;
 static	char		*cmd_argv[MAX_ARGS];
 static	char		cmd_null_string[] = "";
-static	const char	*cmd_args = NULL;
+static	const char	*cmd_args = nullptr;
 
 cmd_source_t	cmd_source;
 
@@ -476,7 +476,7 @@ void Cmd_List_f (void)
 	}
 	else
 	{
-		partial = NULL;
+		partial = nullptr;
 		len = 0;
 	}
 
@@ -542,7 +542,7 @@ void Cmd_Apropos_f(void)
 			Con_SafePrintf ("%s\n", Cmd_TintSubstring(cmd->name, substr, tmpbuf, sizeof(tmpbuf)));
 		}
 	}
-	
+
 	for (var=Cvar_FindVarAfter("", 0) ; var ; var=var->next)
 	{
 		if (q_strcasestr(var->name, substr))
@@ -626,7 +626,7 @@ void Cmd_TokenizeString (const char *text)
 		Z_Free (cmd_argv[i]);
 
 	cmd_argc = 0;
-	cmd_args = NULL;
+	cmd_args = nullptr;
 
 	while (1)
 	{
@@ -696,7 +696,7 @@ void	Cmd_AddCommand (const char *cmd_name, xcommand_t function)
 	cmd->function = function;
 
 	//johnfitz -- insert each entry in alphabetical order
-	if (cmd_functions == NULL || strcmp(cmd->name, cmd_functions->name) < 0) //insert at front
+	if (cmd_functions == nullptr || strcmp(cmd->name, cmd_functions->name) < 0) //insert at front
 	{
 		cmd->next = cmd_functions;
 		cmd_functions = cmd;
@@ -705,7 +705,7 @@ void	Cmd_AddCommand (const char *cmd_name, xcommand_t function)
 	{
 		prev = cmd_functions;
 		cursor = cmd_functions->next;
-		while ((cursor != NULL) && (strcmp(cmd->name, cursor->name) > 0))
+		while ((cursor != nullptr) && (strcmp(cmd->name, cursor->name) > 0))
 		{
 			prev = cursor;
 			cursor = cursor->next;
@@ -749,14 +749,14 @@ const char *Cmd_CompleteCommand (const char *partial)
 	len = Q_strlen(partial);
 
 	if (!len)
-		return NULL;
+		return nullptr;
 
 // check functions
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 		if (!Q_strncmp (partial,cmd->name, len))
 			return cmd->name;
 
-	return NULL;
+	return nullptr;
 }
 
 /*

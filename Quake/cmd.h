@@ -93,13 +93,13 @@ qboolean Cmd_Exists (const char *cmd_name);
 
 const char	*Cmd_CompleteCommand (const char *partial);
 // attempts to match a partial command for automatic command line completion
-// returns NULL if nothing fits
+// returns nullptr if nothing fits
 
 int		Cmd_Argc (void);
 const char	*Cmd_Argv (int arg);
 const char	*Cmd_Args (void);
 // The functions that execute commands get their parameters with these
-// functions. Cmd_Argv () will return an empty string, not a NULL
+// functions. Cmd_Argv () will return an empty string, not a nullptr
 // if arg > argc, so string operations are allways safe.
 
 int Cmd_CheckParm (const char *parm);

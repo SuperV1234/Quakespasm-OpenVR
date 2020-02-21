@@ -34,7 +34,7 @@ static void VR_MenuPlaySound(const char *sound, float fvol)
 static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
 {
 	char value_buffer[32] = {0};
-	const char *value_string = NULL;
+	const char *value_string = nullptr;
 
 	const auto printAsStr = [&](const auto& cvar)
 	{
@@ -197,7 +197,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
 			break;
 		case VRMenuOpt::VR_AIMMODE:
 			intValue = (int)vr_aimmode.value;
-			intValue = CLAMP( aimmode[0], isLeft ? intValue - 1 : intValue + 1, _sizeofarray( aimmode ) );
+			intValue = CLAMP( aimmode[0], isLeft ? intValue - 1 : intValue + 1, (int)_sizeofarray( aimmode ) );
 			intValue -= 1;
 			Cvar_SetValue( "vr_aimmode", aimmode[intValue] );
 			break;
@@ -232,6 +232,9 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
 		case VRMenuOpt::VR_IMPULSE9:
 			VR_MenuPlaySound("items/r_item2.wav", 0.5);
 			Cmd_ExecuteString("impulse 9", cmd_source_t::src_command);
+			break;
+		default:
+			assert(false);
 			break;
 	}
 

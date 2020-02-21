@@ -94,9 +94,13 @@ Max_Edicts_f -- johnfitz
 */
 static void Max_Edicts_f (cvar_t *var)
 {
+	(void) var;
+
 	//TODO: clamp it here?
 	if (cls.state == ca_connected || sv.active)
+	{
 		Con_Printf ("Changes to max_edicts will not take effect until the next time a map is loaded.\n");
+	}
 }
 
 /*
@@ -433,7 +437,7 @@ void SV_DropClient (qboolean crash)
 
 // break the net connection
 	NET_Close (host_client->netconnection);
-	host_client->netconnection = NULL;
+	host_client->netconnection = nullptr;
 
 // free the client (the body stays around)
 	host_client->active = false;
@@ -846,7 +850,7 @@ void Host_Init (void)
 
 	if (cls.state != ca_dedicated)
 	{
-		host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp", NULL);
+		host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp", nullptr);
 		if (!host_colormap)
 			Sys_Error ("Couldn't load gfx/colormap.lmp");
 

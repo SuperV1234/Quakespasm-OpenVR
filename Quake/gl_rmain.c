@@ -173,7 +173,7 @@ static void GLSLGamma_CreateShaders (void)
 	if (!gl_glsl_gamma_able)
 		return;
 
-	r_gamma_program = GL_CreateProgram (vertSource, fragSource, 0, NULL);
+	r_gamma_program = GL_CreateProgram (vertSource, fragSource, 0, nullptr);
 
 // get uniform locations
 	gammaLoc = GL_GetUniformLocation (&r_gamma_program, "GammaValue");
@@ -216,7 +216,7 @@ void GLSLGamma_GammaCorrect (void)
 			r_gamma_texture_height = TexMgr_Pad(r_gamma_texture_height);
 		}
 
-		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA8, r_gamma_texture_width, r_gamma_texture_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA8, r_gamma_texture_width, r_gamma_texture_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
@@ -1033,7 +1033,7 @@ void R_ScaleView (void)
 			r_scaleview_texture_height = TexMgr_Pad(r_scaleview_texture_height);
 		}
 
-		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, r_scaleview_texture_width, r_scaleview_texture_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, r_scaleview_texture_width, r_scaleview_texture_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}

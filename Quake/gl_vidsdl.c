@@ -112,38 +112,38 @@ qboolean gl_glsl_gamma_able = false; //ericw
 qboolean gl_glsl_alias_able = false; //ericw
 int gl_stencilbits;
 
-PFNGLMULTITEXCOORD2FARBPROC GL_MTexCoord2fFunc = NULL; //johnfitz
-PFNGLACTIVETEXTUREARBPROC GL_SelectTextureFunc = NULL; //johnfitz
-PFNGLCLIENTACTIVETEXTUREARBPROC GL_ClientActiveTextureFunc = NULL; //ericw
-PFNGLBINDBUFFERARBPROC GL_BindBufferFunc = NULL; //ericw
-PFNGLBUFFERDATAARBPROC GL_BufferDataFunc = NULL; //ericw
-PFNGLBUFFERSUBDATAARBPROC GL_BufferSubDataFunc = NULL; //ericw
-PFNGLDELETEBUFFERSARBPROC GL_DeleteBuffersFunc = NULL; //ericw
-PFNGLGENBUFFERSARBPROC GL_GenBuffersFunc = NULL; //ericw
+PFNGLMULTITEXCOORD2FARBPROC GL_MTexCoord2fFunc = nullptr; //johnfitz
+PFNGLACTIVETEXTUREARBPROC GL_SelectTextureFunc = nullptr; //johnfitz
+PFNGLCLIENTACTIVETEXTUREARBPROC GL_ClientActiveTextureFunc = nullptr; //ericw
+PFNGLBINDBUFFERARBPROC GL_BindBufferFunc = nullptr; //ericw
+PFNGLBUFFERDATAARBPROC GL_BufferDataFunc = nullptr; //ericw
+PFNGLBUFFERSUBDATAARBPROC GL_BufferSubDataFunc = nullptr; //ericw
+PFNGLDELETEBUFFERSARBPROC GL_DeleteBuffersFunc = nullptr; //ericw
+PFNGLGENBUFFERSARBPROC GL_GenBuffersFunc = nullptr; //ericw
 
-QS_PFNGLCREATESHADERPROC GL_CreateShaderFunc = NULL; //ericw
-QS_PFNGLDELETESHADERPROC GL_DeleteShaderFunc = NULL; //ericw
-QS_PFNGLDELETEPROGRAMPROC GL_DeleteProgramFunc = NULL; //ericw
-QS_PFNGLSHADERSOURCEPROC GL_ShaderSourceFunc = NULL; //ericw
-QS_PFNGLCOMPILESHADERPROC GL_CompileShaderFunc = NULL; //ericw
-QS_PFNGLGETSHADERIVPROC GL_GetShaderivFunc = NULL; //ericw
-QS_PFNGLGETSHADERINFOLOGPROC GL_GetShaderInfoLogFunc = NULL; //ericw
-QS_PFNGLGETPROGRAMIVPROC GL_GetProgramivFunc = NULL; //ericw
-QS_PFNGLGETPROGRAMINFOLOGPROC GL_GetProgramInfoLogFunc = NULL; //ericw
-QS_PFNGLCREATEPROGRAMPROC GL_CreateProgramFunc = NULL; //ericw
-QS_PFNGLATTACHSHADERPROC GL_AttachShaderFunc = NULL; //ericw
-QS_PFNGLLINKPROGRAMPROC GL_LinkProgramFunc = NULL; //ericw
-QS_PFNGLBINDATTRIBLOCATIONFUNC GL_BindAttribLocationFunc = NULL; //ericw
-QS_PFNGLUSEPROGRAMPROC GL_UseProgramFunc = NULL; //ericw
-QS_PFNGLGETATTRIBLOCATIONPROC GL_GetAttribLocationFunc = NULL; //ericw
-QS_PFNGLVERTEXATTRIBPOINTERPROC GL_VertexAttribPointerFunc = NULL; //ericw
-QS_PFNGLENABLEVERTEXATTRIBARRAYPROC GL_EnableVertexAttribArrayFunc = NULL; //ericw
-QS_PFNGLDISABLEVERTEXATTRIBARRAYPROC GL_DisableVertexAttribArrayFunc = NULL; //ericw
-QS_PFNGLGETUNIFORMLOCATIONPROC GL_GetUniformLocationFunc = NULL; //ericw
-QS_PFNGLUNIFORM1IPROC GL_Uniform1iFunc = NULL; //ericw
-QS_PFNGLUNIFORM1FPROC GL_Uniform1fFunc = NULL; //ericw
-QS_PFNGLUNIFORM3FPROC GL_Uniform3fFunc = NULL; //ericw
-QS_PFNGLUNIFORM4FPROC GL_Uniform4fFunc = NULL; //ericw
+QS_PFNGLCREATESHADERPROC GL_CreateShaderFunc = nullptr; //ericw
+QS_PFNGLDELETESHADERPROC GL_DeleteShaderFunc = nullptr; //ericw
+QS_PFNGLDELETEPROGRAMPROC GL_DeleteProgramFunc = nullptr; //ericw
+QS_PFNGLSHADERSOURCEPROC GL_ShaderSourceFunc = nullptr; //ericw
+QS_PFNGLCOMPILESHADERPROC GL_CompileShaderFunc = nullptr; //ericw
+QS_PFNGLGETSHADERIVPROC GL_GetShaderivFunc = nullptr; //ericw
+QS_PFNGLGETSHADERINFOLOGPROC GL_GetShaderInfoLogFunc = nullptr; //ericw
+QS_PFNGLGETPROGRAMIVPROC GL_GetProgramivFunc = nullptr; //ericw
+QS_PFNGLGETPROGRAMINFOLOGPROC GL_GetProgramInfoLogFunc = nullptr; //ericw
+QS_PFNGLCREATEPROGRAMPROC GL_CreateProgramFunc = nullptr; //ericw
+QS_PFNGLATTACHSHADERPROC GL_AttachShaderFunc = nullptr; //ericw
+QS_PFNGLLINKPROGRAMPROC GL_LinkProgramFunc = nullptr; //ericw
+QS_PFNGLBINDATTRIBLOCATIONFUNC GL_BindAttribLocationFunc = nullptr; //ericw
+QS_PFNGLUSEPROGRAMPROC GL_UseProgramFunc = nullptr; //ericw
+QS_PFNGLGETATTRIBLOCATIONPROC GL_GetAttribLocationFunc = nullptr; //ericw
+QS_PFNGLVERTEXATTRIBPOINTERPROC GL_VertexAttribPointerFunc = nullptr; //ericw
+QS_PFNGLENABLEVERTEXATTRIBARRAYPROC GL_EnableVertexAttribArrayFunc = nullptr; //ericw
+QS_PFNGLDISABLEVERTEXATTRIBARRAYPROC GL_DisableVertexAttribArrayFunc = nullptr; //ericw
+QS_PFNGLGETUNIFORMLOCATIONPROC GL_GetUniformLocationFunc = nullptr; //ericw
+QS_PFNGLUNIFORM1IPROC GL_Uniform1iFunc = nullptr; //ericw
+QS_PFNGLUNIFORM1FPROC GL_Uniform1fFunc = nullptr; //ericw
+QS_PFNGLUNIFORM3FPROC GL_Uniform3fFunc = nullptr; //ericw
+QS_PFNGLUNIFORM4FPROC GL_Uniform4fFunc = nullptr; //ericw
 
 //====================================
 
@@ -271,6 +271,8 @@ VID_Gamma_f -- callback when the cvar changes
 */
 static void VID_Gamma_f (cvar_t *var)
 {
+	(void) var;
+
 	if (gl_glsl_gamma_able)
 		return;
 
@@ -457,7 +459,7 @@ void *VID_GetWindow (void)
 #if defined(USE_SDL2)
 	return draw_context;
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -497,10 +499,10 @@ VID_SDL2_GetDisplayMode
 
 Returns a pointer to a statically allocated SDL_DisplayMode structure
 if there is one with the requested params on the default display.
-Otherwise returns NULL.
+Otherwise returns nullptr.
 
 This is passed to SDL_SetWindowDisplayMode to specify a pixel format
-with the requested bpp. If we didn't care about bpp we could just pass NULL.
+with the requested bpp. If we didn't care about bpp we could just pass nullptr.
 ================
 */
 static SDL_DisplayMode *VID_SDL2_GetDisplayMode(int width, int height, int refreshrate, int bpp)
@@ -521,7 +523,7 @@ static SDL_DisplayMode *VID_SDL2_GetDisplayMode(int width, int height, int refre
 			return &mode;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 #endif /* USE_SDL2 */
 
@@ -543,7 +545,7 @@ static qboolean VID_ValidMode (int width, int height, int refreshrate, int bpp, 
 		return false;
 
 #if defined(USE_SDL2)
-	if (fullscreen && VID_SDL2_GetDisplayMode(width, height, refreshrate, bpp) == NULL)
+	if (fullscreen && VID_SDL2_GetDisplayMode(width, height, refreshrate, bpp) == nullptr)
 		bpp = 0;
 #else
 	{
@@ -767,6 +769,8 @@ VID_Changed_f -- kristian -- notify us that a value has changed that requires a 
 */
 static void VID_Changed_f (cvar_t *var)
 {
+	(void) var;
+
 	vid_changed = true;
 }
 
@@ -949,7 +953,7 @@ static char *GL_MakeNiceExtensionsList (const char *in)
 	out[0] = 0;
 
 	copy = (char *) Z_Strdup(in);
-	for (token = strtok(copy, " "); token; token = strtok(NULL, " "))
+	for (token = strtok(copy, " "); token; token = strtok(nullptr, " "))
 	{
 		strcat(out, "\n   ");
 		strcat(out, token);
@@ -984,7 +988,7 @@ static qboolean GL_ParseExtensionList (const char *list, const char *name)
 
 	if (!list || !name || !*name)
 		return false;
-	if (strchr(name, ' ') != NULL)
+	if (strchr(name, ' ') != nullptr)
 		return false;	// extension names must not have spaces
 
 	start = list;
@@ -1325,13 +1329,13 @@ static void GL_Init (void)
 	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);
 	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
 
-	if (gl_version == NULL || sscanf(gl_version, "%d.%d", &gl_version_major, &gl_version_minor) < 2)
+	if (gl_version == nullptr || sscanf(gl_version, "%d.%d", &gl_version_major, &gl_version_minor) < 2)
 	{
 		gl_version_major = 0;
 		gl_version_minor = 0;
 	}
 
-	if (gl_extensions_nice != NULL)
+	if (gl_extensions_nice != nullptr)
 		Z_Free (gl_extensions_nice);
 	gl_extensions_nice = GL_MakeNiceExtensionsList (gl_extensions);
 
@@ -1397,9 +1401,9 @@ void	VID_Shutdown (void)
 		VID_Gamma_Shutdown (); //johnfitz
 
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
-		draw_context = NULL;
+		draw_context = nullptr;
 #if defined(USE_SDL2)
-		gl_context = NULL;
+		gl_context = nullptr;
 #endif
 		PL_VID_Shutdown();
 	}
@@ -1528,7 +1532,7 @@ static void VID_InitModelist (void)
 	int		bpps[] = {16, 24, 32}; // enumerate >8 bpp modes
 
 	originalnummodes = nummodes = 0;
-	format.palette = NULL;
+	format.palette = nullptr;
 
 	// enumerate fullscreen modes
 	flags = DEFAULT_SDL_FLAGS | SDL_FULLSCREEN;

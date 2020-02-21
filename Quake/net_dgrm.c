@@ -253,6 +253,8 @@ qboolean Datagram_CanSendMessage (qsocket_t *sock)
 
 qboolean Datagram_CanSendUnreliableMessage (qsocket_t *sock)
 {
+	(void) sock;
+
 	return true;
 }
 
@@ -473,7 +475,7 @@ static void NET_Stats_f (void)
 				break;
 		}
 
-		if (s == NULL)
+		if (s == nullptr)
 		{
 			for (s = net_freeSockets; s; s = s->next)
 			{
@@ -482,7 +484,7 @@ static void NET_Stats_f (void)
 			}
 		}
 
-		if (s == NULL)
+		if (s == nullptr)
 			return;
 
 		PrintStats(s);
@@ -501,7 +503,7 @@ static const char *Strip_Port (const char *host)
 	if (!host || !*host)
 		return host;
 	q_strlcpy (noport, host, sizeof(noport));
-	if ((p = Q_strrchr(noport, ':')) == NULL)
+	if ((p = Q_strrchr(noport, ':')) == nullptr)
 		return host;
 	*p++ = '\0';
 	port = Q_atoi (p);
@@ -520,10 +522,12 @@ static int		testDriver;
 static sys_socket_t	testSocket;
 
 static void Test_Poll (void *);
-static PollProcedure	testPollProcedure = {NULL, 0.0, Test_Poll};
+static PollProcedure	testPollProcedure = {nullptr, 0.0, Test_Poll};
 
 static void Test_Poll (void *unused)
 {
+	(void) unused;
+
 	struct qsockaddr clientaddr;
 	int		control;
 	int		len;
@@ -653,10 +657,12 @@ static int		test2Driver;
 static sys_socket_t	test2Socket;
 
 static void Test2_Poll (void *);
-static PollProcedure	test2PollProcedure = {NULL, 0.0, Test2_Poll};
+static PollProcedure	test2PollProcedure = {nullptr, 0.0, Test2_Poll};
 
 static void Test2_Poll (void *unused)
 {
+	(void) unused;
+
 	struct qsockaddr clientaddr;
 	int		control;
 	int		len;
@@ -869,30 +875,30 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 	acceptsock = dfunc.CheckNewConnections();
 	if (acceptsock == INVALID_SOCKET)
-		return NULL;
+		return nullptr;
 
 	SZ_Clear(&net_message);
 
 	len = dfunc.Read (acceptsock, net_message.data, net_message.maxsize, &clientaddr);
 	if (len < (int) sizeof(int))
-		return NULL;
+		return nullptr;
 	net_message.cursize = len;
 
 	MSG_BeginReading ();
 	control = BigLong(*((int *)net_message.data));
 	MSG_ReadLong();
 	if (control == -1)
-		return NULL;
+		return nullptr;
 	if ((control & (~NETFLAG_LENGTH_MASK)) != (int)NETFLAG_CTL)
-		return NULL;
+		return nullptr;
 	if ((control & NETFLAG_LENGTH_MASK) != len)
-		return NULL;
+		return nullptr;
 
 	command = MSG_ReadByte();
 	if (command == CCREQ_SERVER_INFO)
 	{
 		if (Q_strcmp(MSG_ReadString(), "QUAKE") != 0)
-			return NULL;
+			return nullptr;
 
 		SZ_Clear(&net_message);
 		// save space for the header, filled in later
@@ -908,7 +914,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
 		SZ_Clear(&net_message);
-		return NULL;
+		return nullptr;
 	}
 
 	if (command == CCREQ_PLAYER_INFO)
@@ -932,7 +938,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		}
 
 		if (clientNumber == svs.maxclients)
-			return NULL;
+			return nullptr;
 
 		SZ_Clear(&net_message);
 		// save space for the header, filled in later
@@ -948,7 +954,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
 		SZ_Clear(&net_message);
 
-		return NULL;
+		return nullptr;
 	}
 
 	if (command == CCREQ_RULE_INFO)
@@ -974,14 +980,14 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
 		SZ_Clear(&net_message);
 
-		return NULL;
+		return nullptr;
 	}
 
 	if (command != CCREQ_CONNECT)
-		return NULL;
+		return nullptr;
 
 	if (Q_strcmp(MSG_ReadString(), "QUAKE") != 0)
-		return NULL;
+		return nullptr;
 
 	if (MSG_ReadByte() != NET_PROTOCOL_VERSION)
 	{
@@ -993,7 +999,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
 		SZ_Clear(&net_message);
-		return NULL;
+		return nullptr;
 	}
 
 #ifdef BAN_TEST
@@ -1012,7 +1018,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 			*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 			dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
 			SZ_Clear(&net_message);
-			return NULL;
+			return nullptr;
 		}
 	}
 #endif
@@ -1038,18 +1044,18 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 				*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 				dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
 				SZ_Clear(&net_message);
-				return NULL;
+				return nullptr;
 			}
 			// it's somebody coming back in from a crash/disconnect
 			// so close the old qsocket and let their retry get them back in
 			NET_Close(s);
-			return NULL;
+			return nullptr;
 		}
 	}
 
 	// allocate a QSocket
 	sock = NET_NewQSocket ();
-	if (sock == NULL)
+	if (sock == nullptr)
 	{
 		// no room; try to let him know
 		SZ_Clear(&net_message);
@@ -1060,7 +1066,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
 		SZ_Clear(&net_message);
-		return NULL;
+		return nullptr;
 	}
 
 	// allocate a network socket
@@ -1068,7 +1074,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	if (newsock == INVALID_SOCKET)
 	{
 		NET_FreeQSocket(sock);
-		return NULL;
+		return nullptr;
 	}
 
 	// connect to the client
@@ -1076,7 +1082,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	{
 		dfunc.Close_Socket(newsock);
 		NET_FreeQSocket(sock);
-		return NULL;
+		return nullptr;
 	}
 
 	// everything is allocated, just fill in the details
@@ -1102,13 +1108,13 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 qsocket_t *Datagram_CheckNewConnections (void)
 {
-	qsocket_t *ret = NULL;
+	qsocket_t *ret = nullptr;
 
 	for (net_landriverlevel = 0; net_landriverlevel < net_numlandrivers; net_landriverlevel++)
 	{
 		if (net_landrivers[net_landriverlevel].initialized)
 		{
-			if ((ret = _Datagram_CheckNewConnections ()) != NULL)
+			if ((ret = _Datagram_CheckNewConnections ()) != nullptr)
 				break;
 		}
 	}
@@ -1246,15 +1252,15 @@ static qsocket_t *_Datagram_Connect (const char *host)
 	if (dfunc.GetAddrFromName(host, &sendaddr) == -1)
 	{
 		Con_Printf("Could not resolve %s\n", host);
-		return NULL;
+		return nullptr;
 	}
 
 	newsock = dfunc.Open_Socket (0);
 	if (newsock == INVALID_SOCKET)
-		return NULL;
+		return nullptr;
 
 	sock = NET_NewQSocket ();
-	if (sock == NULL)
+	if (sock == nullptr)
 		goto ErrorReturn2;
 	sock->socket = newsock;
 	sock->landriver = net_landriverlevel;
@@ -1400,19 +1406,19 @@ ErrorReturn2:
 		m_state = m_return_state;
 		m_return_onerror = false;
 	}
-	return NULL;
+	return nullptr;
 }
 
 qsocket_t *Datagram_Connect (const char *host)
 {
-	qsocket_t *ret = NULL;
+	qsocket_t *ret = nullptr;
 
 	host = Strip_Port (host);
 	for (net_landriverlevel = 0; net_landriverlevel < net_numlandrivers; net_landriverlevel++)
 	{
 		if (net_landrivers[net_landriverlevel].initialized)
 		{
-			if ((ret = _Datagram_Connect (host)) != NULL)
+			if ((ret = _Datagram_Connect (host)) != nullptr)
 				break;
 		}
 	}

@@ -57,7 +57,7 @@ static int opc_fread (void *f, unsigned char *buf, int size)
 
 static int opc_fseek (void *f, opus_int64 off, int whence)
 {
-	if (f == NULL) return (-1);
+	if (f == nullptr) return (-1);
 	return FS_fseek((fshandle_t *)f, (long) off, whence);
 }
 
@@ -90,7 +90,7 @@ static qboolean S_OPUS_CodecOpenStream (snd_stream_t *stream)
 	long numstreams;
 	int res;
 
-	opFile = op_open_callbacks(&stream->fh, &opc_qfs, NULL, 0, &res);
+	opFile = op_open_callbacks(&stream->fh, &opc_qfs, nullptr, 0, &res);
 	if (!opFile)
 	{
 		Con_Printf("%s is not a valid Opus file (error %i).\n",
@@ -203,7 +203,7 @@ snd_codec_t opus_codec =
 	S_OPUS_CodecReadStream,
 	S_OPUS_CodecRewindStream,
 	S_OPUS_CodecCloseStream,
-	NULL
+	nullptr
 };
 
 #endif	/* USE_CODEC_OPUS */

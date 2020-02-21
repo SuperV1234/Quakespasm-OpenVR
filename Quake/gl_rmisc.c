@@ -59,6 +59,8 @@ GL_Overbright_f -- johnfitz
 */
 static void GL_Overbright_f (cvar_t *var)
 {
+	(void) var;
+
 	R_RebuildAllLightmaps ();
 }
 
@@ -69,6 +71,8 @@ GL_Fullbrights_f -- johnfitz
 */
 static void GL_Fullbrights_f (cvar_t *var)
 {
+	(void) var;
+
 	TexMgr_ReloadNobrightImages ();
 }
 
@@ -79,11 +83,10 @@ R_SetClearColor_f -- johnfitz
 */
 static void R_SetClearColor_f (cvar_t *var)
 {
-	byte	*rgb;
-	int		s;
+	(void) var;
 
-	s = (int)r_clearcolor.value & 0xFF;
-	rgb = (byte*)(d_8to24table + s);
+	const int s = (int)r_clearcolor.value & 0xFF;
+	const byte	* rgb = (byte*)(d_8to24table + s);
 	glClearColor (rgb[0]/255.0,rgb[1]/255.0,rgb[2]/255.0,0);
 }
 
@@ -94,6 +97,8 @@ R_Novis_f -- johnfitz
 */
 static void R_VisChanged (cvar_t *var)
 {
+	(void) var;
+
 	extern int vis_changed;
 	vis_changed = 1;
 }
@@ -105,9 +110,12 @@ R_Model_ExtraFlags_List_f -- johnfitz -- called when r_nolerp_list or r_noshadow
 */
 static void R_Model_ExtraFlags_List_f (cvar_t *var)
 {
-	int i;
-	for (i=0; i < MAX_MODELS; i++)
+	(void) var;
+
+	for (int i=0; i < MAX_MODELS; i++)
+	{
 		Mod_SetExtraFlags (cl.model_precache[i]);
+	}
 }
 
 /*
@@ -321,7 +329,7 @@ void R_NewGame (void)
 
 	//clear playertexture pointers (the textures themselves were freed by texmgr_newgame)
 	for (i=0; i<MAX_SCOREBOARD; i++)
-		playertextures[i] = NULL;
+		playertextures[i] = nullptr;
 }
 
 /*
@@ -394,9 +402,9 @@ void R_NewMap (void)
 // clear out efrags in case the level hasn't been reloaded
 // FIXME: is this one short?
 	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
-		cl.worldmodel->leafs[i].efrags = NULL;
+		cl.worldmodel->leafs[i].efrags = nullptr;
 
-	r_viewleaf = NULL;
+	r_viewleaf = nullptr;
 	R_ClearParticles ();
 
 	GL_BuildLightmaps ();
@@ -463,7 +471,7 @@ static qboolean GL_CheckShader (GLuint shader)
 		char infolog[1024];
 
 		memset(infolog, 0, sizeof(infolog));
-		GL_GetShaderInfoLogFunc (shader, sizeof(infolog), NULL, infolog);
+		GL_GetShaderInfoLogFunc (shader, sizeof(infolog), nullptr, infolog);
 
 		Con_Warning ("GLSL program failed to compile: %s", infolog);
 
@@ -482,7 +490,7 @@ static qboolean GL_CheckProgram (GLuint program)
 		char infolog[1024];
 
 		memset(infolog, 0, sizeof(infolog));
-		GL_GetProgramInfoLogFunc (program, sizeof(infolog), NULL, infolog);
+		GL_GetProgramInfoLogFunc (program, sizeof(infolog), nullptr, infolog);
 
 		Con_Warning ("GLSL program failed to link: %s", infolog);
 
@@ -528,7 +536,7 @@ GLuint GL_CreateProgram (const GLchar *vertSource, const GLchar *fragSource, int
 		return 0;
 
 	vertShader = GL_CreateShaderFunc (GL_VERTEX_SHADER);
-	GL_ShaderSourceFunc (vertShader, 1, &vertSource, NULL);
+	GL_ShaderSourceFunc (vertShader, 1, &vertSource, nullptr);
 	GL_CompileShaderFunc (vertShader);
 	if (!GL_CheckShader (vertShader))
 	{
@@ -537,7 +545,7 @@ GLuint GL_CreateProgram (const GLchar *vertSource, const GLchar *fragSource, int
 	}
 
 	fragShader = GL_CreateShaderFunc (GL_FRAGMENT_SHADER);
-	GL_ShaderSourceFunc (fragShader, 1, &fragSource, NULL);
+	GL_ShaderSourceFunc (fragShader, 1, &fragSource, nullptr);
 	GL_CompileShaderFunc (fragShader);
 	if (!GL_CheckShader (fragShader))
 	{

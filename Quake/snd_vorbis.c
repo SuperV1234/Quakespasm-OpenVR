@@ -52,7 +52,7 @@ static int ovc_fclose (void *f)
 
 static int ovc_fseek (void *f, ogg_int64_t off, int whence)
 {
-	if (f == NULL) return (-1);
+	if (f == nullptr) return (-1);
 	return FS_fseek((fshandle_t *)f, (long) off, whence);
 }
 
@@ -82,7 +82,7 @@ static qboolean S_VORBIS_CodecOpenStream (snd_stream_t *stream)
 
 	ovFile = (OggVorbis_File *) Z_Malloc(sizeof(OggVorbis_File));
 	stream->priv = ovFile;
-	res = ov_open_callbacks(&stream->fh, ovFile, NULL, 0, ovc_qfs);
+	res = ov_open_callbacks(&stream->fh, ovFile, nullptr, 0, ovc_qfs);
 	if (res != 0)
 	{
 		Con_Printf("%s is not a valid Ogg Vorbis file (error %i).\n",
@@ -197,7 +197,7 @@ snd_codec_t vorbis_codec =
 	S_VORBIS_CodecReadStream,
 	S_VORBIS_CodecRewindStream,
 	S_VORBIS_CodecCloseStream,
-	NULL
+	nullptr
 };
 
 #endif	/* USE_CODEC_VORBIS */

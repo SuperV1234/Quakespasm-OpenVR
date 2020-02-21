@@ -55,7 +55,7 @@ static INT_PTR PASCAL FAR BlockingHook (void)
 	}
 
 	/* get the next message, if any */
-	ret = (BOOL) PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
+	ret = (BOOL) PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE);
 
 	/* if we got one, process it */
 	if (ret)
@@ -72,7 +72,7 @@ static INT_PTR PASCAL FAR BlockingHook (void)
 
 static void WINS_GetLocalAddress (void)
 {
-	struct hostent	*local = NULL;
+	struct hostent	*local = nullptr;
 	char		buff[MAXHOSTNAMELEN];
 	in_addr_t	addr;
 	int		err;
@@ -98,7 +98,7 @@ static void WINS_GetLocalAddress (void)
 #ifndef _USE_WINSOCK2
 	WSAUnhookBlockingHook();
 #endif
-	if (local == NULL)
+	if (local == nullptr)
 	{
 		Con_SafePrintf("WINS_GetLocalAddress: gethostbyname failed (%s)\n",
 							__WSAE_StrError(err));
@@ -326,6 +326,9 @@ static int PartialIPAddress (const char *in, struct qsockaddr *hostaddr)
 
 int WINS_Connect (sys_socket_t socketid, struct qsockaddr *addr)
 {
+	(void) socketid;
+	(void) addr;
+
 	return 0;
 }
 
@@ -338,7 +341,7 @@ sys_socket_t WINS_CheckNewConnections (void)
 	if (net_acceptsocket == INVALID_SOCKET)
 		return INVALID_SOCKET;
 
-	if (recvfrom (net_acceptsocket, buf, sizeof(buf), MSG_PEEK, NULL, NULL)
+	if (recvfrom (net_acceptsocket, buf, sizeof(buf), MSG_PEEK, nullptr, nullptr)
 								!= SOCKET_ERROR)
 	{
 		return net_acceptsocket;

@@ -171,7 +171,7 @@ keyname_t keynames[] =
 	{"LTRIGGER", K_LTRIGGER},
 	{"RTRIGGER", K_RTRIGGER},
 
-	{NULL,		0}
+	{nullptr,		0}
 };
 
 /*
@@ -190,7 +190,7 @@ static void PasteToConsole (void)
 	if (key_linepos == MAXCMDLINE - 1)
 		return;
 
-	if ((cbd = PL_GetClipboardData()) == NULL)
+	if ((cbd = PL_GetClipboardData()) == nullptr)
 		return;
 
 	p = cbd;
@@ -254,7 +254,7 @@ void Key_Console (int key)
 		Cbuf_AddText ("\n");
 		Con_Printf ("%s\n", workline);
 
-		// If the last two lines are identical, skip storing this line in history 
+		// If the last two lines are identical, skip storing this line in history
 		// by not incrementing edit_line
 		if (strcmp(workline, key_lines[(edit_line-1)&31]))
 			edit_line = (edit_line + 1) & 31;
@@ -608,7 +608,7 @@ void Key_SetBinding (int keynum, const char *binding)
 	if (keybindings[keynum])
 	{
 		Z_Free (keybindings[keynum]);
-		keybindings[keynum] = NULL;
+		keybindings[keynum] = nullptr;
 	}
 
 // allocate memory for new binding
@@ -638,7 +638,7 @@ void Key_Unbind_f (void)
 		return;
 	}
 
-	Key_SetBinding (b, NULL);
+	Key_SetBinding (b, nullptr);
 }
 
 void Key_Unbindall_f (void)
@@ -648,7 +648,7 @@ void Key_Unbindall_f (void)
 	for (i = 0; i < MAX_KEYS; i++)
 	{
 		if (keybindings[i])
-			Key_SetBinding (i, NULL);
+			Key_SetBinding (i, nullptr);
 	}
 }
 
@@ -753,7 +753,7 @@ void History_Init (void)
 	key_linepos = 1;
 
 	hf = fopen(va("%s/%s", host_parms->userdir, HISTORY_FILE_NAME), "rt");
-	if (hf != NULL)
+	if (hf != nullptr)
 	{
 		do
 		{
@@ -790,7 +790,7 @@ void History_Shutdown (void)
 	FILE *hf;
 
 	hf = fopen(va("%s/%s", host_parms->userdir, HISTORY_FILE_NAME), "wt");
-	if (hf != NULL)
+	if (hf != nullptr)
 	{
 		i = edit_line;
 		do

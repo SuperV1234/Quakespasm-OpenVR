@@ -44,7 +44,7 @@ void PL_SetWindowIcon (void)
 	SDL_SysWMinfo wminfo;
 	HWND hwnd;
 
-	handle = GetModuleHandle(NULL);
+	handle = GetModuleHandle(nullptr);
 	icon = LoadIcon(handle, "icon");
 
 	if (!icon)
@@ -78,17 +78,17 @@ void PL_VID_Shutdown (void)
 #define MAX_CLIPBOARDTXT	MAXCMDLINE	/* 256 */
 char *PL_GetClipboardData (void)
 {
-	char *data = NULL;
+	char *data = nullptr;
 	char *cliptext;
 
-	if (OpenClipboard(NULL) != 0)
+	if (OpenClipboard(nullptr) != 0)
 	{
 		HANDLE hClipboardData;
 
-		if ((hClipboardData = GetClipboardData(CF_TEXT)) != NULL)
+		if ((hClipboardData = GetClipboardData(CF_TEXT)) != nullptr)
 		{
 			cliptext = (char *) GlobalLock(hClipboardData);
-			if (cliptext != NULL)
+			if (cliptext != nullptr)
 			{
 				size_t size = GlobalSize(hClipboardData) + 1;
 			/* this is intended for simple small text copies
@@ -108,7 +108,7 @@ char *PL_GetClipboardData (void)
 
 void PL_ErrorDialog(const char *errorMsg)
 {
-	MessageBox (NULL, errorMsg, "Quake Error",
+	MessageBox (nullptr, errorMsg, "Quake Error",
 			MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
 }
 

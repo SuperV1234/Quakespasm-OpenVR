@@ -226,7 +226,7 @@ void PR_Profile_f (void)
 	do
 	{
 		pmax = 0;
-		best = NULL;
+		best = nullptr;
 		for (i = 0; i < progs->numfunctions; i++)
 		{
 			f = &pr_functions[i];

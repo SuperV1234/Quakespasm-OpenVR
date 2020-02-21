@@ -304,8 +304,8 @@ void Host_InitCommands (void);
 void Host_Init (void);
 void Host_Shutdown(void);
 void Host_Callback_Notify (cvar_t *var);	/* callback function for CVAR_NOTIFY */
-FUNC_NORETURN void Host_Error (const char *error, ...) FUNC_PRINTF(1,2);
-FUNC_NORETURN void Host_EndGame (const char *message, ...) FUNC_PRINTF(1,2);
+[[noreturn]] void Host_Error (const char *error, ...) FUNC_PRINTF(1,2);
+[[noreturn]] void Host_EndGame (const char *message, ...) FUNC_PRINTF(1,2);
 #ifdef __WATCOMC__
 #pragma aux Host_Error aborts;
 #pragma aux Host_EndGame aborts;

@@ -47,7 +47,7 @@ int		con_totallines;		// total lines in console scrollback
 int		con_backscroll;		// lines up from bottom to display
 int		con_current;		// where next message will be printed
 int		con_x;				// offset in current line for next print
-char		*con_text = NULL;
+char		*con_text = nullptr;
 
 cvar_t		con_notifytime = {"con_notifytime","3",CVAR_NONE};	//seconds
 cvar_t		con_logcenterprint = {"con_logcenterprint", "1", CVAR_NONE}; //johnfitz
@@ -522,7 +522,7 @@ void Con_Printf (const char *fmt, ...)
 /*
 ================
 Con_DWarning -- ericw
- 
+
 same as Con_Warning, but only prints if "developer" cvar is set.
 use for "exceeds standard limit of" messages, which are only relevant for developers
 targetting vanilla engines
@@ -893,7 +893,7 @@ void BuildTabList (const char *partial)
 	cmd_function_t		*cmd;
 	int		len;
 
-	tablist = NULL;
+	tablist = nullptr;
 	len = strlen(partial);
 
 	bash_partial[0] = 0;
@@ -951,7 +951,7 @@ void Con_TabComplete (void)
 	// for (like "map ") and a list of all the maps.
 		arg_completion_type_t arg_completion = arg_completion_types[j];
 		const char *command_name = arg_completion.command;
-		
+
 		if (!strncmp (key_lines[edit_line] + 1, command_name, strlen(command_name)))
 		{
 			int nummatches = 0;
@@ -1280,7 +1280,7 @@ void LOG_Init (quakeparms_t *parms)
 	if (!COM_CheckParm("-condebug"))
 		return;
 
-	inittime = time (NULL);
+	inittime = time (nullptr);
 	strftime (session, sizeof(session), "%m/%d/%Y %H:%M:%S", localtime(&inittime));
 	q_snprintf (logfilename, sizeof(logfilename), "%s/qconsole.log", parms->basedir);
 

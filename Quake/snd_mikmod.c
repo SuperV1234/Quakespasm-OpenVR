@@ -104,7 +104,7 @@ static qboolean S_MIKMOD_CodecInitialize (void)
 
 	MikMod_RegisterDriver(&drv_nos);	/* only need the "nosound" driver, none else */
 	MikMod_RegisterAllLoaders();
-	if (S_MIKMOD_initlib(NULL))
+	if (S_MIKMOD_initlib(nullptr))
 	{
 		Con_DPrintf("Could not initialize MikMod: %s\n", MikMod_strerror(MikMod_errno));
 		return false;
@@ -197,7 +197,7 @@ snd_codec_t mikmod_codec =
 	S_MIKMOD_CodecReadStream,
 	S_MIKMOD_CodecRewindStream,
 	S_MIKMOD_CodecCloseStream,
-	NULL
+	nullptr
 };
 
 #endif	/* USE_CODEC_MIKMOD */

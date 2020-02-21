@@ -121,7 +121,7 @@ int Sys_FileOpenWrite (const char *path)
 void Sys_FileClose (int handle)
 {
 	fclose (sys_handles[handle]);
-	sys_handles[handle] = NULL;
+	sys_handles[handle] = nullptr;
 }
 
 void Sys_FileSeek (int handle, int position)
@@ -158,6 +158,8 @@ static char	cwd[1024];
 
 static void Sys_GetBasedir (char *argv0, char *dst, size_t dstsize)
 {
+	(void) argv0;
+
 	char *tmp;
 	size_t rc;
 
@@ -193,8 +195,8 @@ static void Sys_SetDPIAware (void)
 
 	hShcore = LoadLibraryA ("Shcore.dll");
 	hUser32 = LoadLibraryA ("user32.dll");
-	setDPIAwareness = (SetProcessDPIAwarenessFunc) (hShcore ? GetProcAddress (hShcore, "SetProcessDpiAwareness") : NULL);
-	setDPIAware = (SetProcessDPIAwareFunc) (hUser32 ? GetProcAddress (hUser32, "SetProcessDPIAware") : NULL);
+	setDPIAwareness = (SetProcessDPIAwarenessFunc) (hShcore ? GetProcAddress (hShcore, "SetProcessDpiAwareness") : nullptr);
+	setDPIAware = (SetProcessDPIAwareFunc) (hUser32 ? GetProcAddress (hUser32, "SetProcessDPIAware") : nullptr);
 
 	if (setDPIAwareness) /* Windows 8.1+ */
 		setDPIAwareness (dpi_monitor_aware);
@@ -225,7 +227,7 @@ void Sys_Init (void)
 	Sys_SetDPIAware ();
 
 	memset (cwd, 0, sizeof(cwd));
-	Sys_GetBasedir(NULL, cwd, sizeof(cwd));
+	Sys_GetBasedir(nullptr, cwd, sizeof(cwd));
 	host_parms->basedir = cwd;
 
 	/* userdirs not really necessary for windows guys.
@@ -283,7 +285,7 @@ void Sys_Init (void)
 
 void Sys_mkdir (const char *path)
 {
-	if (CreateDirectory(path, NULL) != 0)
+	if (CreateDirectory(path, nullptr) != 0)
 		return;
 	if (GetLastError() != ERROR_ALREADY_EXISTS)
 		Sys_Error("Unable to create directory %s", path);
@@ -305,7 +307,7 @@ void Sys_Error (const char *error, ...)
 	va_end (argptr);
 
 	if (isDedicated)
-		WriteFile (houtput, errortxt1, strlen(errortxt1), &dummy, NULL);
+		WriteFile (houtput, errortxt1, strlen(errortxt1), &dummy, nullptr);
 	/* SDL will put these into its own stderr log,
 	   so print to stderr even in graphical mode. */
 	fputs (errortxt1, stderr);
@@ -317,9 +319,9 @@ void Sys_Error (const char *error, ...)
 		PL_ErrorDialog(text);
 	else
 	{
-		WriteFile (houtput, errortxt2, strlen(errortxt2), &dummy, NULL);
-		WriteFile (houtput, text,      strlen(text),      &dummy, NULL);
-		WriteFile (houtput, "\r\n",    2,		  &dummy, NULL);
+		WriteFile (houtput, errortxt2, strlen(errortxt2), &dummy, nullptr);
+		WriteFile (houtput, text,      strlen(text),      &dummy, nullptr);
+		WriteFile (houtput, "\r\n",    2,		  &dummy, nullptr);
 		SDL_Delay (3000);	/* show the console 3 more seconds */
 	}
 
@@ -338,7 +340,7 @@ void Sys_Printf (const char *fmt, ...)
 
 	if (isDedicated)
 	{
-		WriteFile(houtput, text, strlen(text), &dummy, NULL);
+		WriteFile(houtput, text, strlen(text), &dummy, nullptr);
 	}
 	else
 	{
@@ -394,7 +396,7 @@ const char *Sys_ConsoleInput (void)
 			switch (ch)
 			{
 			case '\r':
-				WriteFile(houtput, "\r\n", 2, &dummy, NULL);
+				WriteFile(houtput, "\r\n", 2, &dummy, nullptr);
 
 				if (textlen != 0)
 				{
@@ -406,7 +408,7 @@ const char *Sys_ConsoleInput (void)
 				break;
 
 			case '\b':
-				WriteFile(houtput, "\b \b", 3, &dummy, NULL);
+				WriteFile(houtput, "\b \b", 3, &dummy, nullptr);
 				if (textlen != 0)
 					textlen--;
 
@@ -415,7 +417,7 @@ const char *Sys_ConsoleInput (void)
 			default:
 				if (ch >= ' ')
 				{
-					WriteFile(houtput, &ch, 1, &dummy, NULL);
+					WriteFile(houtput, &ch, 1, &dummy, nullptr);
 					con_text[textlen] = ch;
 					textlen = (textlen + 1) & 0xff;
 				}
@@ -426,7 +428,7 @@ const char *Sys_ConsoleInput (void)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void Sys_Sleep (unsigned long msecs)

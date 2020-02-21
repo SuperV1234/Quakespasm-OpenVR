@@ -86,7 +86,7 @@ void R_InitParticleTextures (void)
 			*dst++ = 255;
 			*dst++ = R_ParticleTextureLookup(x, y, 8);
 		}
-	particletexture1 = TexMgr_LoadImage (NULL, "particle1", 64, 64, SRC_RGBA, particle1_data, "", (src_offset_t)particle1_data, TEXPREF_PERSIST | TEXPREF_ALPHA | TEXPREF_LINEAR);
+	particletexture1 = TexMgr_LoadImage (nullptr, "particle1", 64, 64, SRC_RGBA, particle1_data, "", (src_offset_t)particle1_data, TEXPREF_PERSIST | TEXPREF_ALPHA | TEXPREF_LINEAR);
 
 	// particle texture 2 -- square
 	dst = particle2_data;
@@ -98,7 +98,7 @@ void R_InitParticleTextures (void)
 			*dst++ = 255;
 			*dst++ = x || y ? 0 : 255;
 		}
-	particletexture2 = TexMgr_LoadImage (NULL, "particle2", 2, 2, SRC_RGBA, particle2_data, "", (src_offset_t)particle2_data, TEXPREF_PERSIST | TEXPREF_ALPHA | TEXPREF_NEAREST);
+	particletexture2 = TexMgr_LoadImage (nullptr, "particle2", 2, 2, SRC_RGBA, particle2_data, "", (src_offset_t)particle2_data, TEXPREF_PERSIST | TEXPREF_ALPHA | TEXPREF_NEAREST);
 
 	// particle texture 3 -- blob
 	dst = particle3_data;
@@ -110,7 +110,7 @@ void R_InitParticleTextures (void)
 			*dst++ = 255;
 			*dst++ = R_ParticleTextureLookup(x, y, 2);
 		}
-	particletexture3 = TexMgr_LoadImage (NULL, "particle3", 64, 64, SRC_RGBA, particle3_data, "", (src_offset_t)particle3_data, TEXPREF_PERSIST | TEXPREF_ALPHA | TEXPREF_LINEAR);
+	particletexture3 = TexMgr_LoadImage (nullptr, "particle3", 64, 64, SRC_RGBA, particle3_data, "", (src_offset_t)particle3_data, TEXPREF_PERSIST | TEXPREF_ALPHA | TEXPREF_LINEAR);
 
 	//set default
 	particletexture = particletexture1;
@@ -124,6 +124,8 @@ R_SetParticleTexture_f -- johnfitz
 */
 static void R_SetParticleTexture_f (cvar_t *var)
 {
+	(void) var;
+
 	switch ((int)(r_particles.value))
 	{
 	case 1:
@@ -253,11 +255,11 @@ void R_ClearParticles (void)
 	int		i;
 
 	free_particles = &particles[0];
-	active_particles = NULL;
+	active_particles = nullptr;
 
 	for (i=0 ;i<r_numparticles ; i++)
 		particles[i].next = &particles[i+1];
-	particles[r_numparticles-1].next = NULL;
+	particles[r_numparticles-1].next = nullptr;
 }
 
 /*
@@ -279,7 +281,7 @@ void R_ReadPointFile_f (void)
 
 	q_snprintf (name, sizeof(name), "maps/%s.pts", cl.mapname);
 
-	COM_FOpenFile (name, &f, NULL);
+	COM_FOpenFile (name, &f, nullptr);
 	if (!f)
 	{
 		Con_Printf ("couldn't open %s\n", name);

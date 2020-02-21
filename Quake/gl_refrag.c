@@ -39,10 +39,10 @@ removed, so I trimmed out unused functionality and fields in efrag_t.
 Now, efrags are just a linked list for each leaf of the static
 entities that touch that leaf. The efrags are hunk-allocated so there is no
 fixed limit.
- 
+
 This is inspired by MH's tutorial, and code from RMQEngine.
 http://forums.insideqc.com/viewtopic.php?t=1930
- 
+
 ===============================================================================
 */
 
@@ -59,28 +59,28 @@ static efrag_t *R_GetEfrag (void)
 	// we could just Hunk_Alloc a single efrag_t and return it, but since
 	// the struct is so small (2 pointers) allocate groups of them
 	// to avoid wasting too much space on the hunk allocation headers.
-	
+
 	if (cl.free_efrags)
 	{
 		efrag_t *ef = cl.free_efrags;
 		cl.free_efrags = ef->leafnext;
-		ef->leafnext = NULL;
-		
+		ef->leafnext = nullptr;
+
 		cl.num_efrags++;
-		
+
 		return ef;
 	}
 	else
 	{
 		int i;
-		
+
 		cl.free_efrags = (efrag_t *) Hunk_AllocName (EXTRA_EFRAGS * sizeof (efrag_t), "efrags");
-		
+
 		for (i = 0; i < EXTRA_EFRAGS - 1; i++)
 			cl.free_efrags[i].leafnext = &cl.free_efrags[i + 1];
-		
-		cl.free_efrags[i].leafnext = NULL;
-		
+
+		cl.free_efrags[i].leafnext = nullptr;
+
 		// call recursively to get a newly allocated free efrag
 		return R_GetEfrag ();
 	}
@@ -176,7 +176,7 @@ void R_AddEfrags (entity_t *ent)
 
 	r_addent = ent;
 
-	r_pefragtopnode = NULL;
+	r_pefragtopnode = nullptr;
 
 	entmodel = ent->model;
 
@@ -204,7 +204,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 	entity_t	*pent;
 	efrag_t		*pefrag;
 
-	while ((pefrag = *ppefrag) != NULL)
+	while ((pefrag = *ppefrag) != nullptr)
 	{
 		pent = pefrag->entity;
 

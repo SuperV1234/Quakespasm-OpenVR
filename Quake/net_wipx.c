@@ -215,6 +215,9 @@ int WIPX_CloseSocket (sys_socket_t handle)
 
 int WIPX_Connect (sys_socket_t handle, struct qsockaddr *addr)
 {
+	(void) handle;
+	(void) addr;
+
 	return 0;
 }
 
@@ -334,7 +337,7 @@ int WIPX_StringToAddr (const char *string, struct qsockaddr *addr)
 #define DO(src,dest) do {				\
 	buf[0] = string[src];				\
 	buf[1] = string[src + 1];			\
-	if (sscanf (buf, "%x", &val) != 1)		\
+	if (sscanf (buf, "%d", &val) != 1)		\
 		return -1;				\
 	((struct sockaddr_ipx *)addr)->dest = val;	\
       } while (0)
@@ -351,7 +354,7 @@ int WIPX_StringToAddr (const char *string, struct qsockaddr *addr)
 	DO(19, sa_nodenum[5]);
 #undef DO
 
-	sscanf (&string[22], "%u", &val);
+	sscanf (&string[22], "%d", &val);
 	((struct sockaddr_ipx *)addr)->sa_socket = htons((unsigned short)val);
 
 	return 0;

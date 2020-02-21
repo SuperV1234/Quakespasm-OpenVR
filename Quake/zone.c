@@ -131,7 +131,7 @@ static void *Z_TagMalloc (int size, int tag)
 	do
 	{
 		if (rover == start)	// scaned all the way around the list
-			return NULL;
+			return nullptr;
 		if (rover->tag)
 			base = rover = rover->next;
 		else
@@ -263,12 +263,12 @@ void Z_Print (memzone_t *zone)
 {
 	memblock_t	*block;
 
-	Con_Printf ("zone size: %i  location: %p\n",mainzone->size,mainzone);
+	Con_Printf ("zone size: %i  location: %p\n",mainzone->size,static_cast<void*>(mainzone));
 
 	for (block = zone->blocklist.next ; ; block = block->next)
 	{
 		Con_Printf ("block:%p    size:%7i    tag:%3i\n",
-			block, block->size, block->tag);
+			static_cast<void*>(block), block->size, block->tag);
 
 		if (block->next == &zone->blocklist)
 			break;			// all blocks have been hit
@@ -388,7 +388,9 @@ void Hunk_Print (qboolean all)
 	//
 		memcpy (name, h->name, HUNKNAME_LEN);
 		if (all)
-			Con_Printf ("%8p :%8i %8s\n",h, h->size, name);
+		{
+			Con_Printf ("%8p :%8i %8s\n", static_cast<void*>(h), h->size, name);
+		}
 
 	//
 	// print the total
@@ -530,7 +532,7 @@ void *Hunk_HighAllocName (int size, const char *name)
 	if (hunk_size - hunk_low_used - hunk_high_used < size)
 	{
 		Con_Printf ("Hunk_HighAlloc: failed on %i bytes\n",size);
-		return NULL;
+		return nullptr;
 	}
 
 	hunk_high_used += size;
@@ -667,7 +669,7 @@ void Cache_FreeHigh (int new_high_hunk)
 {
 	cache_system_t	*c, *prev;
 
-	prev = NULL;
+	prev = nullptr;
 	while (1)
 	{
 		c = cache_head.prev;
@@ -693,7 +695,7 @@ void Cache_UnlinkLRU (cache_system_t *cs)
 	cs->lru_next->lru_prev = cs->lru_prev;
 	cs->lru_prev->lru_next = cs->lru_next;
 
-	cs->lru_prev = cs->lru_next = NULL;
+	cs->lru_prev = cs->lru_next = nullptr;
 }
 
 void Cache_MakeLRU (cache_system_t *cs)
@@ -784,7 +786,7 @@ cache_system_t *Cache_TryAlloc (int size, qboolean nobottom)
 		return new_cs;
 	}
 
-	return NULL;		// couldn't allocate
+	return nullptr;		// couldn't allocate
 }
 
 /*
@@ -859,9 +861,9 @@ void Cache_Free (cache_user_t *c, qboolean freetextures) //johnfitz -- added sec
 
 	cs->prev->next = cs->next;
 	cs->next->prev = cs->prev;
-	cs->next = cs->prev = NULL;
+	cs->next = cs->prev = nullptr;
 
-	c->data = NULL;
+	c->data = nullptr;
 
 	Cache_UnlinkLRU (cs);
 
@@ -884,7 +886,7 @@ void *Cache_Check (cache_user_t *c)
 	cache_system_t	*cs;
 
 	if (!c->data)
-		return NULL;
+		return nullptr;
 
 	cs = ((cache_system_t *)c->data) - 1;
 

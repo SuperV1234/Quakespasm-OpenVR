@@ -76,7 +76,7 @@ void FileList_Add (const char *name, filelist_item_t **list)
 	q_strlcpy (item->name, name, sizeof(item->name));
 
 	// insert each entry in alphabetical order
-	if (*list == NULL ||
+	if (*list == nullptr ||
 	    q_strcasecmp(item->name, (*list)->name) < 0) //insert at front
 	{
 		item->next = *list;
@@ -153,9 +153,9 @@ void ExtraMaps_Init (void)
 #else
 			q_snprintf (filestring, sizeof(filestring), "%s/maps/", search->filename);
 			dir_p = opendir(filestring);
-			if (dir_p == NULL)
+			if (dir_p == nullptr)
 				continue;
-			while ((dir_t = readdir(dir_p)) != NULL)
+			while ((dir_t = readdir(dir_p)) != nullptr)
 			{
 				if (q_strcasecmp(COM_FileGetExtension(dir_t->d_name), "bsp") != 0)
 					continue;
@@ -262,10 +262,10 @@ void Modlist_Init (void)
 
 	q_snprintf (dir_string, sizeof(dir_string), "%s/", com_basedir);
 	dir_p = opendir(dir_string);
-	if (dir_p == NULL)
+	if (dir_p == nullptr)
 		return;
 
-	while ((dir_t = readdir(dir_p)) != NULL)
+	while ((dir_t = readdir(dir_p)) != nullptr)
 	{
 		if (!strcmp(dir_t->d_name, ".") || !strcmp(dir_t->d_name, ".."))
 			continue;
@@ -273,7 +273,7 @@ void Modlist_Init (void)
 			continue;
 		q_snprintf(mod_string, sizeof(mod_string), "%s%s/", dir_string, dir_t->d_name);
 		mod_dir_p = opendir(mod_string);
-		if (mod_dir_p == NULL)
+		if (mod_dir_p == nullptr)
 			continue;
 		/* don't bother testing for pak files / progs.dat */
 		Modlist_Add(dir_t->d_name);
@@ -340,9 +340,9 @@ void DemoList_Init (void)
 #else
 			q_snprintf (filestring, sizeof(filestring), "%s/", search->filename);
 			dir_p = opendir(filestring);
-			if (dir_p == NULL)
+			if (dir_p == nullptr)
 				continue;
-			while ((dir_t = readdir(dir_p)) != NULL)
+			while ((dir_t = readdir(dir_p)) != nullptr)
 			{
 				if (q_strcasecmp(COM_FileGetExtension(dir_t->d_name), "dem") != 0)
 					continue;
@@ -903,7 +903,7 @@ void Host_Changelevel_f (void)
 
 	//johnfitz -- check for client having map before anything else
 	q_snprintf (level, sizeof(level), "maps/%s.bsp", Cmd_Argv(1));
-	if (!COM_FileExists(level, NULL))
+	if (!COM_FileExists(level, nullptr))
 		Host_Error ("cannot find map %s", level);
 	//johnfitz
 
@@ -1159,11 +1159,11 @@ void Host_Loadgame_f (void)
 	Con_Printf ("Loading game from %s...\n", name);
 
 // avoid leaking if the previous Host_Loadgame_f failed with a Host_Error
-	if (start != NULL)
+	if (start != nullptr)
 		free (start);
 
-	start = (char *) COM_LoadMallocFile_TextMode_OSPath(name, NULL);
-	if (start == NULL)
+	start = (char *) COM_LoadMallocFile_TextMode_OSPath(name, nullptr);
+	if (start == nullptr)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
 		return;
@@ -1174,7 +1174,7 @@ void Host_Loadgame_f (void)
 	if (version != SAVEGAME_VERSION)
 	{
 		free (start);
-		start = NULL;
+		start = nullptr;
 		Con_Printf ("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
 		return;
 	}
@@ -1197,7 +1197,7 @@ void Host_Loadgame_f (void)
 	if (!sv.active)
 	{
 		free (start);
-		start = NULL;
+		start = nullptr;
 		Con_Printf ("Couldn't load map\n");
 		return;
 	}
@@ -1252,7 +1252,7 @@ void Host_Loadgame_f (void)
 	sv.time = time;
 
 	free (start);
-	start = NULL;
+	start = nullptr;
 
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		svs.clients->spawn_parms[i] = spawn_parms[i];
@@ -1760,7 +1760,7 @@ Kicks a user off of the server
 void Host_Kick_f (void)
 {
 	const char	*who;
-	const char	*message = NULL;
+	const char	*message = nullptr;
 	client_t	*save;
 	int		i;
 	qboolean	byNumber = false;
@@ -2086,7 +2086,7 @@ edict_t	*FindViewthing (void)
 			return e;
 	}
 	Con_Printf ("No viewthing on map\n");
-	return NULL;
+	return nullptr;
 }
 
 /*

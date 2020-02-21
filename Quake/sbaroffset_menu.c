@@ -54,6 +54,7 @@ static void SbarOffset_MenuPrintOptionValue(int cx, int cy, SbarOffsetMenuOpt op
 		case SbarOffsetMenuOpt::Roll:		printAsStr(rr); break;
 		case SbarOffsetMenuOpt::Pitch:		printAsStr(rp); break;
 		case SbarOffsetMenuOpt::Yaw:		printAsStr(ry); break;
+		default: 						    assert(false); break;
 	}
 }
 
@@ -82,6 +83,7 @@ static void SbarOffset_MenuKeyOption(int key, SbarOffsetMenuOpt option)
 		case SbarOffsetMenuOpt::Roll:		adjustF(rr, rInc, -rBound, rBound); break;
 		case SbarOffsetMenuOpt::Pitch:		adjustF(rp, rInc, -rBound, rBound); break;
 		case SbarOffsetMenuOpt::Yaw:		adjustF(ry, rInc, -rBound, rBound); break;
+		default: 						    assert(false); break;
 	}
 }
 

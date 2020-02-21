@@ -83,16 +83,16 @@ byte *Image_LoadImage (const char *name, int *width, int *height)
 	FILE	*f;
 
 	q_snprintf (loadfilename, sizeof(loadfilename), "%s.tga", name);
-	COM_FOpenFile (loadfilename, &f, NULL);
+	COM_FOpenFile (loadfilename, &f, nullptr);
 	if (f)
 		return Image_LoadTGA (f, width, height);
 
 	q_snprintf (loadfilename, sizeof(loadfilename), "%s.pcx", name);
-	COM_FOpenFile (loadfilename, &f, NULL);
+	COM_FOpenFile (loadfilename, &f, nullptr);
 	if (f)
 		return Image_LoadPCX (f, width, height);
 
-	return NULL;
+	return nullptr;
 }
 
 //==============================================================================
@@ -493,7 +493,7 @@ static byte *CopyFlipped(const byte *data, int width, int height, int bpp)
 	rowsize = width * (bpp / 8);
 	flipped = (byte *) malloc(height * rowsize);
 	if (!flipped)
-		return NULL;
+		return nullptr;
 
 	for (y=0; y<height; y++)
 	{

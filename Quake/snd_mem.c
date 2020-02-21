@@ -113,25 +113,25 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 
 //	Con_Printf ("loading %s\n",namebuffer);
 
-	data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf), NULL);
+	data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf), nullptr);
 
 	if (!data)
 	{
 		Con_Printf ("Couldn't load %s\n", namebuffer);
-		return NULL;
+		return nullptr;
 	}
 
 	info = GetWavinfo (s->name, data, com_filesize);
 	if (info.channels != 1)
 	{
 		Con_Printf ("%s is a stereo sample\n",s->name);
-		return NULL;
+		return nullptr;
 	}
 
 	if (info.width != 1 && info.width != 2)
 	{
 		Con_Printf("%s is not 8 or 16 bit\n", s->name);
-		return NULL;
+		return nullptr;
 	}
 
 	stepscale = (float)info.rate / shm->speed;
@@ -142,12 +142,12 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	if (info.samples == 0 || len == 0)
 	{
 		Con_Printf("%s has zero samples\n", s->name);
-		return NULL;
+		return nullptr;
 	}
 
 	sc = (sfxcache_t *) Cache_Alloc ( &s->cache, len + sizeof(sfxcache_t), s->name);
 	if (!sc)
-		return NULL;
+		return nullptr;
 
 	sc->length = info.samples;
 	sc->loopstart = info.loopstart;
@@ -203,7 +203,7 @@ static void FindNextChunk (const char *name)
 	// Need at least 8 bytes for a chunk
 		if (last_chunk + 8 >= iff_end)
 		{
-			data_p = NULL;
+			data_p = nullptr;
 			return;
 		}
 
@@ -211,7 +211,7 @@ static void FindNextChunk (const char *name)
 		iff_chunk_len = GetLittleLong();
 		if (iff_chunk_len < 0 || iff_chunk_len > iff_end - data_p)
 		{
-			data_p = NULL;
+			data_p = nullptr;
 			Con_DPrintf2("bad \"%s\" chunk length (%d)\n", name, iff_chunk_len);
 			return;
 		}

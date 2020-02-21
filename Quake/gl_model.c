@@ -119,7 +119,7 @@ mleaf_t *Mod_PointInLeaf (vec3_t p, qmodel_t *model)
 			node = node->children[1];
 	}
 
-	return NULL;	// never reached
+	return nullptr;	// never reached
 }
 
 
@@ -136,7 +136,7 @@ byte *Mod_DecompressVis (byte *in, qmodel_t *model)
 	int		row;
 
 	row = (model->numleafs+7)>>3;
-	if (mod_decompressed == NULL || row > mod_decompressed_capacity)
+	if (mod_decompressed == nullptr || row > mod_decompressed_capacity)
 	{
 		mod_decompressed_capacity = row;
 		mod_decompressed = (byte *) realloc (mod_decompressed, mod_decompressed_capacity);
@@ -196,7 +196,7 @@ byte *Mod_NoVisPVS (qmodel_t *model)
 	int pvsbytes;
 
 	pvsbytes = (model->numleafs+7)>>3;
-	if (mod_novis == NULL || pvsbytes > mod_novis_capacity)
+	if (mod_novis == nullptr || pvsbytes > mod_novis_capacity)
 	{
 		mod_novis_capacity = pvsbytes;
 		mod_novis = (byte *) realloc (mod_novis, mod_novis_capacity);
@@ -335,7 +335,7 @@ qmodel_t *Mod_LoadModel (qmodel_t *mod, qboolean crash)
 	{
 		if (crash)
 			Host_Error ("Mod_LoadModel: %s not found", mod->name); //johnfitz -- was "Mod_NumForName"
-		return NULL;
+		return nullptr;
 	}
 
 //
@@ -440,7 +440,7 @@ void Mod_LoadTextures (lump_t *l)
 	{
 		Con_Printf ("Mod_LoadTextures: no textures in bsp file\n");
 		nummiptex = 0;
-		m = NULL; // avoid bogus compiler warning
+		m = nullptr; // avoid bogus compiler warning
 	}
 	else
 	{
@@ -489,8 +489,8 @@ void Mod_LoadTextures (lump_t *l)
 		memcpy ( tx+1, mt+1, pixels);
 
 		tx->update_warp = false; //johnfitz
-		tx->warpimage = NULL; //johnfitz
-		tx->fullbright = NULL; //johnfitz
+		tx->warpimage = nullptr; //johnfitz
+		tx->fullbright = nullptr; //johnfitz
 
 		//johnfitz -- lots of changes
 		if (!isDedicated) //no texture uploading for dedicated server
@@ -709,7 +709,7 @@ void Mod_LoadLighting (lump_t *l)
 	char litfilename[MAX_OSPATH];
 	unsigned int path_id;
 
-	loadmodel->lightdata = NULL;
+	loadmodel->lightdata = nullptr;
 	// LordHavoc: check for a .lit file
 	q_strlcpy(litfilename, loadmodel->name, sizeof(litfilename));
 	COM_StripExtension(litfilename, litfilename, sizeof(litfilename));
@@ -779,7 +779,7 @@ void Mod_LoadVisibility (lump_t *l)
 	loadmodel->viswarn = false;
 	if (!l->filelen)
 	{
-		loadmodel->visdata = NULL;
+		loadmodel->visdata = nullptr;
 		return;
 	}
 	loadmodel->visdata = (byte *) Hunk_AllocName ( l->filelen, loadname);
@@ -828,7 +828,7 @@ void Mod_LoadEntities (lump_t *l)
 _load_embedded:
 	if (!l->filelen)
 	{
-		loadmodel->entities = NULL;
+		loadmodel->entities = nullptr;
 		return;
 	}
 	loadmodel->entities = (char *) Hunk_AllocName ( l->filelen, loadname);
@@ -1093,7 +1093,7 @@ void Mod_PolyForUnlitSurface (msurface_t *fa)
 
 	//create the poly
 	poly = (glpoly_t *) Hunk_Alloc (sizeof(glpoly_t) + (numverts-4) * VERTEXSIZE*sizeof(float));
-	poly->next = NULL;
+	poly->next = nullptr;
 	fa->polys = poly;
 	poly->numverts = numverts;
 	for (i=0, vec=(float *)verts; i<numverts; i++, vec+= 3)
@@ -1156,7 +1156,7 @@ void Mod_LoadFaces (lump_t *l, qboolean bsp2)
 
 	if (bsp2)
 	{
-		ins = NULL;
+		ins = nullptr;
 		inl = (dlface_t *)(mod_base + l->fileofs);
 		if (l->filelen % sizeof(*inl))
 			Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
@@ -1165,7 +1165,7 @@ void Mod_LoadFaces (lump_t *l, qboolean bsp2)
 	else
 	{
 		ins = (dsface_t *)(mod_base + l->fileofs);
-		inl = NULL;
+		inl = nullptr;
 		if (l->filelen % sizeof(*ins))
 			Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 		count = l->filelen / sizeof(*ins);
@@ -1222,7 +1222,7 @@ void Mod_LoadFaces (lump_t *l, qboolean bsp2)
 
 	// lighting info
 		if (lofs == -1)
-			out->samples = NULL;
+			out->samples = nullptr;
 		else
 			out->samples = loadmodel->lightdata + (lofs * 3); //johnfitz -- lit support via lordhavoc (was "+ i")
 
@@ -1457,7 +1457,7 @@ void Mod_LoadNodes (lump_t *l, int bsp2)
 	else
 		Mod_LoadNodes_S(l);
 
-	Mod_SetParent (loadmodel->nodes, NULL);	// sets nodes and leafs
+	Mod_SetParent (loadmodel->nodes, nullptr);	// sets nodes and leafs
 }
 
 void Mod_ProcessLeafs_S (dsleaf_t *in, int filelen)
@@ -1494,10 +1494,10 @@ void Mod_ProcessLeafs_S (dsleaf_t *in, int filelen)
 
 		p = LittleLong(in->visofs);
 		if (p == -1)
-			out->compressed_vis = NULL;
+			out->compressed_vis = nullptr;
 		else
 			out->compressed_vis = loadmodel->visdata + p;
-		out->efrags = NULL;
+		out->efrags = nullptr;
 
 		for (j=0 ; j<4 ; j++)
 			out->ambient_sound_level[j] = in->ambient_level[j];
@@ -1537,10 +1537,10 @@ void Mod_ProcessLeafs_L1 (dl1leaf_t *in, int filelen)
 
 		p = LittleLong(in->visofs);
 		if (p == -1)
-			out->compressed_vis = NULL;
+			out->compressed_vis = nullptr;
 		else
 			out->compressed_vis = loadmodel->visdata + p;
-		out->efrags = NULL;
+		out->efrags = nullptr;
 
 		for (j=0 ; j<4 ; j++)
 			out->ambient_sound_level[j] = in->ambient_level[j];
@@ -1580,10 +1580,10 @@ void Mod_ProcessLeafs_L2 (dl2leaf_t *in, int filelen)
 
 		p = LittleLong(in->visofs);
 		if (p == -1)
-			out->compressed_vis = NULL;
+			out->compressed_vis = nullptr;
 		else
 			out->compressed_vis = loadmodel->visdata + p;
-		out->efrags = NULL;
+		out->efrags = nullptr;
 
 		for (j=0 ; j<4 ; j++)
 			out->ambient_sound_level[j] = in->ambient_level[j];
@@ -1625,7 +1625,7 @@ void Mod_LoadClipnodes (lump_t *l, qboolean bsp2)
 
 	if (bsp2)
 	{
-		ins = NULL;
+		ins = nullptr;
 		inl = (dlclipnode_t *)(mod_base + l->fileofs);
 		if (l->filelen % sizeof(*inl))
 			Sys_Error ("Mod_LoadClipnodes: funny lump size in %s",loadmodel->name);
@@ -1635,7 +1635,7 @@ void Mod_LoadClipnodes (lump_t *l, qboolean bsp2)
 	else
 	{
 		ins = (dsclipnode_t *)(mod_base + l->fileofs);
-		inl = NULL;
+		inl = nullptr;
 		if (l->filelen % sizeof(*ins))
 			Sys_Error ("Mod_LoadClipnodes: funny lump size in %s",loadmodel->name);
 
@@ -2342,7 +2342,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 			{
 				pheader->gltextures[i][0] = TexMgr_LoadImage (loadmodel, name, pheader->skinwidth, pheader->skinheight,
 					SRC_INDEXED, (byte *)(pskintype+1), loadmodel->name, offset, texflags);
-				pheader->fbtextures[i][0] = NULL;
+				pheader->fbtextures[i][0] = nullptr;
 			}
 
 			pheader->gltextures[i][3] = pheader->gltextures[i][2] = pheader->gltextures[i][1] = pheader->gltextures[i][0];
@@ -2385,7 +2385,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				{
 					pheader->gltextures[i][j&3] = TexMgr_LoadImage (loadmodel, name, pheader->skinwidth, pheader->skinheight,
 						SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags);
-					pheader->fbtextures[i][j&3] = NULL;
+					pheader->fbtextures[i][j&3] = nullptr;
 				}
 				//johnfitz
 

@@ -45,13 +45,13 @@ void PL_VID_Shutdown (void)
 #define MAX_CLIPBOARDTXT	MAXCMDLINE	/* 256 */
 char *PL_GetClipboardData (void)
 {
-    char *data			= NULL;
+    char *data			= nullptr;
     NSPasteboard* pasteboard	= [NSPasteboard generalPasteboard];
     NSArray* types		= [pasteboard types];
 
     if ([types containsObject: NSStringPboardType]) {
 	NSString* clipboardString = [pasteboard stringForType: NSStringPboardType];
-	if (clipboardString != NULL && [clipboardString length] > 0) {
+	if (clipboardString != nullptr && [clipboardString length] > 0) {
 		size_t sz = [clipboardString length] + 1;
 		sz = q_min(MAX_CLIPBOARDTXT, sz);
 		data = (char *) Z_Malloc(sz);

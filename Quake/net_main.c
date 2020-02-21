@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "net_defs.h"
 
-qsocket_t	*net_activeSockets = NULL;
-qsocket_t	*net_freeSockets = NULL;
+qsocket_t	*net_activeSockets = nullptr;
+qsocket_t	*net_freeSockets = nullptr;
 int		net_numsockets = 0;
 
 qboolean	ipxAvailable = false;
@@ -48,8 +48,8 @@ static int		slistLastShown;
 
 static void Slist_Send (void *);
 static void Slist_Poll (void *);
-static PollProcedure	slistSendProcedure = {NULL, 0.0, Slist_Send};
-static PollProcedure	slistPollProcedure = {NULL, 0.0, Slist_Poll};
+static PollProcedure	slistSendProcedure = {nullptr, 0.0, Slist_Send};
+static PollProcedure	slistPollProcedure = {nullptr, 0.0, Slist_Poll};
 
 sizebuf_t	net_message;
 int		net_activeconnections		= 0;
@@ -90,11 +90,11 @@ qsocket_t *NET_NewQSocket (void)
 {
 	qsocket_t	*sock;
 
-	if (net_freeSockets == NULL)
-		return NULL;
+	if (net_freeSockets == nullptr)
+		return nullptr;
 
 	if (net_activeconnections >= svs.maxclients)
-		return NULL;
+		return nullptr;
 
 	// get one from free list
 	sock = net_freeSockets;
@@ -109,7 +109,7 @@ qsocket_t *NET_NewQSocket (void)
 	Q_strcpy (sock->address,"UNSET ADDRESS");
 	sock->driver = net_driverlevel;
 	sock->socket = 0;
-	sock->driverdata = NULL;
+	sock->driverdata = nullptr;
 	sock->canSend = true;
 	sock->sendNext = false;
 	sock->lastMessageTime = net_time;
@@ -361,6 +361,8 @@ const char *NET_SlistPrintServerName (int idx)
 
 static void Slist_Send (void *unused)
 {
+	(void) unused;
+
 	for (net_driverlevel = 0; net_driverlevel < net_numdrivers; net_driverlevel++)
 	{
 		if (!slistLocal && IS_LOOP_DRIVER(net_driverlevel))
@@ -377,6 +379,8 @@ static void Slist_Send (void *unused)
 
 static void Slist_Poll (void *unused)
 {
+	(void) unused;
+
 	for (net_driverlevel = 0; net_driverlevel < net_numdrivers; net_driverlevel++)
 	{
 		if (!slistLocal && IS_LOOP_DRIVER(net_driverlevel))
@@ -421,7 +425,7 @@ qsocket_t *NET_Connect (const char *host)
 	SetNetTime();
 
 	if (host && *host == 0)
-		host = NULL;
+		host = nullptr;
 
 	if (host)
 	{
@@ -450,10 +454,10 @@ qsocket_t *NET_Connect (const char *host)
 	while (slistInProgress)
 		NET_Poll();
 
-	if (host == NULL)
+	if (host == nullptr)
 	{
 		if (hostCacheCount != 1)
-			return NULL;
+			return nullptr;
 		host = hostcache[0].cname;
 		Con_Printf("Connecting to...\n%s @ %s\n\n", hostcache[0].name, host);
 	}
@@ -488,7 +492,7 @@ JustDoIt:
 		PrintSlistTrailer();
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -516,7 +520,7 @@ qsocket_t *NET_CheckNewConnections (void)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -863,7 +867,7 @@ void NET_Shutdown (void)
 }
 
 
-static PollProcedure *pollProcedureList = NULL;
+static PollProcedure *pollProcedureList = nullptr;
 
 void NET_Poll(void)
 {
@@ -886,14 +890,14 @@ void SchedulePollProcedure(PollProcedure *proc, double timeOffset)
 	PollProcedure *pp, *prev;
 
 	proc->nextTime = Sys_DoubleTime() + timeOffset;
-	for (pp = pollProcedureList, prev = NULL; pp; pp = pp->next)
+	for (pp = pollProcedureList, prev = nullptr; pp; pp = pp->next)
 	{
 		if (pp->nextTime >= proc->nextTime)
 			break;
 		prev = pp;
 	}
 
-	if (prev == NULL)
+	if (prev == nullptr)
 	{
 		proc->next = pollProcedureList;
 		pollProcedureList = proc;

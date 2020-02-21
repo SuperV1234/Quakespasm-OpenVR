@@ -72,6 +72,11 @@ sys_socket_t UDP_Init (void)
 #endif
 		if (!(local = gethostbyname(buff)))
 		{
+			// TODO VR:
+			#ifdef __MINGW32__
+			#define	hstrerror(x)	strerror((x))
+			#endif
+
 			Con_SafePrintf("UDP_Init: gethostbyname failed (%s)\n",
 							hstrerror(h_errno));
 		}
@@ -141,7 +146,7 @@ sys_socket_t UDP_OpenSocket (int port)
 {
 	sys_socket_t newsocket;
 	struct sockaddr_in address;
-	int _true = 1;
+	u_long _true = 1;
 	int err;
 
 	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
@@ -237,6 +242,9 @@ static int PartialIPAddress (const char *in, struct qsockaddr *hostaddr)
 
 int UDP_Connect (sys_socket_t socketid, struct qsockaddr *addr)
 {
+	(void) socketid;
+	(void) addr;
+
 	return 0;
 }
 
@@ -252,6 +260,8 @@ sys_socket_t UDP_CheckNewConnections (void)
 	if (net_acceptsocket == INVALID_SOCKET)
 		return INVALID_SOCKET;
 
+	// TODO VR:
+	#ifndef __MINGW32__
 	if (ioctl (net_acceptsocket, FIONREAD, &available) == -1)
 	{
 		int err = SOCKETERRNO;
@@ -261,6 +271,8 @@ sys_socket_t UDP_CheckNewConnections (void)
 		return net_acceptsocket;
 	// quietly absorb empty packets
 	recvfrom (net_acceptsocket, buff, 0, 0, (struct sockaddr *) &from, &fromlen);
+	#endif
+
 	return INVALID_SOCKET;
 }
 
@@ -271,7 +283,8 @@ int UDP_Read (sys_socket_t socketid, byte *buf, int len, struct qsockaddr *addr)
 	socklen_t addrlen = sizeof(struct qsockaddr);
 	int ret;
 
-	ret = recvfrom (socketid, buf, len, 0, (struct sockaddr *)addr, &addrlen);
+	// TODO VR:
+	ret = recvfrom (socketid, reinterpret_cast<char*>(buf), len, 0, (struct sockaddr *)addr, &addrlen);
 	if (ret == SOCKET_ERROR)
 	{
 		int err = SOCKETERRNO;
@@ -328,7 +341,7 @@ int UDP_Write (sys_socket_t socketid, byte *buf, int len, struct qsockaddr *addr
 {
 	int	ret;
 
-	ret = sendto (socketid, buf, len, 0, (struct sockaddr *)addr,
+	ret = sendto (socketid, reinterpret_cast<char*>(buf), len, 0, (struct sockaddr *)addr,
 							sizeof(struct qsockaddr));
 	if (ret == SOCKET_ERROR)
 	{

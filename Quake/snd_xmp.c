@@ -67,7 +67,7 @@ static qboolean S_XMP_CodecOpenStream (snd_stream_t *stream)
 	int mark;
 
 	c = xmp_create_context();
-	if (c == NULL)
+	if (c == nullptr)
 		return false;
 
 	len = FS_filelength (&stream->fh);
@@ -162,7 +162,7 @@ snd_codec_t xmp_codec =
 	S_XMP_CodecReadStream,
 	S_XMP_CodecRewindStream,
 	S_XMP_CodecCloseStream,
-	NULL
+	nullptr
 };
 
 #endif	/* USE_CODEC_XMP */

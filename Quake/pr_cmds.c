@@ -786,7 +786,7 @@ static int PF_newcheckclient (int check)
 	pvs = Mod_LeafPVS (leaf, sv.worldmodel);
 
 	pvsbytes = (sv.worldmodel->numleafs+7)>>3;
-	if (checkpvs == NULL || pvsbytes > checkpvs_capacity)
+	if (checkpvs == nullptr || pvsbytes > checkpvs_capacity)
 	{
 		checkpvs_capacity = pvsbytes;
 		checkpvs = (byte *) realloc (checkpvs, checkpvs_capacity);
@@ -1382,7 +1382,7 @@ static void PF_aim (void)
 // try all possible entities
 	VectorCopy (dir, bestdir);
 	bestdist = sv_aim.value;
-	bestent = NULL;
+	bestent = nullptr;
 
 	check = NEXT_EDICT(sv.edicts);
 	for (i = 1; i < sv.num_edicts; i++, check = NEXT_EDICT(check) )
@@ -1505,7 +1505,7 @@ static sizebuf_t *WriteDest (void)
 		break;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static void PF_WriteByte (void)

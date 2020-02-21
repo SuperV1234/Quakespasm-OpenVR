@@ -39,6 +39,8 @@ static int	buffersize;
 
 static void SDLCALL paint_audio (void *unused, Uint8 *stream, int len)
 {
+	(void) unused;
+
 	int	pos, tobufend;
 	int	len1, len2;
 
@@ -105,10 +107,10 @@ qboolean SNDDMA_Init (dma_t *dma)
 	else
 		desired.samples = 4096; /* for 96 kHz */
 	desired.callback = paint_audio;
-	desired.userdata = NULL;
+	desired.userdata = nullptr;
 
 	/* Open the audio device */
-	if (SDL_OpenAudio(&desired, NULL) == -1)
+	if (SDL_OpenAudio(&desired, nullptr) == -1)
 	{
 		Con_Printf("Couldn't open SDL audio: %s\n", SDL_GetError());
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
@@ -119,7 +121,7 @@ qboolean SNDDMA_Init (dma_t *dma)
 	shm = dma;
 
 	/* Fill the audio DMA information block */
-	/* Since we passed NULL as the 'obtained' spec to SDL_OpenAudio(),
+	/* Since we passed nullptr as the 'obtained' spec to SDL_OpenAudio(),
 	 * SDL will convert to hardware format for us if needed, hence we
 	 * directly use the desired values here. */
 	shm->samplebits = (desired.format & 0xFF); /* first byte of format is bits */
@@ -146,11 +148,11 @@ qboolean SNDDMA_Init (dma_t *dma)
 		const char *driver = SDL_GetCurrentAudioDriver();
 		const char *device = SDL_GetAudioDeviceName(0, SDL_FALSE);
 		q_snprintf(drivername, sizeof(drivername), "%s - %s",
-			driver != NULL ? driver : "(UNKNOWN)",
-			device != NULL ? device : "(UNKNOWN)");
+			driver != nullptr ? driver : "(UNKNOWN)",
+			device != nullptr ? device : "(UNKNOWN)");
 	}
 #else
-	if (SDL_AudioDriverName(drivername, sizeof(drivername)) == NULL)
+	if (SDL_AudioDriverName(drivername, sizeof(drivername)) == nullptr)
 		strcpy(drivername, "(UNKNOWN)");
 #endif
 	buffersize = shm->samples * (shm->samplebits / 8);
@@ -161,7 +163,7 @@ qboolean SNDDMA_Init (dma_t *dma)
 	{
 		SDL_CloseAudio();
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
-		shm = NULL;
+		shm = nullptr;
 		Con_Printf ("Failed allocating memory for SDL audio\n");
 		return false;
 	}
@@ -185,8 +187,8 @@ void SNDDMA_Shutdown (void)
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		if (shm->buffer)
 			free (shm->buffer);
-		shm->buffer = NULL;
-		shm = NULL;
+		shm->buffer = nullptr;
+		shm = nullptr;
 	}
 }
 

@@ -68,14 +68,6 @@
 
 /*==========================================================================*/
 
-#ifndef NULL
-#if defined(__cplusplus)
-#define	NULL		0
-#else
-#define	NULL		((void *)0)
-#endif
-#endif
-
 #define	Q_MAXCHAR	((char)0x7f)
 #define	Q_MAXSHORT	((short)0x7fff)
 #define	Q_MAXINT	((int)0x7fffffff)
@@ -91,20 +83,17 @@
 /* Make sure the types really have the right
  * sizes: These macros are from SDL headers.
  */
-#define	COMPILE_TIME_ASSERT(name, x)	\
-	typedef int dummy_ ## name[(x) * 2 - 1]
-
-COMPILE_TIME_ASSERT(char, sizeof(char) == 1);
-COMPILE_TIME_ASSERT(float, sizeof(float) == 4);
-COMPILE_TIME_ASSERT(long, sizeof(long) >= 4);
-COMPILE_TIME_ASSERT(int, sizeof(int) == 4);
-COMPILE_TIME_ASSERT(short, sizeof(short) == 2);
+static_assert(sizeof(char) == 1);
+static_assert(sizeof(float) == 4);
+static_assert(sizeof(long) >= 4);
+static_assert(sizeof(int) == 4);
+static_assert(sizeof(short) == 2);
 
 /* make sure enums are the size of ints for structure packing */
 typedef enum {
 	THE_DUMMY_VALUE
 } THE_DUMMY_ENUM;
-COMPILE_TIME_ASSERT(enum, sizeof(THE_DUMMY_ENUM) == sizeof(int));
+static_assert(sizeof(THE_DUMMY_ENUM) == sizeof(int));
 
 
 /* Provide a substitute for offsetof() if we don't have one.
@@ -117,31 +106,22 @@ COMPILE_TIME_ASSERT(enum, sizeof(THE_DUMMY_ENUM) == sizeof(int));
 
 /*==========================================================================*/
 
-typedef unsigned char		byte;
+typedef unsigned char byte;
 
 #undef true
 #undef false
-#if defined(__cplusplus)
 /* some structures have qboolean members and the x86 asm code expect
  * those members to be 4 bytes long. therefore, qboolean must be 32
  * bits and it can NOT be binary compatible with the 8 bit C++ bool.  */
 typedef int	qboolean;
-COMPILE_TIME_ASSERT(falsehood, (0 == false));
-COMPILE_TIME_ASSERT(truth, (1  == true));
-#else
-typedef enum {
-	false = 0,
-	true  = 1
-} qboolean;
-COMPILE_TIME_ASSERT(falsehood, ((1 != 1) == false));
-COMPILE_TIME_ASSERT(truth, ((1 == 1) == true));
-#endif
-COMPILE_TIME_ASSERT(qboolean, sizeof(qboolean) == 4);
+static_assert(0 == false);
+static_assert(1 == true);
+static_assert(sizeof(qboolean) == 4);
 
 /*==========================================================================*/
 
 /* math */
-typedef float	vec_t;
+using vec_t = float;
 using vec3_t = vec_t[3];
 
 // TODO VR:
@@ -153,11 +133,11 @@ struct vec3_t : glm::vec3
 };
 */
 
-typedef vec_t	vec4_t[4];
-typedef vec_t	vec5_t[5];
-typedef int	fixed4_t;
-typedef int	fixed8_t;
-typedef int	fixed16_t;
+using vec4_t = vec_t[4];
+using vec5_t = vec_t[5];
+using fixed4_t = int;
+using fixed8_t = int;
+using fixed16_t = int;
 
 
 /*==========================================================================*/
@@ -206,47 +186,7 @@ typedef ptrdiff_t	ssize_t;
 #define FUNCP_PRINTF(x,y)
 #endif
 
-/* llvm's optnone function attribute started with clang-3.5.0 */
-#if defined(__clang__) && \
-           (__clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 5))
-#define FUNC_NO_OPTIMIZE	__attribute__((__optnone__))
-/* function optimize attribute is added starting with gcc 4.4.0 */
-#elif defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 3))
-#define FUNC_NO_OPTIMIZE	__attribute__((__optimize__("0")))
-#else
-#define FUNC_NO_OPTIMIZE
-#endif
-
-#if defined(__GNUC__)
-#define FUNC_NORETURN	__attribute__((__noreturn__))
-#elif defined(_MSC_VER) && (_MSC_VER >= 1200)
-#define FUNC_NORETURN		__declspec(noreturn)
-#elif defined(__WATCOMC__)
-#define FUNC_NORETURN /* use the 'aborts' aux pragma */
-#else
-#define FUNC_NORETURN
-#endif
-
-#if defined(__GNUC__) && ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
-#define FUNC_NOINLINE	__attribute__((__noinline__))
-#elif defined(_MSC_VER) && (_MSC_VER >= 1300)
-#define FUNC_NOINLINE		__declspec(noinline)
-#else
-#define FUNC_NOINLINE
-#endif
-
-#if defined(__GNUC__) && ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5))
-#define FUNC_NOCLONE	__attribute__((__noclone__))
-#else
-#define FUNC_NOCLONE
-#endif
-
-#if defined(_MSC_VER) && !defined(__cplusplus)
-#define inline __inline
-#endif	/* _MSC_VER */
-
 /*==========================================================================*/
-
 
 #endif	/* __QSTDINC_H */
 

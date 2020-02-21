@@ -146,7 +146,7 @@ void CFG_CloseConfig (void)
 	{
 		FS_fclose(cfg_file);
 		Z_Free(cfg_file);
-		cfg_file = NULL;
+		cfg_file = nullptr;
 	}
 }
 
@@ -158,7 +158,7 @@ int CFG_OpenConfig (const char *cfg_name)
 
 	CFG_CloseConfig ();
 
-	length = (long) COM_FOpenFile (cfg_name, &f, NULL);
+	length = (long) COM_FOpenFile (cfg_name, &f, nullptr);
 	pak = file_from_pak;
 	if (length == -1)
 		return -1;

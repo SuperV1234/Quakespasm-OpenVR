@@ -45,10 +45,10 @@ void PL_SetWindowIcon (void)
 
 	/* SDL_RWFromConstMem() requires SDL >= 1.2.7 */
 	rwop = SDL_RWFromConstMem(bmp_bytes, sizeof(bmp_bytes));
-	if (rwop == NULL)
+	if (rwop == nullptr)
 		return;
 	icon = SDL_LoadBMP_RW(rwop, 1);
-	if (icon == NULL)
+	if (icon == nullptr)
 		return;
 	/* make pure magenta (#ff00ff) tranparent */
 	colorkey = SDL_MapRGB(icon->format, 255, 0, 255);
@@ -57,7 +57,7 @@ void PL_SetWindowIcon (void)
 	SDL_SetWindowIcon((SDL_Window*) VID_GetWindow(), icon);
 #else
 	SDL_SetColorKey(icon, SDL_SRCCOLORKEY, colorkey);
-	SDL_WM_SetIcon(icon, NULL);
+	SDL_WM_SetIcon(icon, nullptr);
 #endif
 	SDL_FreeSurface(icon);
 }
@@ -69,11 +69,11 @@ void PL_VID_Shutdown (void)
 #define MAX_CLIPBOARDTXT	MAXCMDLINE	/* 256 */
 char *PL_GetClipboardData (void)
 {
-	char *data = NULL;
+	char *data = nullptr;
 #if defined(USE_SDL2)
 	char *cliptext = SDL_GetClipboardText();
 
-	if (cliptext != NULL)
+	if (cliptext != nullptr)
 	{
 		size_t size = strlen(cliptext) + 1;
 	/* this is intended for simple small text copies

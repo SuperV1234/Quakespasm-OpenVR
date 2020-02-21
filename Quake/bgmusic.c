@@ -53,26 +53,26 @@ typedef struct music_handler_s
 
 static music_handler_t wanted_handlers[] =
 {
-	{ CODECTYPE_VORBIS,BGM_STREAMER,-1,  "ogg", MUSIC_DIRNAME, NULL },
-	{ CODECTYPE_OPUS, BGM_STREAMER, -1, "opus", MUSIC_DIRNAME, NULL },
-	{ CODECTYPE_MP3,  BGM_STREAMER, -1,  "mp3", MUSIC_DIRNAME, NULL },
-	{ CODECTYPE_FLAC, BGM_STREAMER, -1, "flac", MUSIC_DIRNAME, NULL },
-	{ CODECTYPE_WAV,  BGM_STREAMER, -1,  "wav", MUSIC_DIRNAME, NULL },
-	{ CODECTYPE_MOD,  BGM_STREAMER, -1,  "it",  MUSIC_DIRNAME, NULL },
-	{ CODECTYPE_MOD,  BGM_STREAMER, -1,  "s3m", MUSIC_DIRNAME, NULL },
-	{ CODECTYPE_MOD,  BGM_STREAMER, -1,  "xm",  MUSIC_DIRNAME, NULL },
-	{ CODECTYPE_MOD,  BGM_STREAMER, -1,  "mod", MUSIC_DIRNAME, NULL },
-	{ CODECTYPE_UMX,  BGM_STREAMER, -1,  "umx", MUSIC_DIRNAME, NULL },
-	{ CODECTYPE_NONE, BGM_NONE,     -1,   NULL,         NULL,  NULL }
+	{ CODECTYPE_VORBIS,BGM_STREAMER,-1,  "ogg", MUSIC_DIRNAME, nullptr },
+	{ CODECTYPE_OPUS, BGM_STREAMER, -1, "opus", MUSIC_DIRNAME, nullptr },
+	{ CODECTYPE_MP3,  BGM_STREAMER, -1,  "mp3", MUSIC_DIRNAME, nullptr },
+	{ CODECTYPE_FLAC, BGM_STREAMER, -1, "flac", MUSIC_DIRNAME, nullptr },
+	{ CODECTYPE_WAV,  BGM_STREAMER, -1,  "wav", MUSIC_DIRNAME, nullptr },
+	{ CODECTYPE_MOD,  BGM_STREAMER, -1,  "it",  MUSIC_DIRNAME, nullptr },
+	{ CODECTYPE_MOD,  BGM_STREAMER, -1,  "s3m", MUSIC_DIRNAME, nullptr },
+	{ CODECTYPE_MOD,  BGM_STREAMER, -1,  "xm",  MUSIC_DIRNAME, nullptr },
+	{ CODECTYPE_MOD,  BGM_STREAMER, -1,  "mod", MUSIC_DIRNAME, nullptr },
+	{ CODECTYPE_UMX,  BGM_STREAMER, -1,  "umx", MUSIC_DIRNAME, nullptr },
+	{ CODECTYPE_NONE, BGM_NONE,     -1,   nullptr,         nullptr,  nullptr }
 };
 
-static music_handler_t *music_handlers = NULL;
+static music_handler_t *music_handlers = nullptr;
 
 #define ANY_CODECTYPE	0xFFFFFFFF
 #define CDRIP_TYPES	(CODECTYPE_VORBIS | CODECTYPE_MP3 | CODECTYPE_FLAC | CODECTYPE_WAV | CODECTYPE_OPUS)
 #define CDRIPTYPE(x)	(((x) & CDRIP_TYPES) != 0)
 
-static snd_stream_t *bgmstream = NULL;
+static snd_stream_t *bgmstream = nullptr;
 
 static void BGM_Play_f (void)
 {
@@ -124,7 +124,7 @@ static void BGM_Stop_f (void)
 
 qboolean BGM_Init (void)
 {
-	music_handler_t *handlers = NULL;
+	music_handler_t *handlers = nullptr;
 	int i;
 
 	Cvar_RegisterVariable(&bgm_extmusic);
@@ -177,7 +177,7 @@ void BGM_Shutdown (void)
 	BGM_Stop();
 /* sever our connections to
  * midi_drv and snd_codec */
-	music_handlers = NULL;
+	music_handlers = nullptr;
 }
 
 static void BGM_Play_noext (const char *filename, unsigned int allowed_types)
@@ -228,7 +228,7 @@ void BGM_Play (const char *filename)
 
 	BGM_Stop();
 
-	if (music_handlers == NULL)
+	if (music_handlers == nullptr)
 		return;
 
 	if (!filename || !*filename)
@@ -294,7 +294,7 @@ void BGM_PlayCDtrack (byte track, qboolean looping)
 	if (CDAudio_Play(track, looping) == 0)
 		return;			/* success */
 
-	if (music_handlers == NULL)
+	if (music_handlers == nullptr)
 		return;
 
 	if (no_extmusic || !bgm_extmusic.value)
@@ -302,7 +302,7 @@ void BGM_PlayCDtrack (byte track, qboolean looping)
 
 	prev_id = 0;
 	type = 0;
-	ext  = NULL;
+	ext  = nullptr;
 	handler = music_handlers;
 	while (handler)
 	{
@@ -323,7 +323,7 @@ void BGM_PlayCDtrack (byte track, qboolean looping)
 	_next:
 		handler = handler->next;
 	}
-	if (ext == NULL)
+	if (ext == nullptr)
 		Con_Printf("Couldn't find a cdrip for track %d\n", (int)track);
 	else
 	{
@@ -341,7 +341,7 @@ void BGM_Stop (void)
 	{
 		bgmstream->status = STREAM_NONE;
 		S_CodecCloseStream(bgmstream);
-		bgmstream = NULL;
+		bgmstream = nullptr;
 		s_rawend = 0;
 	}
 }

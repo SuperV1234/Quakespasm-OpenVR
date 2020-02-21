@@ -453,7 +453,7 @@ snd_codec_t mp3_codec =
 	S_MP3_CodecReadStream,
 	S_MP3_CodecRewindStream,
 	S_MP3_CodecCloseStream,
-	NULL
+	nullptr
 };
 
 #endif	/* USE_CODEC_MP3 */

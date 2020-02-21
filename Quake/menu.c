@@ -322,25 +322,11 @@ void M_Main_Key (int key)
 
 		switch (m_main_cursor)
 		{
-		case 0:
-			M_Menu_SinglePlayer_f ();
-			break;
-
-		case 1:
-			M_Menu_MultiPlayer_f ();
-			break;
-
-		case 2:
-			M_Menu_Options_f ();
-			break;
-
-		case 3:
-			M_Menu_Help_f ();
-			break;
-
-		case 4:
-			M_Menu_Quit_f ();
-			break;
+			case 0: M_Menu_SinglePlayer_f (); break;
+			case 1: M_Menu_MultiPlayer_f (); break;
+			case 2: M_Menu_Options_f (); break;
+			case 3: M_Menu_Help_f (); break;
+			case 4: M_Menu_Quit_f (); break;
 		}
 	}
 }
@@ -1269,7 +1255,7 @@ void M_Options_Draw (void)
 	// OPT_VIDEO:
 	if (vid_menudrawfn)
 		M_Print (16, 32 + 8*OPT_VIDEO,	"         Video Options");
-	 
+
 	// OPT_VR:
 	if (vid_menudrawfn)
 		M_Print(16, 32 + 8 * OPT_VR, "         VR Options");
@@ -1277,7 +1263,7 @@ void M_Options_Draw (void)
 	// OPT_WPN_OFFSET:
 	if (vid_menudrawfn)
 		M_Print(16, 32 + 8 * OPT_WPN_OFFSET, "      Weapon Offset");
-	
+
 	if (vid_menudrawfn)
 		M_Print(16, 32 + 8 * OPT_SBAR_OFFSET, "  Status Bar Offset");
 
@@ -1349,7 +1335,7 @@ void M_Options_Key (int k)
 		break;
 	}
 
-	if (options_cursor == OPTIONS_ITEMS - 1 && vid_menudrawfn == NULL)
+	if (options_cursor == OPTIONS_ITEMS - 1 && vid_menudrawfn == nullptr)
 	{
 		if (k == K_UPARROW)
 			options_cursor = OPTIONS_ITEMS - 2;
@@ -1438,7 +1424,7 @@ void M_UnbindCommand (const char *command)
 		if (!b)
 			continue;
 		if (!strncmp (b, command, l) )
-			Key_SetBinding (j, NULL);
+			Key_SetBinding (j, nullptr);
 	}
 }
 
@@ -2538,6 +2524,7 @@ void M_Search_Draw (void)
 
 void M_Search_Key (int key)
 {
+	(void) key;
 }
 
 //=============================================================================

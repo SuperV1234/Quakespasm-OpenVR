@@ -46,7 +46,7 @@ static int	snd_blocked = 0;
 static qboolean	snd_initialized = false;
 
 static dma_t	sn;
-volatile dma_t	*shm = NULL;
+volatile dma_t	*shm = nullptr;
 
 vec3_t		listener_origin;
 vec3_t		listener_forward;
@@ -63,7 +63,7 @@ portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
 
 #define	MAX_SFX		1024
-static sfx_t	*known_sfx = NULL;	// hunk allocated [MAX_SFX]
+static sfx_t	*known_sfx = nullptr;	// hunk allocated [MAX_SFX]
 static int	num_sfx;
 
 static sfx_t	*ambient_sfx[NUM_AMBIENTS];
@@ -116,11 +116,15 @@ static void S_SoundInfo_f (void)
 
 static void SND_Callback_sfxvolume (cvar_t *var)
 {
+	(void) var;
+
 	SND_InitScaletable ();
 }
 
 static void SND_Callback_snd_filterquality (cvar_t *var)
 {
+	(void) var;
+
 	if (snd_filterquality.value < 1 || snd_filterquality.value > 5)
 	{
 		Con_Printf ("snd_filterquality must be between 1 and 5\n");
@@ -182,7 +186,7 @@ void S_Init (void)
 	Cvar_RegisterVariable(&sndspeed);
 	Cvar_RegisterVariable(&snd_mixspeed);
 	Cvar_RegisterVariable(&snd_filterquality);
-	
+
 	if (safemode || COM_CheckParm("-nosound"))
 		return;
 
@@ -199,7 +203,7 @@ void S_Init (void)
 	{
 		Cvar_SetQuick (&sndspeed, com_argv[i+1]);
 	}
-	
+
 	i = COM_CheckParm("-mixspeed");
 	if (i && i < com_argc-1)
 	{
@@ -253,7 +257,7 @@ void S_Shutdown (void)
 	S_CodecShutdown();
 
 	SNDDMA_Shutdown();
-	shm = NULL;
+	shm = nullptr;
 }
 
 
@@ -327,7 +331,7 @@ sfx_t *S_PrecacheSound (const char *name)
 	sfx_t	*sfx;
 
 	if (!sound_started || nosound.value)
-		return NULL;
+		return nullptr;
 
 	sfx = S_FindName (name);
 
@@ -379,10 +383,10 @@ channel_t *SND_PickChannel (int entnum, int entchannel)
 	}
 
 	if (first_to_die == -1)
-		return NULL;
+		return nullptr;
 
 	if (snd_channels[first_to_die].sfx)
-		snd_channels[first_to_die].sfx = NULL;
+		snd_channels[first_to_die].sfx = nullptr;
 
 	return &snd_channels[first_to_die];
 }
@@ -479,7 +483,7 @@ void S_StartSound (int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float 
 	sc = S_LoadSound (sfx);
 	if (!sc)
 	{
-		target_chan->sfx = NULL;
+		target_chan->sfx = nullptr;
 		return;		// couldn't load the sound's data
 	}
 
@@ -524,7 +528,7 @@ void S_StopSound (int entnum, int entchannel)
 			&& snd_channels[i].entchannel == entchannel)
 		{
 			snd_channels[i].end = 0;
-			snd_channels[i].sfx = NULL;
+			snd_channels[i].sfx = nullptr;
 			return;
 		}
 	}
@@ -542,7 +546,7 @@ void S_StopAllSounds (qboolean clear)
 	for (i = 0; i < MAX_CHANNELS; i++)
 	{
 		if (snd_channels[i].sfx)
-			snd_channels[i].sfx = NULL;
+			snd_channels[i].sfx = nullptr;
 	}
 
 	memset(snd_channels, 0, MAX_CHANNELS * sizeof(channel_t));
@@ -646,7 +650,7 @@ static void S_UpdateAmbientSounds (void)
 	if (!l || !ambient_level.value)
 	{
 		for (ambient_channel = 0; ambient_channel < NUM_AMBIENTS; ambient_channel++)
-			snd_channels[ambient_channel].sfx = NULL;
+			snd_channels[ambient_channel].sfx = nullptr;
 		return;
 	}
 
@@ -788,7 +792,7 @@ void S_Update (vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 // update general area ambient sound sources
 	S_UpdateAmbientSounds ();
 
-	combine = NULL;
+	combine = nullptr;
 
 // update spatialization for static and dynamic sounds
 	ch = snd_channels + NUM_AMBIENTS;
@@ -823,7 +827,7 @@ void S_Update (vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 
 			if (j == total_channels)
 			{
-				combine = NULL;
+				combine = nullptr;
 			}
 			else
 			{

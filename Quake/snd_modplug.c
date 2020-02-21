@@ -114,7 +114,7 @@ snd_codec_t modplug_codec =
 	S_MODPLUG_CodecReadStream,
 	S_MODPLUG_CodecRewindStream,
 	S_MODPLUG_CodecCloseStream,
-	NULL
+	nullptr
 };
 
 #endif	/* USE_CODEC_MODPLUG */

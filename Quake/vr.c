@@ -24,6 +24,7 @@ static void vec3lerp(vec3_t out, vec3_t start, vec3_t end, double f)
 	out[2] = lerp(start[2], end[2], f);
 }
 
+// TODO VR:
 template <typename _Fp>
 constexpr
 _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
@@ -32,7 +33,7 @@ _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
 
 	if (__t == 1) return __b;
 	const _Fp __x = __a + __t * (__b - __a);
-	if (__t > 1 == __b > __a)
+	if ((__t > 1) == (__b > __a))
 		return __b < __x ? __x : __b;
 	else
 		return __x < __b ? __x : __b;
@@ -111,7 +112,7 @@ struct {
 	{ &glFramebufferRenderbufferEXT, "glFramebufferRenderbufferEXT" },
 	{ &glCheckFramebufferStatusEXT, "glCheckFramebufferStatusEXT"},
 	{ &wglSwapIntervalEXT, "wglSwapIntervalEXT" },
-{ NULL, NULL },
+{ nullptr, nullptr },
 };
 
 // main screen & 2D drawing
@@ -149,14 +150,12 @@ vr::IVRSystem *ovrHMD;
 vr::TrackedDevicePose_t ovr_DevicePose[vr::k_unMaxTrackedDeviceCount];
 
 static vr_eye_t eyes[2];
-static vr_eye_t *current_eye = NULL;
+static vr_eye_t *current_eye = nullptr;
 static vr_controller controllers[2];
 static vec3_t lastOrientation = { 0, 0, 0 };
 static vec3_t lastAim = { 0, 0, 0 };
 
 static bool vr_initialized = false;
-static GLuint mirror_texture = 0;
-static GLuint mirror_fbo = 0;
 
 static vec3_t headOrigin;
 static vec3_t lastHeadOrigin;
@@ -262,14 +261,14 @@ void RecreateTextures(fbo_t* fbo, int width, int height)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
 
 	glBindTexture(GL_TEXTURE_2D, fbo->texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
 	fbo->size.width = width;
 	fbo->size.height = height;
@@ -282,7 +281,6 @@ void RecreateTextures(fbo_t* fbo, int width, int height)
 
 fbo_t CreateFBO(int width, int height) {
 	fbo_t fbo;
-	int swap_chain_length = 0;
 
 	glGenFramebuffersEXT(1, &fbo.framebuffer);
 
@@ -452,6 +450,8 @@ void HmdVec3RotateY(vr::HmdVector3_t* pos, float angle)
 
 static void VR_Enabled_f(cvar_t *var)
 {
+	(void) var;
+
 	VID_VR_Disable();
 
 	if (!vr_enabled.value)
@@ -465,10 +465,14 @@ static void VR_Enabled_f(cvar_t *var)
 
 static void VR_Deadzone_f(cvar_t *var)
 {
+	(void) var;
+
 	// clamp the mouse to a max of 0 - 70 degrees
-	float deadzone = CLAMP(0.0f, vr_deadzone.value, 70.0f);
+	const auto deadzone = CLAMP(0.0f, vr_deadzone.value, 70.0f);
 	if (deadzone != vr_deadzone.value)
+	{
 		Cvar_SetValueQuick(&vr_deadzone, deadzone);
+	}
 }
 
 //Weapon scale/position stuff
@@ -722,7 +726,7 @@ void VID_VR_Disable()
 		return;
 
 	vr::VR_Shutdown();
-	ovrHMD = NULL;
+	ovrHMD = nullptr;
 
 	// Reset the view height
 	cl.viewheight = DEFAULT_VIEWHEIGHT;
@@ -790,7 +794,7 @@ static void RenderScreenForCurrentEye_OVR()
 		glBlitFramebufferEXT(0, 0, glwidth, glheight, 0, 0, glwidth, glheight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
 
-	vr::Texture_t eyeTexture = { (void*)current_eye->fbo.texture, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
+	vr::Texture_t eyeTexture = { reinterpret_cast<void*>(uintptr_t(current_eye->fbo.texture)), vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	vr::VRCompositor()->Submit(current_eye->eye, &eyeTexture);
 
 	// Reset
@@ -880,10 +884,10 @@ void VR_UpdateScreenContent()
 	entity_t *player = &cl_entities[cl.viewentity];
 
 	// Update poses
-	vr::VRCompositor()->WaitGetPoses(ovr_DevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+	vr::VRCompositor()->WaitGetPoses(ovr_DevicePose, vr::k_unMaxTrackedDeviceCount, nullptr, 0);
 
 	// Get the VR devices' orientation and position
-	for (int iDevice = 0; iDevice < vr::k_unMaxTrackedDeviceCount; iDevice++)
+	for (uint32_t iDevice = 0; iDevice < vr::k_unMaxTrackedDeviceCount; iDevice++)
 	{
 		// HMD vectors update
 		if (ovr_DevicePose[iDevice].bPoseIsValid && ovrHMD->GetTrackedDeviceClass(iDevice) == vr::TrackedDeviceClass_HMD)
@@ -1526,7 +1530,7 @@ void IdentifyAxes(int device)
 	if (identified)
 		return;
 
-	for (int i = 0; i < vr::k_unControllerStateAxisCount; i++)
+	for (uint32_t i = 0; i < vr::k_unControllerStateAxisCount; i++)
 	{
 		switch (vr::VRSystem()->GetInt32TrackedDeviceProperty(device, (vr::ETrackedDeviceProperty) (vr::Prop_Axis0Type_Int32 + i), nullptr))
 		{

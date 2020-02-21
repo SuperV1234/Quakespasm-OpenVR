@@ -88,7 +88,7 @@ void SV_Init (void)
 	extern	cvar_t	sv_aim;
 	extern	cvar_t	sv_altnoclip; //johnfitz
 
-	sv.edicts = NULL; // ericw -- sv.edicts switched to use malloc()
+	sv.edicts = nullptr; // ericw -- sv.edicts switched to use malloc()
 
 	Cvar_RegisterVariable (&sv_maxvelocity);
 	Cvar_RegisterVariable (&sv_gravity);
@@ -511,7 +511,7 @@ given point.
 byte *SV_FatPVS (vec3_t org, qmodel_t *worldmodel) //johnfitz -- added worldmodel as a parameter
 {
 	fatbytes = (worldmodel->numleafs+7)>>3; // ericw -- was +31, assumed to be a bug/typo
-	if (fatpvs == NULL || fatbytes > fatpvs_capacity)
+	if (fatpvs == nullptr || fatbytes > fatpvs_capacity)
 	{
 		fatpvs_capacity = fatbytes;
 		fatpvs = (byte *) realloc (fatpvs, fatpvs_capacity);

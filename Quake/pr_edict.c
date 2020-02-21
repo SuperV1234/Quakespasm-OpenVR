@@ -68,8 +68,8 @@ typedef struct {
 
 static gefv_cache	gefvCache[GEFV_CACHESIZE] =
 {
-		{ NULL,	"" },
-		{ NULL,	"" }
+		{ nullptr,	"" },
+		{ nullptr,	"" }
 };
 
 cvar_t	nomonsters = {"nomonsters", "0", CVAR_NONE};
@@ -88,7 +88,7 @@ cvar_t	saved4 = {"saved4", "0", CVAR_ARCHIVE};
 =================
 ED_ClearEdict
 
-Sets everything to NULL
+Sets everything to nullptr
 =================
 */
 void ED_ClearEdict (edict_t *e)
@@ -140,7 +140,7 @@ edict_t *ED_Alloc (void)
 ED_Free
 
 Marks the edict as free
-FIXME: walk all entities and NULL out references to this entity
+FIXME: walk all entities and nullptr out references to this entity
 =================
 */
 void ED_Free (edict_t *ed)
@@ -181,7 +181,7 @@ static ddef_t *ED_GlobalAtOfs (int ofs)
 		if (def->ofs == ofs)
 			return def;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -200,7 +200,7 @@ static ddef_t *ED_FieldAtOfs (int ofs)
 		if (def->ofs == ofs)
 			return def;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -219,7 +219,7 @@ static ddef_t *ED_FindField (const char *name)
 		if ( !strcmp(PR_GetString(def->s_name), name) )
 			return def;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -239,7 +239,7 @@ static ddef_t *ED_FindGlobal (const char *name)
 		if ( !strcmp(PR_GetString(def->s_name), name) )
 			return def;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -259,7 +259,7 @@ static dfunction_t *ED_FindFunction (const char *fn_name)
 		if ( !strcmp(PR_GetString(func->s_name), fn_name) )
 			return func;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -269,7 +269,7 @@ GetEdictFieldValue
 */
 eval_t *GetEdictFieldValue(edict_t *ed, const char *field)
 {
-	ddef_t			*def = NULL;
+	ddef_t			*def = nullptr;
 	int				i;
 	static int		rep = 0;
 
@@ -293,7 +293,7 @@ eval_t *GetEdictFieldValue(edict_t *ed, const char *field)
 
 Done:
 	if (!def)
-		return NULL;
+		return nullptr;
 
 	return (eval_t *)((char *)&ed->v + def->ofs*4);
 }
@@ -972,7 +972,7 @@ to call ED_CallSpawnFunctions () to let the objects initialize themselves.
 void ED_LoadFromFile (const char *data)
 {
 	dfunction_t	*func;
-	edict_t		*ent = NULL;
+	edict_t		*ent = nullptr;
 	int		inhibit = 0;
 
 	pr_global_struct->time = sv.time;
@@ -1058,7 +1058,7 @@ void PR_LoadProgs (void)
 
 	CRC_Init (&pr_crc);
 
-	progs = (dprograms_t *)COM_LoadHunkFile ("progs.dat", NULL);
+	progs = (dprograms_t *)COM_LoadHunkFile ("progs.dat", nullptr);
 	if (!progs)
 		Host_Error ("PR_LoadProgs: couldn't load progs.dat");
 	Con_DPrintf ("Programs occupy %iK.\n", com_filesize/1024);
@@ -1086,7 +1086,7 @@ void PR_LoadProgs (void)
 	pr_stringssize = progs->numstrings;
 	if (pr_knownstrings)
 		Z_Free ((void *)pr_knownstrings);
-	pr_knownstrings = NULL;
+	pr_knownstrings = nullptr;
 	PR_SetEngineString("");
 
 	pr_globaldefs = (ddef_t *)((byte *)progs + progs->ofs_globaldefs);
