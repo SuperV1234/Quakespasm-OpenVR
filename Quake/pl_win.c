@@ -38,77 +38,74 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static HICON icon;
 
-void PL_SetWindowIcon (void)
+void PL_SetWindowIcon(void)
 {
-	HINSTANCE handle;
-	SDL_SysWMinfo wminfo;
-	HWND hwnd;
+    HINSTANCE handle;
+    SDL_SysWMinfo wminfo;
+    HWND hwnd;
 
-	handle = GetModuleHandle(nullptr);
-	icon = LoadIcon(handle, "icon");
+    handle = GetModuleHandle(nullptr);
+    icon = LoadIcon(handle, "icon");
 
-	if (!icon)
-		return;	/* no icon in the exe */
+    if(!icon) return; /* no icon in the exe */
 
-	SDL_VERSION(&wminfo.version);
+    SDL_VERSION(&wminfo.version);
 
 #if defined(USE_SDL2)
-	if (SDL_GetWindowWMInfo((SDL_Window*) VID_GetWindow(), &wminfo) != SDL_TRUE)
-		return;	/* wrong SDL version */
+    if(SDL_GetWindowWMInfo((SDL_Window*)VID_GetWindow(), &wminfo) != SDL_TRUE)
+        return; /* wrong SDL version */
 
-	hwnd = wminfo.info.win.window;
+    hwnd = wminfo.info.win.window;
 #else
-	if (SDL_GetWMInfo(&wminfo) != 1)
-		return;	/* wrong SDL version */
+    if(SDL_GetWMInfo(&wminfo) != 1) return; /* wrong SDL version */
 
-	hwnd = wminfo.window;
+    hwnd = wminfo.window;
 #endif
 #ifdef _WIN64
-	SetClassLongPtr(hwnd, GCLP_HICON, (LONG_PTR) icon);
+    SetClassLongPtr(hwnd, GCLP_HICON, (LONG_PTR)icon);
 #else
-	SetClassLong(hwnd, GCL_HICON, (LONG) icon);
+    SetClassLong(hwnd, GCL_HICON, (LONG)icon);
 #endif
 }
 
-void PL_VID_Shutdown (void)
+void PL_VID_Shutdown(void)
 {
-	DestroyIcon(icon);
+    DestroyIcon(icon);
 }
 
-#define MAX_CLIPBOARDTXT	MAXCMDLINE	/* 256 */
-char *PL_GetClipboardData (void)
+#define MAX_CLIPBOARDTXT MAXCMDLINE /* 256 */
+char* PL_GetClipboardData(void)
 {
-	char *data = nullptr;
-	char *cliptext;
+    char* data = nullptr;
+    char* cliptext;
 
-	if (OpenClipboard(nullptr) != 0)
-	{
-		HANDLE hClipboardData;
+    if(OpenClipboard(nullptr) != 0)
+    {
+        HANDLE hClipboardData;
 
-		if ((hClipboardData = GetClipboardData(CF_TEXT)) != nullptr)
-		{
-			cliptext = (char *) GlobalLock(hClipboardData);
-			if (cliptext != nullptr)
-			{
-				size_t size = GlobalSize(hClipboardData) + 1;
-			/* this is intended for simple small text copies
-			 * such as an ip address, etc:  do chop the size
-			 * here, otherwise we may experience Z_Malloc()
-			 * failures and all other not-oh-so-fun stuff. */
-				size = q_min(MAX_CLIPBOARDTXT, size);
-				data = (char *) Z_Malloc(size);
-				q_strlcpy (data, cliptext, size);
-				GlobalUnlock (hClipboardData);
-			}
-		}
-		CloseClipboard ();
-	}
-	return data;
+        if((hClipboardData = GetClipboardData(CF_TEXT)) != nullptr)
+        {
+            cliptext = (char*)GlobalLock(hClipboardData);
+            if(cliptext != nullptr)
+            {
+                size_t size = GlobalSize(hClipboardData) + 1;
+                /* this is intended for simple small text copies
+                 * such as an ip address, etc:  do chop the size
+                 * here, otherwise we may experience Z_Malloc()
+                 * failures and all other not-oh-so-fun stuff. */
+                size = q_min(MAX_CLIPBOARDTXT, size);
+                data = (char*)Z_Malloc(size);
+                q_strlcpy(data, cliptext, size);
+                GlobalUnlock(hClipboardData);
+            }
+        }
+        CloseClipboard();
+    }
+    return data;
 }
 
-void PL_ErrorDialog(const char *errorMsg)
+void PL_ErrorDialog(const char* errorMsg)
 {
-	MessageBox (nullptr, errorMsg, "Quake Error",
-			MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
+    MessageBox(nullptr, errorMsg, "Quake Error",
+        MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
 }
-

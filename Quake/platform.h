@@ -28,13 +28,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void PL_SetWindowIcon(void);
 
 /* platform dependent cleanup */
-void PL_VID_Shutdown (void);
+void PL_VID_Shutdown(void);
 
 /* retrieve text from the clipboard (returns Z_Malloc()'ed data) */
-char *PL_GetClipboardData (void);
+char* PL_GetClipboardData(void);
 
 /* show an error dialog */
-void PL_ErrorDialog(const char *text);
+void PL_ErrorDialog(const char* text);
 
-#endif	/* _QUAKE_PLATFORM_H */
-
+#endif /* _QUAKE_PLATFORM_H */
