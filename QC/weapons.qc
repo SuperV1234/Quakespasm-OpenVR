@@ -286,7 +286,7 @@ void(float damage, vector dir) TraceAttack =
 ================
 FireBullets
 
-Used by shotgun, super shotgun, and enemy soldier firing
+Used by shotgun, and super shotgun
 Go to the trouble of combining multiple pellets into a single damage call.
 ================
 */
@@ -297,7 +297,40 @@ void(float shotcount, vector dir, vector spread) FireBullets =
 
 	makevectors(self.v_angle);
 
-	src = self.handpos + v_forward*10;
+	src = self.handpos; // + v_forward*10;
+	// src_z = self.absmin_z + self.size_z * 0.7;
+
+	ClearMultiDamage ();
+	while (shotcount > 0)
+	{
+		direction = dir + crandom()*spread_x*v_right + crandom()*spread_y*v_up;
+
+		traceline (src, src + direction*2048, FALSE, self);
+		if (trace_fraction != 1.0)
+			TraceAttack (4, direction);
+
+		shotcount = shotcount - 1;
+	}
+	ApplyMultiDamage ();
+};
+
+
+/*
+================
+EnemyFireBullets
+
+Used by enemy soldier firing
+Go to the trouble of combining multiple pellets into a single damage call.
+================
+*/
+void(float shotcount, vector dir, vector spread) EnemyFireBullets =
+{
+	local	vector direction;
+	local	vector	src;
+
+	makevectors(self.v_angle);
+
+	src = self.origin + v_forward*10;
 	src_z = self.absmin_z + self.size_z * 0.7;
 
 	ClearMultiDamage ();
@@ -329,7 +362,7 @@ void() W_FireShotgun =
 
 	self.currentammo = self.ammo_shells = self.ammo_shells - 1;
 	dir = aim (self, 100000);
-	FireBullets (6, dir, '0.04 0.04 0');
+	FireBullets (6, dir, '0.03 0.03 0');
 };
 
 
@@ -354,7 +387,7 @@ void() W_FireSuperShotgun =
 
 	self.currentammo = self.ammo_shells = self.ammo_shells - 2;
 	dir = aim (self, 100000);
-	FireBullets (14, dir, '0.14 0.08 0');
+	FireBullets (14, dir, '0.12 0.06 0');
 };
 
 
@@ -459,7 +492,8 @@ void() W_FireRocket =
 
 	setmodel (missile, "progs/missile.mdl");
 	setsize (missile, '0 0 0', '0 0 0');
-	setorigin (missile, self.handpos + v_forward*8 + '0 0 16');
+	setorigin (missile, self.handpos + '0 0 0');
+	//setorigin (missile, self.handpos + v_forward*8 + '0 0 16');
 };
 
 /*
@@ -550,7 +584,8 @@ void() W_FireLightning =
 
 	self.currentammo = self.ammo_cells = self.ammo_cells - 1;
 
-	org = self.handpos + '0 0 16';
+	// org = self.handpos + '0 0 16';
+	org = self.handpos + '0 0 0';
 
 	traceline (org, org + v_forward*600, TRUE, self);
 
@@ -690,7 +725,8 @@ void() W_FireSuperSpikes =
 	self.attack_finished = time + 0.2;
 	self.currentammo = self.ammo_nails = self.ammo_nails - 2;
 	dir = aim (self, 1000);
-	launch_spike (self.handpos + '0 0 16', dir);
+	// launch_spike (self.handpos + '0 0 16', dir);
+	launch_spike (self.handpos + '0 0 0', dir);
 	newmis.touch = superspike_touch;
 	setmodel (newmis, "progs/s_spike.mdl");
 	setsize (newmis, VEC_ORIGIN, VEC_ORIGIN);
@@ -721,7 +757,8 @@ void(float ox) W_FireSpikes =
 	self.attack_finished = time + 0.2;
 	self.currentammo = self.ammo_nails = self.ammo_nails - 1;
 	dir = aim (self, 1000);
-	launch_spike (self.handpos + '0 0 16' + v_right*ox, dir);
+	// launch_spike (self.handpos + '0 0 16' + v_right*ox, dir);
+	launch_spike (self.handpos + '0 0 0' + v_right*ox, dir);
 
 	self.punchangle_x = -2;
 };

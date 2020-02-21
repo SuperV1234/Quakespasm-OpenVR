@@ -147,7 +147,8 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
 		case VRMenuOpt::VR_GUNMODELSCALE:            printAsStr(vr_gunmodelscale); break;
 		case VRMenuOpt::VR_GUNMODELY:                printAsStr(vr_gunmodely); break;
 		case VRMenuOpt::VR_CROSSHAIRY:               printAsStr(vr_crosshairy); break;
-		case VRMenuOpt::VR_PROJECTILESPAWN_Z_OFFSET: printAsStr(vr_projectilespawn_z_offset); break;
+		// TODO VR:
+		// case VRMenuOpt::VR_PROJECTILESPAWN_Z_OFFSET: printAsStr(vr_projectilespawn_z_offset); break;
 		case VRMenuOpt::VR_HUD_SCALE:                printAsStr(vr_hud_scale); break;
 		case VRMenuOpt::VR_MENU_SCALE:               printAsStr(vr_menu_scale); break;
 		case VRMenuOpt::VR_MELEE_THRESHOLD:          printAsStr(vr_melee_threshold); break;
@@ -220,7 +221,8 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
 		case VRMenuOpt::VR_GUNMODELSCALE: 				adjustF(vr_gunmodelscale, 0.05f, 0.1f, 2.f); break;
 		case VRMenuOpt::VR_GUNMODELY: 					adjustF(vr_gunmodely, 0.1f, -5.0f, 5.f); break;
 		case VRMenuOpt::VR_CROSSHAIRY: 					adjustF(vr_crosshairy, 0.05f, -10.0f, 10.f); break;
-		case VRMenuOpt::VR_PROJECTILESPAWN_Z_OFFSET:	adjustF(vr_projectilespawn_z_offset, 0.5f, -24.0f, 24.f); break;
+		// TODO VR:
+		// case VRMenuOpt::VR_PROJECTILESPAWN_Z_OFFSET:	adjustF(vr_projectilespawn_z_offset, 0.5f, -24.0f, 24.f); break;
 		case VRMenuOpt::VR_HUD_SCALE: 					adjustF(vr_hud_scale, 0.005f, 0.01f, 0.1f); break;
 		case VRMenuOpt::VR_MENU_SCALE: 					adjustF(vr_menu_scale, 0.01f, 0.05f, 0.6f); break;
 		case VRMenuOpt::VR_MELEE_THRESHOLD: 			adjustF(vr_melee_threshold, 1.f, 4.f, 18.f); break;
@@ -321,7 +323,8 @@ void VR_MenuDraw (void)
 		"Gun Model Scale",
 		"Gun Model Z Offset",
 		"Crosshair Z Offset",
-		"Projectile Spawn Z",
+		// TODO VR:
+		// "Projectile Spawn Z",
 		"HUD Scale",
 		"Menu Scale",
 		"Melee Threshold",

@@ -196,7 +196,8 @@ DEFINE_CVAR(vr_gunangle, 32, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_gunmodelpitch, 0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_gunmodelscale, 1.0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_gunmodely, 0, CVAR_ARCHIVE);
-DEFINE_CVAR(vr_projectilespawn_z_offset, 24, CVAR_ARCHIVE);
+// TODO VR:
+// DEFINE_CVAR(vr_projectilespawn_z_offset, 24, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_crosshairy, 0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_world_scale, 1.0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_floor_offset, -16, CVAR_ARCHIVE);
@@ -1086,16 +1087,16 @@ void VR_UpdateScreenContent()
 			sprintf(msgbuf, "%f , %f , %f\n", rads[0], rads[1], rads[2]);
 			OutputDebugStringA(msgbuf);
 			*/
-				
+
 			// glm::fquat a, b;
-			// 
+			//
 			// {
 			// 	vec3_t forward, right, up;
 			// 	AngleVectors(handrottemp, forward, right, up);
 			// 	a = glm::conjugate(glm::quatLookAt(toVec3(forward), toVec3(up)));
 			// 	a = glm::normalize(a);
 			// }
-			// 
+			//
 			// {
 			// 	vec3_t forward, right, up;
 			// 	AngleVectors(cl.handrot[i], forward, right, up);
@@ -1115,7 +1116,7 @@ void VR_UpdateScreenContent()
 			//m = glm::rotate(m, vr_sbar_offset_roll.value, glm::vec3(0, 0, 1));
 			//m = glm::normalize(m);
 
-			// 
+			//
 			// cl.handrot[i][0] = ca.x;
 			// cl.handrot[i][1] = ca.y;
 			// cl.handrot[i][2] = ca.z;
@@ -1135,10 +1136,6 @@ void VR_UpdateScreenContent()
 		SetHandPos(1, player);
 
 		// TODO VR: interpolate based on weapon weight?
-
-
-		
-
 		VectorCopy(cl.handrot[1], cl.aimangles); // Sets the shooting angle
 		// TODO: what sets the shooting origin?
 
@@ -1649,10 +1646,12 @@ void VR_Move(usercmd_t *cmd)
 	fwd2[2] *= vr_gunmodelscale.value * ofs[2];
 	VectorAdd(adj, fwd2, adj);
 
-	// TODO: VR
+	// TODO VR:
 	vec3_t adjhandpos;
 	VectorCopy(cl.handpos[1], adjhandpos);
-	adjhandpos[2] -= vr_projectilespawn_z_offset.value;
+
+	// TODO VR: not needed anymore, changing QC
+	// adjhandpos[2] -= vr_projectilespawn_z_offset.value;
 
 	// handpos
 	VectorCopy(adjhandpos, cmd->handpos);

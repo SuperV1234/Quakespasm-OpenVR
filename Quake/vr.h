@@ -59,7 +59,8 @@ extern cvar_t vr_melee_threshold;
 extern cvar_t vr_menu_scale;
 extern cvar_t vr_movement_mode;
 extern cvar_t vr_msaa;
-extern cvar_t vr_projectilespawn_z_offset;
+// TODO VR:
+// extern cvar_t vr_projectilespawn_z_offset;
 extern cvar_t vr_snap_turn;
 extern cvar_t vr_turn_speed;
 extern cvar_t vr_viewkick;
