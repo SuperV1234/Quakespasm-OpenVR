@@ -29,10 +29,10 @@
 #ifndef __QSTDINC_H
 #define __QSTDINC_H
 
-#include <sys/types.h>
-#include <stddef.h>
-#include <limits.h>
 #include <glm.hpp>
+#include <limits.h>
+#include <stddef.h>
+#include <sys/types.h>
 #ifndef _WIN32 /* others we support without sys/param.h? */
 #include <sys/param.h>
 #endif
@@ -52,7 +52,7 @@
    For this, we need stdint.h (or inttypes.h)
    FIXME: On some platforms, only inttypes.h is available.
    FIXME: Properly replace certain short and int usage
-	  with int16_t and int32_t.
+      with int16_t and int32_t.
  */
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
 /* MS Visual Studio provides stdint.h only starting with
@@ -62,23 +62,23 @@
 #include <stdint.h>
 #endif
 
-#include <stdlib.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
 
 /*==========================================================================*/
 
-#define	Q_MAXCHAR	((char)0x7f)
-#define	Q_MAXSHORT	((short)0x7fff)
-#define	Q_MAXINT	((int)0x7fffffff)
-#define	Q_MAXLONG	((int)0x7fffffff)
-#define	Q_MAXFLOAT	((int)0x7fffffff)
+#define Q_MAXCHAR ((char)0x7f)
+#define Q_MAXSHORT ((short)0x7fff)
+#define Q_MAXINT ((int)0x7fffffff)
+#define Q_MAXLONG ((int)0x7fffffff)
+#define Q_MAXFLOAT ((int)0x7fffffff)
 
-#define	Q_MINCHAR	((char)0x80)
-#define	Q_MINSHORT	((short)0x8000)
-#define	Q_MININT	((int)0x80000000)
-#define	Q_MINLONG	((int)0x80000000)
-#define	Q_MINFLOAT	((int)0x7fffffff)
+#define Q_MINCHAR ((char)0x80)
+#define Q_MINSHORT ((short)0x8000)
+#define Q_MININT ((int)0x80000000)
+#define Q_MINLONG ((int)0x80000000)
+#define Q_MINFLOAT ((int)0x7fffffff)
 
 /* Make sure the types really have the right
  * sizes: These macros are from SDL headers.
@@ -90,8 +90,9 @@ static_assert(sizeof(int) == 4);
 static_assert(sizeof(short) == 2);
 
 /* make sure enums are the size of ints for structure packing */
-typedef enum {
-	THE_DUMMY_VALUE
+typedef enum
+{
+    THE_DUMMY_VALUE
 } THE_DUMMY_ENUM;
 static_assert(sizeof(THE_DUMMY_ENUM) == sizeof(int));
 
@@ -100,7 +101,7 @@ static_assert(sizeof(THE_DUMMY_ENUM) == sizeof(int));
  * This variant works on most (but not *all*) systems...
  */
 #ifndef offsetof
-#define offsetof(t,m) ((size_t)&(((t *)0)->m))
+#define offsetof(t, m) ((size_t) & (((t*)0)->m))
 #endif
 
 
@@ -113,7 +114,7 @@ typedef unsigned char byte;
 /* some structures have qboolean members and the x86 asm code expect
  * those members to be 4 bytes long. therefore, qboolean must be 32
  * bits and it can NOT be binary compatible with the 8 bit C++ bool.  */
-typedef int	qboolean;
+typedef int qboolean;
 static_assert(0 == false);
 static_assert(1 == true);
 static_assert(sizeof(qboolean) == 4);
@@ -150,23 +151,23 @@ using fixed16_t = int;
 #if !defined(PATH_MAX)
 /* equivalent values? */
 #if defined(MAXPATHLEN)
-#define PATH_MAX	MAXPATHLEN
+#define PATH_MAX MAXPATHLEN
 #elif defined(_WIN32) && defined(_MAX_PATH)
-#define PATH_MAX	_MAX_PATH
+#define PATH_MAX _MAX_PATH
 #elif defined(_WIN32) && defined(MAX_PATH)
-#define PATH_MAX	MAX_PATH
+#define PATH_MAX MAX_PATH
 #else /* fallback */
-#define PATH_MAX	1024
+#define PATH_MAX 1024
 #endif
-#endif	/* PATH_MAX */
+#endif /* PATH_MAX */
 
-#define MAX_OSPATH	PATH_MAX
+#define MAX_OSPATH PATH_MAX
 
 /*==========================================================================*/
 
 /* missing types: */
 #if defined(_MSC_VER)
-typedef ptrdiff_t	ssize_t;
+typedef ptrdiff_t ssize_t;
 #endif
 
 /*==========================================================================*/
@@ -174,19 +175,19 @@ typedef ptrdiff_t	ssize_t;
 /* function attributes, etc */
 
 #if defined(__GNUC__)
-#define FUNC_PRINTF(x,y)	__attribute__((__format__(__printf__,x,y)))
+#define FUNC_PRINTF(x, y) __attribute__((__format__(__printf__, x, y)))
 #else
-#define FUNC_PRINTF(x,y)
+#define FUNC_PRINTF(x, y)
 #endif
 
-/* argument format attributes for function pointers are supported for gcc >= 3.1 */
+/* argument format attributes for function pointers are supported for gcc >= 3.1
+ */
 #if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ > 0))
-#define FUNCP_PRINTF	FUNC_PRINTF
+#define FUNCP_PRINTF FUNC_PRINTF
 #else
-#define FUNCP_PRINTF(x,y)
+#define FUNCP_PRINTF(x, y)
 #endif
 
 /*==========================================================================*/
 
-#endif	/* __QSTDINC_H */
-
+#endif /* __QSTDINC_H */
