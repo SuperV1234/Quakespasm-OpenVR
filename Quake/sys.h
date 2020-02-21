@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // sys.h -- non-portable functions
 
-void Sys_Init (void);
+void Sys_Init(void);
 
 //
 // file IO
@@ -32,39 +32,38 @@ void Sys_Init (void);
 
 // returns the file size or -1 if file is not present.
 // the file should be in BINARY mode for stupid OSs that care
-int Sys_FileOpenRead (const char *path, int *hndl);
+int Sys_FileOpenRead(const char* path, int* hndl);
 
-int Sys_FileOpenWrite (const char *path);
-void Sys_FileClose (int handle);
-void Sys_FileSeek (int handle, int position);
-int Sys_FileRead (int handle, void *dest, int count);
-int Sys_FileWrite (int handle,const void *data, int count);
-int Sys_FileTime (const char *path);
-void Sys_mkdir (const char *path);
+int Sys_FileOpenWrite(const char* path);
+void Sys_FileClose(int handle);
+void Sys_FileSeek(int handle, int position);
+int Sys_FileRead(int handle, void* dest, int count);
+int Sys_FileWrite(int handle, const void* data, int count);
+int Sys_FileTime(const char* path);
+void Sys_mkdir(const char* path);
 
 //
 // system IO
 //
-FUNC_NORETURN void Sys_Quit (void);
-FUNC_NORETURN void Sys_Error (const char *error, ...) FUNC_PRINTF(1,2);
+[[noreturn]] void Sys_Quit(void);
+[[noreturn]] void Sys_Error(const char* error, ...) FUNC_PRINTF(1, 2);
 // an error will cause the entire program to exit
 #ifdef __WATCOMC__
 #pragma aux Sys_Error aborts;
 #pragma aux Sys_Quit aborts;
 #endif
 
-void Sys_Printf (const char *fmt, ...) FUNC_PRINTF(1,2);
+void Sys_Printf(const char* fmt, ...) FUNC_PRINTF(1, 2);
 // send text to the console
 
-double Sys_DoubleTime (void);
+double Sys_DoubleTime(void);
 
-const char *Sys_ConsoleInput (void);
+const char* Sys_ConsoleInput(void);
 
-void Sys_Sleep (unsigned long msecs);
+void Sys_Sleep(unsigned long msecs);
 // yield for about 'msecs' milliseconds.
 
-void Sys_SendKeyEvents (void);
+void Sys_SendKeyEvents(void);
 // Perform Key_Event () callbacks until the input que is empty
 
-#endif	/* _QUAKE_SYS_H */
-
+#endif /* _QUAKE_SYS_H */

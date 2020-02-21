@@ -22,7 +22,9 @@
 
 int CDAudio_Play(byte track, qboolean looping)
 {
-	return -1;
+    (void)track;
+    (void)looping;
+    return -1;
 }
 
 void CDAudio_Stop(void)
@@ -43,11 +45,10 @@ void CDAudio_Update(void)
 
 int CDAudio_Init(void)
 {
-	Con_Printf("CDAudio disabled at compile time\n");
-	return -1;
+    Con_Printf("CDAudio disabled at compile time\n");
+    return -1;
 }
 
 void CDAudio_Shutdown(void)
 {
 }
-

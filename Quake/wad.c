@@ -23,11 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-int				wad_numlumps;
-lumpinfo_t		*wad_lumps;
-byte			*wad_base = NULL;
+int wad_numlumps;
+lumpinfo_t* wad_lumps;
+byte* wad_base = nullptr;
 
-void SwapPic (qpic_t *pic);
+void SwapPic(qpic_t* pic);
 
 /*
 ==================
@@ -40,24 +40,21 @@ Space padding is so names can be printed nicely in tables.
 Can safely be performed in place.
 ==================
 */
-void W_CleanupName (const char *in, char *out)
+void W_CleanupName(const char* in, char* out)
 {
-	int		i;
-	int		c;
+    int i;
+    int c;
 
-	for (i=0 ; i<16 ; i++ )
-	{
-		c = in[i];
-		if (!c)
-			break;
+    for(i = 0; i < 16; i++)
+    {
+        c = in[i];
+        if(!c) break;
 
-		if (c >= 'A' && c <= 'Z')
-			c += ('a' - 'A');
-		out[i] = c;
-	}
+        if(c >= 'A' && c <= 'Z') c += ('a' - 'A');
+        out[i] = c;
+    }
 
-	for ( ; i< 16 ; i++ )
-		out[i] = 0;
+    for(; i < 16; i++) out[i] = 0;
 }
 
 /*
@@ -65,44 +62,47 @@ void W_CleanupName (const char *in, char *out)
 W_LoadWadFile
 ====================
 */
-void W_LoadWadFile (void) //johnfitz -- filename is now hard-coded for honesty
+void W_LoadWadFile(void) // johnfitz -- filename is now hard-coded for honesty
 {
-	lumpinfo_t		*lump_p;
-	wadinfo_t		*header;
-	int			i;
-	int			infotableofs;
-	const char		*filename = WADFILENAME;
+    lumpinfo_t* lump_p;
+    wadinfo_t* header;
+    int i;
+    int infotableofs;
+    const char* filename = WADFILENAME;
 
-	//johnfitz -- modified to use malloc
-	//TODO: use cache_alloc
-	if (wad_base)
-		free (wad_base);
-	wad_base = COM_LoadMallocFile (filename, NULL);
-	if (!wad_base)
-		Sys_Error ("W_LoadWadFile: couldn't load %s\n\n"
-			   "Basedir is: %s\n\n"
-			   "Check that this has an " GAMENAME " subdirectory containing pak0.pak and pak1.pak, "
-			   "or use the -basedir command-line option to specify another directory.",
-			   filename, com_basedir);
+    // johnfitz -- modified to use malloc
+    // TODO: use cache_alloc
+    if(wad_base) free(wad_base);
+    wad_base = COM_LoadMallocFile(filename, nullptr);
+    if(!wad_base)
+        Sys_Error(
+            "W_LoadWadFile: couldn't load %s\n\n"
+            "Basedir is: %s\n\n"
+            "Check that this has an " GAMENAME
+            " subdirectory containing pak0.pak and pak1.pak, "
+            "or use the -basedir command-line option to specify another "
+            "directory.",
+            filename, com_basedir);
 
-	header = (wadinfo_t *)wad_base;
+    header = (wadinfo_t*)wad_base;
 
-	if (header->identification[0] != 'W' || header->identification[1] != 'A'
-	 || header->identification[2] != 'D' || header->identification[3] != '2')
-		Sys_Error ("Wad file %s doesn't have WAD2 id\n",filename);
+    if(header->identification[0] != 'W' || header->identification[1] != 'A' ||
+        header->identification[2] != 'D' || header->identification[3] != '2')
+        Sys_Error("Wad file %s doesn't have WAD2 id\n", filename);
 
-	wad_numlumps = LittleLong(header->numlumps);
-	infotableofs = LittleLong(header->infotableofs);
-	wad_lumps = (lumpinfo_t *)(wad_base + infotableofs);
+    wad_numlumps = LittleLong(header->numlumps);
+    infotableofs = LittleLong(header->infotableofs);
+    wad_lumps = (lumpinfo_t*)(wad_base + infotableofs);
 
-	for (i=0, lump_p = wad_lumps ; i<wad_numlumps ; i++,lump_p++)
-	{
-		lump_p->filepos = LittleLong(lump_p->filepos);
-		lump_p->size = LittleLong(lump_p->size);
-		W_CleanupName (lump_p->name, lump_p->name);	// CAUTION: in-place editing!!!
-		if (lump_p->type == TYP_QPIC)
-			SwapPic ( (qpic_t *)(wad_base + lump_p->filepos));
-	}
+    for(i = 0, lump_p = wad_lumps; i < wad_numlumps; i++, lump_p++)
+    {
+        lump_p->filepos = LittleLong(lump_p->filepos);
+        lump_p->size = LittleLong(lump_p->size);
+        W_CleanupName(
+            lump_p->name, lump_p->name); // CAUTION: in-place editing!!!
+        if(lump_p->type == TYP_QPIC)
+            SwapPic((qpic_t*)(wad_base + lump_p->filepos));
+    }
 }
 
 
@@ -111,45 +111,45 @@ void W_LoadWadFile (void) //johnfitz -- filename is now hard-coded for honesty
 W_GetLumpinfo
 =============
 */
-lumpinfo_t	*W_GetLumpinfo (const char *name)
+lumpinfo_t* W_GetLumpinfo(const char* name)
 {
-	int		i;
-	lumpinfo_t	*lump_p;
-	char	clean[16];
+    int i;
+    lumpinfo_t* lump_p;
+    char clean[16];
 
-	W_CleanupName (name, clean);
+    W_CleanupName(name, clean);
 
-	for (lump_p=wad_lumps, i=0 ; i<wad_numlumps ; i++,lump_p++)
-	{
-		if (!strcmp(clean, lump_p->name))
-			return lump_p;
-	}
+    for(lump_p = wad_lumps, i = 0; i < wad_numlumps; i++, lump_p++)
+    {
+        if(!strcmp(clean, lump_p->name)) return lump_p;
+    }
 
-	Con_SafePrintf ("W_GetLumpinfo: %s not found\n", name); //johnfitz -- was Sys_Error
-	return NULL;
+    Con_SafePrintf(
+        "W_GetLumpinfo: %s not found\n", name); // johnfitz -- was Sys_Error
+    return nullptr;
 }
 
-void *W_GetLumpName (const char *name)
+void* W_GetLumpName(const char* name)
 {
-	lumpinfo_t	*lump;
+    lumpinfo_t* lump;
 
-	lump = W_GetLumpinfo (name);
+    lump = W_GetLumpinfo(name);
 
-	if (!lump) return NULL; //johnfitz
+    if(!lump) return nullptr; // johnfitz
 
-	return (void *)(wad_base + lump->filepos);
+    return (void*)(wad_base + lump->filepos);
 }
 
-void *W_GetLumpNum (int num)
+void* W_GetLumpNum(int num)
 {
-	lumpinfo_t	*lump;
+    lumpinfo_t* lump;
 
-	if (num < 0 || num > wad_numlumps)
-		Sys_Error ("W_GetLumpNum: bad number: %i", num);
+    if(num < 0 || num > wad_numlumps)
+        Sys_Error("W_GetLumpNum: bad number: %i", num);
 
-	lump = wad_lumps + num;
+    lump = wad_lumps + num;
 
-	return (void *)(wad_base + lump->filepos);
+    return (void*)(wad_base + lump->filepos);
 }
 
 /*
@@ -160,8 +160,8 @@ automatic byte swapping
 =============================================================================
 */
 
-void SwapPic (qpic_t *pic)
+void SwapPic(qpic_t* pic)
 {
-	pic->width = LittleLong(pic->width);
-	pic->height = LittleLong(pic->height);
+    pic->width = LittleLong(pic->width);
+    pic->height = LittleLong(pic->height);
 }
