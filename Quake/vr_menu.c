@@ -362,3 +362,10 @@ void VR_Menu_f (void)
 
 	VR_MenuPlaySound( sound, 0.5 );
 }
+
+// TODO VR:
+// * hud disappears under water on when using powerups
+// * difficulty options
+// * nicer explosion particles
+// * smaller hitboxes for nails and enemies (make aimign more important)
+// * locomotion bugs out in raw mode when right controller is up
