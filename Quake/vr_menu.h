@@ -16,6 +16,7 @@ enum class VRMenuOpt
     VR_CROSSHAIR_ALPHA,
     VR_WORLD_SCALE,
     VR_MOVEMENT_MODE,
+    VR_ENABLE_JOYSTICK_TURN,
     VR_SNAP_TURN,
     VR_TURN_SPEED,
     VR_MSAA,
@@ -33,18 +34,14 @@ enum class VRMenuOpt
     VR_GUNYAW,
     VR_GUN_Z_OFFSET,
     VR_SBAR_MODE,
+    VR_VIEWKICK,
     VR_IMPULSE9,
 
     VR_MAX
 };
 
-void VR_Menu_Init();
 void VR_Menu_f(void);
 void VR_MenuDraw(void);
 void VR_MenuKey(int key);
-
-extern void (*vr_menucmdfn)(void);
-extern void (*vr_menudrawfn)(void);
-extern void (*vr_menukeyfn)(int key);
 
 #endif

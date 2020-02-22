@@ -69,6 +69,7 @@ extern cvar_t vr_movement_mode;
 extern cvar_t vr_msaa;
 // TODO VR:
 // extern cvar_t vr_projectilespawn_z_offset;
+extern cvar_t vr_enable_joystick_turn;
 extern cvar_t vr_snap_turn;
 extern cvar_t vr_turn_speed;
 extern cvar_t vr_viewkick;
@@ -92,7 +93,5 @@ enum class VrSbarMode : int
 
 extern cvar_t vr_weapon_offset[MAX_WEAPONS * VARS_PER_WEAPON];
 extern int weaponCVarEntry;
-
-// TODO VR:
 
 #endif

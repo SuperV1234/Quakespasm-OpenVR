@@ -713,7 +713,7 @@ void(vector org, vector dir) launch_spike =
 	setsize (newmis, VEC_ORIGIN, VEC_ORIGIN);
 	setorigin (newmis, org);
 
-	newmis.velocity = dir * 1000;
+	newmis.velocity = dir * 1500;
 };
 
 void() W_FireSuperSpikes =
@@ -981,7 +981,7 @@ void() W_Attack =
 
 	if (self.weapon == IT_AXE)
 	{
-		// TODO VR:
+		// TODO VR: check if in VR mode
 		/*
 		sound (self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);
 		r = random();

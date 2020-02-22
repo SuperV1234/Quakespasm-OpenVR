@@ -341,7 +341,7 @@ void V_ParseDamage(void)
     //
     // check if we're out of vr or if vr viewkick is enabled
     if(!vr_enabled.value ||
-        (vr_enabled.value && vr_viewkick.value) /* TODO VR CVAR */)
+        (vr_enabled.value && vr_viewkick.value))
     {
         ent = &cl_entities[cl.viewentity];
 
@@ -551,15 +551,20 @@ void V_PolyBlend(void)
 
     GL_DisableMultitexture();
 
+    glPushAttrib(GL_TRANSFORM_BIT);
+
     glDisable(GL_ALPHA_TEST);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
 
     glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
     glLoadIdentity();
     glOrtho(0, 1, 1, 0, -99999, 99999);
+
     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
     glLoadIdentity();
 
     glColor4fv(v_blend);
@@ -571,10 +576,20 @@ void V_PolyBlend(void)
     glVertex2f(0, 1);
     glEnd();
 
+    glColor3f(1, 1, 1);
+
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_ALPHA_TEST);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+
+    glPopAttrib();
 }
 
 /*

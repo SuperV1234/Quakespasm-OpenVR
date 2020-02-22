@@ -199,8 +199,6 @@ void() player_nail2   =[$nailatt2, player_nail1  ]
 
 //============================================================================
 
-// TODO VR: try removing delay for lightning attack (0.2) for smoother beam
-
 void() player_light1   =[$light1, player_light2  ]
 {
 	self.effects = self.effects | EF_MUZZLEFLASH;

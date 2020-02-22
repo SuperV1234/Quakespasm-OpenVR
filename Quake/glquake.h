@@ -81,7 +81,7 @@ typedef struct
 } drawsurf_t;
 
 
-typedef enum
+enum ptype_t
 {
     pt_static,
     pt_grav,
@@ -91,21 +91,21 @@ typedef enum
     pt_explode2,
     pt_blob,
     pt_blob2
-} ptype_t;
+} ;
 
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
-typedef struct particle_s
+struct particle_t
 {
     // driver-usable fields
     vec3_t org;
     float color;
     // drivers never touch the following fields
-    struct particle_s* next;
+    struct particle_t* next;
     vec3_t vel;
     float ramp;
     float die;
     ptype_t type;
-} particle_t;
+};
 
 
 //====================================================

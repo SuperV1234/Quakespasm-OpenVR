@@ -26,21 +26,6 @@ static void vec3lerp(vec3_t out, vec3_t start, vec3_t end, double f)
     out[2] = lerp(start[2], end[2], f);
 }
 
-// TODO VR:
-template <typename _Fp>
-constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept
-{
-    if((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
-        return __t * __b + (1 - __t) * __a;
-
-    if(__t == 1) return __b;
-    const _Fp __x = __a + __t * (__b - __a);
-    if((__t > 1) == (__b > __a))
-        return __b < __x ? __x : __b;
-    else
-        return __x < __b ? __x : __b;
-}
-
 #ifdef WIN32
 #define UNICODE 1
 #include <mmsystem.h>
@@ -195,7 +180,7 @@ static std::vector<cvar_t*> cvarsToRegister;
     } _cvar_registrar##name##__LINE__
 
 DEFINE_CVAR(vr_enabled, 0, CVAR_NONE);
-DEFINE_CVAR(vr_viewkick, 0, CVAR_NONE);
+DEFINE_CVAR(vr_viewkick, 1, CVAR_NONE);
 DEFINE_CVAR(vr_lefthanded, 0, CVAR_NONE);
 DEFINE_CVAR(vr_crosshair, 1, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_crosshair_depth, 0, CVAR_ARCHIVE);
@@ -213,6 +198,7 @@ DEFINE_CVAR(vr_crosshairy, 0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_world_scale, 1.0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_floor_offset, -16, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_snap_turn, 0, CVAR_ARCHIVE);
+DEFINE_CVAR(vr_enable_joystick_turn, 1, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_turn_speed, 1, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_msaa, 4, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_movement_mode, 0, CVAR_ARCHIVE);
@@ -704,11 +690,6 @@ void VID_VR_Init()
 
     InitAllWeaponCVars();
 
-    // Sickness stuff
-    Cvar_RegisterVariable(&vr_viewkick);
-
-    VR_Menu_Init();
-
     // Set the cvar if invoked from a command line parameter
     {
         // int i = COM_CheckParm("-vr");
@@ -903,7 +884,7 @@ void SetHandPos(int index, entity_t* player)
     {
         cl.handpos[index][0] = lerp(oldx, final[0], 0.05f);
         cl.handpos[index][1] = lerp(oldy, final[1], 0.05f);
-        cl.handpos[index][2] = __lerp(oldz, final[2], 0.05f);
+        cl.handpos[index][2] = lerp(oldz, final[2], 0.05f);
     }
 
     // handrot is set with AngleVectorFromRotMat
@@ -1515,7 +1496,10 @@ void VR_Draw2D()
     glEnable(GL_DEPTH_TEST);
     glPopMatrix();
 
-    if(draw_sbar) VR_DrawSbar();
+    if(draw_sbar)
+    {
+        VR_DrawSbar();
+    }
 
     glwidth = oldglwidth;
     glheight = oldglheight;
@@ -1884,23 +1868,26 @@ void VR_Move(usercmd_t* cmd)
             cmd->upmove *= cl_movespeedkey.value;
         }
 
-        float yawMove = GetAxis(&controllers[1].state, 0, 0.0);
+        if(vr_enable_joystick_turn.value == 1)
+        {
+            const float yawMove = GetAxis(&controllers[1].state, 0, 0.0);
 
-        if(vr_snap_turn.value != 0)
-        {
-            static int lastSnap = 0;
-            int snap = yawMove > 0.0f ? 1 : yawMove < 0.0f ? -1 : 0;
-            if(snap != lastSnap)
+            if(vr_snap_turn.value != 0)
             {
-                vrYaw -= snap * vr_snap_turn.value;
-                lastSnap = snap;
+                static int lastSnap = 0;
+                int snap = yawMove > 0.0f ? 1 : yawMove < 0.0f ? -1 : 0;
+                if(snap != lastSnap)
+                {
+                    vrYaw -= snap * vr_snap_turn.value;
+                    lastSnap = snap;
+                }
             }
-        }
-        else
-        {
-            vrYaw -= (yawMove * host_frametime * 100.0f *
-                         vr_joystick_yaw_multi.value) *
-                     vr_turn_speed.value;
+            else
+            {
+                vrYaw -= (yawMove * host_frametime * 100.0f *
+                            vr_joystick_yaw_multi.value) *
+                        vr_turn_speed.value;
+            }
         }
     }
 }

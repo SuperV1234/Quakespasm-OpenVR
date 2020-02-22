@@ -14,14 +14,6 @@ static int vr_options_cursor = 0;
 
 extern void M_DrawSlider(int x, int y, float range);
 
-void VR_Menu_Init()
-{
-    // VR menu function pointers
-    vr_menucmdfn = VR_Menu_f;
-    vr_menudrawfn = VR_MenuDraw;
-    vr_menukeyfn = VR_MenuKey;
-}
-
 static void VR_MenuPlaySound(const char* sound, float fvol)
 {
     sfx_t* sfx = S_PrecacheSound(sound);
@@ -40,6 +32,11 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
     const auto printAsStr = [&](const auto& cvar) {
         snprintf(value_buffer, sizeof(value_buffer), "%.4f", cvar.value);
         M_Print(cx, cy, value_buffer);
+    };
+
+    const auto fmt = [&](const auto& fmtStr, const auto& cvar) {
+        snprintf(value_buffer, sizeof(value_buffer), fmtStr, cvar.value);
+        value_string = value_buffer;
     };
 
 #ifdef _MSC_VER
@@ -74,9 +71,7 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
         case VRMenuOpt::VR_DEADZONE:
             if(vr_deadzone.value > 0)
             {
-                snprintf(value_buffer, sizeof(value_buffer), "%.0f degrees",
-                    vr_deadzone.value);
-                value_string = value_buffer;
+                fmt("%.0f degrees", vr_deadzone);
             }
             else
             {
@@ -100,9 +95,7 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
         case VRMenuOpt::VR_CROSSHAIR_DEPTH:
             if(vr_crosshair_depth.value > 0)
             {
-                snprintf(value_buffer, sizeof(value_buffer), "%.0f units",
-                    vr_crosshair_depth.value);
-                value_string = value_buffer;
+                fmt("%.0f units", vr_crosshair_depth);
             }
             else
             {
@@ -112,8 +105,7 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
         case VRMenuOpt::VR_CROSSHAIR_SIZE:
             if(vr_crosshair_size.value > 0)
             {
-                snprintf(value_buffer, sizeof(value_buffer), "%.0f pixels",
-                    vr_crosshair_size.value);
+                fmt("%.0f pixels", vr_crosshair_size);
                 value_string = value_buffer;
             }
             else
@@ -138,6 +130,9 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
                     break;
             }
             break;
+        case VRMenuOpt::VR_ENABLE_JOYSTICK_TURN:
+            value_string = vr_snap_turn.value == 0 ? "Off" : "On";
+            break;
         case VRMenuOpt::VR_SNAP_TURN:
             if(vr_snap_turn.value == 0)
             {
@@ -146,9 +141,7 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
             }
             else
             {
-                snprintf(value_buffer, sizeof(value_buffer), "%d Degrees",
-                    (int)vr_snap_turn.value);
-                value_string = value_buffer;
+                fmt("%.2f Degrees", vr_snap_turn);
             }
             break;
         case VRMenuOpt::VR_TURN_SPEED:
@@ -161,9 +154,7 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
             }
             else
             {
-                snprintf(value_buffer, sizeof(value_buffer), "%d Samples",
-                    (int)vr_msaa.value);
-                value_string = value_buffer;
+                fmt("%.0f Samples", vr_msaa);
             }
             break;
         case VRMenuOpt::VR_SBAR_MODE:
@@ -188,6 +179,9 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
             break;
         case VRMenuOpt::VR_GUNYAW: printAsStr(vr_gunyaw); break;
         case VRMenuOpt::VR_GUN_Z_OFFSET: printAsStr(vr_gun_z_offset); break;
+        case VRMenuOpt::VR_VIEWKICK:
+            value_string = vr_viewkick.value == 0 ? "Off" : "On";
+            break;
         case VRMenuOpt::VR_IMPULSE9: break;
     }
 #ifdef _MSC_VER
@@ -265,6 +259,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
         case VRMenuOpt::VR_MOVEMENT_MODE:
             adjustI(vr_movement_mode, 1, 0, VR_MAX_MOVEMENT_MODE);
             break;
+        case VRMenuOpt::VR_ENABLE_JOYSTICK_TURN: adjustI(vr_enable_joystick_turn, 1, 0, 1); break;
         case VRMenuOpt::VR_SNAP_TURN: adjustI(vr_snap_turn, 45, 0, 90); break;
         case VRMenuOpt::VR_TURN_SPEED:
             adjustF(vr_turn_speed, 0.25f, 0.f, VR_MAX_TURN_SPEED);
@@ -312,6 +307,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
             adjustF(vr_gun_z_offset, 0.25f, -30.f, 30.f);
             break;
         case VRMenuOpt::VR_SBAR_MODE: adjustI(vr_sbar_mode, 1, 0, 1); break;
+        case VRMenuOpt::VR_VIEWKICK: adjustI(vr_viewkick, 1, 0, 1); break;
         case VRMenuOpt::VR_IMPULSE9:
             VR_MenuPlaySound("items/r_item2.wav", 0.5);
             Cmd_ExecuteString("impulse 9", cmd_source_t::src_command);
@@ -393,13 +389,13 @@ void VR_MenuDraw(void)
                 (std::string(24 - strlen(labels), ' ') + labels)...};
         }("VR Enabled", "Aim Mode", "Deadzone", "Crosshair", "Crosshair Depth",
             "Crosshair Size", "Crosshair Alpha", "World Scale", "Movement mode",
-            "Turn", "Turn Speed", "MSAA", "Gun Angle", "Floor Offset",
+            "Enable Joystick Turn", "Turn", "Turn Speed", "MSAA", "Gun Angle", "Floor Offset",
             "Gun Model Pitch", "Gun Model Scale", "Gun Model Z Offset",
             "Crosshair Z Offset",
             // TODO VR:
             // "Projectile Spawn Z",
             "HUD Scale", "Menu Scale", "Melee Threshold", "Gun Yaw",
-            "Gun Z Offset", "Status Bar Mode", "Impulse 9");
+            "Gun Z Offset", "Status Bar Mode", "Viewkick", "Impulse 9");
 
     static_assert(adjustedLabels.size() == (int)VRMenuOpt::VR_MAX);
 

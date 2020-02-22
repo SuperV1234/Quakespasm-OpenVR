@@ -30,10 +30,6 @@ void (*vid_menucmdfn)(void); // johnfitz
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
 
-void (*vr_menucmdfn)(void);
-void (*vr_menudrawfn)(void);
-void (*vr_menukeyfn)(int key);
-
 enum m_state_e m_state;
 
 void M_Menu_Main_f(void);
@@ -1508,28 +1504,19 @@ void M_Video_Key(int key)
 
 void M_Menu_VR_f(void)
 {
-    if(vr_menucmdfn)
-    {
-        (*vr_menucmdfn)();
-    }
+    VR_Menu_f();
 }
 
 
 void M_VR_Draw(void)
 {
-    if(vr_menudrawfn)
-    {
-        (*vr_menudrawfn)();
-    }
+    VR_MenuDraw();
 }
 
 
 void M_VR_Key(int key)
 {
-    if(vr_menukeyfn)
-    {
-        (*vr_menukeyfn)(key);
-    }
+    VR_MenuKey(key);
 }
 
 //=============================================================================

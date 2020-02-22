@@ -864,7 +864,14 @@ void R_DrawParticles(void)
                                          // size of different particle textures
 
             // TODO VR: global particle scale
-            scale *= 0.5f;
+            if (p->type == ptype_t::pt_explode || p->type == ptype_t::pt_explode2)
+            {
+                scale *= 1.2f;
+            }
+            else
+            {
+                scale *= 0.6f;
+            }
 
             // johnfitz -- particle transparency and fade out
             c = (GLubyte*)&d_8to24table[(int)p->color];
