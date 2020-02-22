@@ -436,4 +436,3 @@ void VR_Menu_f(void)
 // * difficulty options
 // * nicer explosion particles
 // * smaller hitboxes for nails and enemies (make aimign more important)
-// * locomotion bugs out in raw mode when right controller is up

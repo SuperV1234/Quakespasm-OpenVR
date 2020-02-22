@@ -121,7 +121,7 @@ float MSG_ReadAngle16(unsigned int flags); // johnfitz
 //============================================================================
 
 void Q_memset(void* dest, int fill, size_t count);
-void Q_memcpy(void* dest, const void* src, size_t count);
+void Q_memcpy(void* dest, const void* src, size_t count); 
 int Q_memcmp(const void* m1, const void* m2, size_t count);
 void Q_strcpy(char* dest, const char* src);
 void Q_strncpy(char* dest, const char* src, int count);

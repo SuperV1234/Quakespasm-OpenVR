@@ -43,16 +43,16 @@ void() W_FireAxe =
 	// local	string	s;
 
 	// TODO VR: add damage multiplier cvar
-	xdmg = 0.29 * self.handvelmag;
+	xdmg = 0.31 * self.handvelmag;
 
 	// s = ftos(xdmg);
 	// sprint (self, "DMG: ");
 	// sprint (self, s);
 
 	makevectors (self.v_angle);
-	source = self.handpos + '0 0 16';
+	source = self.handpos + '0 0 0';
 	// TODO VR: add range multiplier cvar
-	traceline (source - v_forward*16, source + v_forward*24, FALSE, self);
+	traceline (source - v_forward*16, source + v_forward*26, FALSE, self);
 	if (trace_fraction == 1.0)
 		return;
 
@@ -90,15 +90,15 @@ void() W_GunMelee =
 	local	float	xdmg;
 	// local	string	s;
 
-	xdmg = 0.15 * self.handvelmag;
+	xdmg = 0.18 * self.handvelmag;
 
 	// s = ftos(xdmg);
 	// sprint (self, "DMG: ");
 	// sprint (self, s);
 
 	makevectors (self.v_angle);
-	source = self.handpos + '0 0 16';
-	traceline (source - v_forward*16, source + v_forward*18, FALSE, self);
+	source = self.handpos + '0 0 0';
+	traceline (source - v_forward*16, source + v_forward*20, FALSE, self);
 	if (trace_fraction == 1.0)
 		return;
 
@@ -1355,6 +1355,28 @@ Called every frame so impulse events can be handled as well as possible
 */
 void() W_WeaponFrame =
 {
+	local	vector		org;
+
+	if (self.button0)
+	{
+		// Lightning effect (per-frame)
+		if (self.weapon == IT_LIGHTNING)
+		{
+			org = self.handpos + '0 0 0';
+			traceline (org, org + v_forward*600, TRUE, self);
+
+			WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
+			WriteByte (MSG_BROADCAST, TE_LIGHTNING2);
+			WriteEntity (MSG_BROADCAST, self);
+			WriteCoord (MSG_BROADCAST, org_x);
+			WriteCoord (MSG_BROADCAST, org_y);
+			WriteCoord (MSG_BROADCAST, org_z);
+			WriteCoord (MSG_BROADCAST, trace_endpos_x);
+			WriteCoord (MSG_BROADCAST, trace_endpos_y);
+			WriteCoord (MSG_BROADCAST, trace_endpos_z);
+		}
+	}
+
 	if (time < self.attack_finished)
 		return;
 

@@ -7,6 +7,7 @@
 #include <gtc/quaternion.hpp>
 #include <gtx/quaternion.hpp>
 #include <gtx/euler_angles.hpp>
+#include "util.h"
 
 [[nodiscard]] constexpr glm::vec3 toVec3(vec3_t v) noexcept
 {
@@ -877,9 +878,6 @@ static void RenderScreenForCurrentEye_OVR()
 
 void SetHandPos(int index, entity_t* player)
 {
-    static int foo = 0;
-
-
     vec3_t headLocalPreRot;
     _VectorSubtract(controllers[index].position, headOrigin, headLocalPreRot);
 
@@ -894,36 +892,19 @@ void SetHandPos(int index, entity_t* player)
     final[2] = headLocal[2] + player->origin[2] + vr_floor_offset.value +
                vr_gun_z_offset.value;
 
-    // TODO VR:
-    // glm::vec3 a{cl.handpos[index][0], cl.handpos[index][1],
-    // cl.handpos[index][2]}; glm::vec3 b{final[0], final[1], final[2]}; auto
-    // fff = glm::mix(a, b, 0.99f); cl.handpos[index][0] = fff.x;
-    // cl.handpos[index][1] = fff.y;
-    // cl.handpos[index][2] = fff.z;
-    //
-    // char msgbuf[100];
-    // sprintf(msgbuf, "%f -> %f\n", cl.handpos[index][0], final[0]);
-    // OutputDebugStringA(msgbuf);
-
     // handpos
     auto oldx = cl.handpos[index][0];
     auto oldy = cl.handpos[index][1];
     auto oldz = cl.handpos[index][2];
     VectorCopy(final, cl.handpos[index]);
 
-    // char msgbuf[100];
-    // sprintf(msgbuf, "%f -> %f\n", oldz, final[2]);
-    // OutputDebugStringA(msgbuf);
-
     // TODO VR: adjust weight and add cvar, fix movement
-    if(false && foo > 500)
+    if(false)
     {
         cl.handpos[index][0] = lerp(oldx, final[0], 0.05f);
         cl.handpos[index][1] = lerp(oldy, final[1], 0.05f);
         cl.handpos[index][2] = __lerp(oldz, final[2], 0.05f);
     }
-    ++foo;
-
 
     // handrot is set with AngleVectorFromRotMat
 
@@ -1180,66 +1161,71 @@ void VR_UpdateScreenContent()
                 vec3_t handrottemp;
                 AngleVectorFromRotMat(mat, handrottemp);
 
-                // TODO VR:
-                /*
-                auto rads = glm::radians(glm::vec3(handrottemp[0],
-                handrottemp[1], handrottemp[2])); auto quat = glm::fquat(rads);
+#if 0
+                if (i == 0) continue;
 
-                // glm::fquat qa =
-                glm::fquat(glm::radians(glm::vec3(cl.handrot[i][0],
-                cl.handrot[i][1], cl.handrot[i][2])));
-                // glm::fquat qb =
-                glm::fquat(glm::radians(glm::vec3(handrottemp[0],
-                handrottemp[1], handrottemp[2])));
-                // auto qc = glm::mix(qa, qb, 0.02f);
-                float t0, t1, t2;
-                glm::extractEulerAngleXYZ(glm::toMat4(quat), t2, t1, t0);
+                const auto ox = cl.handrot[i][PITCH];
+                const auto oy = cl.handrot[i][YAW];
+                const auto oz = cl.handrot[i][ROLL];
 
-                auto qf = glm::degrees(glm::vec3(t0,t1,t2));
+                const auto tx = handrottemp[PITCH];
+                const auto ty = handrottemp[YAW];
+                const auto tz = handrottemp[ROLL];
 
-                char msgbuf[100];
-                sprintf(msgbuf, "%f , %f , %f\n", rads[0], rads[1], rads[2]);
-                OutputDebugStringA(msgbuf);
-                */
+                const glm::vec3 orig{ ox, oy, oz };
 
-                // glm::fquat a, b;
-                //
-                // {
-                // 	vec3_t forward, right, up;
-                // 	AngleVectors(handrottemp, forward, right, up);
-                // 	a = glm::conjugate(glm::quatLookAt(toVec3(forward),
-                // toVec3(up))); 	a = glm::normalize(a);
-                // }
-                //
-                // {
-                // 	vec3_t forward, right, up;
-                // 	AngleVectors(cl.handrot[i], forward, right, up);
-                // 	b = glm::quatLookAt(toVec3(forward), toVec3(up));
-                // 	b = glm::normalize(b);
-                // }
+                // glm::fquat q{glm::radians(orig)};
+                // q = glm::mix(glm::normalize(q), glm::normalize(glm::fquat(glm::radians(glm::vec3(tx, ty, tz)))), 0.05f);
 
+                glm::mat3 m(toVec3(mat[0]), toVec3(mat[1]), toVec3(mat[2]));
+                glm::fquat q(m);
 
-                // glm::fquat a(glm::vec3(cl.handrot[i][PITCH],
-                // cl.handrot[i][YAW], cl.handrot[i][ROLL])); glm::fquat
-                // b(glm::vec3(handrottemp[PITCH], handrottemp[YAW],
-                // handrottemp[ROLL])); auto c = glm::mix(b, a, 0.1f); auto ro =
-                // controllers[i].raworientation; auto ca =
-                // glm::degrees(glm::eulerAngles(glm::conjugate(glm::quat(ro.w,ro.x,ro.y,ro.z))));
-                // m = glm::quatLookAt(toVec3(forward), toVec3(up));
-                // m = glm::rotate(m, vr_sbar_offset_pitch.value, glm::vec3(1,
-                // 0, 0)); m = glm::rotate(m, vr_sbar_offset_yaw.value,
-                // glm::vec3(0, 1, 0)); m = glm::rotate(m,
-                // vr_sbar_offset_roll.value, glm::vec3(0, 0, 1)); m =
-                // glm::normalize(m);
+                const glm::vec3 res{ glm::degrees(glm::eulerAngles(glm::normalize(q))) };
 
-                //
-                // cl.handrot[i][0] = ca.x;
-                // cl.handrot[i][1] = ca.y;
-                // cl.handrot[i][2] = ca.z;
+                const auto nx = res[PITCH];
+                const auto ny = res[YAW];
+                const auto nz = res[ROLL];
+
+                auto fx = nx;
+                auto fy = ny;
+                auto fz = nz;
+
+                if (oy > 90)
+                {
+                    fx += 180.f;
+                    fy -= 180.f;
+                    fy *= -1.f;
+                    fx -= 360.f;
+                    fz += 180.f;
+
+                    if (ox > 0.f)
+                    {
+                        fx += 360.f;
+                    }
+                }
+
+                if (false)
+                {
+                    Con_Printf("%d %d %d | %d %d %d | %d %d %d\n",
+                        (int)ox, (int)oy, (int)oz,
+                        (int)nx, (int)ny, (int)nz,
+                        (int)fx, (int)fy, (int)fz
+                    );
+
+                    quake::util::debugPrintSeparated(" ", (int)ox, (int)oy, (int)oz);
+                    quake::util::debugPrint(" | ");
+                    quake::util::debugPrintSeparated(" ", (int)nx, (int)ny, (int)nz);
+                    quake::util::debugPrint(" | ");
+                    quake::util::debugPrintSeparated(" ", (int)fx, (int)fy, (int)fz);
+                    quake::util::debugPrint("\n");
+                }
+
+                handrottemp[0] = fx;
+                handrottemp[1] = fy;
+                handrottemp[2] = fz;
+#endif
 
                 VectorCopy(handrottemp, cl.handrot[i]);
-
-                // vec3lerp(cl.handrot[i], cl.handrot[i], handrottemp, 0.02f);
             }
 
             if(cl.viewent.model)
@@ -1833,13 +1819,14 @@ void VR_Move(usercmd_t* cmd)
         {
             cmd->forwardmove +=
                 cl_forwardspeed.value * GetAxis(&controllers[0].state, 1, 0.0);
+
             cmd->sidemove +=
                 cl_forwardspeed.value * GetAxis(&controllers[0].state, 0, 0.0);
         }
         else
         {
             vec3_t vfwd, vright, vup;
-            vec3_t playerYawOnly = {0, sv_player->v.v_angle[YAW], 0};
+            vec3_t playerYawOnly = {0, sv_player->v.v_viewangle[YAW], 0};
 
             AngleVectors(playerYawOnly, vfwd, vright, vup);
 

@@ -309,7 +309,7 @@ void SV_AirMove(void)
     float wishspeed;
     float fmove, smove;
 
-    AngleVectors(sv_player->v.angles, forward, right, up);
+    AngleVectors(sv_player->v.v_viewangle, forward, right, up);
 
     fmove = cmd.forwardmove;
     smove = cmd.sidemove;
@@ -414,7 +414,6 @@ SV_ReadClientMove
 void SV_ReadClientMove(usercmd_t* move)
 {
     int i;
-    vec3_t angle;
     int bits;
 
     // read ping time
@@ -422,16 +421,25 @@ void SV_ReadClientMove(usercmd_t* move)
         sv.time - MSG_ReadFloat();
     host_client->num_pings++;
 
-    // read current angles
-    for(i = 0; i < 3; i++)
-        // johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
-        if(sv.protocol == PROTOCOL_NETQUAKE)
-            angle[i] = MSG_ReadAngle(sv.protocolflags);
-        else
-            angle[i] = MSG_ReadAngle16(sv.protocolflags);
-    // johnfitz
+    const auto readAngles = [&](auto& target)
+    {
+        // read current angles
+        for(int i = 0; i < 3; i++)
+        {
+            // johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
+            if(sv.protocol == PROTOCOL_NETQUAKE)
+                target[i] = MSG_ReadAngle(sv.protocolflags);
+            else
+                target[i] = MSG_ReadAngle16(sv.protocolflags);
+        // johnfitz
+        }
+    };
 
-    VectorCopy(angle, host_client->edict->v.v_angle);
+    // aimangles
+    readAngles(host_client->edict->v.v_angle);
+
+    // viewangles
+    readAngles(host_client->edict->v.v_viewangle);
 
     // handpos
     move->handpos[0] = MSG_ReadFloat();

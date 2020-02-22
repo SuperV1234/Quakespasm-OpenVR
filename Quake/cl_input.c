@@ -437,9 +437,8 @@ CL_SendMove
 */
 void CL_SendMove(const usercmd_t* cmd)
 {
-    constexpr size_t bufsize = 128 + 24;
+    constexpr size_t bufsize = 256;
 
-    int i;
     int bits;
     sizebuf_t buf;
     byte data[bufsize];
@@ -457,13 +456,24 @@ void CL_SendMove(const usercmd_t* cmd)
 
     MSG_WriteFloat(&buf, cl.mtime[0]); // so server can get ping times
 
-    for(i = 0; i < 3; i++)
-        // johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
-        if(cl.protocol == PROTOCOL_NETQUAKE)
-            MSG_WriteAngle(&buf, cl.aimangles[i], cl.protocolflags);
-        else
-            MSG_WriteAngle16(&buf, cl.aimangles[i], cl.protocolflags);
-    // johnfitz
+    const auto writeAngles = [&](const auto& angles)
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            // johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
+            if(cl.protocol == PROTOCOL_NETQUAKE)
+                MSG_WriteAngle(&buf, angles[i], cl.protocolflags);
+            else
+                MSG_WriteAngle16(&buf, angles[i], cl.protocolflags);
+        // johnfitz
+        }
+    };
+
+    // aimangles
+    writeAngles(cl.aimangles);
+
+    // viewangles
+    writeAngles(cl.viewangles);
 
     // handpos
     MSG_WriteFloat(&buf, cmd->handpos[0]);
