@@ -38,6 +38,7 @@ set(source_list "../Quake/bgmusic.c"
                 "../Quake/keys.c"
                 "../Quake/main_sdl.c"
                 "../Quake/mathlib.c"
+                "../Quake/map_menu.c"
                 "../Quake/menu.c"
                 "../Quake/net_dgrm.c"
                 "../Quake/net_loop.c"
@@ -95,8 +96,8 @@ add_executable(quakespasm-sdl2 "${CMAKE_CURRENT_SOURCE_DIR}/../Quake/vr.c" "${so
 set_target_properties(quakespasm-sdl2 PROPERTIES LINKER_LANGUAGE CXX)
 
 target_compile_features(quakespasm-sdl2 PUBLIC cxx_std_17)
-target_compile_options(quakespasm-sdl2 PRIVATE -Wall -Wextra -Wno-missing-field-initializers -fdiagnostics-color=always -Wpedantic)
-target_compile_definitions(quakespasm-sdl2 PRIVATE USE_SDL2=1)
+target_compile_options(quakespasm-sdl2 PRIVATE -x c++ -Wall -Wextra -Wno-missing-field-initializers -fdiagnostics-color=always -Wpedantic)
+target_compile_definitions(quakespasm-sdl2 PRIVATE USE_SDL2=1 _AMD64_=1)
 
 target_include_directories(
     quakespasm-sdl2 PUBLIC

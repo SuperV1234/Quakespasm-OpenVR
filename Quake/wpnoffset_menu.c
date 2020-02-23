@@ -1,22 +1,20 @@
 #include "quakedef.h"
 #include "vr.h"
 #include "wpnoffset_menu.h"
+#include "cmd.h"
+#include "util.h"
+
 #include <string>
 #include <cassert>
 #include <array>
 #include <tuple>
-#include "cmd.h"
 
 static bool wpnoff_offhand = false;
 static int wpnoff_cursor = 0;
 
-extern void M_DrawSlider(int x, int y, float range);
-
 static void WpnOffset_MenuPlaySound(const char* sound, float fvol)
 {
-    sfx_t* sfx = S_PrecacheSound(sound);
-
-    if(sfx)
+    if(sfx_t* const sfx = S_PrecacheSound(sound))
     {
         S_StartSound(cl.viewentity, 0, sfx, vec3_origin, fvol, 1);
     }
@@ -24,9 +22,10 @@ static void WpnOffset_MenuPlaySound(const char* sound, float fvol)
 
 static auto getCvars()
 {
-    // TODO VR: hardcoded hand
+    // TODO VR: hardcoded hand/fist cvar number
     const auto idx = wpnoff_offhand ? 16 : weaponCVarEntry;
 
+    // clang-format off
     return std::tie(
         vr_weapon_offset[idx * VARS_PER_WEAPON],     // OffsetX
         vr_weapon_offset[idx * VARS_PER_WEAPON + 1], // OffsetY
@@ -36,10 +35,11 @@ static auto getCvars()
         vr_weapon_offset[idx * VARS_PER_WEAPON + 5], // Pitch
         vr_weapon_offset[idx * VARS_PER_WEAPON + 6]  // Yaw
     );
+    // clang-format on
 }
 
 static void WpnOffset_MenuPrintOptionValue(
-    int cx, int cy, WpnOffsetMenuOpt option)
+    const int cx, const int cy, const WpnOffsetMenuOpt option)
 {
     char value_buffer[32] = {0};
 
@@ -53,7 +53,7 @@ static void WpnOffset_MenuPrintOptionValue(
         M_Print(cx, cy, value_buffer);
     };
 
-    auto [ox, oy, oz, sc, rr, rp, ry] = getCvars();
+    const auto& [ox, oy, oz, sc, rr, rp, ry] = getCvars();
 
     switch(option)
     {
@@ -79,7 +79,7 @@ static void WpnOffset_MenuKeyOption(int key, WpnOffsetMenuOpt option)
             CLAMP(min, isLeft ? cvar.value - incr : cvar.value + incr, max));
     };
 
-    auto [ox, oy, oz, sc, rr, rp, ry] = getCvars();
+    const auto& [ox, oy, oz, sc, rr, rp, ry] = getCvars();
 
     constexpr float oInc = 0.1f;
     constexpr float oBound = 100.f;
@@ -89,9 +89,7 @@ static void WpnOffset_MenuKeyOption(int key, WpnOffsetMenuOpt option)
 
     switch(option)
     {
-        case WpnOffsetMenuOpt::OffHand:
-            wpnoff_offhand = !wpnoff_offhand;
-            break;
+        case WpnOffsetMenuOpt::OffHand: wpnoff_offhand = !wpnoff_offhand; break;
         case WpnOffsetMenuOpt::OffsetX:
             adjustF(ox, oInc, -oBound, oBound);
             break;
@@ -114,13 +112,16 @@ void WpnOffset_MenuKey(int key)
     switch(key)
     {
         case K_ESCAPE:
+        {
             VID_SyncCvars(); // sync cvars before leaving menu. FIXME: there are
                              // other ways to leave menu
             S_LocalSound("misc/menu1.wav");
             M_Menu_Options_f();
             break;
+        }
 
         case K_UPARROW:
+        {
             S_LocalSound("misc/menu1.wav");
             wpnoff_cursor--;
             if(wpnoff_cursor < 0)
@@ -128,8 +129,10 @@ void WpnOffset_MenuKey(int key)
                 wpnoff_cursor = (int)WpnOffsetMenuOpt::Max - 1;
             }
             break;
+        }
 
         case K_DOWNARROW:
+        {
             S_LocalSound("misc/menu1.wav");
             wpnoff_cursor++;
             if(wpnoff_cursor >= (int)WpnOffsetMenuOpt::Max)
@@ -137,19 +140,22 @@ void WpnOffset_MenuKey(int key)
                 wpnoff_cursor = 0;
             }
             break;
+        }
 
         case K_LEFTARROW: [[fallthrough]];
         case K_RIGHTARROW:
+        {
             S_LocalSound("misc/menu3.wav");
             WpnOffset_MenuKeyOption(key, (WpnOffsetMenuOpt)wpnoff_cursor);
             break;
+        }
 
         case K_ENTER:
+        {
             m_entersound = true;
             WpnOffset_MenuKeyOption(key, (WpnOffsetMenuOpt)wpnoff_cursor);
             break;
-
-        default: break;
+        }
     }
 }
 
@@ -173,9 +179,9 @@ void WpnOffset_MenuDraw(void)
     y += 16;
     int idx = 0;
 
-    static const auto adjustedLabels = [](auto... labels) {
-        return std::array{(std::string(24 - strlen(labels), ' ') + labels)...};
-    }("Offhand", "Offset X", "Offset Y", "Offset Z", "Scale", "Roll", "Pitch", "Yaw");
+    static const auto adjustedLabels =
+        quake::util::makeAdjustedMenuLabels("Offhand", "Offset X", "Offset Y",
+            "Offset Z", "Scale", "Roll", "Pitch", "Yaw");
 
     static_assert(adjustedLabels.size() == (int)WpnOffsetMenuOpt::Max);
 

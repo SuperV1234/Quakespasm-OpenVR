@@ -255,6 +255,9 @@
     <ClCompile Include="..\..\Quake\sbaroffset_menu.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Quake\map_menu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Quake\anorm_dots.h">
@@ -468,6 +471,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Quake\util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Quake\map_menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

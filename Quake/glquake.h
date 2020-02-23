@@ -373,6 +373,8 @@ void Fog_SetupState(void);
 
 void R_NewGame(void);
 
+struct dlight_t;
+
 void R_AnimateLight(void);
 void R_MarkSurfaces(void);
 void R_CullSurfaces(void);

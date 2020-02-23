@@ -1,15 +1,15 @@
 #include "quakedef.h"
 #include "vr.h"
 #include "sbaroffset_menu.h"
+#include "cmd.h"
+#include "util.h"
+
 #include <string>
 #include <cassert>
 #include <array>
 #include <tuple>
-#include "cmd.h"
 
 static int sbaroff_cursor = 0;
-
-extern void M_DrawSlider(int x, int y, float range);
 
 static void SbarOffset_MenuPlaySound(const char* sound, float fvol)
 {
@@ -150,15 +150,13 @@ void SbarOffset_MenuDraw(void)
     y += 28;
 
     // title
-    const char* title = "Weapon Offsets";
+    const char* title = "Status Bar Offset";
     M_PrintWhite((320 - 8 * strlen(title)) / 2, y, title);
 
     y += 16;
     int idx = 0;
 
-    static const auto adjustedLabels = [](auto... labels) {
-        return std::array{(std::string(24 - strlen(labels), ' ') + labels)...};
-    }("Offset X", "Offset Y", "Offset Z", "Scale", "Roll", "Pitch", "Yaw");
+    static const auto adjustedLabels = quake::util::makeAdjustedMenuLabels("Offset X", "Offset Y", "Offset Z", "Scale", "Roll", "Pitch", "Yaw");
 
     static_assert(adjustedLabels.size() == (int)SbarOffsetMenuOpt::Max);
 

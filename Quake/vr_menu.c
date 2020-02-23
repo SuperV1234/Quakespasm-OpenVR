@@ -1,10 +1,12 @@
 #include "quakedef.h"
 #include "vr.h"
 #include "vr_menu.h"
+#include "cmd.h"
+#include "util.h"
+
 #include <string>
 #include <cassert>
 #include <array>
-#include "cmd.h"
 
 static int vr_options_cursor = 0;
 
@@ -383,10 +385,7 @@ void VR_MenuDraw(void)
     int idx = 0;
 
     static const auto adjustedLabels =
-        [](auto... labels) {
-            return std::array{
-                (std::string(24 - strlen(labels), ' ') + labels)...};
-        }("VR Enabled", "Aim Mode", "Deadzone", "Crosshair", "Crosshair Depth",
+        quake::util::makeAdjustedMenuLabels("VR Enabled", "Aim Mode", "Deadzone", "Crosshair", "Crosshair Depth",
             "Crosshair Size", "Crosshair Alpha", "World Scale", "Movement mode",
             "Enable Joystick Turn", "Turn", "Turn Speed", "MSAA", "Gun Angle", "Floor Offset",
             "Gun Model Pitch", "Gun Model Scale", "Gun Model Z Offset",

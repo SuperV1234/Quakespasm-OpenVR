@@ -28,7 +28,7 @@
 
 #define MUSIC_DIRNAME "music"
 
-qboolean bgmloop;
+bool bgmloop;
 cvar_t bgm_extmusic = {"bgm_extmusic", "1", CVAR_ARCHIVE};
 
 static qboolean no_extmusic = false;

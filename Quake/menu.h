@@ -38,6 +38,7 @@ enum m_state_e
     m_vr,
     m_wpn_offset,
     m_sbar_offset,
+    m_map,
     m_keys,
     m_help,
     m_quit,

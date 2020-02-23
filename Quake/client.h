@@ -20,6 +20,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#define CSHIFT_CONTENTS 0
+#define CSHIFT_DAMAGE 1
+#define CSHIFT_BONUS 2
+#define CSHIFT_POWERUP 3
+#define NUM_CSHIFTS 4
+#define NAME_LENGTH 64
+#define SIGNONS 4 // signon messages to receive before connected
+#define MAX_DLIGHTS 64 // johnfitz -- was 32
+#define MAX_BEAMS 32   // johnfitz -- was 24
+#define MAX_MAPSTRING 2048
+#define MAX_DEMOS 8
+#define MAX_DEMONAME 16
+#define MAX_TEMP_ENTITIES 256    // johnfitz -- was 64
+#define MAX_STATIC_ENTITIES 4096 // ericw -- was 512	//johnfitz -- was 128
+#define MAX_VISEDICTS 4096       // larger, now we support BSP2
+
 #ifndef _CLIENT_H_
 #define _CLIENT_H_
 
@@ -48,23 +64,14 @@ typedef struct
     int percent; // 0-256
 } cshift_t;
 
-#define CSHIFT_CONTENTS 0
-#define CSHIFT_DAMAGE 1
-#define CSHIFT_BONUS 2
-#define CSHIFT_POWERUP 3
-#define NUM_CSHIFTS 4
-
-#define NAME_LENGTH 64
-
 
 //
 // client_state_t should hold all pieces of the client state
 //
 
-#define SIGNONS 4 // signon messages to receive before connected
 
-#define MAX_DLIGHTS 64 // johnfitz -- was 32
-typedef struct
+
+struct dlight_t
 {
     vec3_t origin;
     float radius;
@@ -73,10 +80,9 @@ typedef struct
     float minlight; // don't add when contributing less
     int key;
     vec3_t color; // johnfitz -- lit support via lordhavoc
-} dlight_t;
+};
 
 
-#define MAX_BEAMS 32 // johnfitz -- was 24
 typedef struct
 {
     int entity;
@@ -85,9 +91,7 @@ typedef struct
     vec3_t start, end;
 } beam_t;
 
-#define MAX_MAPSTRING 2048
-#define MAX_DEMOS 8
-#define MAX_DEMONAME 16
+
 
 typedef enum
 {
@@ -222,9 +226,9 @@ typedef struct
     struct qmodel_s* worldmodel; // cl_entitites[0].model
     struct efrag_s* free_efrags;
     int num_efrags;
-    int num_entities; // held in cl_entities array
-    int num_statics;  // held in cl_staticentities array
-    entity_t viewent; // the gun model
+    int num_entities;         // held in cl_entities array
+    int num_statics;          // held in cl_staticentities array
+    entity_t viewent;         // the gun model
     entity_t offhand_viewent; // the offhand gun model
 
     int cdtrack, looptrack; // cd audio
@@ -275,9 +279,7 @@ extern cvar_t m_forward;
 extern cvar_t m_side;
 
 
-#define MAX_TEMP_ENTITIES 256    // johnfitz -- was 64
-#define MAX_STATIC_ENTITIES 4096 // ericw -- was 512	//johnfitz -- was 128
-#define MAX_VISEDICTS 4096       // larger, now we support BSP2
+
 
 extern client_state_t cl;
 
@@ -380,7 +382,7 @@ extern cvar_t chase_active;
 void Chase_Init(void);
 void TraceLine(vec3_t start, vec3_t end, vec3_t impact);
 void TraceLineToEntity(vec3_t start, vec3_t end, vec3_t impact, edict_t* ent);
-void Chase_UpdateForClient(void);  // johnfitz
+void Chase_UpdateForClient(void);                                 // johnfitz
 void Chase_UpdateForDrawing(refdef_t& refdef, entity_t* viewent); // johnfitz
 
 #endif /* _CLIENT_H_ */

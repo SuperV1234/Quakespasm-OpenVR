@@ -1,6 +1,7 @@
 #pragma once
 
 #include "debugapi.h"
+#include "q_stdinc.h"
 
 #include <glm.hpp>
 
@@ -23,7 +24,8 @@ namespace quake::util
     }
 
     template <typename T, typename... Ts>
-    [[nodiscard]] std::string stringCatSeparated(const std::string_view separator, const T& x, const Ts&... xs)
+    [[nodiscard]] std::string stringCatSeparated(
+        const std::string_view separator, const T& x, const Ts&... xs)
     {
         std::ostringstream oss;
         oss << x;
@@ -47,16 +49,28 @@ namespace quake::util
     {
         return {v[0], v[1], v[2]};
     }
-}
+
+    template <typename... Ts>
+    [[nodiscard]] constexpr auto makeAdjustedMenuLabels(const Ts&... labels)
+    {
+        return std::array{(std::string(24 - strlen(labels), ' ') + labels)...};
+    }
+} // namespace quake::util
 
 namespace std
 {
     template <int D, typename T, glm::qualifier P>
-    struct tuple_size<glm::vec<D, T, P>> : std::integral_constant<std::size_t, D> { };
+    struct tuple_size<glm::vec<D, T, P>>
+        : std::integral_constant<std::size_t, D>
+    {
+    };
 
     template <std::size_t I, int D, typename T, glm::qualifier P>
-    struct tuple_element<I, glm::vec<D, T, P>> { using type = T; };
-}
+    struct tuple_element<I, glm::vec<D, T, P>>
+    {
+        using type = T;
+    };
+} // namespace std
 
 namespace glm
 {
@@ -65,4 +79,4 @@ namespace glm
     {
         return v[I];
     }
-}
+} // namespace glm

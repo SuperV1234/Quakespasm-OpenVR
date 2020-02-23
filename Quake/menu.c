@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "vr_menu.h"
 #include "wpnoffset_menu.h"
 #include "sbaroffset_menu.h"
+#include "map_menu.h"
 
 void (*vid_menucmdfn)(void); // johnfitz
 void (*vid_menudrawfn)(void);
@@ -49,6 +50,7 @@ void M_Menu_Video_f(void);
 void M_Menu_VR_f(void);
 void M_Menu_WpnOffset_f(void);
 void M_Menu_SbarOffset_f(void);
+void M_Menu_MapMenu_f(void);
 void M_Menu_Help_f(void);
 void M_Menu_Quit_f(void);
 
@@ -944,6 +946,7 @@ enum
     OPT_VR,
     OPT_WPN_OFFSET,
     OPT_SBAR_OFFSET,
+    OPT_MAP_MENU,
     OPTIONS_ITEMS
 };
 
@@ -1223,10 +1226,15 @@ void M_Options_Draw(void)
 
     // OPT_WPN_OFFSET:
     if(vid_menudrawfn)
-        M_Print(16, 32 + 8 * OPT_WPN_OFFSET, "      Weapon Offset");
+        M_Print(16, 32 + 8 * OPT_WPN_OFFSET,  "     Weapon Offsets");
 
+    // OPT_SBAR_OFFSET:
     if(vid_menudrawfn)
         M_Print(16, 32 + 8 * OPT_SBAR_OFFSET, "  Status Bar Offset");
+
+    // OPT_MAP_MENU:
+    if(vid_menudrawfn)
+        M_Print(16, 32 + 8 * OPT_MAP_MENU,    "               Maps");
 
     // cursor
     M_DrawCharacter(
@@ -1265,6 +1273,7 @@ void M_Options_Key(int k)
                 case OPT_VR: M_Menu_VR_f(); break;
                 case OPT_WPN_OFFSET: M_Menu_WpnOffset_f(); break;
                 case OPT_SBAR_OFFSET: M_Menu_SbarOffset_f(); break;
+                case OPT_MAP_MENU: M_Menu_MapMenu_f(); break;
                 default: M_AdjustSliders(1); break;
             }
             return;
@@ -1557,6 +1566,26 @@ void M_SbarOffset_Draw(void)
 void M_SbarOffset_Key(int key)
 {
     SbarOffset_MenuKey(key);
+}
+
+//=============================================================================
+/* MAP MENU */
+
+void M_Menu_MapMenu_f(void)
+{
+    MapMenu_Menu_f();
+}
+
+
+void M_MapMenu_Draw(void)
+{
+    MapMenu_MenuDraw();
+}
+
+
+void M_MapMenu_Key(int key)
+{
+    MapMenu_MenuKey(key);
 }
 
 //=============================================================================
@@ -2538,6 +2567,7 @@ void M_Draw(void)
         case m_vr: M_VR_Draw(); break;
         case m_wpn_offset: M_WpnOffset_Draw(); return;
         case m_sbar_offset: M_SbarOffset_Draw(); return;
+        case m_map: M_MapMenu_Draw(); return;
         case m_help: M_Help_Draw(); break;
         case m_lanconfig: M_LanConfig_Draw(); break;
         case m_gameoptions: M_GameOptions_Draw(); break;
@@ -2583,6 +2613,7 @@ void M_Keydown(int key)
         case m_vr: M_VR_Key(key); return;
         case m_wpn_offset: M_WpnOffset_Key(key); return;
         case m_sbar_offset: M_SbarOffset_Key(key); return;
+        case m_map: M_MapMenu_Key(key); return;
         case m_help: M_Help_Key(key); return;
         case m_quit: M_Quit_Key(key); return;
         case m_lanconfig: M_LanConfig_Key(key); return;
