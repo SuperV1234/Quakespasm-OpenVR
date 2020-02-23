@@ -71,7 +71,7 @@ int net_driverlevel;
 double net_time;
 
 
-double SetNetTime(void)
+double SetNetTime()
 {
     net_time = Sys_DoubleTime();
     return net_time;
@@ -86,7 +86,7 @@ Called by drivers when a new communications endpoint is required
 The sequence and buffer fields will be filled in properly
 ===================
 */
-qsocket_t* NET_NewQSocket(void)
+qsocket_t* NET_NewQSocket()
 {
     qsocket_t* sock;
 
@@ -163,7 +163,7 @@ const char* NET_QSocketGetAddressString(const qsocket_t* s)
 }
 
 
-static void NET_Listen_f(void)
+static void NET_Listen_f()
 {
     if(Cmd_Argc() != 2)
     {
@@ -182,7 +182,7 @@ static void NET_Listen_f(void)
 }
 
 
-static void MaxPlayers_f(void)
+static void MaxPlayers_f()
 {
     int n;
 
@@ -219,7 +219,7 @@ static void MaxPlayers_f(void)
 }
 
 
-static void NET_Port_f(void)
+static void NET_Port_f()
 {
     int n;
 
@@ -248,7 +248,7 @@ static void NET_Port_f(void)
 }
 
 
-static void PrintSlistHeader(void)
+static void PrintSlistHeader()
 {
     Con_Printf("Server          Map             Users\n");
     Con_Printf("--------------- --------------- -----\n");
@@ -256,7 +256,7 @@ static void PrintSlistHeader(void)
 }
 
 
-static void PrintSlist(void)
+static void PrintSlist()
 {
     int n;
 
@@ -273,7 +273,7 @@ static void PrintSlist(void)
 }
 
 
-static void PrintSlistTrailer(void)
+static void PrintSlistTrailer()
 {
     if(hostCacheCount)
         Con_Printf("== end list ==\n\n");
@@ -282,7 +282,7 @@ static void PrintSlistTrailer(void)
 }
 
 
-void NET_Slist_f(void)
+void NET_Slist_f()
 {
     if(slistInProgress) return;
 
@@ -302,7 +302,7 @@ void NET_Slist_f(void)
 }
 
 
-void NET_SlistSort(void)
+void NET_SlistSort()
 {
     if(hostCacheCount > 1)
     {
@@ -485,7 +485,7 @@ JustDoIt:
 NET_CheckNewConnections
 ===================
 */
-qsocket_t* NET_CheckNewConnections(void)
+qsocket_t* NET_CheckNewConnections()
 {
     qsocket_t* ret;
 
@@ -738,7 +738,7 @@ NET_Init
 ====================
 */
 
-void NET_Init(void)
+void NET_Init()
 {
     int i;
     qsocket_t* s;
@@ -814,7 +814,7 @@ NET_Shutdown
 ====================
 */
 
-void NET_Shutdown(void)
+void NET_Shutdown()
 {
     qsocket_t* sock;
 
@@ -839,7 +839,7 @@ void NET_Shutdown(void)
 
 static PollProcedure* pollProcedureList = nullptr;
 
-void NET_Poll(void)
+void NET_Poll()
 {
     PollProcedure* pp;
 

@@ -40,7 +40,7 @@ extern qboolean pr_alpha_supported; // johnfitz
 SV_Protocol_f
 ===============
 */
-void SV_Protocol_f(void)
+void SV_Protocol_f()
 {
     int i;
 
@@ -71,7 +71,7 @@ void SV_Protocol_f(void)
 SV_Init
 ===============
 */
-void SV_Init(void)
+void SV_Init()
 {
     int i;
     const char* p;
@@ -398,7 +398,7 @@ SV_CheckForNewClients
 
 ===================
 */
-void SV_CheckForNewClients(void)
+void SV_CheckForNewClients()
 {
     struct qsocket_s* ret;
     int i;
@@ -441,7 +441,7 @@ SV_ClearDatagram
 
 ==================
 */
-void SV_ClearDatagram(void)
+void SV_ClearDatagram()
 {
     SZ_Clear(&sv.datagram);
 }
@@ -739,7 +739,7 @@ SV_CleanupEnts
 
 =============
 */
-void SV_CleanupEnts(void)
+void SV_CleanupEnts()
 {
     int e;
     edict_t* ent;
@@ -971,7 +971,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 SV_UpdateToReliableMessages
 =======================
 */
-void SV_UpdateToReliableMessages(void)
+void SV_UpdateToReliableMessages()
 {
     int i, j;
     client_t* client;
@@ -1034,7 +1034,7 @@ void SV_SendNop(client_t* client)
 SV_SendClientMessages
 =======================
 */
-void SV_SendClientMessages(void)
+void SV_SendClientMessages()
 {
     int i;
 
@@ -1137,7 +1137,7 @@ int SV_ModelIndex(const char* name)
 SV_CreateBaseline
 ================
 */
-void SV_CreateBaseline(void)
+void SV_CreateBaseline()
 {
     int i;
     edict_t* svent;
@@ -1242,7 +1242,7 @@ SV_SendReconnect
 Tell all the clients that the server is changing levels
 ================
 */
-void SV_SendReconnect(void)
+void SV_SendReconnect()
 {
     byte data[128];
     sizebuf_t msg;
@@ -1267,7 +1267,7 @@ Grabs the current state of each client for saving across the
 transition to another level
 ================
 */
-void SV_SaveSpawnparms(void)
+void SV_SaveSpawnparms()
 {
     int i, j;
 

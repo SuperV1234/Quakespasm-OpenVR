@@ -123,7 +123,7 @@ entity_t* CL_EntityNum(int num)
 CL_ParseStartSoundPacket
 ==================
 */
-void CL_ParseStartSoundPacket(void)
+void CL_ParseStartSoundPacket()
 {
     vec3_t pos;
     int channel, ent;
@@ -187,7 +187,7 @@ so the server doesn't disconnect.
 ==================
 */
 static byte net_olddata[NET_MAXMESSAGE];
-void CL_KeepaliveMessage(void)
+void CL_KeepaliveMessage()
 {
     float time;
     static float lastmsg;
@@ -241,7 +241,7 @@ void CL_KeepaliveMessage(void)
 CL_ParseServerInfo
 ==================
 */
-void CL_ParseServerInfo(void)
+void CL_ParseServerInfo()
 {
     const char* str;
     int i;
@@ -668,7 +668,7 @@ CL_ParseClientdata
 Server information pertaining to this client only
 ==================
 */
-void CL_ParseClientdata(void)
+void CL_ParseClientdata()
 {
     int i, j;
     int bits; // johnfitz
@@ -933,7 +933,7 @@ void CL_ParseStaticSound(int version) // johnfitz -- added argument
 CL_ParseServerMessage
 =====================
 */
-void CL_ParseServerMessage(void)
+void CL_ParseServerMessage()
 {
     int cmd;
     int i;

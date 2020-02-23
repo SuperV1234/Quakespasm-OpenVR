@@ -42,7 +42,7 @@ static qboolean com_modified; // set true if using non-id files
 
 qboolean fitzmode;
 
-static void COM_Path_f(void);
+static void COM_Path_f();
 
 // if a packfile directory differs from this, it is assumed to be hacked
 #define PAK0_COUNT 339      /* id1/pak0.pak - v1.0x */
@@ -735,14 +735,14 @@ void MSG_WriteAngle16(sizebuf_t* sb, float f, unsigned int flags)
 int msg_readcount;
 qboolean msg_badread;
 
-void MSG_BeginReading(void)
+void MSG_BeginReading()
 {
     msg_readcount = 0;
     msg_badread = false;
 }
 
 // returns -1 and sets msg_badread if no more characters are available
-int MSG_ReadChar(void)
+int MSG_ReadChar()
 {
     int c;
 
@@ -758,7 +758,7 @@ int MSG_ReadChar(void)
     return c;
 }
 
-int MSG_ReadByte(void)
+int MSG_ReadByte()
 {
     int c;
 
@@ -774,7 +774,7 @@ int MSG_ReadByte(void)
     return c;
 }
 
-int MSG_ReadShort(void)
+int MSG_ReadShort()
 {
     int c;
 
@@ -792,7 +792,7 @@ int MSG_ReadShort(void)
     return c;
 }
 
-int MSG_ReadLong(void)
+int MSG_ReadLong()
 {
     int c;
 
@@ -812,7 +812,7 @@ int MSG_ReadLong(void)
     return c;
 }
 
-float MSG_ReadFloat(void)
+float MSG_ReadFloat()
 {
     union
     {
@@ -832,7 +832,7 @@ float MSG_ReadFloat(void)
     return dat.f;
 }
 
-const char* MSG_ReadString(void)
+const char* MSG_ReadString()
 {
     static char string[2048];
     int c;
@@ -853,19 +853,19 @@ const char* MSG_ReadString(void)
 }
 
 // johnfitz -- original behavior, 13.3 fixed point coords, max range +-4096
-float MSG_ReadCoord16(void)
+float MSG_ReadCoord16()
 {
     return MSG_ReadShort() * (1.0 / 8);
 }
 
 // johnfitz -- 16.8 fixed point coords, max range +-32768
-float MSG_ReadCoord24(void)
+float MSG_ReadCoord24()
 {
     return MSG_ReadShort() + MSG_ReadByte() * (1.0 / 255);
 }
 
 // johnfitz -- 32-bit float coords
-float MSG_ReadCoord32f(void)
+float MSG_ReadCoord32f()
 {
     return MSG_ReadFloat();
 }
@@ -1245,7 +1245,7 @@ Immediately exits out if an alternate game was attempted to be started without
 being registered.
 ================
 */
-static void COM_CheckRegistered(void)
+static void COM_CheckRegistered()
 {
     int h;
     unsigned short check[128];
@@ -1352,7 +1352,7 @@ Test_f -- johnfitz
 ================
 */
 #ifdef _DEBUG
-static void FitzTest_f(void)
+static void FitzTest_f()
 {
 }
 #endif
@@ -1362,7 +1362,7 @@ static void FitzTest_f(void)
 COM_Init
 ================
 */
-void COM_Init(void)
+void COM_Init()
 {
     int i = 0x12345678;
     /*    U N I X */
@@ -1423,7 +1423,7 @@ FIXME: make this buffer size safe someday
 #define VA_NUM_BUFFS 4
 #define VA_BUFFERLEN 1024
 
-static char* get_va_buffer(void)
+static char* get_va_buffer()
 {
     static char va_buffers[VA_NUM_BUFFS][VA_BUFFERLEN];
     static int buffer_idx = 0;
@@ -1485,7 +1485,7 @@ searchpath_t* com_base_searchpaths;
 COM_Path_f
 ============
 */
-static void COM_Path_f(void)
+static void COM_Path_f()
 {
     searchpath_t* s;
 
@@ -2042,8 +2042,8 @@ _add_path:
 //==============================================================================
 // johnfitz -- dynamic gamedir stuff -- modified by QuakeSpasm team.
 //==============================================================================
-void ExtraMaps_NewGame(void);
-static void COM_Game_f(void)
+void ExtraMaps_NewGame();
+static void COM_Game_f()
 {
     if(Cmd_Argc() > 1)
     {
@@ -2208,7 +2208,7 @@ static void COM_Game_f(void)
 COM_InitFilesystem
 =================
 */
-void COM_InitFilesystem(void) // johnfitz -- modified based on topaz's tutorial
+void COM_InitFilesystem() // johnfitz -- modified based on topaz's tutorial
 {
     int i, j;
 

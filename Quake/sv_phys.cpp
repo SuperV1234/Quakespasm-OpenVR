@@ -62,7 +62,7 @@ void SV_Physics_Toss(edict_t* ent);
 SV_CheckAllEnts
 ================
 */
-void SV_CheckAllEnts(void)
+void SV_CheckAllEnts()
 {
     int e;
     edict_t* check;
@@ -1210,7 +1210,7 @@ SV_Physics
 
 ================
 */
-void SV_Physics(void)
+void SV_Physics()
 {
     int i;
     int entity_cap; // For sv_freezenonclients

@@ -32,7 +32,7 @@ extern cvar_t r_flatlightstyles; // johnfitz
 R_AnimateLight
 ==================
 */
-void R_AnimateLight(void)
+void R_AnimateLight()
 {
     int i, j, k;
 
@@ -120,7 +120,7 @@ void R_RenderDlight(dlight_t* light)
 R_RenderDlights
 =============
 */
-void R_RenderDlights(void)
+void R_RenderDlights()
 {
     int i;
     dlight_t* l;
@@ -240,7 +240,7 @@ start:
 R_PushDlights
 =============
 */
-void R_PushDlights(void)
+void R_PushDlights()
 {
     int i;
     dlight_t* l;

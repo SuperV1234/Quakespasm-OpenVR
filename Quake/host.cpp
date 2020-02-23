@@ -192,7 +192,7 @@ void Host_Error(const char* error, ...)
 Host_FindMaxClients
 ================
 */
-void Host_FindMaxClients(void)
+void Host_FindMaxClients()
 {
     int i;
 
@@ -238,7 +238,7 @@ void Host_FindMaxClients(void)
         Cvar_SetQuick(&deathmatch, "0");
 }
 
-void Host_Version_f(void)
+void Host_Version_f()
 {
     Con_Printf("Quake Version %1.2f\n", VERSION);
     Con_Printf("QuakeSpasm Version " QUAKESPASM_VER_STRING "\n");
@@ -258,7 +258,7 @@ void Host_Callback_Notify(cvar_t* var)
 Host_InitLocal
 ======================
 */
-void Host_InitLocal(void)
+void Host_InitLocal()
 {
     Cmd_AddCommand("version", Host_Version_f);
 
@@ -307,7 +307,7 @@ Host_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void Host_WriteConfiguration(void)
+void Host_WriteConfiguration()
 {
     FILE* f;
 
@@ -547,7 +547,7 @@ This clears all the memory used by both the client and server, but does
 not reinitialize anything.
 ================
 */
-void Host_ClearMemory(void)
+void Host_ClearMemory()
 {
     Con_DPrintf("Clearing memory\n");
     D_FlushCaches();
@@ -609,7 +609,7 @@ Host_GetConsoleCommands
 Add them exactly as if they had been typed at the console
 ===================
 */
-void Host_GetConsoleCommands(void)
+void Host_GetConsoleCommands()
 {
     const char* cmd;
 
@@ -628,7 +628,7 @@ void Host_GetConsoleCommands(void)
 Host_ServerFrame
 ==================
 */
-void Host_ServerFrame(void)
+void Host_ServerFrame()
 {
     int i, active; // johnfitz
     edict_t* ent;  // johnfitz
@@ -807,7 +807,7 @@ void Host_Frame(float time)
 Host_Init
 ====================
 */
-void Host_Init(void)
+void Host_Init()
 {
     if(standard_quake)
         minimum_memory = MINIMUM_MEMORY;
@@ -902,7 +902,7 @@ FIXME: this is a callback from Sys_Quit and Sys_Error.  It would be better
 to run quit through here before the final handoff to the sys code.
 ===============
 */
-void Host_Shutdown(void)
+void Host_Shutdown()
 {
     static qboolean isdown = false;
 

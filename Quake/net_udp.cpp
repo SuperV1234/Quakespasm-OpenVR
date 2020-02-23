@@ -38,7 +38,7 @@ static in_addr_t myAddr;
 
 //=============================================================================
 
-sys_socket_t UDP_Init(void)
+sys_socket_t UDP_Init()
 {
     int err;
     char* tst;
@@ -113,7 +113,7 @@ sys_socket_t UDP_Init(void)
 
 //=============================================================================
 
-void UDP_Shutdown(void)
+void UDP_Shutdown()
 {
     UDP_Listen(false);
     UDP_CloseSocket(net_controlsocket);
@@ -244,7 +244,7 @@ int UDP_Connect(sys_socket_t socketid, struct qsockaddr* addr)
 
 //=============================================================================
 
-sys_socket_t UDP_CheckNewConnections(void)
+sys_socket_t UDP_CheckNewConnections()
 {
     int available;
     struct sockaddr_in from;

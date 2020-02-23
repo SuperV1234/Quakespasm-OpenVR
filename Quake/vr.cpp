@@ -101,25 +101,25 @@ struct
 };
 
 // main screen & 2D drawing
-extern void SCR_SetUpToDrawConsole(void);
+extern void SCR_SetUpToDrawConsole();
 extern void SCR_UpdateScreenContent();
 extern qboolean scr_drawdialog;
-extern void SCR_DrawNotifyString(void);
+extern void SCR_DrawNotifyString();
 extern qboolean scr_drawloading;
-extern void SCR_DrawLoading(void);
-extern void SCR_CheckDrawCenterString(void);
-extern void SCR_DrawRam(void);
-extern void SCR_DrawNet(void);
-extern void SCR_DrawTurtle(void);
-extern void SCR_DrawPause(void);
-extern void SCR_DrawDevStats(void);
-extern void SCR_DrawFPS(void);
-extern void SCR_DrawClock(void);
-extern void SCR_DrawConsole(void);
+extern void SCR_DrawLoading();
+extern void SCR_CheckDrawCenterString();
+extern void SCR_DrawRam();
+extern void SCR_DrawNet();
+extern void SCR_DrawTurtle();
+extern void SCR_DrawPause();
+extern void SCR_DrawDevStats();
+extern void SCR_DrawFPS();
+extern void SCR_DrawClock();
+extern void SCR_DrawConsole();
 
 // rendering
-extern void R_SetupView(void);
-extern void R_RenderScene(void);
+extern void R_SetupView();
+extern void R_RenderScene();
 extern int glx, gly, glwidth, glheight;
 extern refdef_t r_refdef;
 extern vec3_t vright;

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.hpp"
 
-void Cmd_ForwardToServer(void);
+void Cmd_ForwardToServer();
 
 #define MAX_ALIAS_NAME 32
 
@@ -52,7 +52,7 @@ next frame.  This allows commands like:
 bind g "impulse 5 ; +attack ; wait ; -attack ; impulse 2"
 ============
 */
-void Cmd_Wait_f(void)
+void Cmd_Wait_f()
 {
     cmd_wait = true;
 }
@@ -72,7 +72,7 @@ sizebuf_t cmd_text;
 Cbuf_Init
 ============
 */
-void Cbuf_Init(void)
+void Cbuf_Init()
 {
     SZ_Alloc(&cmd_text,
         1 << 18); // space for commands and script files. spike -- was 8192, but
@@ -145,7 +145,7 @@ void Cbuf_InsertText(const char* text)
 Cbuf_Execute
 ============
 */
-void Cbuf_Execute(void)
+void Cbuf_Execute()
 {
     int i;
     char* text;
@@ -221,7 +221,7 @@ quake +prog jctest.qp +cmd amlev1
 quake -nosound +cmd amlev1
 ===============
 */
-void Cmd_StuffCmds_f(void)
+void Cmd_StuffCmds_f()
 {
     extern cvar_t cmdline;
     char cmds[CMDLINE_LENGTH];
@@ -259,7 +259,7 @@ void Cmd_StuffCmds_f(void)
 Cmd_Exec_f
 ===============
 */
-void Cmd_Exec_f(void)
+void Cmd_Exec_f()
 {
     char* f;
     int mark;
@@ -291,7 +291,7 @@ Cmd_Echo_f
 Just prints the rest of the line to the console
 ===============
 */
-void Cmd_Echo_f(void)
+void Cmd_Echo_f()
 {
     int i;
 
@@ -306,7 +306,7 @@ Cmd_Alias_f -- johnfitz -- rewritten
 Creates a new command that executes a command string (possibly ; seperated)
 ===============
 */
-void Cmd_Alias_f(void)
+void Cmd_Alias_f()
 {
     cmdalias_t* a;
     char cmd[1024];
@@ -380,7 +380,7 @@ void Cmd_Alias_f(void)
 Cmd_Unalias_f -- johnfitz
 ===============
 */
-void Cmd_Unalias_f(void)
+void Cmd_Unalias_f()
 {
     cmdalias_t *a, *prev;
 
@@ -415,7 +415,7 @@ void Cmd_Unalias_f(void)
 Cmd_Unaliasall_f -- johnfitz
 ===============
 */
-void Cmd_Unaliasall_f(void)
+void Cmd_Unaliasall_f()
 {
     cmdalias_t* blah;
 
@@ -463,7 +463,7 @@ cmd_function_t* cmd_functions; // possible commands to execute
 Cmd_List_f -- johnfitz
 ============
 */
-void Cmd_List_f(void)
+void Cmd_List_f()
 {
     cmd_function_t* cmd;
     const char* partial;
@@ -524,7 +524,7 @@ without the sake of consistency it still combines cvars+commands under a single
 command.
 ============
 */
-void Cmd_Apropos_f(void)
+void Cmd_Apropos_f()
 {
     char tmpbuf[256];
     int hits = 0;
@@ -567,7 +567,7 @@ void Cmd_Apropos_f(void)
 Cmd_Init
 ============
 */
-void Cmd_Init(void)
+void Cmd_Init()
 {
     Cmd_AddCommand("cmdlist", Cmd_List_f);          // johnfitz
     Cmd_AddCommand("unalias", Cmd_Unalias_f);       // johnfitz
@@ -589,7 +589,7 @@ void Cmd_Init(void)
 Cmd_Argc
 ============
 */
-int Cmd_Argc(void)
+int Cmd_Argc()
 {
     return cmd_argc;
 }
@@ -610,7 +610,7 @@ const char* Cmd_Argv(int arg)
 Cmd_Args
 ============
 */
-const char* Cmd_Args(void)
+const char* Cmd_Args()
 {
     return cmd_args;
 }
@@ -809,7 +809,7 @@ Cmd_ForwardToServer
 Sends the entire command line over to the server
 ===================
 */
-void Cmd_ForwardToServer(void)
+void Cmd_ForwardToServer()
 {
     if(cls.state != ca_connected)
     {

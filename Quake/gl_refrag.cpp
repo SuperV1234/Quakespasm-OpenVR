@@ -54,7 +54,7 @@ entity_t* r_addent;
 #define EXTRA_EFRAGS 128
 
 // based on RMQEngine
-static efrag_t* R_GetEfrag(void)
+static efrag_t* R_GetEfrag()
 {
     // we could just Hunk_Alloc a single efrag_t and return it, but since
     // the struct is so small (2 pointers) allocate groups of them
@@ -146,7 +146,7 @@ void R_SplitEntityOnNode(mnode_t* node)
 R_CheckEfrags -- johnfitz -- check for excessive efrag count
 ===========
 */
-void R_CheckEfrags(void)
+void R_CheckEfrags()
 {
     if(cls.signon < 2)
         return; // don't spam when still parsing signon packet full of static

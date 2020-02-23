@@ -41,7 +41,7 @@ sfx_t* cl_sfx_r_exp3;
 CL_ParseTEnt
 =================
 */
-void CL_InitTEnts(void)
+void CL_InitTEnts()
 {
     cl_sfx_wizhit = S_PrecacheSound("wizard/hit.wav");
     cl_sfx_knighthit = S_PrecacheSound("hknight/hit.wav");
@@ -115,7 +115,7 @@ void CL_ParseBeam(qmodel_t* m)
 CL_ParseTEnt
 =================
 */
-void CL_ParseTEnt(void)
+void CL_ParseTEnt()
 {
     int type;
     vec3_t pos;
@@ -266,7 +266,7 @@ void CL_ParseTEnt(void)
 CL_NewTempEntity
 =================
 */
-entity_t* CL_NewTempEntity(void)
+entity_t* CL_NewTempEntity()
 {
     entity_t* ent;
 
@@ -288,7 +288,7 @@ entity_t* CL_NewTempEntity(void)
 CL_UpdateTEnts
 =================
 */
-void CL_UpdateTEnts(void)
+void CL_UpdateTEnts()
 {
     int i, j; // johnfitz -- use j instead of using i twice, so we don't corrupt
               // memory

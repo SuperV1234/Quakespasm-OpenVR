@@ -50,7 +50,7 @@ SV_SetIdealPitch
 ===============
 */
 #define MAX_FORWARD 6
-void SV_SetIdealPitch(void)
+void SV_SetIdealPitch()
 {
     float angleval, sinval, cosval;
     trace_t tr;
@@ -114,7 +114,7 @@ SV_UserFriction
 
 ==================
 */
-void SV_UserFriction(void)
+void SV_UserFriction()
 {
     float* vel;
     float speed, newspeed, control;
@@ -191,7 +191,7 @@ void SV_AirAccelerate(float wishspeed, vec3_t wishveloc)
 }
 
 
-void DropPunchAngle(void)
+void DropPunchAngle()
 {
     float len;
 
@@ -208,7 +208,7 @@ SV_WaterMove
 
 ===================
 */
-void SV_WaterMove(void)
+void SV_WaterMove()
 {
     int i;
     vec3_t wishvel;
@@ -263,7 +263,7 @@ void SV_WaterMove(void)
     for(i = 0; i < 3; i++) velocity[i] += accelspeed * wishvel[i];
 }
 
-void SV_WaterJump(void)
+void SV_WaterJump()
 {
     if(sv.time > sv_player->v.teleport_time || !sv_player->v.waterlevel)
     {
@@ -281,7 +281,7 @@ SV_NoclipMove -- johnfitz
 new, alternate noclip. old noclip is still handled in SV_AirMove
 ===================
 */
-void SV_NoclipMove(void)
+void SV_NoclipMove()
 {
     AngleVectors(sv_player->v.v_angle, forward, right, up);
 
@@ -302,7 +302,7 @@ void SV_NoclipMove(void)
 SV_AirMove
 ===================
 */
-void SV_AirMove(void)
+void SV_AirMove()
 {
     int i;
     vec3_t wishvel, wishdir;
@@ -355,7 +355,7 @@ the move fields specify an intended velocity in pix/sec
 the angle fields specify an exact angular motion in degrees
 ===================
 */
-void SV_ClientThink(void)
+void SV_ClientThink()
 {
     vec3_t v_angle;
 
@@ -503,7 +503,7 @@ SV_ReadClientMessage
 Returns false if the client should be killed
 ===================
 */
-qboolean SV_ReadClientMessage(void)
+qboolean SV_ReadClientMessage()
 {
     int ret;
     int ccmd;
@@ -615,7 +615,7 @@ qboolean SV_ReadClientMessage(void)
 SV_RunClients
 ==================
 */
-void SV_RunClients(void)
+void SV_RunClients()
 {
     int i;
 

@@ -98,7 +98,7 @@ static int SDLCALL IN_SDL2_FilterMouseEvents(void* userdata, SDL_Event* event)
 }
 #endif
 
-static void IN_BeginIgnoringMouseEvents(void)
+static void IN_BeginIgnoringMouseEvents()
 {
 #if defined(USE_SDL2)
     SDL_EventFilter currentFilter = nullptr;
@@ -113,7 +113,7 @@ static void IN_BeginIgnoringMouseEvents(void)
 #endif
 }
 
-static void IN_EndIgnoringMouseEvents(void)
+static void IN_EndIgnoringMouseEvents()
 {
 #if defined(USE_SDL2)
     SDL_EventFilter currentFilter;
@@ -212,7 +212,7 @@ static void IN_ReenableOSXMouseAccel(void)
 #endif /* MACOS_X_ACCELERATION_HACK */
 
 
-void IN_Activate(void)
+void IN_Activate()
 {
     if(no_mouse) return;
 
@@ -282,7 +282,7 @@ void IN_Deactivate(qboolean free_cursor)
     IN_BeginIgnoringMouseEvents();
 }
 
-void IN_StartupJoystick(void)
+void IN_StartupJoystick()
 {
 #if defined(USE_SDL2)
     int i;
@@ -349,14 +349,14 @@ void IN_StartupJoystick(void)
 #endif
 }
 
-void IN_ShutdownJoystick(void)
+void IN_ShutdownJoystick()
 {
 #if defined(USE_SDL2)
     SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER);
 #endif
 }
 
-void IN_Init(void)
+void IN_Init()
 {
     textmode = Key_TextEntry();
 
@@ -396,7 +396,7 @@ void IN_Init(void)
     IN_StartupJoystick();
 }
 
-void IN_Shutdown(void)
+void IN_Shutdown()
 {
     IN_Deactivate(true);
     IN_ShutdownJoystick();
@@ -610,7 +610,7 @@ Emit key events for game controller buttons, including emulated buttons for
 analog sticks/triggers
 ================
 */
-void IN_Commands(void)
+void IN_Commands()
 {
 #if defined(USE_SDL2)
     joyaxisstate_t newaxisstate;
@@ -802,11 +802,11 @@ void IN_Move(usercmd_t* cmd)
     IN_MouseMove(cmd);
 }
 
-void IN_ClearStates(void)
+void IN_ClearStates()
 {
 }
 
-void IN_UpdateInputMode(void)
+void IN_UpdateInputMode()
 {
     qboolean want_textmode = Key_TextEntry();
     if(textmode != want_textmode)
@@ -1055,7 +1055,7 @@ static void IN_DebugKeyEvent(SDL_Event* event)
 #endif
 }
 
-void IN_SendKeyEvents(void)
+void IN_SendKeyEvents()
 {
     SDL_Event event;
     int key;

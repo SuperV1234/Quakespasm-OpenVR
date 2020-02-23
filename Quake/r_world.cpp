@@ -75,7 +75,7 @@ R_MarkSurfaces -- johnfitz -- mark surfaces based on PVS and rebuild texture
 chains
 ===============
 */
-void R_MarkSurfaces(void)
+void R_MarkSurfaces()
 {
     byte* vis;
     mleaf_t* leaf;
@@ -202,7 +202,7 @@ qboolean R_BackFaceCull(msurface_t* surf)
 R_CullSurfaces -- johnfitz
 ================
 */
-void R_CullSurfaces(void)
+void R_CullSurfaces()
 {
     msurface_t* s;
     int i;
@@ -791,7 +791,7 @@ R_DrawLightmapChains -- johnfitz -- R_BlendLightmaps stripped down to almost
 nothing
 ================
 */
-void R_DrawLightmapChains(void)
+void R_DrawLightmapChains()
 {
     int i, j;
     glpoly_t* p;
@@ -839,7 +839,7 @@ static GLuint alphaLoc;
 GLWorld_CreateShaders
 =============
 */
-void GLWorld_CreateShaders(void)
+void GLWorld_CreateShaders()
 {
     const glsl_attrib_binding_t bindings[] = {{"Vert", vertAttrIndex},
         {"TexCoords", texCoordsAttrIndex}, {"LMCoords", LMCoordsAttrIndex}};
@@ -1246,7 +1246,7 @@ R_DrawWorld -- ericw -- moved from R_DrawTextureChains, which is no longer
 specific to the world.
 =============
 */
-void R_DrawWorld(void)
+void R_DrawWorld()
 {
     if(!r_drawworld_cheatsafe) return;
 
@@ -1259,7 +1259,7 @@ R_DrawWorld_Water -- ericw -- moved from R_DrawTextureChains_Water, which is no
 longer specific to the world.
 =============
 */
-void R_DrawWorld_Water(void)
+void R_DrawWorld_Water()
 {
     if(!r_drawworld_cheatsafe) return;
 
@@ -1272,7 +1272,7 @@ R_DrawWorld_ShowTris -- ericw -- moved from R_DrawTextureChains_ShowTris, which
 is no longer specific to the world.
 =============
 */
-void R_DrawWorld_ShowTris(void)
+void R_DrawWorld_ShowTris()
 {
     if(!r_drawworld_cheatsafe) return;
 

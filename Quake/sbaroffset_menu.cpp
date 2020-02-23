@@ -136,7 +136,7 @@ void SbarOffset_MenuKey(int key)
     }
 }
 
-void SbarOffset_MenuDraw(void)
+void SbarOffset_MenuDraw()
 {
     int y = 4;
 
@@ -176,7 +176,7 @@ void SbarOffset_MenuDraw(void)
     }
 }
 
-void SbarOffset_Menu_f(void)
+void SbarOffset_Menu_f()
 {
     const char* sound = "items/r_item1.wav";
 

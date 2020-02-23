@@ -873,7 +873,7 @@ Builds the lightmap texture
 with all the surfaces from all brush models
 ==================
 */
-void GL_BuildLightmaps(void)
+void GL_BuildLightmaps()
 {
     char name[24];
     int i, j;
@@ -956,7 +956,7 @@ void GL_BuildLightmaps(void)
 
 GLuint gl_bmodel_vbo = 0;
 
-void GL_DeleteBModelVertexBuffer(void)
+void GL_DeleteBModelVertexBuffer()
 {
     if(!(gl_vbo_able && gl_mtexable && gl_max_texture_units >= 3)) return;
 
@@ -974,7 +974,7 @@ Deletes gl_bmodel_vbo if it already exists, then rebuilds it with all
 surfaces from world + all brush models
 ==================
 */
-void GL_BuildBModelVertexBuffer(void)
+void GL_BuildBModelVertexBuffer()
 {
     unsigned int numverts, varray_bytes, varray_index;
     int i, j;
@@ -1261,7 +1261,7 @@ static void R_UploadLightmap(int lmap)
     rs_dynamiclightmaps++;
 }
 
-void R_UploadLightmaps(void)
+void R_UploadLightmaps()
 {
     int lmap;
 
@@ -1279,7 +1279,7 @@ void R_UploadLightmaps(void)
 R_RebuildAllLightmaps -- johnfitz -- called when gl_overbright gets toggled
 ================
 */
-void R_RebuildAllLightmaps(void)
+void R_RebuildAllLightmaps()
 {
     int i, j;
     qmodel_t* mod;

@@ -126,7 +126,7 @@ void MapMenu_MenuKey(int key)
     }
 }
 
-void MapMenu_MenuDraw(void)
+void MapMenu_MenuDraw()
 {
     int y = 4;
 
@@ -162,7 +162,7 @@ void MapMenu_MenuDraw(void)
     }
 }
 
-void MapMenu_Menu_f(void)
+void MapMenu_Menu_f()
 {
     const char* sound = "items/r_item1.wav";
 

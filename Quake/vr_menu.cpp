@@ -364,7 +364,7 @@ void VR_MenuKey(int key)
     }
 }
 
-void VR_MenuDraw(void)
+void VR_MenuDraw()
 {
     int y = 4;
 
@@ -413,7 +413,7 @@ void VR_MenuDraw(void)
     }
 }
 
-void VR_Menu_f(void)
+void VR_Menu_f()
 {
     const char* sound = "items/r_item1.wav";
 

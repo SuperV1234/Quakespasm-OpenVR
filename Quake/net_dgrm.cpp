@@ -72,7 +72,7 @@ static char* StrAddr(struct qsockaddr* addr)
 static struct in_addr banAddr;
 static struct in_addr banMask;
 
-static void NET_Ban_f(void)
+static void NET_Ban_f()
 {
     char addrStr[32];
     char maskStr[32];
@@ -443,7 +443,7 @@ static void PrintStats(qsocket_t* s)
     Con_Printf("\n");
 }
 
-static void NET_Stats_f(void)
+static void NET_Stats_f()
 {
     qsocket_t* s;
 
@@ -574,7 +574,7 @@ static void Test_Poll(void* unused)
     }
 }
 
-static void Test_f(void)
+static void Test_f()
 {
     const char* host;
     int n;
@@ -706,7 +706,7 @@ Done:
     return;
 }
 
-static void Test2_f(void)
+static void Test2_f()
 {
     const char* host;
     int n;
@@ -768,7 +768,7 @@ JustDoIt:
 }
 
 
-int Datagram_Init(void)
+int Datagram_Init()
 {
     int i, num_inited;
     sys_socket_t csock;
@@ -805,7 +805,7 @@ int Datagram_Init(void)
 }
 
 
-void Datagram_Shutdown(void)
+void Datagram_Shutdown()
 {
     int i;
 
@@ -840,7 +840,7 @@ void Datagram_Listen(qboolean state)
 }
 
 
-static qsocket_t* _Datagram_CheckNewConnections(void)
+static qsocket_t* _Datagram_CheckNewConnections()
 {
     struct qsockaddr clientaddr;
     struct qsockaddr newaddr;
@@ -1093,7 +1093,7 @@ static qsocket_t* _Datagram_CheckNewConnections(void)
     return sock;
 }
 
-qsocket_t* Datagram_CheckNewConnections(void)
+qsocket_t* Datagram_CheckNewConnections()
 {
     qsocket_t* ret = nullptr;
 

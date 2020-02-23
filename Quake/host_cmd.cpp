@@ -31,7 +31,7 @@ extern cvar_t pausable;
 
 int current_skill;
 
-void Mod_Print(void);
+void Mod_Print();
 
 /*
 ==================
@@ -39,7 +39,7 @@ Host_Quit_f
 ==================
 */
 
-void Host_Quit_f(void)
+void Host_Quit_f()
 {
     if(key_dest != key_console && cls.state != ca_dedicated)
     {
@@ -114,7 +114,7 @@ void ExtraMaps_Add(const char* name)
     FileList_Add(name, &extralevels);
 }
 
-void ExtraMaps_Init(void)
+void ExtraMaps_Init()
 {
 #ifdef _WIN32
     WIN32_FIND_DATA fdat;
@@ -186,12 +186,12 @@ void ExtraMaps_Init(void)
     }
 }
 
-static void ExtraMaps_Clear(void)
+static void ExtraMaps_Clear()
 {
     FileList_Clear(&extralevels);
 }
 
-void ExtraMaps_NewGame(void)
+void ExtraMaps_NewGame()
 {
     ExtraMaps_Clear();
     ExtraMaps_Init();
@@ -202,7 +202,7 @@ void ExtraMaps_NewGame(void)
 Host_Maps_f
 ==================
 */
-void Host_Maps_f(void)
+void Host_Maps_f()
 {
     int i;
     filelist_item_t* level;
@@ -228,7 +228,7 @@ void Modlist_Add(const char* name)
 }
 
 #ifdef _WIN32
-void Modlist_Init(void)
+void Modlist_Init()
 {
     WIN32_FIND_DATA fdat;
     HANDLE fhnd;
@@ -293,19 +293,19 @@ void Modlist_Init(void)
 
 filelist_item_t* demolist;
 
-static void DemoList_Clear(void)
+static void DemoList_Clear()
 {
     FileList_Clear(&demolist);
 }
 
-void DemoList_Rebuild(void)
+void DemoList_Rebuild()
 {
     DemoList_Clear();
     DemoList_Init();
 }
 
 // TODO: Factor out to a general-purpose file searching function
-void DemoList_Init(void)
+void DemoList_Init()
 {
 #ifdef _WIN32
     WIN32_FIND_DATA fdat;
@@ -381,7 +381,7 @@ Host_Mods_f -- johnfitz
 list all potential mod directories (contain either a pak file or a progs.dat)
 ==================
 */
-void Host_Mods_f(void)
+void Host_Mods_f()
 {
     int i;
     filelist_item_t* mod;
@@ -402,7 +402,7 @@ void Host_Mods_f(void)
 Host_Mapname_f -- johnfitz
 =============
 */
-void Host_Mapname_f(void)
+void Host_Mapname_f()
 {
     if(sv.active)
     {
@@ -424,7 +424,7 @@ void Host_Mapname_f(void)
 Host_Status_f
 ==================
 */
-void Host_Status_f(void)
+void Host_Status_f()
 {
     void (*print_fn)(const char* fmt, ...) FUNCP_PRINTF(1, 2);
     client_t* client;
@@ -478,7 +478,7 @@ Host_God_f
 Sets client to godmode
 ==================
 */
-void Host_God_f(void)
+void Host_God_f()
 {
     if(cmd_source == src_command)
     {
@@ -523,7 +523,7 @@ void Host_God_f(void)
 Host_Notarget_f
 ==================
 */
-void Host_Notarget_f(void)
+void Host_Notarget_f()
 {
     if(cmd_source == src_command)
     {
@@ -571,7 +571,7 @@ qboolean noclip_anglehack;
 Host_Noclip_f
 ==================
 */
-void Host_Noclip_f(void)
+void Host_Noclip_f()
 {
     if(cmd_source == src_command)
     {
@@ -628,7 +628,7 @@ Host_SetPos_f
 adapted from fteqw, originally by Alex Shadowalker
 ====================
 */
-void Host_SetPos_f(void)
+void Host_SetPos_f()
 {
     if(cmd_source == src_command)
     {
@@ -685,7 +685,7 @@ Host_Fly_f
 Sets client to flymode
 ==================
 */
-void Host_Fly_f(void)
+void Host_Fly_f()
 {
     if(cmd_source == src_command)
     {
@@ -737,7 +737,7 @@ Host_Ping_f
 
 ==================
 */
-void Host_Ping_f(void)
+void Host_Ping_f()
 {
     int i, j;
     float total;
@@ -778,7 +778,7 @@ map <servername>
 command from the console.  Active clients are kicked off.
 ======================
 */
-void Host_Map_f(void)
+void Host_Map_f()
 {
     int i;
     char name[MAX_QPATH], *p;
@@ -842,7 +842,7 @@ Host_Randmap_f
 Loads a random map from the "maps" list.
 ======================
 */
-void Host_Randmap_f(void)
+void Host_Randmap_f()
 {
     int i, randlevel, numlevels;
     filelist_item_t* level;
@@ -878,7 +878,7 @@ Host_Changelevel_f
 Goes to a new map, taking all clients along
 ==================
 */
-void Host_Changelevel_f(void)
+void Host_Changelevel_f()
 {
     char level[MAX_QPATH];
 
@@ -914,7 +914,7 @@ Host_Restart_f
 Restarts the current server for a dead player
 ==================
 */
-void Host_Restart_f(void)
+void Host_Restart_f()
 {
     char mapname[MAX_QPATH];
 
@@ -935,7 +935,7 @@ This command causes the client to wait for the signon messages again.
 This is sent just before a server changes levels
 ==================
 */
-void Host_Reconnect_f(void)
+void Host_Reconnect_f()
 {
     if(cls.demoplayback) // cross-map demo playback fix from Baker
         return;
@@ -951,7 +951,7 @@ Host_Connect_f
 User command to connect to server
 =====================
 */
-void Host_Connect_f(void)
+void Host_Connect_f()
 {
     char name[MAX_QPATH];
 
@@ -1009,7 +1009,7 @@ void Host_SavegameComment(char* text)
 Host_Savegame_f
 ===============
 */
-void Host_Savegame_f(void)
+void Host_Savegame_f()
 {
     char name[MAX_OSPATH];
     FILE* f;
@@ -1104,7 +1104,7 @@ void Host_Savegame_f(void)
 Host_Loadgame_f
 ===============
 */
-void Host_Loadgame_f(void)
+void Host_Loadgame_f()
 {
     static char* start;
 
@@ -1257,7 +1257,7 @@ void Host_Loadgame_f(void)
 Host_Name_f
 ======================
 */
-void Host_Name_f(void)
+void Host_Name_f()
 {
     char newName[32];
 
@@ -1370,19 +1370,19 @@ void Host_Say(qboolean teamonly)
 }
 
 
-void Host_Say_f(void)
+void Host_Say_f()
 {
     Host_Say(false);
 }
 
 
-void Host_Say_Team_f(void)
+void Host_Say_Team_f()
 {
     Host_Say(true);
 }
 
 
-void Host_Tell_f(void)
+void Host_Tell_f()
 {
     int j;
     client_t* client;
@@ -1448,7 +1448,7 @@ void Host_Tell_f(void)
 Host_Color_f
 ==================
 */
-void Host_Color_f(void)
+void Host_Color_f()
 {
     int top, bottom;
     int playercolor;
@@ -1497,7 +1497,7 @@ void Host_Color_f(void)
 Host_Kill_f
 ==================
 */
-void Host_Kill_f(void)
+void Host_Kill_f()
 {
     if(cmd_source == src_command)
     {
@@ -1522,7 +1522,7 @@ void Host_Kill_f(void)
 Host_Pause_f
 ==================
 */
-void Host_Pause_f(void)
+void Host_Pause_f()
 {
     // ericw -- demo pause support (inspired by MarkV)
     if(cls.demoplayback)
@@ -1568,7 +1568,7 @@ void Host_Pause_f(void)
 Host_PreSpawn_f
 ==================
 */
-void Host_PreSpawn_f(void)
+void Host_PreSpawn_f()
 {
     if(cmd_source == src_command)
     {
@@ -1593,7 +1593,7 @@ void Host_PreSpawn_f(void)
 Host_Spawn_f
 ==================
 */
-void Host_Spawn_f(void)
+void Host_Spawn_f()
 {
     int i;
     client_t* client;
@@ -1715,7 +1715,7 @@ void Host_Spawn_f(void)
 Host_Begin_f
 ==================
 */
-void Host_Begin_f(void)
+void Host_Begin_f()
 {
     if(cmd_source == src_command)
     {
@@ -1736,7 +1736,7 @@ Host_Kick_f
 Kicks a user off of the server
 ==================
 */
-void Host_Kick_f(void)
+void Host_Kick_f()
 {
     const char* who;
     const char* message = nullptr;
@@ -1823,7 +1823,7 @@ DEBUGGING TOOLS
 Host_Give_f
 ==================
 */
-void Host_Give_f(void)
+void Host_Give_f()
 {
     const char* t;
     int v;
@@ -2053,7 +2053,7 @@ void Host_Give_f(void)
     // johnfitz
 }
 
-edict_t* FindViewthing(void)
+edict_t* FindViewthing()
 {
     int i;
     edict_t* e;
@@ -2072,7 +2072,7 @@ edict_t* FindViewthing(void)
 Host_Viewmodel_f
 ==================
 */
-void Host_Viewmodel_f(void)
+void Host_Viewmodel_f()
 {
     edict_t* e;
     qmodel_t* m;
@@ -2096,7 +2096,7 @@ void Host_Viewmodel_f(void)
 Host_Viewframe_f
 ==================
 */
-void Host_Viewframe_f(void)
+void Host_Viewframe_f()
 {
     edict_t* e;
     int f;
@@ -2130,7 +2130,7 @@ void PrintFrameName(qmodel_t* m, int frame)
 Host_Viewnext_f
 ==================
 */
-void Host_Viewnext_f(void)
+void Host_Viewnext_f()
 {
     edict_t* e;
     qmodel_t* m;
@@ -2150,7 +2150,7 @@ void Host_Viewnext_f(void)
 Host_Viewprev_f
 ==================
 */
-void Host_Viewprev_f(void)
+void Host_Viewprev_f()
 {
     edict_t* e;
     qmodel_t* m;
@@ -2180,7 +2180,7 @@ DEMO LOOP CONTROL
 Host_Startdemos_f
 ==================
 */
-void Host_Startdemos_f(void)
+void Host_Startdemos_f()
 {
     int i, c;
 
@@ -2232,7 +2232,7 @@ Host_Demos_f
 Return to looping demos
 ==================
 */
-void Host_Demos_f(void)
+void Host_Demos_f()
 {
     if(cls.state == ca_dedicated) return;
     if(cls.demonum == -1) cls.demonum = 1;
@@ -2247,7 +2247,7 @@ Host_Stopdemo_f
 Return to looping demos
 ==================
 */
-void Host_Stopdemo_f(void)
+void Host_Stopdemo_f()
 {
     if(cls.state == ca_dedicated) return;
     if(!cls.demoplayback) return;
@@ -2262,7 +2262,7 @@ void Host_Stopdemo_f(void)
 Host_InitCommands
 ==================
 */
-void Host_InitCommands(void)
+void Host_InitCommands()
 {
     Cmd_AddCommand("maps", Host_Maps_f); // johnfitz
     Cmd_AddCommand("mods", Host_Mods_f); // johnfitz

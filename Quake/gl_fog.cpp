@@ -92,7 +92,7 @@ Fog_ParseServerMessage
 handle an SVC_FOG message from server
 =============
 */
-void Fog_ParseServerMessage(void)
+void Fog_ParseServerMessage()
 {
     float density, red, green, blue, time;
 
@@ -112,7 +112,7 @@ Fog_FogCommand_f
 handle the 'fog' console command
 =============
 */
-void Fog_FogCommand_f(void)
+void Fog_FogCommand_f()
 {
     switch(Cmd_Argc())
     {
@@ -163,7 +163,7 @@ Fog_ParseWorldspawn
 called at map load
 =============
 */
-void Fog_ParseWorldspawn(void)
+void Fog_ParseWorldspawn()
 {
     char key[128], value[4096];
     const char* data;
@@ -215,7 +215,7 @@ Fog_GetColor
 calculates fog color for this frame, taking into account fade times
 =============
 */
-float* Fog_GetColor(void)
+float* Fog_GetColor()
 {
     static float c[4];
     float f;
@@ -251,7 +251,7 @@ Fog_GetDensity
 returns current density of fog
 =============
 */
-float Fog_GetDensity(void)
+float Fog_GetDensity()
 {
     float f;
 
@@ -271,7 +271,7 @@ Fog_SetupFrame
 called at the beginning of each frame
 =============
 */
-void Fog_SetupFrame(void)
+void Fog_SetupFrame()
 {
     glFogfv(GL_FOG_COLOR, Fog_GetColor());
     glFogf(GL_FOG_DENSITY, Fog_GetDensity() / 64.0);
@@ -284,7 +284,7 @@ Fog_EnableGFog
 called before drawing stuff that should be fogged
 =============
 */
-void Fog_EnableGFog(void)
+void Fog_EnableGFog()
 {
     if(Fog_GetDensity() > 0) glEnable(GL_FOG);
 }
@@ -296,7 +296,7 @@ Fog_DisableGFog
 called after drawing stuff that should be fogged
 =============
 */
-void Fog_DisableGFog(void)
+void Fog_DisableGFog()
 {
     if(Fog_GetDensity() > 0) glDisable(GL_FOG);
 }
@@ -308,7 +308,7 @@ Fog_StartAdditive
 called before drawing stuff that is additive blended -- sets fog color to black
 =============
 */
-void Fog_StartAdditive(void)
+void Fog_StartAdditive()
 {
     vec3_t color = {0, 0, 0};
 
@@ -322,7 +322,7 @@ Fog_StopAdditive
 called after drawing stuff that is additive blended -- restores fog color
 =============
 */
-void Fog_StopAdditive(void)
+void Fog_StopAdditive()
 {
     if(Fog_GetDensity() > 0) glFogfv(GL_FOG_COLOR, Fog_GetColor());
 }
@@ -335,10 +335,10 @@ void Fog_StopAdditive(void)
 
 cvar_t r_vfog = {"r_vfog", "1", CVAR_NONE};
 
-void Fog_DrawVFog(void)
+void Fog_DrawVFog()
 {
 }
-void Fog_MarkModels(void)
+void Fog_MarkModels()
 {
 }
 
@@ -355,7 +355,7 @@ Fog_NewMap
 called whenever a map is loaded
 =============
 */
-void Fog_NewMap(void)
+void Fog_NewMap()
 {
     Fog_ParseWorldspawn(); // for global fog
     Fog_MarkModels();      // for volumetric fog
@@ -368,7 +368,7 @@ Fog_Init
 called when quake initializes
 =============
 */
-void Fog_Init(void)
+void Fog_Init()
 {
     Cmd_AddCommand("fog", Fog_FogCommand_f);
 
@@ -391,7 +391,7 @@ ericw -- moved from Fog_Init, state that needs to be setup when a new context is
 created
 =============
 */
-void Fog_SetupState(void)
+void Fog_SetupState()
 {
     glFogi(GL_FOG_MODE, GL_EXP2);
 }

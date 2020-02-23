@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static HICON icon;
 
-void PL_SetWindowIcon(void)
+void PL_SetWindowIcon()
 {
     HINSTANCE handle;
     SDL_SysWMinfo wminfo;
@@ -68,13 +68,13 @@ void PL_SetWindowIcon(void)
 #endif
 }
 
-void PL_VID_Shutdown(void)
+void PL_VID_Shutdown()
 {
     DestroyIcon(icon);
 }
 
 #define MAX_CLIPBOARDTXT MAXCMDLINE /* 256 */
-char* PL_GetClipboardData(void)
+char* PL_GetClipboardData()
 {
     char* data = nullptr;
     char* cliptext;

@@ -116,148 +116,148 @@ void KeyUp(kbutton_t* b)
     b->state |= 4;              // impulse up
 }
 
-void IN_KLookDown(void)
+void IN_KLookDown()
 {
     KeyDown(&in_klook);
 }
-void IN_KLookUp(void)
+void IN_KLookUp()
 {
     KeyUp(&in_klook);
 }
-void IN_MLookDown(void)
+void IN_MLookDown()
 {
     KeyDown(&in_mlook);
 }
-void IN_MLookUp(void)
+void IN_MLookUp()
 {
     KeyUp(&in_mlook);
     if(!(in_mlook.state & 1) && lookspring.value) V_StartPitchDrift();
 }
-void IN_UpDown(void)
+void IN_UpDown()
 {
     KeyDown(&in_up);
 }
-void IN_UpUp(void)
+void IN_UpUp()
 {
     KeyUp(&in_up);
 }
-void IN_DownDown(void)
+void IN_DownDown()
 {
     KeyDown(&in_down);
 }
-void IN_DownUp(void)
+void IN_DownUp()
 {
     KeyUp(&in_down);
 }
-void IN_LeftDown(void)
+void IN_LeftDown()
 {
     KeyDown(&in_left);
 }
-void IN_LeftUp(void)
+void IN_LeftUp()
 {
     KeyUp(&in_left);
 }
-void IN_RightDown(void)
+void IN_RightDown()
 {
     KeyDown(&in_right);
 }
-void IN_RightUp(void)
+void IN_RightUp()
 {
     KeyUp(&in_right);
 }
-void IN_ForwardDown(void)
+void IN_ForwardDown()
 {
     KeyDown(&in_forward);
 }
-void IN_ForwardUp(void)
+void IN_ForwardUp()
 {
     KeyUp(&in_forward);
 }
-void IN_BackDown(void)
+void IN_BackDown()
 {
     KeyDown(&in_back);
 }
-void IN_BackUp(void)
+void IN_BackUp()
 {
     KeyUp(&in_back);
 }
-void IN_LookupDown(void)
+void IN_LookupDown()
 {
     KeyDown(&in_lookup);
 }
-void IN_LookupUp(void)
+void IN_LookupUp()
 {
     KeyUp(&in_lookup);
 }
-void IN_LookdownDown(void)
+void IN_LookdownDown()
 {
     KeyDown(&in_lookdown);
 }
-void IN_LookdownUp(void)
+void IN_LookdownUp()
 {
     KeyUp(&in_lookdown);
 }
-void IN_MoveleftDown(void)
+void IN_MoveleftDown()
 {
     KeyDown(&in_moveleft);
 }
-void IN_MoveleftUp(void)
+void IN_MoveleftUp()
 {
     KeyUp(&in_moveleft);
 }
-void IN_MoverightDown(void)
+void IN_MoverightDown()
 {
     KeyDown(&in_moveright);
 }
-void IN_MoverightUp(void)
+void IN_MoverightUp()
 {
     KeyUp(&in_moveright);
 }
 
-void IN_SpeedDown(void)
+void IN_SpeedDown()
 {
     KeyDown(&in_speed);
 }
-void IN_SpeedUp(void)
+void IN_SpeedUp()
 {
     KeyUp(&in_speed);
 }
-void IN_StrafeDown(void)
+void IN_StrafeDown()
 {
     KeyDown(&in_strafe);
 }
-void IN_StrafeUp(void)
+void IN_StrafeUp()
 {
     KeyUp(&in_strafe);
 }
 
-void IN_AttackDown(void)
+void IN_AttackDown()
 {
     KeyDown(&in_attack);
 }
-void IN_AttackUp(void)
+void IN_AttackUp()
 {
     KeyUp(&in_attack);
 }
 
-void IN_UseDown(void)
+void IN_UseDown()
 {
     KeyDown(&in_use);
 }
-void IN_UseUp(void)
+void IN_UseUp()
 {
     KeyUp(&in_use);
 }
-void IN_JumpDown(void)
+void IN_JumpDown()
 {
     KeyDown(&in_jump);
 }
-void IN_JumpUp(void)
+void IN_JumpUp()
 {
     KeyUp(&in_jump);
 }
 
-void IN_Impulse(void)
+void IN_Impulse()
 {
     in_impulse = Q_atoi(Cmd_Argv(1));
 }
@@ -341,7 +341,7 @@ CL_AdjustAngles
 Moves the local angle positions
 ================
 */
-void CL_AdjustAngles(void)
+void CL_AdjustAngles()
 {
     float speed;
     float up, down;
@@ -537,7 +537,7 @@ void CL_SendMove(const usercmd_t* cmd)
 CL_InitInput
 ============
 */
-void CL_InitInput(void)
+void CL_InitInput()
 {
     Cmd_AddCommand("+moveup", IN_UpDown);
     Cmd_AddCommand("-moveup", IN_UpUp);

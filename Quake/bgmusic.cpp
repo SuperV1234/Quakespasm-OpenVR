@@ -74,7 +74,7 @@ static music_handler_t* music_handlers = nullptr;
 
 static snd_stream_t* bgmstream = nullptr;
 
-static void BGM_Play_f(void)
+static void BGM_Play_f()
 {
     if(Cmd_Argc() == 2)
     {
@@ -87,17 +87,17 @@ static void BGM_Play_f(void)
     }
 }
 
-static void BGM_Pause_f(void)
+static void BGM_Pause_f()
 {
     BGM_Pause();
 }
 
-static void BGM_Resume_f(void)
+static void BGM_Resume_f()
 {
     BGM_Resume();
 }
 
-static void BGM_Loop_f(void)
+static void BGM_Loop_f()
 {
     if(Cmd_Argc() == 2)
     {
@@ -117,12 +117,12 @@ static void BGM_Loop_f(void)
         Con_Printf("Music will not be looped\n");
 }
 
-static void BGM_Stop_f(void)
+static void BGM_Stop_f()
 {
     BGM_Stop();
 }
 
-qboolean BGM_Init(void)
+qboolean BGM_Init()
 {
     music_handler_t* handlers = nullptr;
     int i;
@@ -170,7 +170,7 @@ qboolean BGM_Init(void)
     return true;
 }
 
-void BGM_Shutdown(void)
+void BGM_Shutdown()
 {
     BGM_Stop();
     /* sever our connections to
@@ -319,7 +319,7 @@ void BGM_PlayCDtrack(byte track, qboolean looping)
     }
 }
 
-void BGM_Stop(void)
+void BGM_Stop()
 {
     if(bgmstream)
     {
@@ -330,7 +330,7 @@ void BGM_Stop(void)
     }
 }
 
-void BGM_Pause(void)
+void BGM_Pause()
 {
     if(bgmstream)
     {
@@ -338,7 +338,7 @@ void BGM_Pause(void)
     }
 }
 
-void BGM_Resume(void)
+void BGM_Resume()
 {
     if(bgmstream)
     {
@@ -346,7 +346,7 @@ void BGM_Resume(void)
     }
 }
 
-static void BGM_UpdateStream(void)
+static void BGM_UpdateStream()
 {
     qboolean did_rewind = false;
     int res; /* Number of bytes read. */
@@ -432,7 +432,7 @@ static void BGM_UpdateStream(void)
     }
 }
 
-void BGM_Update(void)
+void BGM_Update()
 {
     if(old_volume != bgmvolume.value)
     {

@@ -55,7 +55,7 @@ static HANDLE hinput, houtput;
 static FILE* sys_handles[MAX_HANDLES];
 
 
-static int findhandle(void)
+static int findhandle()
 {
     int i;
 
@@ -183,7 +183,7 @@ typedef enum
 typedef BOOL(WINAPI* SetProcessDPIAwareFunc)();
 typedef HRESULT(WINAPI* SetProcessDPIAwarenessFunc)(dpi_awareness value);
 
-static void Sys_SetDPIAware(void)
+static void Sys_SetDPIAware()
 {
     HMODULE hUser32, hShcore;
     SetProcessDPIAwarenessFunc setDPIAwareness;
@@ -210,7 +210,7 @@ static void Sys_SetDPIAware(void)
     if(hUser32) FreeLibrary(hUser32);
 }
 
-static void Sys_SetTimerResolution(void)
+static void Sys_SetTimerResolution()
 {
     /* Set OS timer resolution to 1ms.
        Works around buffer underruns with directsound and SDL2, but also
@@ -220,7 +220,7 @@ static void Sys_SetTimerResolution(void)
     timeBeginPeriod(1);
 }
 
-void Sys_Init(void)
+void Sys_Init()
 {
     OSVERSIONINFO vinfo;
 
@@ -348,7 +348,7 @@ void Sys_Printf(const char* fmt, ...)
     }
 }
 
-void Sys_Quit(void)
+void Sys_Quit()
 {
     Host_Shutdown();
 
@@ -357,12 +357,12 @@ void Sys_Quit(void)
     exit(0);
 }
 
-double Sys_DoubleTime(void)
+double Sys_DoubleTime()
 {
     return SDL_GetTicks() / 1000.0;
 }
 
-const char* Sys_ConsoleInput(void)
+const char* Sys_ConsoleInput()
 {
     static char con_text[256];
     static int textlen;
@@ -431,7 +431,7 @@ void Sys_Sleep(unsigned long msecs)
     SDL_Delay(msecs);
 }
 
-void Sys_SendKeyEvents(void)
+void Sys_SendKeyEvents()
 {
     IN_Commands(); // ericw -- allow joysticks to add keys so they can be used
                    // to confirm SCR_ModalMessage

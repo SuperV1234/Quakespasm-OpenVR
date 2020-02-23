@@ -72,7 +72,7 @@ CL_ClearState
 
 =====================
 */
-void CL_ClearState(void)
+void CL_ClearState()
 {
     if(!sv.active) Host_ClearMemory();
 
@@ -102,7 +102,7 @@ Sends a disconnect message to the server
 This is also called on Host_Error, so it shouldn't cause any errors
 =====================
 */
-void CL_Disconnect(void)
+void CL_Disconnect()
 {
     if(key_dest == key_message) Key_EndChat(); // don't get stuck in chat mode
 
@@ -135,7 +135,7 @@ void CL_Disconnect(void)
     cl.intermission = 0;
 }
 
-void CL_Disconnect_f(void)
+void CL_Disconnect_f()
 {
     CL_Disconnect();
     if(sv.active) Host_ShutdownServer(false);
@@ -174,7 +174,7 @@ CL_SignonReply
 An svc_signonnum has been received, perform a client side setup
 =====================
 */
-void CL_SignonReply(void)
+void CL_SignonReply()
 {
     char str[8192];
 
@@ -220,7 +220,7 @@ CL_NextDemo
 Called to play the next demo in the demo loop
 =====================
 */
-void CL_NextDemo(void)
+void CL_NextDemo()
 {
     char str[1024];
 
@@ -250,7 +250,7 @@ void CL_NextDemo(void)
 CL_PrintEntities_f
 ==============
 */
-void CL_PrintEntities_f(void)
+void CL_PrintEntities_f()
 {
     entity_t* ent;
     int i;
@@ -328,7 +328,7 @@ CL_DecayLights
 
 ===============
 */
-void CL_DecayLights(void)
+void CL_DecayLights()
 {
     int i;
     dlight_t* dl;
@@ -355,7 +355,7 @@ Determines the fraction between the last two messages that the objects
 should be put at.
 ===============
 */
-float CL_LerpPoint(void)
+float CL_LerpPoint()
 {
     float f, frac;
 
@@ -398,7 +398,7 @@ float CL_LerpPoint(void)
 CL_RelinkEntities
 ===============
 */
-void CL_RelinkEntities(void)
+void CL_RelinkEntities()
 {
     entity_t* ent;
     int i, j;
@@ -599,7 +599,7 @@ CL_ReadFromServer
 Read all incoming data from the server
 ===============
 */
-int CL_ReadFromServer(void)
+int CL_ReadFromServer()
 {
     int ret;
     extern int num_temp_entities; // johnfitz
@@ -676,7 +676,7 @@ int CL_ReadFromServer(void)
 CL_SendCmd
 =================
 */
-void CL_SendCmd(void)
+void CL_SendCmd()
 {
     usercmd_t cmd;
 
@@ -773,7 +773,7 @@ void CL_Viewpos_f(refdef_t& refdef)
 CL_Init
 =================
 */
-void CL_Init(void)
+void CL_Init()
 {
     SZ_Alloc(&cls.message, 1024);
 

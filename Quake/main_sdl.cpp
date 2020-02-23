@@ -54,12 +54,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #endif
 
-static void Sys_AtExit(void)
+static void Sys_AtExit()
 {
     SDL_Quit();
 }
 
-static void Sys_InitSDL(void)
+static void Sys_InitSDL()
 {
 #if defined(USE_SDL2)
     SDL_version v;

@@ -86,14 +86,14 @@ static SDL_Surface* draw_context;
 static qboolean vid_locked = false; // johnfitz
 static qboolean vid_changed = false;
 
-static void VID_Menu_Init(void); // johnfitz
-static void VID_Menu_f(void);    // johnfitz
-static void VID_MenuDraw(void);
+static void VID_Menu_Init(); // johnfitz
+static void VID_Menu_f();    // johnfitz
+static void VID_MenuDraw();
 static void VID_MenuKey(int key);
 
-static void ClearAllStates(void);
-static void GL_Init(void);
-static void GL_SetupState(void); // johnfitz
+static void ClearAllStates();
+static void GL_Init();
+static void GL_SetupState(); // johnfitz
 
 viddef_t vid; // global video state
 modestate_t modestate = MS_UNINIT;
@@ -197,7 +197,7 @@ static int fsaa;
 VID_Gamma_SetGamma -- apply gamma correction
 ================
 */
-static void VID_Gamma_SetGamma(void)
+static void VID_Gamma_SetGamma()
 {
     if(gl_glsl_gamma_able) return;
 
@@ -239,7 +239,7 @@ static void VID_Gamma_SetGamma(void)
 VID_Gamma_Restore -- restore system gamma
 ================
 */
-static void VID_Gamma_Restore(void)
+static void VID_Gamma_Restore()
 {
     if(gl_glsl_gamma_able) return;
 
@@ -273,7 +273,7 @@ static void VID_Gamma_Restore(void)
 VID_Gamma_Shutdown -- called on exit
 ================
 */
-static void VID_Gamma_Shutdown(void)
+static void VID_Gamma_Shutdown()
 {
     VID_Gamma_Restore();
 }
@@ -312,7 +312,7 @@ static void VID_Gamma_f(cvar_t* var)
 VID_Gamma_Init -- call on init
 ================
 */
-static void VID_Gamma_Init(void)
+static void VID_Gamma_Init()
 {
     Cvar_RegisterVariable(&vid_gamma);
     Cvar_RegisterVariable(&vid_contrast);
@@ -351,7 +351,7 @@ static void VID_Gamma_Init(void)
 VID_GetCurrentWidth
 ======================
 */
-static int VID_GetCurrentWidth(void)
+static int VID_GetCurrentWidth()
 {
 #if defined(USE_SDL2)
     int w = 0, h = 0;
@@ -367,7 +367,7 @@ static int VID_GetCurrentWidth(void)
 VID_GetCurrentHeight
 =======================
 */
-static int VID_GetCurrentHeight(void)
+static int VID_GetCurrentHeight()
 {
 #if defined(USE_SDL2)
     int w = 0, h = 0;
@@ -383,7 +383,7 @@ static int VID_GetCurrentHeight(void)
 VID_GetCurrentRefreshRate
 ====================
 */
-static int VID_GetCurrentRefreshRate(void)
+static int VID_GetCurrentRefreshRate()
 {
 #if defined(USE_SDL2)
     SDL_DisplayMode mode;
@@ -407,7 +407,7 @@ static int VID_GetCurrentRefreshRate(void)
 VID_GetCurrentBPP
 ====================
 */
-static int VID_GetCurrentBPP(void)
+static int VID_GetCurrentBPP()
 {
 #if defined(USE_SDL2)
     const Uint32 pixelFormat = SDL_GetWindowPixelFormat(draw_context);
@@ -424,7 +424,7 @@ VID_GetFullscreen
 returns true if we are in regular fullscreen or "desktop fullscren"
 ====================
 */
-static qboolean VID_GetFullscreen(void)
+static qboolean VID_GetFullscreen()
 {
 #if defined(USE_SDL2)
     return (SDL_GetWindowFlags(draw_context) & SDL_WINDOW_FULLSCREEN) != 0;
@@ -440,7 +440,7 @@ VID_GetDesktopFullscreen
 returns true if we are specifically in "desktop fullscreen" mode
 ====================
 */
-static qboolean VID_GetDesktopFullscreen(void)
+static qboolean VID_GetDesktopFullscreen()
 {
 #if defined(USE_SDL2)
     return (SDL_GetWindowFlags(draw_context) & SDL_WINDOW_FULLSCREEN_DESKTOP) ==
@@ -455,7 +455,7 @@ static qboolean VID_GetDesktopFullscreen(void)
 VID_GetVSync
 ====================
 */
-static qboolean VID_GetVSync(void)
+static qboolean VID_GetVSync()
 {
 #if defined(USE_SDL2)
     return SDL_GL_GetSwapInterval() == 1;
@@ -474,7 +474,7 @@ VID_GetWindow
 used by pl_win.c
 ====================
 */
-void* VID_GetWindow(void)
+void* VID_GetWindow()
 {
 #if defined(USE_SDL2)
     return draw_context;
@@ -488,7 +488,7 @@ void* VID_GetWindow(void)
 VID_HasMouseOrInputFocus
 ====================
 */
-qboolean VID_HasMouseOrInputFocus(void)
+qboolean VID_HasMouseOrInputFocus()
 {
 #if defined(USE_SDL2)
     return (SDL_GetWindowFlags(draw_context) &
@@ -503,7 +503,7 @@ qboolean VID_HasMouseOrInputFocus(void)
 VID_IsMinimized
 ====================
 */
-qboolean VID_IsMinimized(void)
+qboolean VID_IsMinimized()
 {
 #if defined(USE_SDL2)
     return !(SDL_GetWindowFlags(draw_context) & SDL_WINDOW_SHOWN);
@@ -806,7 +806,7 @@ static void VID_Changed_f(cvar_t* var)
 VID_Restart -- johnfitz -- change video modes on the fly
 ===================
 */
-static void VID_Restart(void)
+static void VID_Restart()
 {
     int width, height, refreshrate, bpp;
     qboolean fullscreen;
@@ -896,7 +896,7 @@ VID_Test -- johnfitz -- like vid_restart, but asks for confirmation after
 switching modes
 ================
 */
-static void VID_Test(void)
+static void VID_Test()
 {
     int old_width, old_height, old_refreshrate, old_bpp, old_fullscreen;
 
@@ -931,7 +931,7 @@ static void VID_Test(void)
 VID_Unlock -- johnfitz
 ================
 */
-static void VID_Unlock(void)
+static void VID_Unlock()
 {
     vid_locked = false;
     VID_SyncCvars();
@@ -948,7 +948,7 @@ Used when changing gamedirs so the current settings override what was saved
 in the config.cfg.
 ================
 */
-void VID_Lock(void)
+void VID_Lock()
 {
     vid_locked = true;
 }
@@ -999,7 +999,7 @@ static char* GL_MakeNiceExtensionsList(const char* in)
 GL_Info_f -- johnfitz
 ===============
 */
-static void GL_Info_f(void)
+static void GL_Info_f()
 {
     Con_SafePrintf("GL_VENDOR: %s\n", gl_vendor);
     Con_SafePrintf("GL_RENDERER: %s\n", gl_renderer);
@@ -1034,7 +1034,7 @@ static qboolean GL_ParseExtensionList(const char* list, const char* name)
     return false;
 }
 
-static void GL_CheckExtensions(void)
+static void GL_CheckExtensions()
 {
     int swap_control;
 
@@ -1368,7 +1368,7 @@ does all the stuff from GL_Init that needs to be done every time a new GL render
 context is created
 ===============
 */
-static void GL_SetupState(void)
+static void GL_SetupState()
 {
     glClearColor(0.15, 0.15, 0.15, 0); // johnfitz -- originally 1,0,0,0
     glCullFace(GL_BACK); // johnfitz -- glquake used CCW with backwards culling
@@ -1396,7 +1396,7 @@ static void GL_SetupState(void)
 GL_Init
 ===============
 */
-static void GL_Init(void)
+static void GL_Init()
 {
     gl_vendor = (const char*)glGetString(GL_VENDOR);
     gl_renderer = (const char*)glGetString(GL_RENDERER);
@@ -1459,7 +1459,7 @@ void GL_BeginRendering(int* x, int* y, int* width, int* height)
 GL_EndRendering
 =================
 */
-void GL_EndRendering(void)
+void GL_EndRendering()
 {
     if(!scr_skipupdate)
     {
@@ -1472,7 +1472,7 @@ void GL_EndRendering(void)
 }
 
 
-void VID_Shutdown(void)
+void VID_Shutdown()
 {
     if(vid_initialized)
     {
@@ -1500,7 +1500,7 @@ MAIN WINDOW
 ClearAllStates
 ================
 */
-static void ClearAllStates(void)
+static void ClearAllStates()
 {
     Key_ClearStates();
     IN_ClearStates();
@@ -1518,7 +1518,7 @@ static void ClearAllStates(void)
 VID_DescribeCurrentMode_f
 =================
 */
-static void VID_DescribeCurrentMode_f(void)
+static void VID_DescribeCurrentMode_f()
 {
     if(draw_context)
         Con_Printf("%dx%dx%d %dHz %s\n", VID_GetCurrentWidth(),
@@ -1533,7 +1533,7 @@ VID_DescribeModes_f -- johnfitz -- changed formatting, and added refresh rates
 after each mode.
 =================
 */
-static void VID_DescribeModes_f(void)
+static void VID_DescribeModes_f()
 {
     int i;
     int lastwidth, lastheight, lastbpp, count;
@@ -1581,7 +1581,7 @@ static void VID_FSAA_f(cvar_t* var)
 VID_InitModelist
 =================
 */
-static void VID_InitModelist(void)
+static void VID_InitModelist()
 {
 #if defined(USE_SDL2)
     const int sdlmodes = SDL_GetNumDisplayModes(0);
@@ -1662,7 +1662,7 @@ static void VID_InitModelist(void)
 VID_Init
 ===================
 */
-void VID_Init(void)
+void VID_Init()
 {
     static char vid_center[] = "SDL_VIDEO_CENTERED=center";
     int p, width, height, refreshrate, bpp;
@@ -1833,7 +1833,7 @@ void VID_Init(void)
 }
 
 // new proc by S.A., called by alt-return key binding.
-void VID_Toggle(void)
+void VID_Toggle()
 {
     // disabling the fast path completely because SDL_SetWindowFullscreen was
     // changing the window size on SDL2/WinXP and we weren't set up to handle
@@ -1909,7 +1909,7 @@ void VID_Toggle(void)
 VID_SyncCvars -- johnfitz -- set vid cvars to match current video mode
 ================
 */
-void VID_SyncCvars(void)
+void VID_SyncCvars()
 {
     if(draw_context)
     {
@@ -1969,7 +1969,7 @@ static int vid_menu_numrates = 0;
 VID_Menu_Init
 ================
 */
-static void VID_Menu_Init(void)
+static void VID_Menu_Init()
 {
     int i, j, h, w;
 
@@ -2000,7 +2000,7 @@ VID_Menu_RebuildBppList
 regenerates bpp list based on current vid_width and vid_height
 ================
 */
-static void VID_Menu_RebuildBppList(void)
+static void VID_Menu_RebuildBppList()
 {
     int i, j, b;
 
@@ -2052,7 +2052,7 @@ VID_Menu_RebuildRateList
 regenerates rate list based on current vid_width, vid_height and vid_bpp
 ================
 */
-static void VID_Menu_RebuildRateList(void)
+static void VID_Menu_RebuildRateList()
 {
     int i, j, r;
 
@@ -2301,7 +2301,7 @@ static void VID_MenuKey(int key)
 VID_MenuDraw
 ================
 */
-static void VID_MenuDraw(void)
+static void VID_MenuDraw()
 {
     int i, y;
     qpic_t* p;
@@ -2373,7 +2373,7 @@ static void VID_MenuDraw(void)
 VID_Menu_f
 ================
 */
-static void VID_Menu_f(void)
+static void VID_Menu_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;

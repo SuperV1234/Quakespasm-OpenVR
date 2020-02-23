@@ -182,7 +182,7 @@ float GL_WaterAlphaForSurface(msurface_t* fa)
 R_Init
 ===============
 */
-void R_Init(void)
+void R_Init()
 {
     extern cvar_t gl_finish;
 
@@ -330,7 +330,7 @@ void R_TranslateNewPlayerSkin(int playernum)
 R_NewGame -- johnfitz -- handle a game switch
 ===============
 */
-void R_NewGame(void)
+void R_NewGame()
 {
     int i;
 
@@ -346,7 +346,7 @@ R_ParseWorldspawn
 called at map load
 =============
 */
-static void R_ParseWorldspawn(void)
+static void R_ParseWorldspawn()
 {
     char key[128], value[4096];
     const char* data;
@@ -390,7 +390,7 @@ static void R_ParseWorldspawn(void)
 R_NewMap
 ===============
 */
-void R_NewMap(void)
+void R_NewMap()
 {
     int i;
 
@@ -429,7 +429,7 @@ R_TimeRefresh_f
 For program optimization
 ====================
 */
-void R_TimeRefresh_f(void)
+void R_TimeRefresh_f()
 {
     int i;
     float start, stop, time;
@@ -455,7 +455,7 @@ void R_TimeRefresh_f(void)
     Con_Printf("%f seconds (%f fps)\n", time, 128 / time);
 }
 
-void D_FlushCaches(void)
+void D_FlushCaches()
 {
 }
 
@@ -592,7 +592,7 @@ R_DeleteShaders
 Deletes any GLSL programs that have been created.
 ====================
 */
-void R_DeleteShaders(void)
+void R_DeleteShaders()
 {
     int i;
 

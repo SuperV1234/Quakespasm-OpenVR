@@ -116,7 +116,7 @@ keyname_t keynames[] = {{"TAB", K_TAB}, {"ENTER", K_ENTER},
 ==============================================================================
 */
 
-static void PasteToConsole(void)
+static void PasteToConsole()
 {
     char *cbd, *p, *workline;
     int mvlen, inslen;
@@ -413,17 +413,17 @@ qboolean chat_team = false;
 static char chat_buffer[MAXCMDLINE];
 static int chat_bufferlen = 0;
 
-const char* Key_GetChatBuffer(void)
+const char* Key_GetChatBuffer()
 {
     return chat_buffer;
 }
 
-int Key_GetChatMsgLen(void)
+int Key_GetChatMsgLen()
 {
     return chat_bufferlen;
 }
 
-void Key_EndChat(void)
+void Key_EndChat()
 {
     key_dest = key_game;
     chat_bufferlen = 0;
@@ -544,7 +544,7 @@ void Key_SetBinding(int keynum, const char* binding)
 Key_Unbind_f
 ===================
 */
-void Key_Unbind_f(void)
+void Key_Unbind_f()
 {
     int b;
 
@@ -564,7 +564,7 @@ void Key_Unbind_f(void)
     Key_SetBinding(b, nullptr);
 }
 
-void Key_Unbindall_f(void)
+void Key_Unbindall_f()
 {
     int i;
 
@@ -579,7 +579,7 @@ void Key_Unbindall_f(void)
 Key_Bindlist_f -- johnfitz
 ============
 */
-void Key_Bindlist_f(void)
+void Key_Bindlist_f()
 {
     int i, count;
 
@@ -601,7 +601,7 @@ void Key_Bindlist_f(void)
 Key_Bind_f
 ===================
 */
-void Key_Bind_f(void)
+void Key_Bind_f()
 {
     int i, c, b;
     char cmd[1024];
@@ -662,7 +662,7 @@ void Key_WriteBindings(FILE* f)
 }
 
 
-void History_Init(void)
+void History_Init()
 {
     int i, c;
     FILE* hf;
@@ -707,7 +707,7 @@ void History_Init(void)
     }
 }
 
-void History_Shutdown(void)
+void History_Shutdown()
 {
     int i;
     FILE* hf;
@@ -735,7 +735,7 @@ void History_Shutdown(void)
 Key_Init
 ===================
 */
-void Key_Init(void)
+void Key_Init()
 {
     int i;
 
@@ -816,7 +816,7 @@ static struct
 Key_BeginInputGrab
 ===================
 */
-void Key_BeginInputGrab(void)
+void Key_BeginInputGrab()
 {
     Key_ClearStates();
 
@@ -832,7 +832,7 @@ void Key_BeginInputGrab(void)
 Key_EndInputGrab
 ===================
 */
-void Key_EndInputGrab(void)
+void Key_EndInputGrab()
 {
     Key_ClearStates();
 
@@ -1018,7 +1018,7 @@ void Char_Event(int key)
 Key_TextEntry
 ===================
 */
-qboolean Key_TextEntry(void)
+qboolean Key_TextEntry()
 {
     if(key_inputgrab.active) return true;
 
@@ -1039,7 +1039,7 @@ qboolean Key_TextEntry(void)
 Key_ClearStates
 ===================
 */
-void Key_ClearStates(void)
+void Key_ClearStates()
 {
     int i;
 
@@ -1054,7 +1054,7 @@ void Key_ClearStates(void)
 Key_UpdateForDest
 ===================
 */
-void Key_UpdateForDest(void)
+void Key_UpdateForDest()
 {
     static qboolean forced = false;
 

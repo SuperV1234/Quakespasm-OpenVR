@@ -33,7 +33,7 @@ cvar_t chase_active = {"chase_active", "0", CVAR_NONE};
 Chase_Init
 ==============
 */
-void Chase_Init(void)
+void Chase_Init()
 {
     Cvar_RegisterVariable(&chase_back);
     Cvar_RegisterVariable(&chase_up);
@@ -72,7 +72,7 @@ Chase_UpdateForClient -- johnfitz -- orient client based on camera. called after
 input
 ==============
 */
-void Chase_UpdateForClient(void)
+void Chase_UpdateForClient()
 {
     // place camera
 

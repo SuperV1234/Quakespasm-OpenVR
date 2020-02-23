@@ -159,7 +159,7 @@ void WpnOffset_MenuKey(int key)
     }
 }
 
-void WpnOffset_MenuDraw(void)
+void WpnOffset_MenuDraw()
 {
     int y = 4;
 
@@ -201,7 +201,7 @@ void WpnOffset_MenuDraw(void)
     }
 }
 
-void WpnOffset_Menu_f(void)
+void WpnOffset_Menu_f()
 {
     const char* sound = "items/r_item1.wav";
 

@@ -28,12 +28,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "snd_codec.hpp"
 #include "bgmusic.hpp"
 
-static void S_Play(void);
-static void S_PlayVol(void);
-static void S_SoundList(void);
-static void S_Update_(void);
+static void S_Play();
+static void S_PlayVol();
+static void S_SoundList();
+static void S_Update_();
 void S_StopAllSounds(qboolean clear);
-static void S_StopAllSoundsC(void);
+static void S_StopAllSoundsC();
 
 // =======================================================================
 // Internal sound data & structures
@@ -96,7 +96,7 @@ static cvar_t snd_show = {"snd_show", "0", CVAR_NONE};
 static cvar_t _snd_mixahead = {"_snd_mixahead", "0.1", CVAR_ARCHIVE};
 
 
-static void S_SoundInfo_f(void)
+static void S_SoundInfo_f()
 {
     if(!sound_started || !shm)
     {
@@ -137,7 +137,7 @@ static void SND_Callback_snd_filterquality(cvar_t* var)
 S_Startup
 ================
 */
-void S_Startup(void)
+void S_Startup()
 {
     if(!snd_initialized) return;
 
@@ -160,7 +160,7 @@ void S_Startup(void)
 S_Init
 ================
 */
-void S_Init(void)
+void S_Init()
 {
     int i;
 
@@ -241,7 +241,7 @@ void S_Init(void)
 // =======================================================================
 // Shutdown sound engine
 // =======================================================================
-void S_Shutdown(void)
+void S_Shutdown()
 {
     if(!sound_started) return;
 
@@ -533,12 +533,12 @@ void S_StopAllSounds(qboolean clear)
     if(clear) S_ClearBuffer();
 }
 
-static void S_StopAllSoundsC(void)
+static void S_StopAllSoundsC()
 {
     S_StopAllSounds(true);
 }
 
-void S_ClearBuffer(void)
+void S_ClearBuffer()
 {
     int clear;
 
@@ -607,7 +607,7 @@ void S_StaticSound(sfx_t* sfx, vec3_t origin, float vol, float attenuation)
 S_UpdateAmbientSounds
 ===================
 */
-static void S_UpdateAmbientSounds(void)
+static void S_UpdateAmbientSounds()
 {
     mleaf_t* l;
     int vol, ambient_channel;
@@ -835,7 +835,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
     S_Update_();
 }
 
-static void GetSoundtime(void)
+static void GetSoundtime()
 {
     int samplepos;
     static int buffers;
@@ -864,13 +864,13 @@ static void GetSoundtime(void)
     soundtime = buffers * fullsamples + samplepos / shm->channels;
 }
 
-void S_ExtraUpdate(void)
+void S_ExtraUpdate()
 {
     if(snd_noextraupdate.value) return; // don't pollute timings
     S_Update_();
 }
 
-static void S_Update_(void)
+static void S_Update_()
 {
     unsigned int endtime;
     int samps;
@@ -900,7 +900,7 @@ static void S_Update_(void)
     SNDDMA_Submit();
 }
 
-void S_BlockSound(void)
+void S_BlockSound()
 {
     /* FIXME: do we really need the blocking at the
      * driver level?
@@ -913,7 +913,7 @@ void S_BlockSound(void)
     }
 }
 
-void S_UnblockSound(void)
+void S_UnblockSound()
 {
     if(!sound_started || !snd_blocked) return;
     if(snd_blocked == 1) /* --snd_blocked == 0 */
@@ -932,7 +932,7 @@ console functions
 ===============================================================================
 */
 
-static void S_Play(void)
+static void S_Play()
 {
     static int hash = 345;
     int i;
@@ -953,7 +953,7 @@ static void S_Play(void)
     }
 }
 
-static void S_PlayVol(void)
+static void S_PlayVol()
 {
     static int hash = 543;
     int i;
@@ -976,7 +976,7 @@ static void S_PlayVol(void)
     }
 }
 
-static void S_SoundList(void)
+static void S_SoundList()
 {
     int i;
     sfx_t* sfx;
@@ -1019,16 +1019,16 @@ void S_LocalSound(const char* name)
 }
 
 
-void S_ClearPrecache(void)
+void S_ClearPrecache()
 {
 }
 
 
-void S_BeginPrecaching(void)
+void S_BeginPrecaching()
 {
 }
 
 
-void S_EndPrecaching(void)
+void S_EndPrecaching()
 {
 }

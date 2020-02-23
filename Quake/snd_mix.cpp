@@ -31,7 +31,7 @@ short* snd_out;
 
 static int snd_vol;
 
-static void Snd_WriteLinearBlastStereo16(void)
+static void Snd_WriteLinearBlastStereo16()
 {
     int i;
     int val;
@@ -462,7 +462,7 @@ void S_PaintChannels(int endtime)
     }
 }
 
-void SND_InitScaletable(void)
+void SND_InitScaletable()
 {
     int i, j;
     int scale;

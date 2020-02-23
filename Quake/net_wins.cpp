@@ -44,7 +44,7 @@ WSADATA winsockdata;
 #if !defined(_USE_WINSOCK2)
 static double blocktime;
 
-static INT_PTR PASCAL FAR BlockingHook(void)
+static INT_PTR PASCAL FAR BlockingHook()
 {
     MSG msg;
     BOOL ret;
@@ -71,7 +71,7 @@ static INT_PTR PASCAL FAR BlockingHook(void)
 #endif /* ! _USE_WINSOCK2 */
 
 
-static void WINS_GetLocalAddress(void)
+static void WINS_GetLocalAddress()
 {
     struct hostent* local = nullptr;
     char buff[MAXHOSTNAMELEN];
@@ -113,7 +113,7 @@ static void WINS_GetLocalAddress(void)
 }
 
 
-sys_socket_t WINS_Init(void)
+sys_socket_t WINS_Init()
 {
     int i, err;
     char buff[MAXHOSTNAMELEN];
@@ -184,7 +184,7 @@ sys_socket_t WINS_Init(void)
 
 //=============================================================================
 
-void WINS_Shutdown(void)
+void WINS_Shutdown()
 {
     WINS_Listen(false);
     WINS_CloseSocket(net_controlsocket);
@@ -326,7 +326,7 @@ int WINS_Connect(sys_socket_t socketid, struct qsockaddr* addr)
 
 //=============================================================================
 
-sys_socket_t WINS_CheckNewConnections(void)
+sys_socket_t WINS_CheckNewConnections()
 {
     char buf[4096];
 

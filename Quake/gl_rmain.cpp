@@ -144,7 +144,7 @@ static GLuint textureLoc;
 GLSLGamma_DeleteTexture
 =============
 */
-void GLSLGamma_DeleteTexture(void)
+void GLSLGamma_DeleteTexture()
 {
     glDeleteTextures(1, &r_gamma_texture);
     r_gamma_texture = 0;
@@ -156,7 +156,7 @@ void GLSLGamma_DeleteTexture(void)
 GLSLGamma_CreateShaders
 =============
 */
-static void GLSLGamma_CreateShaders(void)
+static void GLSLGamma_CreateShaders()
 {
     const GLchar* vertSource =
         "#version 110\n"
@@ -194,7 +194,7 @@ static void GLSLGamma_CreateShaders(void)
 GLSLGamma_GammaCorrect
 =============
 */
-void GLSLGamma_GammaCorrect(void)
+void GLSLGamma_GammaCorrect()
 {
     float smax, tmax;
 
@@ -511,7 +511,7 @@ void GL_SetFrustum(float fovx, float fovy)
 R_SetupGL
 =============
 */
-void R_SetupGL(void)
+void R_SetupGL()
 {
     int scale;
 
@@ -565,7 +565,7 @@ void R_SetupGL(void)
 R_Clear -- johnfitz -- rewritten and gutted
 =============
 */
-void R_Clear(void)
+void R_Clear()
 {
     unsigned int clearbits;
 
@@ -583,7 +583,7 @@ R_SetupScene -- johnfitz -- this is the stuff that needs to be done once per eye
 in stereo mode
 ===============
 */
-void R_SetupScene(void)
+void R_SetupScene()
 {
     R_PushDlights();
     R_AnimateLight();
@@ -597,7 +597,7 @@ R_SetupView -- johnfitz -- this is the stuff that needs to be done once per
 frame, even in stereo mode
 ===============
 */
-void R_SetupView(void)
+void R_SetupView()
 {
     Fog_SetupFrame(); // johnfitz
 
@@ -783,7 +783,7 @@ R_ShowBoundingBoxes -- johnfitz
 draw bounding boxes -- the server-side boxes, not the renderer cullboxes
 ================
 */
-void R_ShowBoundingBoxes(void)
+void R_ShowBoundingBoxes()
 {
     extern edict_t* sv_player;
     vec3_t mins, maxs;
@@ -840,7 +840,7 @@ void R_ShowBoundingBoxes(void)
 R_ShowTris -- johnfitz
 ================
 */
-void R_ShowTris(void)
+void R_ShowTris()
 {
     extern cvar_t r_particles;
     int i;
@@ -924,7 +924,7 @@ void R_ShowTris(void)
 R_DrawShadows
 ================
 */
-void R_DrawShadows(void)
+void R_DrawShadows()
 {
     int i;
 
@@ -964,7 +964,7 @@ void R_DrawShadows(void)
 R_RenderScene
 ================
 */
-void R_RenderScene(void)
+void R_RenderScene()
 {
     R_SetupScene(); // johnfitz -- this does everything that should be done once
                     // per call to RenderScene
@@ -1009,7 +1009,7 @@ static int r_scaleview_texture_width, r_scaleview_texture_height;
 R_ScaleView_DeleteTexture
 =============
 */
-void R_ScaleView_DeleteTexture(void)
+void R_ScaleView_DeleteTexture()
 {
     glDeleteTextures(1, &r_scaleview_texture);
     r_scaleview_texture = 0;
@@ -1025,7 +1025,7 @@ r_refdef.vrect. This is for emulating a low-resolution pixellated look,
 or possibly as a perforance boost on slow graphics cards.
 ================
 */
-void R_ScaleView(void)
+void R_ScaleView()
 {
     float smax, tmax;
     int scale;
@@ -1112,7 +1112,7 @@ void R_ScaleView(void)
 R_RenderView
 ================
 */
-void R_RenderView(void)
+void R_RenderView()
 {
     double time1, time2;
 

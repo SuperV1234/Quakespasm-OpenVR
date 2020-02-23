@@ -125,7 +125,7 @@ static void* GLARB_GetNormalOffset(aliashdr_t* hdr, int pose)
 GLAlias_CreateShaders
 =============
 */
-void GLAlias_CreateShaders(void)
+void GLAlias_CreateShaders()
 {
     const glsl_attrib_binding_t bindings[] = {{"TexCoords", texCoordsAttrIndex},
         {"Pose1Vert", pose1VertexAttrIndex},

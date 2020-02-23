@@ -215,7 +215,7 @@ void DrawWaterPoly(glpoly_t* p)
 R_UpdateWarpTextures -- johnfitz -- each frame, update warping textures
 =============
 */
-void R_UpdateWarpTextures(void)
+void R_UpdateWarpTextures()
 {
     texture_t* tx;
     int i;

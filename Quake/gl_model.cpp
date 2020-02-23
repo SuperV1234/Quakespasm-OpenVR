@@ -55,7 +55,7 @@ texture_t* r_notexture_mip2; // johnfitz -- used for non-lightmapped surfs with
 Mod_Init
 ===============
 */
-void Mod_Init(void)
+void Mod_Init()
 {
     Cvar_RegisterVariable(&gl_subdivide_size);
     Cvar_RegisterVariable(&external_ents);
@@ -217,7 +217,7 @@ byte* Mod_NoVisPVS(qmodel_t* model)
 Mod_ClearAll
 ===================
 */
-void Mod_ClearAll(void)
+void Mod_ClearAll()
 {
     int i;
     qmodel_t* mod;
@@ -230,7 +230,7 @@ void Mod_ClearAll(void)
         }
 }
 
-void Mod_ResetAll(void)
+void Mod_ResetAll()
 {
     int i;
     qmodel_t* mod;
@@ -1783,7 +1783,7 @@ Mod_MakeHull0
 Duplicate the drawing hull structure as a clipping hull
 =================
 */
-void Mod_MakeHull0(void)
+void Mod_MakeHull0()
 {
     mnode_t *in, *child;
     mclipnode_t* out; // johnfitz -- was dclipnode_t
@@ -2962,7 +2962,7 @@ void Mod_LoadSpriteModel(qmodel_t* mod, void* buffer)
 Mod_Print
 ================
 */
-void Mod_Print(void)
+void Mod_Print()
 {
     int i;
     qmodel_t* mod;

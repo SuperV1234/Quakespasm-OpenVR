@@ -119,7 +119,7 @@ float scr_disabled_time;
 
 int scr_tileclear_updates = 0; // johnfitz
 
-void SCR_ScreenShot_f(void);
+void SCR_ScreenShot_f();
 
 /*
 ===============================================================================
@@ -160,7 +160,7 @@ void SCR_CenterPrint(const char* str) // update centerprint data
     }
 }
 
-void SCR_DrawCenterString(void) // actually do the drawing
+void SCR_DrawCenterString() // actually do the drawing
 {
     char* start;
     int l;
@@ -206,7 +206,7 @@ void SCR_DrawCenterString(void) // actually do the drawing
     } while(1);
 }
 
-void SCR_CheckDrawCenterString(void)
+void SCR_CheckDrawCenterString()
 {
     if(scr_center_lines > scr_erase_lines) scr_erase_lines = scr_center_lines;
 
@@ -267,7 +267,7 @@ Must be called whenever vid changes
 Internal use only
 =================
 */
-static void SCR_CalcRefdef(void)
+static void SCR_CalcRefdef()
 {
     float size, scale; // johnfitz -- scale
 
@@ -325,7 +325,7 @@ SCR_SizeUp_f
 Keybinding command
 =================
 */
-void SCR_SizeUp_f(void)
+void SCR_SizeUp_f()
 {
     Cvar_SetValueQuick(&scr_viewsize, scr_viewsize.value + 10);
 }
@@ -338,7 +338,7 @@ SCR_SizeDown_f
 Keybinding command
 =================
 */
-void SCR_SizeDown_f(void)
+void SCR_SizeDown_f()
 {
     Cvar_SetValueQuick(&scr_viewsize, scr_viewsize.value - 10);
 }
@@ -377,7 +377,7 @@ void SCR_Conwidth_f(cvar_t* var)
 SCR_LoadPics -- johnfitz
 ==================
 */
-void SCR_LoadPics(void)
+void SCR_LoadPics()
 {
     scr_ram = Draw_PicFromWad("ram");
     scr_net = Draw_PicFromWad("net");
@@ -389,7 +389,7 @@ void SCR_LoadPics(void)
 SCR_Init
 ==================
 */
-void SCR_Init(void)
+void SCR_Init()
 {
     // johnfitz -- new cvars
     Cvar_RegisterVariable(&scr_menuscale);
@@ -434,7 +434,7 @@ void SCR_Init(void)
 SCR_DrawFPS -- johnfitz
 ==============
 */
-void SCR_DrawFPS(void)
+void SCR_DrawFPS()
 {
     static double oldtime = 0;
     static double lastfps = 0;
@@ -478,7 +478,7 @@ void SCR_DrawFPS(void)
 SCR_DrawClock -- johnfitz
 ==============
 */
-void SCR_DrawClock(void)
+void SCR_DrawClock()
 {
     char str[12];
 
@@ -506,7 +506,7 @@ void SCR_DrawClock(void)
 SCR_DrawDevStats
 ==============
 */
-void SCR_DrawDevStats(void)
+void SCR_DrawDevStats()
 {
     char str[40];
     int y = 25 - 9; // 9=number of lines to print
@@ -554,7 +554,7 @@ void SCR_DrawDevStats(void)
 SCR_DrawRam
 ==============
 */
-void SCR_DrawRam(void)
+void SCR_DrawRam()
 {
     if(!scr_showram.value) return;
 
@@ -570,7 +570,7 @@ void SCR_DrawRam(void)
 SCR_DrawTurtle
 ==============
 */
-void SCR_DrawTurtle(void)
+void SCR_DrawTurtle()
 {
     static int count;
 
@@ -595,7 +595,7 @@ void SCR_DrawTurtle(void)
 SCR_DrawNet
 ==============
 */
-void SCR_DrawNet(void)
+void SCR_DrawNet()
 {
     if(realtime - cl.last_received_message < 0.3) return;
     if(cls.demoplayback) return;
@@ -610,7 +610,7 @@ void SCR_DrawNet(void)
 DrawPause
 ==============
 */
-void SCR_DrawPause(void)
+void SCR_DrawPause()
 {
     qpic_t* pic;
 
@@ -633,7 +633,7 @@ void SCR_DrawPause(void)
 SCR_DrawLoading
 ==============
 */
-void SCR_DrawLoading(void)
+void SCR_DrawLoading()
 {
     qpic_t* pic;
 
@@ -653,7 +653,7 @@ void SCR_DrawLoading(void)
 SCR_DrawCrosshair -- johnfitz
 ==============
 */
-void SCR_DrawCrosshair(void)
+void SCR_DrawCrosshair()
 {
     if(!crosshair.value) return;
 
@@ -671,7 +671,7 @@ void SCR_DrawCrosshair(void)
 SCR_SetUpToDrawConsole
 ==================
 */
-void SCR_SetUpToDrawConsole(void)
+void SCR_SetUpToDrawConsole()
 {
     // johnfitz -- let's hack away the problem of slow console when
     // host_timescale is <0
@@ -728,7 +728,7 @@ void SCR_SetUpToDrawConsole(void)
 SCR_DrawConsole
 ==================
 */
-void SCR_DrawConsole(void)
+void SCR_DrawConsole()
 {
     if(scr_con_current)
     {
@@ -751,7 +751,7 @@ SCREEN SHOTS
 ==============================================================================
 */
 
-static void SCR_ScreenShot_Usage(void)
+static void SCR_ScreenShot_Usage()
 {
     Con_Printf("usage: screenshot <format> <quality>\n");
     Con_Printf("   format must be \"png\" or \"tga\" or \"jpg\"\n");
@@ -764,7 +764,7 @@ static void SCR_ScreenShot_Usage(void)
 SCR_ScreenShot_f -- johnfitz -- rewritten to use Image_WriteTGA
 ==================
 */
-void SCR_ScreenShot_f(void)
+void SCR_ScreenShot_f()
 {
     byte* buffer;
     char ext[4];
@@ -854,7 +854,7 @@ SCR_BeginLoadingPlaque
 
 ================
 */
-void SCR_BeginLoadingPlaque(void)
+void SCR_BeginLoadingPlaque()
 {
     S_StopAllSounds(true);
 
@@ -881,7 +881,7 @@ SCR_EndLoadingPlaque
 
 ================
 */
-void SCR_EndLoadingPlaque(void)
+void SCR_EndLoadingPlaque()
 {
     scr_disabled_for_loading = false;
     Con_ClearNotify();
@@ -892,7 +892,7 @@ void SCR_EndLoadingPlaque(void)
 const char* scr_notifystring;
 qboolean scr_drawdialog;
 
-void SCR_DrawNotifyString(void)
+void SCR_DrawNotifyString()
 {
     const char* start;
     int l;
@@ -986,7 +986,7 @@ johnfitz -- modified to use glwidth/glheight instead of vid.width/vid.height
         also added scr_tileclear_updates
 ==================
 */
-void SCR_TileClear(void)
+void SCR_TileClear()
 {
     // ericw -- added check for glsl gamma. TODO: remove this ugly optimization?
     if(scr_tileclear_updates >= vid.numpages && !gl_clear.value &&
@@ -1016,7 +1016,7 @@ void SCR_TileClear(void)
     }
 }
 
-void SCR_UpdateScreenContent(void)
+void SCR_UpdateScreenContent()
 {
     V_RenderView();
 
@@ -1087,7 +1087,7 @@ WARNING: be very careful calling this from elsewhere, because the refresh
 needs almost the entire 256k of stack space!
 ==================
 */
-void SCR_UpdateScreen(void)
+void SCR_UpdateScreen()
 {
     vid.numpages = (gl_triplebuffer.value) ? 3 : 2;
 

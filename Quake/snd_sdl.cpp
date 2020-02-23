@@ -172,12 +172,12 @@ qboolean SNDDMA_Init(dma_t* dma)
     return true;
 }
 
-int SNDDMA_GetDMAPos(void)
+int SNDDMA_GetDMAPos()
 {
     return shm->samplepos;
 }
 
-void SNDDMA_Shutdown(void)
+void SNDDMA_Shutdown()
 {
     if(shm)
     {
@@ -190,22 +190,22 @@ void SNDDMA_Shutdown(void)
     }
 }
 
-void SNDDMA_LockBuffer(void)
+void SNDDMA_LockBuffer()
 {
     SDL_LockAudio();
 }
 
-void SNDDMA_Submit(void)
+void SNDDMA_Submit()
 {
     SDL_UnlockAudio();
 }
 
-void SNDDMA_BlockSound(void)
+void SNDDMA_BlockSound()
 {
     SDL_PauseAudio(1);
 }
 
-void SNDDMA_UnblockSound(void)
+void SNDDMA_UnblockSound()
 {
     SDL_PauseAudio(0);
 }

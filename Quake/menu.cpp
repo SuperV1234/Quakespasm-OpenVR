@@ -27,52 +27,52 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sbaroffset_menu.hpp"
 #include "map_menu.hpp"
 
-void (*vid_menucmdfn)(void); // johnfitz
-void (*vid_menudrawfn)(void);
+void (*vid_menucmdfn)(); // johnfitz
+void (*vid_menudrawfn)();
 void (*vid_menukeyfn)(int key);
 
 enum m_state_e m_state;
 
-void M_Menu_Main_f(void);
-void M_Menu_SinglePlayer_f(void);
-void M_Menu_Load_f(void);
-void M_Menu_Save_f(void);
-void M_Menu_MultiPlayer_f(void);
-void M_Menu_Setup_f(void);
-void M_Menu_Net_f(void);
-void M_Menu_LanConfig_f(void);
-void M_Menu_GameOptions_f(void);
-void M_Menu_Search_f(void);
-void M_Menu_ServerList_f(void);
-void M_Menu_Options_f(void);
-void M_Menu_Keys_f(void);
-void M_Menu_Video_f(void);
-void M_Menu_VR_f(void);
-void M_Menu_WpnOffset_f(void);
-void M_Menu_SbarOffset_f(void);
-void M_Menu_MapMenu_f(void);
-void M_Menu_Help_f(void);
-void M_Menu_Quit_f(void);
+void M_Menu_Main_f();
+void M_Menu_SinglePlayer_f();
+void M_Menu_Load_f();
+void M_Menu_Save_f();
+void M_Menu_MultiPlayer_f();
+void M_Menu_Setup_f();
+void M_Menu_Net_f();
+void M_Menu_LanConfig_f();
+void M_Menu_GameOptions_f();
+void M_Menu_Search_f();
+void M_Menu_ServerList_f();
+void M_Menu_Options_f();
+void M_Menu_Keys_f();
+void M_Menu_Video_f();
+void M_Menu_VR_f();
+void M_Menu_WpnOffset_f();
+void M_Menu_SbarOffset_f();
+void M_Menu_MapMenu_f();
+void M_Menu_Help_f();
+void M_Menu_Quit_f();
 
-void M_Main_Draw(void);
-void M_SinglePlayer_Draw(void);
-void M_Load_Draw(void);
-void M_Save_Draw(void);
-void M_MultiPlayer_Draw(void);
-void M_Setup_Draw(void);
-void M_Net_Draw(void);
-void M_LanConfig_Draw(void);
-void M_GameOptions_Draw(void);
-void M_Search_Draw(void);
-void M_ServerList_Draw(void);
-void M_Options_Draw(void);
-void M_Keys_Draw(void);
-void M_Video_Draw(void);
-void M_VR_Draw(void);
-void M_WpnOffset_Draw(void);
-void M_SbarOffset_Draw(void);
-void M_Help_Draw(void);
-void M_Quit_Draw(void);
+void M_Main_Draw();
+void M_SinglePlayer_Draw();
+void M_Load_Draw();
+void M_Save_Draw();
+void M_MultiPlayer_Draw();
+void M_Setup_Draw();
+void M_Net_Draw();
+void M_LanConfig_Draw();
+void M_GameOptions_Draw();
+void M_Search_Draw();
+void M_ServerList_Draw();
+void M_Options_Draw();
+void M_Keys_Draw();
+void M_Video_Draw();
+void M_VR_Draw();
+void M_WpnOffset_Draw();
+void M_SbarOffset_Draw();
+void M_Help_Draw();
+void M_Quit_Draw();
 
 void M_Main_Key(int key);
 void M_SinglePlayer_Key(int key);
@@ -107,7 +107,7 @@ char m_return_reason[32];
 #define IPXConfig (m_net_cursor == 0)
 #define TCPIPConfig (m_net_cursor == 1)
 
-void M_ConfigureNetSubsystem(void);
+void M_ConfigureNetSubsystem();
 
 /*
 ================
@@ -224,7 +224,7 @@ int m_save_demonum;
 M_ToggleMenu_f
 ================
 */
-void M_ToggleMenu_f(void)
+void M_ToggleMenu_f()
 {
     m_entersound = true;
 
@@ -259,7 +259,7 @@ int m_main_cursor;
 #define MAIN_ITEMS 5
 
 
-void M_Menu_Main_f(void)
+void M_Menu_Main_f()
 {
     if(key_dest != key_menu)
     {
@@ -273,7 +273,7 @@ void M_Menu_Main_f(void)
 }
 
 
-void M_Main_Draw(void)
+void M_Main_Draw()
 {
     int f;
     qpic_t* p;
@@ -340,7 +340,7 @@ int m_singleplayer_cursor;
 #define SINGLEPLAYER_ITEMS 3
 
 
-void M_Menu_SinglePlayer_f(void)
+void M_Menu_SinglePlayer_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -349,7 +349,7 @@ void M_Menu_SinglePlayer_f(void)
 }
 
 
-void M_SinglePlayer_Draw(void)
+void M_SinglePlayer_Draw()
 {
     int f;
     qpic_t* p;
@@ -418,7 +418,7 @@ int load_cursor; // 0 < load_cursor < MAX_SAVEGAMES
 char m_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH + 1];
 int loadable[MAX_SAVEGAMES];
 
-void M_ScanSaves(void)
+void M_ScanSaves()
 {
     int i, j;
     char name[MAX_OSPATH];
@@ -446,7 +446,7 @@ void M_ScanSaves(void)
     }
 }
 
-void M_Menu_Load_f(void)
+void M_Menu_Load_f()
 {
     m_entersound = true;
     m_state = m_load;
@@ -457,7 +457,7 @@ void M_Menu_Load_f(void)
 }
 
 
-void M_Menu_Save_f(void)
+void M_Menu_Save_f()
 {
     if(!sv.active) return;
     if(cl.intermission) return;
@@ -471,7 +471,7 @@ void M_Menu_Save_f(void)
 }
 
 
-void M_Load_Draw(void)
+void M_Load_Draw()
 {
     int i;
     qpic_t* p;
@@ -486,7 +486,7 @@ void M_Load_Draw(void)
 }
 
 
-void M_Save_Draw(void)
+void M_Save_Draw()
 {
     int i;
     qpic_t* p;
@@ -581,7 +581,7 @@ int m_multiplayer_cursor;
 #define MULTIPLAYER_ITEMS 3
 
 
-void M_Menu_MultiPlayer_f(void)
+void M_Menu_MultiPlayer_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -590,7 +590,7 @@ void M_Menu_MultiPlayer_f(void)
 }
 
 
-void M_MultiPlayer_Draw(void)
+void M_MultiPlayer_Draw()
 {
     int f;
     qpic_t* p;
@@ -664,7 +664,7 @@ int setup_bottom;
 
 #define NUM_SETUP_CMDS 5
 
-void M_Menu_Setup_f(void)
+void M_Menu_Setup_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -677,7 +677,7 @@ void M_Menu_Setup_f(void)
 }
 
 
-void M_Setup_Draw(void)
+void M_Setup_Draw()
 {
     qpic_t* p;
 
@@ -816,7 +816,7 @@ void M_Setup_Char(int k)
 }
 
 
-qboolean M_Setup_TextEntry(void)
+qboolean M_Setup_TextEntry()
 {
     return (setup_cursor == 0 || setup_cursor == 1);
 }
@@ -835,7 +835,7 @@ const char* net_helpMessage[] = {
     " Commonly used to play  ", " over the Internet, but ",
     " also used on a Local   ", " Area Network.          "};
 
-void M_Menu_Net_f(void)
+void M_Menu_Net_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -849,7 +849,7 @@ void M_Menu_Net_f(void)
 }
 
 
-void M_Net_Draw(void)
+void M_Net_Draw()
 {
     int f;
     qpic_t* p;
@@ -962,7 +962,7 @@ enum
 
 int options_cursor;
 
-void M_Menu_Options_f(void)
+void M_Menu_Options_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -1130,7 +1130,7 @@ void M_DrawCheckbox(int x, int y, int on)
         M_Print(x, y, "off");
 }
 
-void M_Options_Draw(void)
+void M_Options_Draw()
 {
     float r, l;
     qpic_t* p;
@@ -1322,7 +1322,7 @@ const char* bindnames[][2] = {{"+attack", "attack"},
 static int keys_cursor;
 static qboolean bind_grab;
 
-void M_Menu_Keys_f(void)
+void M_Menu_Keys_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -1373,7 +1373,7 @@ void M_UnbindCommand(const char* command)
 
 extern qpic_t *pic_up, *pic_down;
 
-void M_Keys_Draw(void)
+void M_Keys_Draw()
 {
     int i, x, y;
     int keys[3];
@@ -1491,13 +1491,13 @@ void M_Keys_Key(int k)
 //=============================================================================
 /* VIDEO MENU */
 
-void M_Menu_Video_f(void)
+void M_Menu_Video_f()
 {
     (*vid_menucmdfn)(); // johnfitz
 }
 
 
-void M_Video_Draw(void)
+void M_Video_Draw()
 {
     (*vid_menudrawfn)();
 }
@@ -1511,13 +1511,13 @@ void M_Video_Key(int key)
 //=============================================================================
 /* VR MENU */
 
-void M_Menu_VR_f(void)
+void M_Menu_VR_f()
 {
     VR_Menu_f();
 }
 
 
-void M_VR_Draw(void)
+void M_VR_Draw()
 {
     VR_MenuDraw();
 }
@@ -1531,13 +1531,13 @@ void M_VR_Key(int key)
 //=============================================================================
 /* WPN OFFSET MENU */
 
-void M_Menu_WpnOffset_f(void)
+void M_Menu_WpnOffset_f()
 {
     WpnOffset_Menu_f();
 }
 
 
-void M_WpnOffset_Draw(void)
+void M_WpnOffset_Draw()
 {
     WpnOffset_MenuDraw();
 }
@@ -1551,13 +1551,13 @@ void M_WpnOffset_Key(int key)
 //=============================================================================
 /* SBAR OFFSET MENU */
 
-void M_Menu_SbarOffset_f(void)
+void M_Menu_SbarOffset_f()
 {
     SbarOffset_Menu_f();
 }
 
 
-void M_SbarOffset_Draw(void)
+void M_SbarOffset_Draw()
 {
     SbarOffset_MenuDraw();
 }
@@ -1571,13 +1571,13 @@ void M_SbarOffset_Key(int key)
 //=============================================================================
 /* MAP MENU */
 
-void M_Menu_MapMenu_f(void)
+void M_Menu_MapMenu_f()
 {
     MapMenu_Menu_f();
 }
 
 
-void M_MapMenu_Draw(void)
+void M_MapMenu_Draw()
 {
     MapMenu_MenuDraw();
 }
@@ -1595,7 +1595,7 @@ int help_page;
 #define NUM_HELP_PAGES 6
 
 
-void M_Menu_Help_f(void)
+void M_Menu_Help_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -1606,7 +1606,7 @@ void M_Menu_Help_f(void)
 
 
 
-void M_Help_Draw(void)
+void M_Help_Draw()
 {
     M_DrawPic(0, 0, Draw_CachePic(va("gfx/help%i.lmp", help_page)));
 }
@@ -1640,7 +1640,7 @@ int msgNumber;
 enum m_state_e m_quit_prevstate;
 qboolean wasInMenus;
 
-void M_Menu_Quit_f(void)
+void M_Menu_Quit_f()
 {
     if(m_state == m_quit) return;
     wasInMenus = (key_dest == key_menu);
@@ -1703,13 +1703,13 @@ void M_Quit_Char(int key)
 }
 
 
-qboolean M_Quit_TextEntry(void)
+qboolean M_Quit_TextEntry()
 {
     return true;
 }
 
 
-void M_Quit_Draw(void) // johnfitz -- modified for new quit message
+void M_Quit_Draw() // johnfitz -- modified for new quit message
 {
     char msg1[40];
     char msg2[] = "by Ozkan Sezer, Eric Wasylishen, others"; /* msg2/msg3 are
@@ -1752,7 +1752,7 @@ int lanConfig_port;
 char lanConfig_portname[6];
 char lanConfig_joinname[22];
 
-void M_Menu_LanConfig_f(void)
+void M_Menu_LanConfig_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -1774,7 +1774,7 @@ void M_Menu_LanConfig_f(void)
 }
 
 
-void M_LanConfig_Draw(void)
+void M_LanConfig_Draw()
 {
     qpic_t* p;
     int basex;
@@ -1948,7 +1948,7 @@ void M_LanConfig_Char(int key)
 }
 
 
-qboolean M_LanConfig_TextEntry(void)
+qboolean M_LanConfig_TextEntry()
 {
     return (lanConfig_cursor == 0 || lanConfig_cursor == 2);
 }
@@ -2053,7 +2053,7 @@ int maxplayers;
 qboolean m_serverInfoMessage = false;
 double m_serverInfoMessageTime;
 
-void M_Menu_GameOptions_f(void)
+void M_Menu_GameOptions_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -2068,7 +2068,7 @@ int gameoptions_cursor_table[] = {40, 56, 64, 72, 80, 88, 96, 112, 120};
 #define NUM_GAMEOPTIONS 9
 int gameoptions_cursor;
 
-void M_GameOptions_Draw(void)
+void M_GameOptions_Draw()
 {
     qpic_t* p;
     int x;
@@ -2372,7 +2372,7 @@ void M_GameOptions_Key(int key)
 qboolean searchComplete = false;
 double searchCompleteTime;
 
-void M_Menu_Search_f(void)
+void M_Menu_Search_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -2385,7 +2385,7 @@ void M_Menu_Search_f(void)
 }
 
 
-void M_Search_Draw(void)
+void M_Search_Draw()
 {
     qpic_t* p;
     int x;
@@ -2432,7 +2432,7 @@ void M_Search_Key(int key)
 int slist_cursor;
 qboolean slist_sorted;
 
-void M_Menu_ServerList_f(void)
+void M_Menu_ServerList_f()
 {
     IN_Deactivate(modestate == MS_WINDOWED);
     key_dest = key_menu;
@@ -2445,7 +2445,7 @@ void M_Menu_ServerList_f(void)
 }
 
 
-void M_ServerList_Draw(void)
+void M_ServerList_Draw()
 {
     int n;
     qpic_t* p;
@@ -2511,7 +2511,7 @@ void M_ServerList_Key(int k)
 /* Menu Subsystem */
 
 
-void M_Init(void)
+void M_Init()
 {
     Cmd_AddCommand("togglemenu", M_ToggleMenu_f);
 
@@ -2530,7 +2530,7 @@ void M_Init(void)
 }
 
 
-void M_Draw(void)
+void M_Draw()
 {
     if(m_state == m_none || key_dest != key_menu) return;
 
@@ -2636,7 +2636,7 @@ void M_Charinput(int key)
 }
 
 
-qboolean M_TextEntry(void)
+qboolean M_TextEntry()
 {
     switch(m_state)
     {
@@ -2648,7 +2648,7 @@ qboolean M_TextEntry(void)
 }
 
 
-void M_ConfigureNetSubsystem(void)
+void M_ConfigureNetSubsystem()
 {
     // enable/disable net systems to match desired config
     Cbuf_AddText("stopdemo\n");

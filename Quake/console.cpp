@@ -104,7 +104,7 @@ Con_ToggleConsole_f
 */
 extern int history_line; // johnfitz
 
-void Con_ToggleConsole_f(void)
+void Con_ToggleConsole_f()
 {
     if(key_dest == key_console /* || (key_dest == key_game && con_forcedup)*/)
     {
@@ -140,7 +140,7 @@ void Con_ToggleConsole_f(void)
 Con_Clear_f
 ================
 */
-static void Con_Clear_f(void)
+static void Con_Clear_f()
 {
     if(con_text)
         Q_memset(con_text, ' ',
@@ -154,7 +154,7 @@ static void Con_Clear_f(void)
 Con_Dump_f -- johnfitz -- adapted from quake2 source
 ================
 */
-static void Con_Dump_f(void)
+static void Con_Dump_f()
 {
     int l, x;
     const char* line;
@@ -207,7 +207,7 @@ static void Con_Dump_f(void)
 Con_ClearNotify
 ================
 */
-void Con_ClearNotify(void)
+void Con_ClearNotify()
 {
     int i;
 
@@ -220,7 +220,7 @@ void Con_ClearNotify(void)
 Con_MessageMode_f
 ================
 */
-static void Con_MessageMode_f(void)
+static void Con_MessageMode_f()
 {
     if(cls.state != ca_connected || cls.demoplayback) return;
     chat_team = false;
@@ -232,7 +232,7 @@ static void Con_MessageMode_f(void)
 Con_MessageMode2_f
 ================
 */
-static void Con_MessageMode2_f(void)
+static void Con_MessageMode2_f()
 {
     if(cls.state != ca_connected || cls.demoplayback) return;
     chat_team = true;
@@ -247,7 +247,7 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
-void Con_CheckResize(void)
+void Con_CheckResize()
 {
     int i, j, width, oldwidth, oldtotallines, numlines, numchars;
     char* tbuf; // johnfitz -- tbuf no longer a static array
@@ -305,7 +305,7 @@ void Con_CheckResize(void)
 Con_Init
 ================
 */
-void Con_Init(void)
+void Con_Init()
 {
     int i;
 
@@ -351,7 +351,7 @@ void Con_Init(void)
 Con_Linefeed
 ===============
 */
-static void Con_Linefeed(void)
+static void Con_Linefeed()
 {
     // johnfitz -- improved scrolling
     if(con_backscroll) con_backscroll++;
@@ -908,7 +908,7 @@ void BuildTabList(const char* partial)
 Con_TabComplete -- johnfitz
 ============
 */
-void Con_TabComplete(void)
+void Con_TabComplete()
 {
     char partial[MAXCMDLINE];
     const char* match;
@@ -1066,7 +1066,7 @@ Con_DrawNotify
 Draws the last few lines of output transparently over the game top
 ================
 */
-void Con_DrawNotify(void)
+void Con_DrawNotify()
 {
     int i, x, v;
     const char* text;
@@ -1136,7 +1136,7 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 extern qpic_t *pic_ovr, *pic_ins; // johnfitz -- new cursor handling
 
-void Con_DrawInput(void)
+void Con_DrawInput()
 {
     int i, ofs;
 
@@ -1286,7 +1286,7 @@ void LOG_Init(quakeparms_t* parms)
     Con_DebugLog(va("LOG started on: %s \n", session));
 }
 
-void LOG_Close(void)
+void LOG_Close()
 {
     if(log_fd == -1) return;
     close(log_fd);

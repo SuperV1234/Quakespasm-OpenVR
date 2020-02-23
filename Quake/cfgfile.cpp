@@ -133,7 +133,7 @@ void CFG_ReadCvarOverrides(const char** vars, int num_vars)
     }
 }
 
-void CFG_CloseConfig(void)
+void CFG_CloseConfig()
 {
     if(cfg_file)
     {

@@ -39,7 +39,7 @@ void Cvar_Reset(const char* name); // johnfitz
 Cvar_List_f -- johnfitz
 ============
 */
-void Cvar_List_f(void)
+void Cvar_List_f()
 {
     cvar_t* cvar;
     const char* partial;
@@ -82,7 +82,7 @@ void Cvar_List_f(void)
 Cvar_Inc_f -- johnfitz
 ============
 */
-void Cvar_Inc_f(void)
+void Cvar_Inc_f()
 {
     switch(Cmd_Argc())
     {
@@ -103,7 +103,7 @@ void Cvar_Inc_f(void)
 Cvar_Toggle_f -- johnfitz
 ============
 */
-void Cvar_Toggle_f(void)
+void Cvar_Toggle_f()
 {
     switch(Cmd_Argc())
     {
@@ -123,7 +123,7 @@ void Cvar_Toggle_f(void)
 Cvar_Cycle_f -- johnfitz
 ============
 */
-void Cvar_Cycle_f(void)
+void Cvar_Cycle_f()
 {
     int i;
 
@@ -168,7 +168,7 @@ void Cvar_Cycle_f(void)
 Cvar_Reset_f -- johnfitz
 ============
 */
-void Cvar_Reset_f(void)
+void Cvar_Reset_f()
 {
     switch(Cmd_Argc())
     {
@@ -183,7 +183,7 @@ void Cvar_Reset_f(void)
 Cvar_ResetAll_f -- johnfitz
 ============
 */
-void Cvar_ResetAll_f(void)
+void Cvar_ResetAll_f()
 {
     cvar_t* var;
 
@@ -195,7 +195,7 @@ void Cvar_ResetAll_f(void)
 Cvar_ResetCfg_f -- QuakeSpasm
 ============
 */
-void Cvar_ResetCfg_f(void)
+void Cvar_ResetCfg_f()
 {
     cvar_t* var;
 
@@ -215,7 +215,7 @@ Cvar_Init -- johnfitz
 ============
 */
 
-void Cvar_Init(void)
+void Cvar_Init()
 {
     Cmd_AddCommand("cvarlist", Cvar_List_f);
     Cmd_AddCommand("toggle", Cvar_Toggle_f);
@@ -288,7 +288,7 @@ void Cvar_UnlockVar(const char* var_name)
     if(var) var->flags &= ~CVAR_LOCKED;
 }
 
-void Cvar_UnlockAll(void)
+void Cvar_UnlockAll()
 {
     cvar_t* var;
 
@@ -584,7 +584,7 @@ Cvar_Command
 Handles variable inspection and changing from the console
 ============
 */
-qboolean Cvar_Command(void)
+qboolean Cvar_Command()
 {
     cvar_t* v;
 

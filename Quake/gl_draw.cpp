@@ -188,7 +188,7 @@ int Scrap_AllocBlock(int w, int h, int* x, int* y)
 Scrap_Upload -- johnfitz -- now uses TexMgr
 ================
 */
-void Scrap_Upload(void)
+void Scrap_Upload()
 {
     char name[8];
     int i;
@@ -358,7 +358,7 @@ qpic_t* Draw_MakePic(const char* name, int width, int height, byte* data)
 Draw_LoadPics -- johnfitz
 ===============
 */
-void Draw_LoadPics(void)
+void Draw_LoadPics()
 {
     byte* data;
     src_offset_t offset;
@@ -379,7 +379,7 @@ void Draw_LoadPics(void)
 Draw_NewGame -- johnfitz
 ===============
 */
-void Draw_NewGame(void)
+void Draw_NewGame()
 {
     cachepic_t* pic;
     int i;
@@ -407,7 +407,7 @@ void Draw_NewGame(void)
 Draw_Init -- johnfitz -- rewritten
 ===============
 */
-void Draw_Init(void)
+void Draw_Init()
 {
     Cvar_RegisterVariable(&scr_conalpha);
 
@@ -555,7 +555,7 @@ void Draw_TransPicTranslate(int x, int y, qpic_t* pic, int top, int bottom)
 Draw_ConsoleBackground -- johnfitz -- rewritten
 ================
 */
-void Draw_ConsoleBackground(void)
+void Draw_ConsoleBackground()
 {
     qpic_t* pic;
     float alpha;
@@ -656,7 +656,7 @@ void Draw_Fill(
 Draw_FadeScreen -- johnfitz -- revised
 ================
 */
-void Draw_FadeScreen(void)
+void Draw_FadeScreen()
 {
     if(vr_enabled.value) return;
 
@@ -777,7 +777,7 @@ void GL_SetCanvas(canvastype newcanvas)
 GL_Set2D -- johnfitz -- rewritten
 ================
 */
-void GL_Set2D(void)
+void GL_Set2D()
 {
     currentcanvas = CANVAS_INVALID;
     GL_SetCanvas(CANVAS_DEFAULT);

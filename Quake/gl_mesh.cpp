@@ -190,7 +190,7 @@ Generate a list of trifans or strips
 for the model, which holds for all frames
 ================
 */
-void BuildTris(void)
+void BuildTris()
 {
     int i, j, k;
     int startv;
@@ -277,7 +277,7 @@ void BuildTris(void)
     alltris += pheader->numtris;
 }
 
-static void GL_MakeAliasModelDisplayLists_VBO(void);
+static void GL_MakeAliasModelDisplayLists_VBO();
 static void GLMesh_LoadVertexBuffer(qmodel_t* m, const aliashdr_t* hdr);
 
 /*
@@ -356,7 +356,7 @@ is copied to Mod_Extradata.
 Original code by MH from RMQEngine
 ================
 */
-void GL_MakeAliasModelDisplayLists_VBO(void)
+void GL_MakeAliasModelDisplayLists_VBO()
 {
     int i, j;
     int maxverts_vbo;
@@ -570,7 +570,7 @@ GLMesh_LoadVertexBuffers
 Loop over all precached alias models, and upload each one to a VBO.
 ================
 */
-void GLMesh_LoadVertexBuffers(void)
+void GLMesh_LoadVertexBuffers()
 {
     int j;
     qmodel_t* m;
@@ -596,7 +596,7 @@ GLMesh_DeleteVertexBuffers
 Delete VBOs for all loaded alias models
 ================
 */
-void GLMesh_DeleteVertexBuffers(void)
+void GLMesh_DeleteVertexBuffers()
 {
     int j;
     qmodel_t* m;

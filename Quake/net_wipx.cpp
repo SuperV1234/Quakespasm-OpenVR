@@ -47,7 +47,7 @@ static int sequence[IPXSOCKETS];
 
 //=============================================================================
 
-sys_socket_t WIPX_Init(void)
+sys_socket_t WIPX_Init()
 {
     int i, err;
     char* colon;
@@ -108,7 +108,7 @@ sys_socket_t WIPX_Init(void)
 
 //=============================================================================
 
-void WIPX_Shutdown(void)
+void WIPX_Shutdown()
 {
     WIPX_Listen(false);
     WIPX_CloseSocket(net_controlsocket);
@@ -218,7 +218,7 @@ int WIPX_Connect(sys_socket_t handle, struct qsockaddr* addr)
 
 //=============================================================================
 
-sys_socket_t WIPX_CheckNewConnections(void)
+sys_socket_t WIPX_CheckNewConnections()
 {
     u_long available;
 

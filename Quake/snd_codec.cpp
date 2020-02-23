@@ -56,7 +56,7 @@ S_CodecRegister
 S_CodecInit
 =================
 */
-void S_CodecInit(void)
+void S_CodecInit()
 {
     snd_codec_t* codec;
     codecs = nullptr;
@@ -101,7 +101,7 @@ void S_CodecInit(void)
 S_CodecShutdown
 =================
 */
-void S_CodecShutdown(void)
+void S_CodecShutdown()
 {
     snd_codec_t* codec = codecs;
     while(codec)
