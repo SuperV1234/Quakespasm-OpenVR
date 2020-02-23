@@ -1133,8 +1133,8 @@ void() PlayerPostThink =
 
 // do weapon stuff
 
-	// TODO VR:
-	if (self.handvelmag > vr_melee_threshold)
+	// vr melee attack
+	if (cvar("vr_enabled") == 1 && time >= self.in_melee && self.handvelmag > vr_melee_threshold)
 	{
 		if (self.weapon == IT_AXE)
 		{
@@ -1156,6 +1156,7 @@ void() PlayerPostThink =
 		}
 
 		self.attack_finished = time + 0.1;
+		self.in_melee = time + 0.01;
 	}
 
 	W_WeaponFrame ();

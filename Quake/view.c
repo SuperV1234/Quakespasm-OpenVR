@@ -102,7 +102,7 @@ float V_CalcRoll(vec3_t angles, vec3_t velocity)
     side = fabs(side);
 
     // Don't roll view in VR
-    if(vr_enabled.value /* TODO VR CVAR */)
+    if(vr_enabled.value /* TODO VR: create CVAR */)
         value = 0;
     else
         value = cl_rollangle.value;
@@ -132,7 +132,7 @@ float V_CalcBob(void)
     float cycle;
 
     // Don't bob if we're in VR
-    if(vr_enabled.value /* TODO VR CVAR */)
+    if(vr_enabled.value /* TODO VR: create CVAR */)
     {
         return 0.f;
     }
@@ -619,7 +619,7 @@ void CalcGunAngle(void)
     static float oldpitch = 0;
 
     // Skip everything if we're doing VR Controller aiming.
-    if(vr_enabled.value && vr_aimmode.value == VR_AIMMODE_CONTROLLER)
+    if(vr_enabled.value && vr_aimmode.value == VrAimMode::e_CONTROLLER)
     {
         vec3_t rotOfs = {
             vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 5].value +
@@ -752,7 +752,7 @@ void V_CalcViewRoll(void)
         v_dmg_time -= host_frametime;
     }
 
-    if(cl.stats[STAT_HEALTH] <= 0 && !vr_enabled.value /* TODO VR CVAR */)
+    if(cl.stats[STAT_HEALTH] <= 0 && !vr_enabled.value /* TODO VR: create CVAR */)
     {
         r_refdef.viewangles[ROLL] = 80; // dead view angle
         return;
@@ -876,7 +876,7 @@ void V_CalcRefdef(void)
     CalcGunAngle();
 
     // VR controller aiming configuration
-    if(vr_enabled.value && vr_aimmode.value == VR_AIMMODE_CONTROLLER)
+    if(vr_enabled.value && vr_aimmode.value == VrAimMode::e_CONTROLLER)
     {
         VectorAdd(cl.handpos[1], cl.vmeshoffset, view->origin);
     }
@@ -910,7 +910,7 @@ void V_CalcRefdef(void)
                                                   // weapon is rendered? got
                                                   // through .weaponmodel from
                                                   // QC
-    // TODO VR: think about offhand weapon? dual wielding?
+    // TODO VR: think about offhand weapon? dual wielding? flashlight?
     view->frame = cl.stats[STAT_WEAPONFRAME];
     view->colormap = vid.colormap;
 
@@ -920,7 +920,7 @@ void V_CalcRefdef(void)
         VectorAdd(r_refdef.viewangles, cl.punchangle, r_refdef.viewangles);
     if(v_gunkick.value == 2 &&
         !(vr_enabled.value &&
-            !vr_viewkick.value)) // lerped kick /* TODO VR CVAR */
+            !vr_viewkick.value)) // lerped kick /* TODO VR: create CVAR */
     {
         for(i = 0; i < 3; i++)
             if(punch[i] != v_punchangles[0][i])

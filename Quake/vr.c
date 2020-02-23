@@ -1,18 +1,24 @@
-#include <cassert>
-#include <vector>
 #include "quakedef.h"
 #include "vr.h"
 #include "vr_menu.h"
+#include "util.h"
+#include "openvr.h"
+
 #include <glm.hpp>
 #include <gtc/quaternion.hpp>
 #include <gtx/quaternion.hpp>
 #include <gtx/euler_angles.hpp>
-#include "util.h"
 
-[[nodiscard]] constexpr glm::vec3 toVec3(vec3_t v) noexcept
-{
-    return {v[0], v[1], v[2]};
-}
+#include <cassert>
+#include <vector>
+
+#ifdef WIN32
+#define UNICODE 1
+#include <mmsystem.h>
+#undef UNICODE
+#endif
+
+using quake::util::toVec3;
 
 static double lerp(double a, double b, double f)
 {
@@ -25,22 +31,6 @@ static void vec3lerp(vec3_t out, vec3_t start, vec3_t end, double f)
     out[1] = lerp(start[1], end[1], f);
     out[2] = lerp(start[2], end[2], f);
 }
-
-#ifdef WIN32
-#define UNICODE 1
-#include <mmsystem.h>
-#undef UNICODE
-#endif
-
-#include "openvr.h"
-
-#if SDL_MAJOR_VERSION < 2
-FILE* __iob_func()
-{
-    FILE result[3] = {*stdin, *stdout, *stderr};
-    return result;
-}
-#endif
 
 struct fbo_t
 {
@@ -180,7 +170,7 @@ static std::vector<cvar_t*> cvarsToRegister;
     } _cvar_registrar##name##__LINE__
 
 DEFINE_CVAR(vr_enabled, 0, CVAR_NONE);
-DEFINE_CVAR(vr_viewkick, 1, CVAR_NONE);
+DEFINE_CVAR(vr_viewkick, 0, CVAR_NONE);
 DEFINE_CVAR(vr_lefthanded, 0, CVAR_NONE);
 DEFINE_CVAR(vr_crosshair, 1, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_crosshair_depth, 0, CVAR_ARCHIVE);
@@ -192,7 +182,7 @@ DEFINE_CVAR(vr_gunangle, 32, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_gunmodelpitch, 0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_gunmodelscale, 1.0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_gunmodely, 0, CVAR_ARCHIVE);
-// TODO VR:
+// TODO VR: consider restoring for custom QC?
 // DEFINE_CVAR(vr_projectilespawn_z_offset, 24, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_crosshairy, 0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_world_scale, 1.0, CVAR_ARCHIVE);
@@ -220,17 +210,22 @@ DEFINE_CVAR(vr_sbar_offset_pitch, 0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_sbar_offset_yaw, 0, CVAR_ARCHIVE);
 DEFINE_CVAR(vr_sbar_offset_roll, 0, CVAR_ARCHIVE);
 
-static qboolean InitOpenGLExtensions()
+[[nodiscard]] static bool InitOpenGLExtensions()
 {
-    int i;
-    static qboolean extensions_initialized;
+    static bool extensions_initialized;
 
-    if(extensions_initialized) return true;
+    if(extensions_initialized)
+    {
+        return true;
+    }
 
-    for(i = 0; gl_extensions[i].func; i++)
+    for(int i = 0; gl_extensions[i].func; ++i)
     {
         void* func = SDL_GL_GetProcAddress(gl_extensions[i].name);
-        if(!func) return false;
+        if(!func)
+        {
+            return false;
+        }
 
         *((void**)gl_extensions[i].func) = func;
     }
@@ -239,7 +234,7 @@ static qboolean InitOpenGLExtensions()
     return extensions_initialized;
 }
 
-void RecreateTextures(fbo_t* fbo, int width, int height)
+void RecreateTextures(fbo_t* const fbo, const int width, const int height)
 {
     GLuint oldDepth = fbo->depth_texture;
     GLuint oldTexture = fbo->texture;
@@ -279,8 +274,7 @@ void RecreateTextures(fbo_t* fbo, int width, int height)
         GL_TEXTURE_2D, fbo->depth_texture, 0);
 }
 
-
-fbo_t CreateFBO(int width, int height)
+[[nodiscard]] fbo_t CreateFBO(const int width, const int height)
 {
     fbo_t fbo;
 
@@ -297,7 +291,7 @@ fbo_t CreateFBO(int width, int height)
     return fbo;
 }
 
-void CreateMSAA(fbo_t* fbo, int width, int height, int msaa)
+void CreateMSAA(fbo_t* const fbo, const int width, const int height, const int msaa)
 {
     fbo->msaa = msaa;
 
@@ -333,19 +327,22 @@ void CreateMSAA(fbo_t* fbo, int width, int height, int msaa)
     }
 }
 
-void DeleteFBO(fbo_t fbo)
+// TODO VR: never called
+void DeleteFBO(const fbo_t& fbo)
 {
     glDeleteFramebuffersEXT(1, &fbo.framebuffer);
     glDeleteTextures(1, &fbo.depth_texture);
     glDeleteTextures(1, &fbo.texture);
 }
 
-void QuatToYawPitchRoll(vr::HmdQuaternion_t q, vec3_t out)
+[[nodiscard]] glm::vec3 QuatToYawPitchRoll(vr::HmdQuaternion_t q)
 {
-    auto sqw = q.w * q.w;
-    auto sqx = q.x * q.x;
-    auto sqy = q.y * q.y;
-    auto sqz = q.z * q.z;
+    const auto sqw = q.w * q.w;
+    const auto sqx = q.x * q.x;
+    const auto sqy = q.y * q.y;
+    const auto sqz = q.z * q.z;
+
+    glm::vec3 out;
 
     out[ROLL] = -atan2(2 * (q.x * q.y + q.w * q.z), sqw - sqx + sqy - sqz) /
                 M_PI_DIV_180;
@@ -353,6 +350,8 @@ void QuatToYawPitchRoll(vr::HmdQuaternion_t q, vec3_t out)
     out[YAW] = atan2(2 * (q.x * q.z + q.w * q.y), sqw - sqx - sqy + sqz) /
                    M_PI_DIV_180 +
                vrYaw;
+
+    return out;
 }
 
 void Vec3RotateZ(vec3_t in, float angle, vec3_t out)
@@ -362,17 +361,18 @@ void Vec3RotateZ(vec3_t in, float angle, vec3_t out)
     out[2] = in[2];
 }
 
-vr::HmdMatrix44_t TransposeMatrix(vr::HmdMatrix44_t in)
+[[nodiscard]] vr::HmdMatrix44_t TransposeMatrix(const vr::HmdMatrix44_t& in)
 {
     vr::HmdMatrix44_t out;
-    int y, x;
-    for(y = 0; y < 4; y++)
-        for(x = 0; x < 4; x++) out.m[x][y] = in.m[y][x];
+
+    for(int y = 0; y < 4; y++)
+        for(int x = 0; x < 4; x++)
+            out.m[x][y] = in.m[y][x];
 
     return out;
 }
 
-vr::HmdVector3_t AddVectors(vr::HmdVector3_t a, vr::HmdVector3_t b)
+[[nodiscard]] vr::HmdVector3_t AddVectors(const vr::HmdVector3_t& a, const vr::HmdVector3_t& b)
 {
     vr::HmdVector3_t out;
 
@@ -386,8 +386,8 @@ vr::HmdVector3_t AddVectors(vr::HmdVector3_t a, vr::HmdVector3_t b)
 // Rotates a vector by a quaternion and returns the results
 // Based on math from
 // https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
-vr::HmdVector3_t RotateVectorByQuaternion(
-    vr::HmdVector3_t v, vr::HmdQuaternion_t q)
+[[nodiscard]] vr::HmdVector3_t RotateVectorByQuaternion(
+    const vr::HmdVector3_t& v, const vr::HmdQuaternion_t& q)
 {
     vr::HmdVector3_t u, result;
     u.v[0] = q.x;
@@ -419,7 +419,7 @@ vr::HmdVector3_t RotateVectorByQuaternion(
 
 // Transforms a HMD Matrix34 to a Vector3
 // Math borrowed from https://github.com/Omnifinity/OpenVR-Tracking-Example
-vr::HmdVector3_t Matrix34ToVector(vr::HmdMatrix34_t in)
+[[nodiscard]] vr::HmdVector3_t Matrix34ToVector(const vr::HmdMatrix34_t& in)
 {
     vr::HmdVector3_t vector;
 
@@ -433,7 +433,7 @@ vr::HmdVector3_t Matrix34ToVector(vr::HmdMatrix34_t in)
 // Transforms a HMD Matrix34 to a Quaternion
 // Function logic nicked from
 // https://github.com/Omnifinity/OpenVR-Tracking-Example
-vr::HmdQuaternion_t Matrix34ToQuaternion(vr::HmdMatrix34_t in)
+[[nodiscard]] vr::HmdQuaternion_t Matrix34ToQuaternion(const vr::HmdMatrix34_t& in)
 {
     vr::HmdQuaternion_t q;
 
@@ -450,12 +450,12 @@ vr::HmdQuaternion_t Matrix34ToQuaternion(vr::HmdMatrix34_t in)
     return q;
 }
 
-void HmdVec3RotateY(vr::HmdVector3_t* pos, float angle)
+void HmdVec3RotateY(vr::HmdVector3_t* const pos, const float angle)
 {
-    float s = sin(angle);
-    float c = cos(angle);
-    float x = c * pos->v[0] - s * pos->v[2];
-    float y = s * pos->v[0] + c * pos->v[2];
+    const float s = sin(angle);
+    const float c = cos(angle);
+    const float x = c * pos->v[0] - s * pos->v[2];
+    const float y = s * pos->v[0] + c * pos->v[2];
 
     pos->v[0] = x;
     pos->v[2] = y;
@@ -526,7 +526,7 @@ void Mod_Weapon(const char* name, aliashdr_t* hdr)
                 scaleCorrect,
             hdr->scale);
 
-        // TODO VR:
+        // TODO VR: repetition of ofs calculation
         vec3_t ofs = {vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON].value,
             vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 1].value,
             vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 2].value +
@@ -569,6 +569,7 @@ void InitWeaponCVars(int i, const char* id, const char* offsetX,
     const char* roll = "0.0", const char* pitch = "0.0",
     const char* yaw = "0.0")
 {
+    // clang-format off
     constexpr const char* nameOffsetX = "vr_wofs_x_nn";
     constexpr const char* nameOffsetY = "vr_wofs_y_nn";
     constexpr const char* nameOffsetZ = "vr_wofs_z_nn";
@@ -578,88 +579,67 @@ void InitWeaponCVars(int i, const char* id, const char* offsetX,
     constexpr const char* namePitch = "vr_wofs_pitch_nn";
     constexpr const char* nameYaw = "vr_wofs_yaw_nn";
 
-    InitWeaponCVar(
-        &vr_weapon_offset[i * VARS_PER_WEAPON], nameOffsetX, i, offsetX);
-    InitWeaponCVar(
-        &vr_weapon_offset[i * VARS_PER_WEAPON + 1], nameOffsetY, i, offsetY);
-    InitWeaponCVar(
-        &vr_weapon_offset[i * VARS_PER_WEAPON + 2], nameOffsetZ, i, offsetZ);
-    InitWeaponCVar(
-        &vr_weapon_offset[i * VARS_PER_WEAPON + 3], nameScale, i, scale);
+    InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON], nameOffsetX, i, offsetX);
+    InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 1], nameOffsetY, i, offsetY);
+    InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 2], nameOffsetZ, i, offsetZ);
+    InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 3], nameScale, i, scale);
     InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 4], nameID, i, id);
-    InitWeaponCVar(
-        &vr_weapon_offset[i * VARS_PER_WEAPON + 5], nameRoll, i, roll);
-    InitWeaponCVar(
-        &vr_weapon_offset[i * VARS_PER_WEAPON + 6], namePitch, i, pitch);
+    InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 5], nameRoll, i, roll);
+    InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 6], namePitch, i, pitch);
     InitWeaponCVar(&vr_weapon_offset[i * VARS_PER_WEAPON + 7], nameYaw, i, yaw);
+    // clang-format on
 }
 
 void InitAllWeaponCVars()
 {
+    // clang-format off
+
     int i = 0;
     if(!strcmp(COM_SkipPath(com_gamedir), "ad"))
-    { // weapons for Arcane Dimensions mod; initially made for v1.70 + patch1
-        InitWeaponCVars(i++, "progs/v_shadaxe0.mdl", "-1.5", "43.1", "41",
-            "0.25"); // shadow axe
-        InitWeaponCVars(i++, "progs/v_shadaxe3.mdl", "-1.5", "43.1", "41",
-            "0.25"); // shadow axe upgrade, same numbers
-        InitWeaponCVars(
-            i++, "progs/v_shot.mdl", "1.5", "1.7", "17.5", "0.33"); // shotgun
-        InitWeaponCVars(i++, "progs/v_shot2.mdl", "-3.5", "0.4", "8.5",
-            "0.8"); // double barrel shotgun
-        InitWeaponCVars(i++, "progs/v_shot3.mdl", "-3.5", "0.4", "8.5",
-            "0.8"); // triple barrel shotgun ("Widowmaker")
-        InitWeaponCVars(
-            i++, "progs/v_nail.mdl", "-9.5", "3", "17", "0.5"); // nailgun
-        InitWeaponCVars(
-            i++, "progs/v_nail2.mdl", "-6", "3.5", "20", "0.4"); // supernailgun
-        InitWeaponCVars(
-            i++, "progs/v_rock.mdl", "-3", "1.25", "17", "0.5"); // grenade
-        InitWeaponCVars(
-            i++, "progs/v_rock2.mdl", "0", "5.55", "22.5", "0.45"); // rocket
-        InitWeaponCVars(
-            i++, "progs/v_light.mdl", "-4", "3.1", "13", "0.5"); // lightning
-        InitWeaponCVars(
-            i++, "progs/v_plasma.mdl", "2.8", "1.8", "22.5", "0.5"); // plasma
+    {
+        // weapons for Arcane Dimensions mod; initially made for v1.70 + patch1
+        InitWeaponCVars(i++, "progs/v_shadaxe0.mdl", "-1.5", "43.1", "41", "0.25"); // shadow axe
+        InitWeaponCVars(i++, "progs/v_shadaxe3.mdl", "-1.5", "43.1", "41", "0.25"); // shadow axe upgrade, same numbers
+        InitWeaponCVars(i++, "progs/v_shot.mdl", "1.5", "1.7", "17.5", "0.33"); // shotgun
+        InitWeaponCVars(i++, "progs/v_shot2.mdl", "-3.5", "0.4", "8.5", "0.8"); // double barrel shotgun
+        InitWeaponCVars(i++, "progs/v_shot3.mdl", "-3.5", "0.4", "8.5", "0.8"); // triple barrel shotgun ("Widowmaker")
+        InitWeaponCVars(i++, "progs/v_nail.mdl", "-9.5", "3", "17", "0.5"); // nailgun
+        InitWeaponCVars(i++, "progs/v_nail2.mdl", "-6", "3.5", "20", "0.4"); // supernailgun
+        InitWeaponCVars(i++, "progs/v_rock.mdl", "-3", "1.25", "17", "0.5"); // grenade
+        InitWeaponCVars(i++, "progs/v_rock2.mdl", "0", "5.55", "22.5", "0.45"); // rocket
+        InitWeaponCVars(i++, "progs/v_light.mdl", "-4", "3.1", "13", "0.5"); // lightning
+        InitWeaponCVars(i++, "progs/v_plasma.mdl", "2.8", "1.8", "22.5", "0.5"); // plasma
     }
     else
-    { // weapons for vanilla Quake, Scourge of Armagon, Dissolution of Eternity
+    {
+        // weapons for vanilla Quake, Scourge of Armagon, Dissolution of Eternity
+
         // vanilla quake weapons
         InitWeaponCVars(i++, "progs/v_axe.mdl", "-4", "24", "37", "0.33");
         InitWeaponCVars(i++, "progs/v_shot.mdl", "1.5", "1", "10", "0.5"); // gun
-        InitWeaponCVars(
-            i++, "progs/v_shot2.mdl", "-3.5", "1", "8.5", "0.8"); // shotgun
-        InitWeaponCVars(
-            i++, "progs/v_nail.mdl", "-5", "3", "15", "0.5"); // nailgun
-        InitWeaponCVars(
-            i++, "progs/v_nail2.mdl", "0", "3", "19", "0.5"); // supernailgun
-        InitWeaponCVars(
-            i++, "progs/v_rock.mdl", "10", "1.5", "13", "0.5"); // grenade
-        InitWeaponCVars(
-            i++, "progs/v_rock2.mdl", "10", "7", "19", "0.5"); // rocket
-        InitWeaponCVars(
-            i++, "progs/v_light.mdl", "3", "4", "13", "0.5"); // lightning
+        InitWeaponCVars(i++, "progs/v_shot2.mdl", "-3.5", "1", "8.5", "0.8"); // shotgun
+        InitWeaponCVars(i++, "progs/v_nail.mdl", "-5", "3", "15", "0.5"); // nailgun
+        InitWeaponCVars(i++, "progs/v_nail2.mdl", "0", "3", "19", "0.5"); // supernailgun
+        InitWeaponCVars(i++, "progs/v_rock.mdl", "10", "1.5", "13", "0.5"); // grenade
+        InitWeaponCVars(i++, "progs/v_rock2.mdl", "10", "7", "19", "0.5"); // rocket
+        InitWeaponCVars(i++, "progs/v_light.mdl", "3", "4", "13", "0.5"); // lightning
+
         // hipnotic weapons
-        InitWeaponCVars(i++, "progs/v_hammer.mdl", "-4", "18", "37",
-            "0.33"); // mjolnir hammer
-        InitWeaponCVars(
-            i++, "progs/v_laserg.mdl", "65", "3.7", "17", "0.33"); // laser
-        InitWeaponCVars(i++, "progs/v_prox.mdl", "10", "1.5", "13",
-            "0.5"); // proximity - same as grenade
+        InitWeaponCVars(i++, "progs/v_hammer.mdl", "-4", "18", "37", "0.33"); // mjolnir hammer
+        InitWeaponCVars(i++, "progs/v_laserg.mdl", "65", "3.7", "17", "0.33"); // laser
+        InitWeaponCVars(i++, "progs/v_prox.mdl", "10", "1.5", "13", "0.5"); // proximity - same as grenade
+
         // rogue weapons
-        InitWeaponCVars(i++, "progs/v_lava.mdl", "-5", "3", "15",
-            "0.5"); // lava nailgun - same as nailgun
-        InitWeaponCVars(i++, "progs/v_lava2.mdl", "0", "3", "19",
-            "0.5"); // lava supernailgun - same as supernailgun
-        InitWeaponCVars(i++, "progs/v_multi.mdl", "10", "1.5", "13",
-            "0.5"); // multigrenade - same as grenade
-        InitWeaponCVars(i++, "progs/v_multi2.mdl", "10", "7", "19",
-            "0.5"); // multirocket - same as rocket
-        InitWeaponCVars(i++, "progs/v_plasma.mdl", "3", "4", "13",
-            "0.5"); // plasma - same as lightning
+        InitWeaponCVars(i++, "progs/v_lava.mdl", "-5", "3", "15", "0.5"); // lava nailgun - same as nailgun
+        InitWeaponCVars(i++, "progs/v_lava2.mdl", "0", "3", "19", "0.5"); // lava supernailgun - same as supernailgun
+        InitWeaponCVars(i++, "progs/v_multi.mdl", "10", "1.5", "13", "0.5"); // multigrenade - same as grenade
+        InitWeaponCVars(i++, "progs/v_multi2.mdl", "10", "7", "19", "0.5"); // multirocket - same as rocket
+        InitWeaponCVars(i++, "progs/v_plasma.mdl", "3", "4", "13", "0.5"); // plasma - same as lightning
     }
 
-    // TODO VR:
+    // clang-format on
+
+    // TODO VR: authentic model offsets, hardcode?
     /*
     auth_mdl
         gun
@@ -706,7 +686,10 @@ void VR_InitGame()
 
 bool VR_Enable()
 {
-    if(vr_initialized) return true;
+    if(vr_initialized)
+    {
+        return true;
+    }
 
     vr::EVRInitError eInit = vr::VRInitError_None;
     ovrHMD = vr::VR_Init(&eInit, vr::VRApplication_Scene);
@@ -874,9 +857,9 @@ void SetHandPos(int index, entity_t* player)
                vr_gun_z_offset.value;
 
     // handpos
-    auto oldx = cl.handpos[index][0];
-    auto oldy = cl.handpos[index][1];
-    auto oldz = cl.handpos[index][2];
+    const auto oldx = cl.handpos[index][0];
+    const auto oldy = cl.handpos[index][1];
+    const auto oldz = cl.handpos[index][2];
     VectorCopy(final, cl.handpos[index]);
 
     // TODO VR: adjust weight and add cvar, fix movement
@@ -900,7 +883,6 @@ void IdentifyAxes(int device);
 
 void VR_UpdateScreenContent()
 {
-    vec3_t orientation;
     GLint w, h;
 
     // Last chance to enable VR Mode - we get here when the game already start
@@ -1019,7 +1001,11 @@ void VR_UpdateScreenContent()
                 controller->velocity[1] = rawControllerVel.v[1];
                 controller->velocity[2] = rawControllerVel.v[2];
 
-                QuatToYawPitchRoll(rawControllerQuat, controller->orientation);
+                // TODO VR: make prettier
+                const auto [x, y, z] = QuatToYawPitchRoll(rawControllerQuat);
+                controller->orientation[0] = x;
+                controller->orientation[1] = y;
+                controller->orientation[2] = z;
             }
         }
     }
@@ -1028,7 +1014,7 @@ void VR_UpdateScreenContent()
     // aimmode from 7 to another.
     cl.aimangles[ROLL] = 0.0;
 
-    QuatToYawPitchRoll(eyes[1].orientation, orientation);
+    const auto orientation = QuatToYawPitchRoll(eyes[1].orientation);
     if(readbackYaw)
     {
         vrYaw = cl.viewangles[YAW] - (orientation[YAW] - vrYaw);
@@ -1039,14 +1025,14 @@ void VR_UpdateScreenContent()
     {
             // 1: (Default) Head Aiming; View YAW is mouse+head, PITCH is head
         default:
-        case VR_AIMMODE_HEAD_MYAW:
+        case VrAimMode::e_HEAD_MYAW:
             cl.viewangles[PITCH] = cl.aimangles[PITCH] = orientation[PITCH];
             cl.aimangles[YAW] = cl.viewangles[YAW] =
                 cl.aimangles[YAW] + orientation[YAW] - lastOrientation[YAW];
             break;
 
             // 2: Head Aiming; View YAW and PITCH is mouse+head (this is stupid)
-        case VR_AIMMODE_HEAD_MYAW_MPITCH:
+        case VrAimMode::e_HEAD_MYAW_MPITCH:
             cl.viewangles[PITCH] = cl.aimangles[PITCH] = cl.aimangles[PITCH] +
                                                          orientation[PITCH] -
                                                          lastOrientation[PITCH];
@@ -1055,19 +1041,19 @@ void VR_UpdateScreenContent()
             break;
 
             // 3: Mouse Aiming; View YAW is mouse+head, PITCH is head
-        case VR_AIMMODE_MOUSE_MYAW:
+        case VrAimMode::e_MOUSE_MYAW:
             cl.viewangles[PITCH] = orientation[PITCH];
             cl.viewangles[YAW] = cl.aimangles[YAW] + orientation[YAW];
             break;
 
             // 4: Mouse Aiming; View YAW and PITCH is mouse+head
-        case VR_AIMMODE_MOUSE_MYAW_MPITCH:
+        case VrAimMode::e_MOUSE_MYAW_MPITCH:
             cl.viewangles[PITCH] = cl.aimangles[PITCH] + orientation[PITCH];
             cl.viewangles[YAW] = cl.aimangles[YAW] + orientation[YAW];
             break;
 
-        case VR_AIMMODE_BLENDED:
-        case VR_AIMMODE_BLENDED_NOPITCH:
+        case VrAimMode::e_BLENDED:
+        case VrAimMode::e_BLENDED_NOPITCH:
         {
             float diffHMDYaw = orientation[YAW] - lastOrientation[YAW];
             float diffHMDPitch = orientation[PITCH] - lastOrientation[PITCH];
@@ -1086,7 +1072,7 @@ void VR_UpdateScreenContent()
                 cl.aimangles[YAW] += diffHMDYaw;
                 cl.viewangles[YAW] += diffAimYaw;
             }
-            if((int)vr_aimmode.value == VR_AIMMODE_BLENDED)
+            if((int)vr_aimmode.value == VrAimMode::e_BLENDED)
             {
                 cl.aimangles[PITCH] += diffHMDPitch;
             }
@@ -1095,7 +1081,7 @@ void VR_UpdateScreenContent()
         break;
 
         // 7: Controller Aiming;
-        case VR_AIMMODE_CONTROLLER:
+        case VrAimMode::e_CONTROLLER:
             cl.viewangles[PITCH] = orientation[PITCH];
             cl.viewangles[YAW] = orientation[YAW];
 
@@ -1237,11 +1223,11 @@ void VR_UpdateScreenContent()
     {
         current_eye = &eyes[i];
 
-        vec3_t temp, orientation;
+        vec3_t temp;
 
         // We need to scale the view offset position to quake units and rotate
         // it by the current input angles (viewangle - eye orientation)
-        QuatToYawPitchRoll(current_eye->orientation, orientation);
+        const auto orientation = QuatToYawPitchRoll(current_eye->orientation);
         temp[0] = -current_eye->position.v[2] * meters_to_units; // X
         temp[1] = -current_eye->position.v[0] * meters_to_units; // Y
         temp[2] = current_eye->position.v[1] * meters_to_units;  // Z
@@ -1277,8 +1263,7 @@ void VR_SetMatrices()
 
 void VR_AddOrientationToViewAngles(vec3_t angles)
 {
-    vec3_t orientation;
-    QuatToYawPitchRoll(current_eye->orientation, orientation);
+    const auto orientation = QuatToYawPitchRoll(current_eye->orientation);
 
     angles[PITCH] = angles[PITCH] + orientation[PITCH];
     angles[YAW] = angles[YAW] + orientation[YAW];
@@ -1311,11 +1296,11 @@ void VR_ShowCrosshair()
 
     // calc the line and draw
     // TODO: Make the laser align correctly
-    if(vr_aimmode.value == VR_AIMMODE_CONTROLLER)
+    if(vr_aimmode.value == VrAimMode::e_CONTROLLER)
     {
         VectorCopy(cl.handpos[1], start);
 
-        // TODO VR:
+        // TODO VR: repetition of ofs calculation
         vec3_t ofs = {vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON].value,
             vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 1].value,
             vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 2].value +
@@ -1340,7 +1325,7 @@ void VR_ShowCrosshair()
     switch((int)vr_crosshair.value)
     {
         default:
-        case VR_CROSSHAIR_POINT:
+        case VrCrosshair::e_POINT:
             if(vr_crosshair_depth.value <= 0)
             {
                 // trace to first wall
@@ -1366,7 +1351,7 @@ void VR_ShowCrosshair()
             glDisable(GL_POINT_SMOOTH);
             break;
 
-        case VR_CROSSHAIR_LINE:
+        case VrCrosshair::e_LINE:
             // trace to first entity
             VectorMA(start, 4096, forward, end);
             TraceLineToEntity(start, end, impact, sv_player);
@@ -1414,7 +1399,8 @@ void VR_Draw2D()
                               // interferring with one another
     glEnable(GL_BLEND);
 
-    if(vr_aimmode.value == VR_AIMMODE_CONTROLLER)
+    // TODO VR: control with cvar
+    if(false && vr_aimmode.value == VrAimMode::e_CONTROLLER)
     {
         AngleVectors(cl.handrot[1], forward, right, up);
 
@@ -1428,19 +1414,21 @@ void VR_Draw2D()
     {
         // TODO: Make the menus' position sperate from the right hand. Centered
         // on last view dir?
-        VectorCopy(r_refdef.aimangles, menu_angles)
+        VectorCopy(cl.viewangles, menu_angles)
 
-            if(vr_aimmode.value == VR_AIMMODE_HEAD_MYAW ||
-                vr_aimmode.value == VR_AIMMODE_HEAD_MYAW_MPITCH)
-                menu_angles[PITCH] = 0;
+        // TODO VR: ?
+        if(vr_aimmode.value == VrAimMode::e_HEAD_MYAW ||
+            vr_aimmode.value == VrAimMode::e_HEAD_MYAW_MPITCH)
+            menu_angles[PITCH] = 0;
 
         AngleVectors(menu_angles, forward, right, up);
 
         VectorMA(r_refdef.vieworg, 48, forward, target);
     }
 
+    // TODO VR: control smoothing with cvar
     const auto smoothedTarget =
-        glm::mix(lastMenuPosition, toVec3(target), 0.03);
+        glm::mix(lastMenuPosition, toVec3(target), 0.9);
     lastMenuPosition = smoothedTarget;
 
     glTranslatef(smoothedTarget[0], smoothedTarget[1], smoothedTarget[2]);
@@ -1517,7 +1505,7 @@ void VR_DrawSbar()
     glDisable(GL_DEPTH_TEST); // prevents drawing sprites on sprites from
                               // interferring with one another
 
-    if(vr_aimmode.value == VR_AIMMODE_CONTROLLER)
+    if(vr_aimmode.value == VrAimMode::e_CONTROLLER)
     {
         const auto mode = static_cast<int>(vr_sbar_mode.value);
 
@@ -1542,8 +1530,8 @@ void VR_DrawSbar()
     {
         VectorCopy(cl.aimangles, sbar_angles);
 
-        if(vr_aimmode.value == VR_AIMMODE_HEAD_MYAW ||
-            vr_aimmode.value == VR_AIMMODE_HEAD_MYAW_MPITCH)
+        if(vr_aimmode.value == VrAimMode::e_HEAD_MYAW ||
+            vr_aimmode.value == VrAimMode::e_HEAD_MYAW_MPITCH)
             sbar_angles[PITCH] = 0;
 
         AngleVectors(sbar_angles, forward, right, up);
@@ -1557,7 +1545,7 @@ void VR_DrawSbar()
 
     glTranslatef(smoothedTarget[0], smoothedTarget[1], smoothedTarget[2]);
 
-    if(vr_aimmode.value == VR_AIMMODE_CONTROLLER &&
+    if(vr_aimmode.value == VrAimMode::e_CONTROLLER &&
         static_cast<int>(vr_sbar_mode.value) ==
             static_cast<int>(VrSbarMode::OffHand))
     {
@@ -1735,7 +1723,10 @@ void VR_Move(usercmd_t* cmd)
 {
     if(!vr_enabled.value) return;
 
-    // TODO VR:
+    // TODO VR: repetition of ofs calculation
+    // TODO VR: adj unused? could be used to find position of muzzle
+    //
+    /*
     vec3_t adj;
     _VectorCopy(cl.handpos[1], adj);
 
@@ -1750,16 +1741,16 @@ void VR_Move(usercmd_t* cmd)
     fwd2[1] *= vr_gunmodelscale.value * ofs[2];
     fwd2[2] *= vr_gunmodelscale.value * ofs[2];
     VectorAdd(adj, fwd2, adj);
+    */
 
-    // TODO VR:
-    vec3_t adjhandpos;
-    VectorCopy(cl.handpos[1], adjhandpos);
-
-    // TODO VR: not needed anymore, changing QC
+    // TODO VR: not needed anymore, changing QC - what to do?
+    //
+    // vec3_t adjhandpos;
+    // VectorCopy(cl.handpos[1], adjhandpos);
     // adjhandpos[2] -= vr_projectilespawn_z_offset.value;
 
     // handpos
-    VectorCopy(adjhandpos, cmd->handpos);
+    VectorCopy(cl.handpos[1], cmd->handpos);
 
     // handvel
     VectorCopy(cl.handvel[1], cmd->handvel);
@@ -1769,7 +1760,7 @@ void VR_Move(usercmd_t* cmd)
 
     DoTrigger(&controllers[0], K_SPACE);
 
-    // TODO VR:
+    // TODO VR: what to do with grips?
     // DoKey(&controllers[0], vr::k_EButton_Grip, K_MWHEELUP);
     // DoKey(&controllers[1], vr::k_EButton_Grip, K_MWHEELDOWN);
 
@@ -1799,7 +1790,7 @@ void VR_Move(usercmd_t* cmd)
         vec3_t lfwd, lright, lup;
         AngleVectors(cl.handrot[0], lfwd, lright, lup);
 
-        if(vr_movement_mode.value == VR_MOVEMENT_MODE_RAW_INPUT)
+        if(vr_movement_mode.value == VrMovementMode::e_RAW_INPUT)
         {
             cmd->forwardmove +=
                 cl_forwardspeed.value * GetAxis(&controllers[0].state, 1, 0.0);

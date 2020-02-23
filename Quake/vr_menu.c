@@ -52,19 +52,19 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
         case VRMenuOpt::VR_AIMMODE:
             switch((int)vr_aimmode.value)
             {
-                case VR_AIMMODE_HEAD_MYAW: value_string = "HEAD_MYAW"; break;
-                case VR_AIMMODE_HEAD_MYAW_MPITCH:
+                case VrAimMode::e_HEAD_MYAW: value_string = "HEAD_MYAW"; break;
+                case VrAimMode::e_HEAD_MYAW_MPITCH:
                     value_string = "HEAD_MYAW_MPITCH";
                     break;
-                case VR_AIMMODE_MOUSE_MYAW: value_string = "MOUSE_MYAW"; break;
-                case VR_AIMMODE_MOUSE_MYAW_MPITCH:
+                case VrAimMode::e_MOUSE_MYAW: value_string = "MOUSE_MYAW"; break;
+                case VrAimMode::e_MOUSE_MYAW_MPITCH:
                     value_string = "MOUSE_MYAW_MPITCH";
                     break;
-                case VR_AIMMODE_BLENDED: value_string = "BLENDED"; break;
-                case VR_AIMMODE_BLENDED_NOPITCH:
+                case VrAimMode::e_BLENDED: value_string = "BLENDED"; break;
+                case VrAimMode::e_BLENDED_NOPITCH:
                     value_string = "BLENDED_NOPITCH";
                     break;
-                case VR_AIMMODE_CONTROLLER: value_string = "CONTROLLER"; break;
+                case VrAimMode::e_CONTROLLER: value_string = "CONTROLLER"; break;
                 default: assert(false);
             }
             break;
@@ -122,10 +122,10 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
         case VRMenuOpt::VR_MOVEMENT_MODE:
             switch((int)vr_movement_mode.value)
             {
-                case VR_MOVEMENT_MODE_FOLLOW_HAND:
+                case VrMovementMode::e_FOLLOW_HAND:
                     value_string = "Follow hand";
                     break;
-                case VR_MOVEMENT_MODE_RAW_INPUT:
+                case VrMovementMode::e_RAW_INPUT:
                     value_string = "Raw input";
                     break;
             }
@@ -136,7 +136,6 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
         case VRMenuOpt::VR_SNAP_TURN:
             if(vr_snap_turn.value == 0)
             {
-                // TODO VR: add option to disable altogether
                 value_string = "Smooth";
             }
             else
@@ -169,7 +168,7 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
         case VRMenuOpt::VR_GUNMODELSCALE: printAsStr(vr_gunmodelscale); break;
         case VRMenuOpt::VR_GUNMODELY: printAsStr(vr_gunmodely); break;
         case VRMenuOpt::VR_CROSSHAIRY: printAsStr(vr_crosshairy); break;
-        // TODO VR:
+        // TODO VR: consider restoring for custom QC?
         // case VRMenuOpt::VR_PROJECTILESPAWN_Z_OFFSET:
         // printAsStr(vr_projectilespawn_z_offset); break;
         case VRMenuOpt::VR_HUD_SCALE: printAsStr(vr_hud_scale); break;
@@ -224,7 +223,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
     switch(option)
     {
         case VRMenuOpt::VR_ENABLED:
-            // TODO VR:
+            // TODO VR: fix and restore
             // Cvar_SetValue( "vr_enabled", ! (int)vr_enabled.value );
             // if ( (int)vr_enabled.value ) {
             //    VR_MenuPlaySound( "items/r_item2.wav", 0.5 );
@@ -257,7 +256,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
             adjustF(vr_world_scale, crosshairAlphaDiff, 0.f, 2.f);
             break;
         case VRMenuOpt::VR_MOVEMENT_MODE:
-            adjustI(vr_movement_mode, 1, 0, VR_MAX_MOVEMENT_MODE);
+            adjustI(vr_movement_mode, 1, 0, VrMovementMode::k_MAX);
             break;
         case VRMenuOpt::VR_ENABLE_JOYSTICK_TURN: adjustI(vr_enable_joystick_turn, 1, 0, 1); break;
         case VRMenuOpt::VR_SNAP_TURN: adjustI(vr_snap_turn, 45, 0, 90); break;
@@ -288,7 +287,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
         case VRMenuOpt::VR_CROSSHAIRY:
             adjustF(vr_crosshairy, 0.05f, -10.0f, 10.f);
             break;
-        // TODO VR:
+        // TODO VR: consider restoring for custom QC?
         // case VRMenuOpt::VR_PROJECTILESPAWN_Z_OFFSET:
         // adjustF(vr_projectilespawn_z_offset, 0.5f, -24.0f, 24.f); break;
         case VRMenuOpt::VR_HUD_SCALE:
@@ -392,7 +391,7 @@ void VR_MenuDraw(void)
             "Enable Joystick Turn", "Turn", "Turn Speed", "MSAA", "Gun Angle", "Floor Offset",
             "Gun Model Pitch", "Gun Model Scale", "Gun Model Z Offset",
             "Crosshair Z Offset",
-            // TODO VR:
+            // TODO VR: consider restoring for custom QC?
             // "Projectile Spawn Z",
             "HUD Scale", "Menu Scale", "Melee Threshold", "Gun Yaw",
             "Gun Z Offset", "Status Bar Mode", "Viewkick", "Impulse 9");
@@ -428,7 +427,6 @@ void VR_Menu_f(void)
 }
 
 // TODO VR:
-// * hud disappears under water on when using powerups
 // * difficulty options
 // * nicer explosion particles
 // * smaller hitboxes for nails and enemies (make aimign more important)

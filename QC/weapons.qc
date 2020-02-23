@@ -40,19 +40,20 @@ void() W_FireAxe =
 	local	vector	source;
 	local	vector	org;
 	local	float	xdmg;
-	// local	string	s;
+	local	string	s;
 
 	// TODO VR: add damage multiplier cvar
-	xdmg = 0.31 * self.handvelmag;
+	xdmg = 0.63 * self.handvelmag;
 
-	// s = ftos(xdmg);
-	// sprint (self, "DMG: ");
-	// sprint (self, s);
+	s = ftos(xdmg);
+	sprint (self, "DMG: ");
+	sprint (self, s);
+	sprint (self, "\n");
 
 	makevectors (self.v_angle);
 	source = self.handpos + '0 0 0';
 	// TODO VR: add range multiplier cvar
-	traceline (source - v_forward*16, source + v_forward*26, FALSE, self);
+	traceline (source - v_forward*24, source + v_forward*28, FALSE, self);
 	if (trace_fraction == 1.0)
 		return;
 
@@ -88,17 +89,18 @@ void() W_GunMelee =
 	local	vector	source;
 	local	vector	org;
 	local	float	xdmg;
-	// local	string	s;
+	local	string	s;
 
-	xdmg = 0.18 * self.handvelmag;
+	xdmg = 0.39 * self.handvelmag;
 
-	// s = ftos(xdmg);
-	// sprint (self, "DMG: ");
-	// sprint (self, s);
+	s = ftos(xdmg);
+	sprint (self, "DMG: ");
+	sprint (self, s);
+	sprint (self, "\n");
 
 	makevectors (self.v_angle);
 	source = self.handpos + '0 0 0';
-	traceline (source - v_forward*16, source + v_forward*20, FALSE, self);
+	traceline (source - v_forward*24, source + v_forward*24, FALSE, self);
 	if (trace_fraction == 1.0)
 		return;
 
@@ -588,17 +590,6 @@ void() W_FireLightning =
 	org = self.handpos + '0 0 0';
 
 	traceline (org, org + v_forward*600, TRUE, self);
-
-	WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
-	WriteByte (MSG_BROADCAST, TE_LIGHTNING2);
-	WriteEntity (MSG_BROADCAST, self);
-	WriteCoord (MSG_BROADCAST, org_x);
-	WriteCoord (MSG_BROADCAST, org_y);
-	WriteCoord (MSG_BROADCAST, org_z);
-	WriteCoord (MSG_BROADCAST, trace_endpos_x);
-	WriteCoord (MSG_BROADCAST, trace_endpos_y);
-	WriteCoord (MSG_BROADCAST, trace_endpos_z);
-
 	LightningDamage (self.handpos, trace_endpos + v_forward*4, self, 30);
 };
 
@@ -981,20 +972,20 @@ void() W_Attack =
 
 	if (self.weapon == IT_AXE)
 	{
-		// TODO VR: check if in VR mode
-		/*
-		sound (self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);
-		r = random();
-		if (r < 0.25)
-			player_axe1 ();
-		else if (r<0.5)
-			player_axeb1 ();
-		else if (r<0.75)
-			player_axec1 ();
-		else
-			player_axed1 ();
-		self.attack_finished = time + 0.5;
-		*/
+		if(cvar("vr_enabled") == 0)
+		{
+			sound (self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);
+			r = random();
+			if (r < 0.25)
+				player_axe1 ();
+			else if (r<0.5)
+				player_axeb1 ();
+			else if (r<0.75)
+				player_axec1 ();
+			else
+				player_axed1 ();
+			self.attack_finished = time + 0.5;
+		}
 	}
 	else if (self.weapon == IT_SHOTGUN)
 	{

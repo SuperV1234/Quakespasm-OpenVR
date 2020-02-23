@@ -173,7 +173,7 @@ Two entities have touched, so run their touch functions
 */
 void SV_Impact(edict_t* e1, edict_t* e2)
 {
-    // TODO VR: handtouch?
+    // TODO VR: implement handtouch to press buttons?
 
     int old_self, old_other;
 

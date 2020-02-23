@@ -5,29 +5,63 @@
 #ifndef __R_VR_H
 #define __R_VR_H
 
-#define VR_AIMMODE_HEAD_MYAW \
-    1 // Head Aiming; View YAW is mouse+head, PITCH is head
-#define VR_AIMMODE_HEAD_MYAW_MPITCH \
-    2 // Head Aiming; View YAW and PITCH is mouse+head
-#define VR_AIMMODE_MOUSE_MYAW \
-    3 // Mouse Aiming; View YAW is mouse+head, PITCH is head
-#define VR_AIMMODE_MOUSE_MYAW_MPITCH \
-    4 // Mouse Aiming; View YAW and PITCH is mouse+head
-#define VR_AIMMODE_BLENDED \
-    5 // Blended Aiming; Mouse aims, with YAW decoupled for limited area
-#define VR_AIMMODE_BLENDED_NOPITCH \
-    6 // Blended Aiming; Mouse aims, with YAW decoupled for limited area, pitch
-      // decoupled entirely
-#define VR_AIMMODE_CONTROLLER 7 // Controller Aiming
+struct VrAimMode
+{
+    enum Enum
+    {
+        // Head Aiming; View YAW is mouse+head, PITCH is head
+        e_HEAD_MYAW = 1,
 
-#define VR_CROSSHAIR_NONE 0 // No crosshair
-#define VR_CROSSHAIR_POINT \
-    1 // Point crosshair projected to depth of object it is in front of
-#define VR_CROSSHAIR_LINE 2 // Line crosshair
+        // Head Aiming; View YAW and PITCH is mouse+head
+        e_HEAD_MYAW_MPITCH = 2,
 
-#define VR_MOVEMENT_MODE_FOLLOW_HAND 0
-#define VR_MOVEMENT_MODE_RAW_INPUT 1
-#define VR_MAX_MOVEMENT_MODE VR_MOVEMENT_MODE_RAW_INPUT
+        // Mouse Aiming; View YAW is mouse+head, PITCH is head
+        e_MOUSE_MYAW = 3,
+
+        // Mouse Aiming; View YAW and PITCH is mouse+head
+        e_MOUSE_MYAW_MPITCH = 4,
+
+        // Blended Aiming; Mouse aims, with YAW decoupled for limited area
+        e_BLENDED = 5,
+
+        // Blended Aiming; Mouse aims, with YAW decoupled for limited area, pitch decoupled entirely
+        e_BLENDED_NOPITCH = 6,
+
+        // Controller Aiming
+        e_CONTROLLER = 7
+    };
+};
+
+struct VrCrosshair
+{
+    enum Enum
+    {
+        // No crosshair
+        e_NONE = 0,
+
+        // Point crosshair projected to depth of object it is in front of
+        e_POINT = 1,
+
+        // Line crosshair
+        e_LINE = 2
+    };
+};
+
+struct VrMovementMode
+{
+    enum Enum
+    {
+        e_FOLLOW_HAND = 0,
+        e_RAW_INPUT = 1,
+        k_MAX
+    };
+};
+
+enum class VrSbarMode : int
+{
+    MainHand = 0,
+    OffHand = 1
+};
 
 void VID_VR_Init();
 void VID_VR_Shutdown();
@@ -67,7 +101,7 @@ extern cvar_t vr_melee_threshold;
 extern cvar_t vr_menu_scale;
 extern cvar_t vr_movement_mode;
 extern cvar_t vr_msaa;
-// TODO VR:
+// TODO VR: consider restoring for custom QC?
 // extern cvar_t vr_projectilespawn_z_offset;
 extern cvar_t vr_enable_joystick_turn;
 extern cvar_t vr_snap_turn;
@@ -82,13 +116,7 @@ extern cvar_t vr_sbar_offset_pitch;
 extern cvar_t vr_sbar_offset_yaw;
 extern cvar_t vr_sbar_offset_roll;
 
-enum class VrSbarMode : int
-{
-    MainHand = 0,
-    OffHand = 1
-};
-
-#define MAX_WEAPONS 20 // not sure what this number should actually be...
+#define MAX_WEAPONS 20 // TODO VR: not sure what this number should actually be...
 #define VARS_PER_WEAPON 8
 
 extern cvar_t vr_weapon_offset[MAX_WEAPONS * VARS_PER_WEAPON];

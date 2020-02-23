@@ -26,7 +26,7 @@ enum class VRMenuOpt
     VR_GUNMODELSCALE,
     VR_GUNMODELY,
     VR_CROSSHAIRY,
-    // TODO VR:
+    // TODO VR: consider restoring for custom QC?
     // VR_PROJECTILESPAWN_Z_OFFSET,
     VR_HUD_SCALE,
     VR_MENU_SCALE,

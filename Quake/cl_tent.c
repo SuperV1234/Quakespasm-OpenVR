@@ -313,11 +313,28 @@ void CL_UpdateTEnts(void)
         {
             if(vr_enabled.value)
             {
-                // TODO VR:
+                // TODO VR: deal with offset in non-vr mode ?
+                //
+                // vec3_t adj;
+                // VectorCopy(cl.handpos[1], adj);
+                // adj[2] += vr_projectilespawn_z_offset.value;
+                // VectorCopy(adj, b->start);
+
+                // TODO VR: hardcoded lightning gun muzzle position for beam effect
+                vec3_t forward, right, up;
+                AngleVectors(cl.handrot[1], forward, right, up);
+
+                // TODO VR: this calculation needs to take into account the scale
+                // of the gun itself, not just the global one. Also grep for other
+                // vr_gunmodelscale calculations that do not do that
+                forward[0] *= 16 * vr_gunmodelscale.value;
+                forward[1] *= 16 * vr_gunmodelscale.value;
+                forward[2] *= 16 * vr_gunmodelscale.value;
+
                 vec3_t adj;
                 VectorCopy(cl.handpos[1], adj);
+                VectorAdd(adj, forward, adj);
 
-                // adj[2] += vr_projectilespawn_z_offset.value;
                 VectorCopy(adj, b->start);
             }
             else
