@@ -522,7 +522,7 @@ qboolean SV_ReadClientMessage()
 
         MSG_BeginReading();
 
-        while(1)
+        while(true)
         {
             if(!host_client->active) return false; // a command caused an error
 

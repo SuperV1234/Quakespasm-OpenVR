@@ -541,7 +541,7 @@ void Draw_TransPicTranslate(int x, int y, qpic_t* pic, int top, int bottom)
 
     if(top != oldtop || bottom != oldbottom)
     {
-        glpic_t* p = (glpic_t*)pic->data;
+        auto* p = (glpic_t*)pic->data;
         gltexture_t* glt = p->gltexture;
         oldtop = top;
         oldbottom = bottom;

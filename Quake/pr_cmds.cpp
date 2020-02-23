@@ -1318,7 +1318,7 @@ static void PF_nextent()
     edict_t* ent;
 
     i = G_EDICTNUM(OFS_PARM0);
-    while(1)
+    while(true)
     {
         i++;
         if(i == sv.num_edicts)

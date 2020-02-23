@@ -615,7 +615,7 @@ void Host_GetConsoleCommands()
 
     if(!isDedicated) return; // no stdin necessary in graphical mode
 
-    while(1)
+    while(true)
     {
         cmd = Sys_ConsoleInput();
         if(!cmd) break;

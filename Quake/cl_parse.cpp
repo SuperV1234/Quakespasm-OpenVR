@@ -955,7 +955,7 @@ void CL_ParseServerMessage()
     MSG_BeginReading();
 
     lastcmd = 0;
-    while(1)
+    while(true)
     {
         if(msg_badread) Host_Error("CL_ParseServerMessage: Bad server message");
 

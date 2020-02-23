@@ -317,7 +317,7 @@ void GL_MakeAliasModelDisplayLists(qmodel_t* m, aliashdr_t* hdr)
 
     // johnfitz -- precompute texcoords for padded skins
     loadcmds = commands;
-    while(1)
+    while(true)
     {
         *cmds++ = count = *loadcmds++;
 
@@ -503,7 +503,7 @@ static void GLMesh_LoadVertexBuffer(qmodel_t* m, const aliashdr_t* hdr)
              // in QuakeSpasm
     {
         int v;
-        meshxyz_t* xyz =
+        auto* xyz =
             (meshxyz_t*)(vbodata + (f * hdr->numverts_vbo * sizeof(meshxyz_t)));
         const trivertx_t* tv = trivertexes + (hdr->numverts * f);
 

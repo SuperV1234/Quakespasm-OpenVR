@@ -226,7 +226,7 @@ void Sky_NewMap()
         return;             // error
     if(com_token[0] != '{') // should never happen
         return;             // error
-    while(1)
+    while(true)
     {
         data = COM_Parse(data);
         if(!data) return;              // error

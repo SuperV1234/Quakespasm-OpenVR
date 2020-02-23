@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
     oldtime = Sys_DoubleTime();
     if(isDedicated)
     {
-        while(1)
+        while(true)
         {
             newtime = Sys_DoubleTime();
             time = newtime - oldtime;
@@ -166,7 +166,7 @@ int main(int argc, char* argv[])
         }
     }
     else
-        while(1)
+        while(true)
         {
             /* If we have no input focus at all, sleep a bit */
             if(!VID_HasMouseOrInputFocus() || cl.paused)

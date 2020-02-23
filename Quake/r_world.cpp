@@ -962,11 +962,11 @@ void R_DrawTextureChains_GLSL(qmodel_t* model, entity_t* ent, texchain_t chain)
     GL_EnableVertexAttribArrayFunc(LMCoordsAttrIndex);
 
     GL_VertexAttribPointerFunc(vertAttrIndex, 3, GL_FLOAT, GL_FALSE,
-        VERTEXSIZE * sizeof(float), ((float*)0));
+        VERTEXSIZE * sizeof(float), ((float*)nullptr));
     GL_VertexAttribPointerFunc(texCoordsAttrIndex, 2, GL_FLOAT, GL_FALSE,
-        VERTEXSIZE * sizeof(float), ((float*)0) + 3);
+        VERTEXSIZE * sizeof(float), ((float*)nullptr) + 3);
     GL_VertexAttribPointerFunc(LMCoordsAttrIndex, 2, GL_FLOAT, GL_FALSE,
-        VERTEXSIZE * sizeof(float), ((float*)0) + 5);
+        VERTEXSIZE * sizeof(float), ((float*)nullptr) + 5);
 
     // set uniforms
     GL_Uniform1iFunc(texLoc, 0);

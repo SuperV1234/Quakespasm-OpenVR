@@ -47,7 +47,7 @@ typedef struct stdio_buffer_s
 
 static stdio_buffer_t* Buf_Alloc(FILE* f)
 {
-    stdio_buffer_t* buf = (stdio_buffer_t*)calloc(1, sizeof(stdio_buffer_t));
+    auto* buf = (stdio_buffer_t*)calloc(1, sizeof(stdio_buffer_t));
     buf->f = f;
     return buf;
 }

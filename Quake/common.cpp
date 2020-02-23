@@ -194,7 +194,7 @@ char* q_strcasestr(const char* haystack, const char* needle)
     c2f = *needle;
     if(c2f >= 'a' && c2f <= 'z') c2f -= ('a' - 'A');
     if(!c2f) return (char*)haystack;
-    while(1)
+    while(true)
     {
         c1 = *haystack;
         if(!c1) return nullptr;
@@ -365,7 +365,7 @@ void Q_strcat(char* dest, const char* src)
 
 int Q_strcmp(const char* s1, const char* s2)
 {
-    while(1)
+    while(true)
     {
         if(*s1 != *s2) return -1; // strings not equal
         if(!*s1) return 0;        // strings are equal
@@ -378,7 +378,7 @@ int Q_strcmp(const char* s1, const char* s2)
 
 int Q_strncmp(const char* s1, const char* s2, int count)
 {
-    while(1)
+    while(true)
     {
         if(!count--) return 0;
         if(*s1 != *s2) return -1; // strings not equal
@@ -412,7 +412,7 @@ int Q_atoi(const char* str)
     if(str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))
     {
         str += 2;
-        while(1)
+        while(true)
         {
             c = *str++;
             if(c >= '0' && c <= '9')
@@ -437,7 +437,7 @@ int Q_atoi(const char* str)
     //
     // assume decimal
     //
-    while(1)
+    while(true)
     {
         c = *str++;
         if(c < '0' || c > '9') return val * sign;
@@ -471,7 +471,7 @@ float Q_atof(const char* str)
     if(str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))
     {
         str += 2;
-        while(1)
+        while(true)
         {
             c = *str++;
             if(c >= '0' && c <= '9')
@@ -498,7 +498,7 @@ float Q_atof(const char* str)
     //
     decimal = -1;
     total = 0;
-    while(1)
+    while(true)
     {
         c = *str++;
         if(c == '.')
@@ -1174,7 +1174,7 @@ skipwhite:
     if(c == '\"')
     {
         data++;
-        while(1)
+        while(true)
         {
             if((c = *data) != 0) ++data;
             if(c == '\"' || !c)

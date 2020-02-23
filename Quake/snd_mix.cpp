@@ -105,7 +105,7 @@ static void S_TransferPaintBuffer(int endtime)
 
     if(shm->samplebits == 16)
     {
-        short* out = (short*)shm->buffer;
+        auto* out = (short*)shm->buffer;
         while(count--)
         {
             val = *p / 256;
@@ -135,7 +135,7 @@ static void S_TransferPaintBuffer(int endtime)
     }
     else if(shm->samplebits == 8) /* S8 format, e.g. with Amiga AHI */
     {
-        signed char* out = (signed char*)shm->buffer;
+        auto* out = (signed char*)shm->buffer;
         while(count--)
         {
             val = *p / 256;

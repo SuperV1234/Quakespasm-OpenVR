@@ -665,7 +665,7 @@ const char* ED_ParseGlobals(const char* data)
     char keyname[64];
     ddef_t* key;
 
-    while(1)
+    while(true)
     {
         // parse key
         data = COM_Parse(data);
@@ -834,7 +834,7 @@ const char* ED_ParseEdict(const char* data, edict_t* ent)
         memset(&ent->v, 0, progs->entityfields * 4);
 
     // go through all the dictionary pairs
-    while(1)
+    while(true)
     {
         // parse key
         data = COM_Parse(data);
@@ -937,7 +937,7 @@ void ED_LoadFromFile(const char* data)
     pr_global_struct->time = sv.time;
 
     // parse ents
-    while(1)
+    while(true)
     {
         // parse the opening brace
         data = COM_Parse(data);

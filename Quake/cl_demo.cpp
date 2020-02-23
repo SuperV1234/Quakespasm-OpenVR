@@ -144,7 +144,7 @@ int CL_GetMessage()
 
     if(cls.demoplayback) return CL_GetDemoMessage();
 
-    while(1)
+    while(true)
     {
         r = NET_GetMessage(cls.netcon);
 

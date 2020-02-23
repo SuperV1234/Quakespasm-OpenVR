@@ -194,7 +194,7 @@ static int GetLittleLong()
 
 static void FindNextChunk(const char* name)
 {
-    while(1)
+    while(true)
     {
         // Need at least 8 bytes for a chunk
         if(last_chunk + 8 >= iff_end)

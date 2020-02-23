@@ -107,7 +107,7 @@ mleaf_t* Mod_PointInLeaf(vec3_t p, qmodel_t* model)
     if(!model || !model->nodes) Sys_Error("Mod_PointInLeaf: bad model");
 
     node = model->nodes;
-    while(1)
+    while(true)
     {
         if(node->contents < 0) return (mleaf_t*)node;
         plane = node->plane;
@@ -901,7 +901,7 @@ void Mod_LoadEdges(lump_t* l, int bsp2)
 
     if(bsp2)
     {
-        dledge_t* in = (dledge_t*)(mod_base + l->fileofs);
+        auto* in = (dledge_t*)(mod_base + l->fileofs);
 
         if(l->filelen % sizeof(*in))
             Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
@@ -920,7 +920,7 @@ void Mod_LoadEdges(lump_t* l, int bsp2)
     }
     else
     {
-        dsedge_t* in = (dsedge_t*)(mod_base + l->fileofs);
+        auto* in = (dsedge_t*)(mod_base + l->fileofs);
 
         if(l->filelen % sizeof(*in))
             Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
@@ -1826,7 +1826,7 @@ void Mod_LoadMarksurfaces(lump_t* l, int bsp2)
     msurface_t** out;
     if(bsp2)
     {
-        unsigned int* in = (unsigned int*)(mod_base + l->fileofs);
+        auto* in = (unsigned int*)(mod_base + l->fileofs);
 
         if(l->filelen % sizeof(*in))
             Host_Error(
@@ -1848,7 +1848,7 @@ void Mod_LoadMarksurfaces(lump_t* l, int bsp2)
     }
     else
     {
-        short* in = (short*)(mod_base + l->fileofs);
+        auto* in = (short*)(mod_base + l->fileofs);
 
         if(l->filelen % sizeof(*in))
             Host_Error(

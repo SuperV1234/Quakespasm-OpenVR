@@ -406,7 +406,7 @@ void SV_CheckForNewClients()
     //
     // check for new connections
     //
-    while(1)
+    while(true)
     {
         ret = NET_CheckNewConnections();
         if(!ret) break;
@@ -469,7 +469,7 @@ void SV_AddToFatPVS(vec3_t org, mnode_t* node,
     mplane_t* plane;
     float d;
 
-    while(1)
+    while(true)
     {
         // if this is a leaf, accumulate the pvs bits
         if(node->contents < 0)

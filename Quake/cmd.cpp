@@ -633,7 +633,7 @@ void Cmd_TokenizeString(const char* text)
     cmd_argc = 0;
     cmd_args = nullptr;
 
-    while(1)
+    while(true)
     {
         // skip whitespace up to a /n
         while(*text && *text <= ' ' && *text != '\n')

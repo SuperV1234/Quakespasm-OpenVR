@@ -359,7 +359,7 @@ static void R_ParseWorldspawn()
     data = COM_Parse(cl.worldmodel->entities);
     if(!data) return;               // error
     if(com_token[0] != '{') return; // error
-    while(1)
+    while(true)
     {
         data = COM_Parse(data);
         if(!data) return;              // error

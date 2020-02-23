@@ -548,7 +548,7 @@ char* CopyWithNumeral(const char* str, int i)
 {
     auto len = strlen(str);
     char* ret = (char*)malloc(len + 1);
-    assert(ret != 0);
+    assert(ret != nullptr);
     strcpy(ret, str);
     ret[len - 1] = '0' + (i % 10);
     ret[len - 2] = '0' + (i / 10);
@@ -752,7 +752,7 @@ bool VR_Enable()
 
 void VR_PushYaw()
 {
-    readbackYaw = 1;
+    readbackYaw = true;
 }
 
 void VID_VR_Shutdown()
@@ -1034,7 +1034,7 @@ void VR_UpdateScreenContent()
     if(readbackYaw)
     {
         vrYaw = cl.viewangles[YAW] - (orientation[YAW] - vrYaw);
-        readbackYaw = 0;
+        readbackYaw = false;
     }
 
     switch((int)vr_aimmode.value)
@@ -1213,7 +1213,7 @@ void VR_UpdateScreenContent()
 
             if(cl.viewent.model)
             {
-                aliashdr_t* hdr = (aliashdr_t*)Mod_Extradata(cl.viewent.model);
+                auto* hdr = (aliashdr_t*)Mod_Extradata(cl.viewent.model);
                 Mod_Weapon(cl.viewent.model->name, hdr);
             }
 

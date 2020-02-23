@@ -465,7 +465,7 @@ void SV_LinkEdict(edict_t* ent, qboolean touch_triggers)
 
     // find the first node that the ent's box crosses
     node = sv_areanodes;
-    while(1)
+    while(true)
     {
         if(node->axis == -1) break;
         if(ent->v.absmin[node->axis] > node->dist)

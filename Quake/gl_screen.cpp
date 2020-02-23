@@ -203,7 +203,7 @@ void SCR_DrawCenterString() // actually do the drawing
 
         if(!*start) break;
         start++; // skip the \n
-    } while(1);
+    } while(true);
 }
 
 void SCR_CheckDrawCenterString()
@@ -919,7 +919,7 @@ void SCR_DrawNotifyString()
 
         if(!*start) break;
         start++; // skip the \n
-    } while(1);
+    } while(true);
 }
 
 /*

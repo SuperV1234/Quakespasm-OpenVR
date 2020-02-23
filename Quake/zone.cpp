@@ -343,7 +343,7 @@ void Hunk_Print(qboolean all)
     Con_Printf("          :%8i total hunk size\n", hunk_size);
     Con_Printf("-------------------------\n");
 
-    while(1)
+    while(true)
     {
         //
         // skip to the high hunk if done with low hunk
@@ -637,7 +637,7 @@ void Cache_FreeLow(int new_low_hunk)
 {
     cache_system_t* c;
 
-    while(1)
+    while(true)
     {
         c = cache_head.next;
         if(c == &cache_head) return; // nothing in cache at all
@@ -659,7 +659,7 @@ void Cache_FreeHigh(int new_high_hunk)
     cache_system_t *c, *prev;
 
     prev = nullptr;
-    while(1)
+    while(true)
     {
         c = cache_head.prev;
         if(c == &cache_head) return; // nothing in cache at all
@@ -902,7 +902,7 @@ void* Cache_Alloc(cache_user_t* c, int size, const char* name)
     size = (size + sizeof(cache_system_t) + 15) & ~15;
 
     // find memory for it
-    while(1)
+    while(true)
     {
         cs = Cache_TryAlloc(size, false);
         if(cs)

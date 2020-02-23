@@ -297,7 +297,7 @@ int Datagram_GetMessage(qsocket_t* sock)
     if(!sock->canSend)
         if((net_time - sock->lastSendTime) > 1.0) ReSendMessage(sock);
 
-    while(1)
+    while(true)
     {
         length = (unsigned int)sfunc.Read(
             sock->socket, (byte*)&packetBuffer, NET_DATAGRAMSIZE, &readaddr);
@@ -533,7 +533,7 @@ static void Test_Poll(void* unused)
 
     net_landriverlevel = testDriver;
 
-    while(1)
+    while(true)
     {
         len = dfunc.Read(
             testSocket, net_message.data, net_message.maxsize, &clientaddr);

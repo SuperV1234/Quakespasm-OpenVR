@@ -328,7 +328,7 @@ void PR_ExecuteProgram(func_t fnum)
     st = &pr_statements[PR_EnterFunction(f)];
     startprofile = profile = 0;
 
-    while(1)
+    while(true)
     {
         st++; /* next statement */
 

@@ -361,7 +361,7 @@ void GL_DrawAliasFrame(aliashdr_t* paliashdr, lerpdata_t lerpdata)
     vertcolor[3] = entalpha; // never changes, so there's no need to put this
                              // inside the loop
 
-    while(1)
+    while(true)
     {
         // get the vertex count and primitive type
         count = *commands++;
