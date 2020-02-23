@@ -612,7 +612,7 @@ float angledelta(float a)
 CalcGunAngle
 ==================
 */
-void CalcGunAngle(void)
+void CalcGunAngle(const int wpnCvarEntry, entity_t* viewent, const vec3_t& handrot)
 {
     float yaw, pitch, move;
     static float oldyaw = 0;
@@ -621,18 +621,19 @@ void CalcGunAngle(void)
     // Skip everything if we're doing VR Controller aiming.
     if(vr_enabled.value && vr_aimmode.value == VrAimMode::e_CONTROLLER)
     {
+        // TODO VR: ofs repetition
         vec3_t rotOfs = {
-            vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 5].value +
+            vr_weapon_offset[wpnCvarEntry * VARS_PER_WEAPON + 5].value +
                 vr_gunmodelpitch.value, // Pitch
-            vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 6]
+            vr_weapon_offset[wpnCvarEntry * VARS_PER_WEAPON + 6]
                 .value, // Yaw
-            vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 7]
+            vr_weapon_offset[wpnCvarEntry * VARS_PER_WEAPON + 7]
                 .value // Roll
         };
 
-        cl.viewent.angles[PITCH] = -(cl.handrot[1][PITCH]) + rotOfs[0];
-        cl.viewent.angles[YAW] = cl.handrot[1][YAW] + rotOfs[1];
-        cl.viewent.angles[ROLL] = cl.handrot[1][ROLL] + rotOfs[2];
+        viewent->angles[PITCH] = -(handrot[PITCH]) + rotOfs[0];
+        viewent->angles[YAW] = handrot[YAW] + rotOfs[1];
+        viewent->angles[ROLL] = handrot[ROLL] + rotOfs[2];
         return;
     }
 
@@ -667,16 +668,16 @@ void CalcGunAngle(void)
     oldyaw = yaw;
     oldpitch = pitch;
 
-    cl.viewent.angles[YAW] = r_refdef.viewangles[YAW] + yaw;
-    cl.viewent.angles[PITCH] = -(r_refdef.viewangles[PITCH] + pitch);
+    viewent->angles[YAW] = r_refdef.viewangles[YAW] + yaw;
+    viewent->angles[PITCH] = -(r_refdef.viewangles[PITCH] + pitch);
 
-    cl.viewent.angles[ROLL] -= v_idlescale.value *
+    viewent->angles[ROLL] -= v_idlescale.value *
                                sin(cl.time * v_iroll_cycle.value) *
                                v_iroll_level.value;
-    cl.viewent.angles[PITCH] -= v_idlescale.value *
+    viewent->angles[PITCH] -= v_idlescale.value *
                                 sin(cl.time * v_ipitch_cycle.value) *
                                 v_ipitch_level.value;
-    cl.viewent.angles[YAW] -= v_idlescale.value *
+    viewent->angles[YAW] -= v_idlescale.value *
                               sin(cl.time * v_iyaw_cycle.value) *
                               v_iyaw_level.value;
 }
@@ -873,11 +874,12 @@ void V_CalcRefdef(void)
     // set up gun position
     VectorCopy(cl.viewangles, view->angles);
 
-    CalcGunAngle();
+    CalcGunAngle(weaponCVarEntry, view, cl.handrot[1]);
 
     // VR controller aiming configuration
     if(vr_enabled.value && vr_aimmode.value == VrAimMode::e_CONTROLLER)
     {
+        // TODO VR: this sets the weapon model's position
         VectorAdd(cl.handpos[1], cl.vmeshoffset, view->origin);
     }
     else
@@ -962,7 +964,56 @@ void V_CalcRefdef(void)
     else
         oldz = ent->origin[2];
 
-    if(chase_active.value) Chase_UpdateForDrawing(); // johnfitz
+    if(chase_active.value) Chase_UpdateForDrawing(r_refdef, view); // johnfitz
+}
+
+void V_CalcRefdef2Test(void)
+{
+    // view is the weapon model (only visible from inside body)
+    entity_t *view = &cl.offhand_viewent;
+
+    // set up gun position
+    VectorCopy(cl.viewangles, view->angles);
+
+    // TODO VR: hardcoded fist cvar entry
+    CalcGunAngle(16, view, cl.handrot[0]);
+
+    // VR controller aiming configuration
+    if(vr_enabled.value && vr_aimmode.value == VrAimMode::e_CONTROLLER)
+    {
+        VectorAdd(cl.handpos[0], cl.vmeshoffset, view->origin);
+    }
+    else
+    {
+        // No off-hand without VR
+    }
+
+    // johnfitz -- removed all gun position fudging code (was used to keep gun
+    // from getting covered by sbar) MarkV -- restored this with
+    // r_viewmodel_quake cvar
+    if(r_viewmodel_quake.value)
+    {
+        if(scr_viewsize.value == 110)
+            view->origin[2] += 1;
+        else if(scr_viewsize.value == 100)
+            view->origin[2] += 2;
+        else if(scr_viewsize.value == 90)
+            view->origin[2] += 1;
+        else if(scr_viewsize.value == 80)
+            view->origin[2] += 0.5;
+    }
+
+    view->model = Mod_ForName("progs/hand.mdl", true);
+        /*cl.model_precache[cl.stats[STAT_WEAPON]]; // TODO VR: this is where the
+                                                  // weapon is rendered? got
+                                                  // through .weaponmodel from
+                                                  // QC*/
+
+    // TODO VR: think about offhand weapon? dual wielding? flashlight?
+    view->frame = cl.stats[STAT_WEAPONFRAME];
+    view->colormap = vid.colormap;
+
+    if(chase_active.value) Chase_UpdateForDrawing(r_refdef, view); // johnfitz
 }
 
 /*
@@ -980,13 +1031,22 @@ void V_RenderView(void)
     if(con_forcedup) return;
 
     if(cl.intermission)
+    {
         V_CalcIntermissionRefdef();
+        R_RenderView();
+    }
     else if(!cl.paused /* && (cl.maxclients > 1 || key_dest == key_game) */)
+    {
         V_CalcRefdef();
+        R_RenderView();
+
+        V_CalcRefdef2Test();
+        R_DrawViewModel(&cl.offhand_viewent, true); // TODO VR: change to offhand entity
+    }
 
     // johnfitz -- removed lcd code
 
-    R_RenderView();
+
 
     V_PolyBlend(); // johnfitz -- moved here from R_Renderview ();
 }

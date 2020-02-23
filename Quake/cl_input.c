@@ -437,7 +437,7 @@ CL_SendMove
 */
 void CL_SendMove(const usercmd_t* cmd)
 {
-    constexpr size_t bufsize = 256;
+    constexpr size_t bufsize = 512;
 
     int bits;
     sizebuf_t buf;
@@ -469,29 +469,30 @@ void CL_SendMove(const usercmd_t* cmd)
         }
     };
 
+    const auto writeVec = [&](const auto& vec)
+    {
+        MSG_WriteFloat(&buf, vec[0]);
+        MSG_WriteFloat(&buf, vec[1]);
+        MSG_WriteFloat(&buf, vec[2]);
+    };
+
     // aimangles
     writeAngles(cl.aimangles);
 
     // viewangles
     writeAngles(cl.viewangles);
 
-    // handpos
-    MSG_WriteFloat(&buf, cmd->handpos[0]);
-    MSG_WriteFloat(&buf, cmd->handpos[1]);
-    MSG_WriteFloat(&buf, cmd->handpos[2]);
-
-    // handrot
-    MSG_WriteFloat(&buf, cmd->handrot[0]);
-    MSG_WriteFloat(&buf, cmd->handrot[1]);
-    MSG_WriteFloat(&buf, cmd->handrot[2]);
-
-    // handvel
-    MSG_WriteFloat(&buf, cmd->handvel[0]);
-    MSG_WriteFloat(&buf, cmd->handvel[1]);
-    MSG_WriteFloat(&buf, cmd->handvel[2]);
-
-    // handvelmag
+    // main hand: handpos, handrot, handvel, handvelmag
+    writeVec(cmd->handpos);
+    writeVec(cmd->handrot);
+    writeVec(cmd->handvel);
     MSG_WriteFloat(&buf, cmd->handvelmag);
+
+    // off hand: offhandpos, offhandrot, offhandvel, offhandvelmag
+    writeVec(cmd->offhandpos);
+    writeVec(cmd->offhandrot);
+    writeVec(cmd->offhandvel);
+    MSG_WriteFloat(&buf, cmd->offhandvelmag);
 
     MSG_WriteShort(&buf, cmd->forwardmove);
     MSG_WriteShort(&buf, cmd->sidemove);

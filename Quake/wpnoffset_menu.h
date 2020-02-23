@@ -6,6 +6,8 @@
 
 enum class WpnOffsetMenuOpt
 {
+    OffHand,
+
     OffsetX,
     OffsetY,
     OffsetZ,

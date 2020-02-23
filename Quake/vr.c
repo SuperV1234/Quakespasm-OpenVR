@@ -495,12 +495,34 @@ cvar_t vr_weapon_offset[MAX_WEAPONS * VARS_PER_WEAPON];
 aliashdr_t* lastWeaponHeader;
 int weaponCVarEntry;
 
+void ApplyMod_Weapon(const int cvarEntry, aliashdr_t* const hdr)
+{
+    const float scaleCorrect =
+        (vr_world_scale.value / 0.75f) *
+        vr_gunmodelscale.value; // initial version had 0.75 default world
+                                // scale, so weapons reflect that
+    VectorScale(hdr->original_scale,
+        vr_weapon_offset[cvarEntry * VARS_PER_WEAPON + 3].value *
+            scaleCorrect,
+        hdr->scale);
+
+    // TODO VR: repetition of ofs calculation
+    vec3_t ofs = {vr_weapon_offset[cvarEntry * VARS_PER_WEAPON].value,
+        vr_weapon_offset[cvarEntry * VARS_PER_WEAPON + 1].value,
+        vr_weapon_offset[cvarEntry * VARS_PER_WEAPON + 2].value +
+            vr_gunmodely.value};
+
+    VectorAdd(hdr->original_scale_origin, ofs, hdr->scale_origin);
+    VectorScale(hdr->scale_origin, scaleCorrect, hdr->scale_origin);
+}
+
 void Mod_Weapon(const char* name, aliashdr_t* hdr)
 {
     if(lastWeaponHeader != hdr)
     {
         lastWeaponHeader = hdr;
         weaponCVarEntry = -1;
+
         for(int i = 0; i < MAX_WEAPONS; i++)
         {
             if(!strcmp(vr_weapon_offset[i * VARS_PER_WEAPON + 4].string, name))
@@ -509,6 +531,7 @@ void Mod_Weapon(const char* name, aliashdr_t* hdr)
                 break;
             }
         }
+
         if(weaponCVarEntry == -1)
         {
             Con_Printf("No VR offset for weapon: %s\n", name);
@@ -517,23 +540,7 @@ void Mod_Weapon(const char* name, aliashdr_t* hdr)
 
     if(weaponCVarEntry != -1)
     {
-        float scaleCorrect =
-            (vr_world_scale.value / 0.75f) *
-            vr_gunmodelscale.value; // initial version had 0.75 default world
-                                    // scale, so weapons reflect that
-        VectorScale(hdr->original_scale,
-            vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 3].value *
-                scaleCorrect,
-            hdr->scale);
-
-        // TODO VR: repetition of ofs calculation
-        vec3_t ofs = {vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON].value,
-            vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 1].value,
-            vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 2].value +
-                vr_gunmodely.value};
-
-        VectorAdd(hdr->original_scale_origin, ofs, hdr->scale_origin);
-        VectorScale(hdr->scale_origin, scaleCorrect, hdr->scale_origin);
+        ApplyMod_Weapon(weaponCVarEntry, hdr);
     }
 }
 
@@ -636,6 +643,9 @@ void InitAllWeaponCVars()
         InitWeaponCVars(i++, "progs/v_multi2.mdl", "10", "7", "19", "0.5"); // multirocket - same as rocket
         InitWeaponCVars(i++, "progs/v_plasma.mdl", "3", "4", "13", "0.5"); // plasma - same as lightning
     }
+
+    // empty hand
+    InitWeaponCVars(i++, "progs/hand.mdl", "0.0", "0.0", "0.0", "0.0"); // shadow axe
 
     // clang-format on
 
@@ -876,7 +886,13 @@ void SetHandPos(int index, entity_t* player)
     VectorCopy(controllers[index].velocity, cl.handvel[index]);
 
     // handvelmag
-    cl.handvelmag[index] = VectorLength(controllers[index].velocity);
+    const auto length = VectorLength(controllers[index].velocity);
+    const auto bestSingle = std::max({
+        std::abs(controllers[index].velocity[0]),
+        std::abs(controllers[index].velocity[1]),
+        std::abs(controllers[index].velocity[2])
+    }) * 1.5f;
+    cl.handvelmag[index] = std::max(length, bestSingle);
 }
 
 void IdentifyAxes(int device);
@@ -1199,6 +1215,15 @@ void VR_UpdateScreenContent()
             {
                 aliashdr_t* hdr = (aliashdr_t*)Mod_Extradata(cl.viewent.model);
                 Mod_Weapon(cl.viewent.model->name, hdr);
+            }
+
+            if(cl.offhand_viewent.model)
+            {
+                // aliashdr_t* hdr = (aliashdr_t*)Mod_Extradata(cl.offhand_viewent.model);
+                // Mod_Weapon(cl.offhand_viewent.model->name, hdr);
+
+                // TODO VR: hardcoded fist cvar entry number
+                ApplyMod_Weapon(16, (aliashdr_t*)Mod_Extradata(cl.offhand_viewent.model));
             }
 
             SetHandPos(0, player);
@@ -1749,14 +1774,28 @@ void VR_Move(usercmd_t* cmd)
     // VectorCopy(cl.handpos[1], adjhandpos);
     // adjhandpos[2] -= vr_projectilespawn_z_offset.value;
 
-    // handpos
+    // main hand: handpos, handrot, handvel, handvelmag
     VectorCopy(cl.handpos[1], cmd->handpos);
-
-    // handvel
+    VectorCopy(cl.handrot[1], cmd->handrot);
     VectorCopy(cl.handvel[1], cmd->handvel);
-
-    // handvelmag
     cmd->handvelmag = cl.handvelmag[1];
+
+    // off hand: offhandpos, offhandrot, offhandvel, offhandvelmag
+    VectorCopy(cl.handpos[0], cmd->offhandpos);
+    VectorCopy(cl.handrot[0], cmd->offhandrot);
+    VectorCopy(cl.handvel[0], cmd->offhandvel);
+    cmd->offhandvelmag = cl.handvelmag[0];
+
+    // TODO VR:
+    /*
+    if(cmd->offhandvelmag > 4) {
+        Con_Printf("%.2f %.2f %.2f -> %.2f\n",
+        controllers[0].velocity[0],
+        controllers[0].velocity[1],
+        controllers[0].velocity[2],
+        cl.handvelmag[0]);
+    }
+    */
 
     DoTrigger(&controllers[0], K_SPACE);
 

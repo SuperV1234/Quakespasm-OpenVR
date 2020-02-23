@@ -699,7 +699,7 @@ void R_DrawEntitiesOnList(qboolean alphapass) // johnfitz -- added parameter
 
         switch(currententity->model->type)
         {
-            case mod_alias: R_DrawAliasModel(currententity); break;
+            case mod_alias: R_DrawAliasModel(currententity, false); break;
             case mod_brush: R_DrawBrushModel(currententity); break;
             case mod_sprite: R_DrawSpriteModel(currententity); break;
         }
@@ -711,7 +711,7 @@ void R_DrawEntitiesOnList(qboolean alphapass) // johnfitz -- added parameter
 R_DrawViewModel -- johnfitz -- gutted
 =============
 */
-void R_DrawViewModel(void)
+void R_DrawViewModel(entity_t* viewent, bool horizflip)
 {
     if(!r_drawviewmodel.value || !r_drawentities.value || chase_active.value)
         return;
@@ -720,7 +720,7 @@ void R_DrawViewModel(void)
 
     if(vr_enabled.value && vr_crosshair.value) VR_ShowCrosshair();
 
-    currententity = &cl.viewent;
+    currententity = viewent;
     if(!currententity->model) return;
 
     // johnfitz -- this fixes a crash
@@ -731,7 +731,7 @@ void R_DrawViewModel(void)
     // only when not in VR
     if(!vr_enabled.value) glDepthRange(0, 0.3);
 
-    R_DrawAliasModel(currententity);
+    R_DrawAliasModel(currententity, horizflip);
 
     if(!vr_enabled.value) glDepthRange(0, 1);
 }
@@ -889,6 +889,18 @@ void R_ShowTris(void)
             R_DrawAliasModel_ShowTris(currententity);
             glDepthRange(0, 1);
         }
+
+        // TODO VR:
+        // offhand viewmodel
+        currententity = &cl.offhand_viewent;
+        if(r_drawviewmodel.value && !chase_active.value &&
+            cl.stats[STAT_HEALTH] > 0 && !(cl.items & IT_INVISIBILITY) &&
+            currententity->model && currententity->model->type == mod_alias)
+        {
+            glDepthRange(0, 0.3);
+            R_DrawAliasModel_ShowTris(currententity);
+            glDepthRange(0, 1);
+        }
     }
 
     if(r_particles.value)
@@ -982,7 +994,7 @@ void R_RenderScene(void)
 
     Fog_DisableGFog(); // johnfitz
 
-    R_DrawViewModel(); // johnfitz -- moved here from R_RenderView
+    R_DrawViewModel(&cl.viewent, false); // johnfitz -- moved here from R_RenderView
 
     R_ShowTris(); // johnfitz
 

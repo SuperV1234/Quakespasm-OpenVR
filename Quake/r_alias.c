@@ -676,7 +676,7 @@ void R_SetupAliasLighting(entity_t* e)
 R_DrawAliasModel -- johnfitz -- almost completely rewritten
 =================
 */
-void R_DrawAliasModel(entity_t* e)
+void R_DrawAliasModel(entity_t* e, bool horizflip)
 {
     aliashdr_t* paliashdr;
     int i, anim, skinnum;
@@ -702,6 +702,13 @@ void R_DrawAliasModel(entity_t* e)
     //
     glPushMatrix();
     R_RotateForEntity(lerpdata.origin, lerpdata.angles);
+
+    if (horizflip)
+    {
+        glScalef( 1.0f, -1.0f, 1.0f );
+        glFrontFace(GL_CCW);
+    }
+
     glTranslatef(paliashdr->scale_origin[0], paliashdr->scale_origin[1],
         paliashdr->scale_origin[2]);
     glScalef(paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
@@ -951,6 +958,11 @@ cleanup:
     if(alphatest) glDisable(GL_ALPHA_TEST);
     glColor3f(1, 1, 1);
     glPopMatrix();
+
+    if (horizflip)
+    {
+        glFrontFace(GL_CW);
+    }
 }
 
 // johnfitz -- values for shadow matrix

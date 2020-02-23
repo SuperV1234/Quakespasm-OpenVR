@@ -7,6 +7,7 @@
 #include <tuple>
 #include "cmd.h"
 
+static bool wpnoff_offhand = false;
 static int wpnoff_cursor = 0;
 
 extern void M_DrawSlider(int x, int y, float range);
@@ -23,14 +24,17 @@ static void WpnOffset_MenuPlaySound(const char* sound, float fvol)
 
 static auto getCvars()
 {
+    // TODO VR: hardcoded hand
+    const auto idx = wpnoff_offhand ? 16 : weaponCVarEntry;
+
     return std::tie(
-        vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON],     // OffsetX
-        vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 1], // OffsetY
-        vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 2], // OffsetZ
-        vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 3], // Scale
-        vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 7], // Roll
-        vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 5], // Pitch
-        vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 6]  // Yaw
+        vr_weapon_offset[idx * VARS_PER_WEAPON],     // OffsetX
+        vr_weapon_offset[idx * VARS_PER_WEAPON + 1], // OffsetY
+        vr_weapon_offset[idx * VARS_PER_WEAPON + 2], // OffsetZ
+        vr_weapon_offset[idx * VARS_PER_WEAPON + 3], // Scale
+        vr_weapon_offset[idx * VARS_PER_WEAPON + 7], // Roll
+        vr_weapon_offset[idx * VARS_PER_WEAPON + 5], // Pitch
+        vr_weapon_offset[idx * VARS_PER_WEAPON + 6]  // Yaw
     );
 }
 
@@ -38,6 +42,11 @@ static void WpnOffset_MenuPrintOptionValue(
     int cx, int cy, WpnOffsetMenuOpt option)
 {
     char value_buffer[32] = {0};
+
+    const auto printBool = [&](const auto& value) {
+        snprintf(value_buffer, sizeof(value_buffer), value ? "On" : "Off");
+        M_Print(cx, cy, value_buffer);
+    };
 
     const auto printAsStr = [&](const auto& cvar) {
         snprintf(value_buffer, sizeof(value_buffer), "%.4f", cvar.value);
@@ -48,6 +57,7 @@ static void WpnOffset_MenuPrintOptionValue(
 
     switch(option)
     {
+        case WpnOffsetMenuOpt::OffHand: printBool(wpnoff_offhand); break;
         case WpnOffsetMenuOpt::OffsetX: printAsStr(ox); break;
         case WpnOffsetMenuOpt::OffsetY: printAsStr(oy); break;
         case WpnOffsetMenuOpt::OffsetZ: printAsStr(oz); break;
@@ -79,6 +89,9 @@ static void WpnOffset_MenuKeyOption(int key, WpnOffsetMenuOpt option)
 
     switch(option)
     {
+        case WpnOffsetMenuOpt::OffHand:
+            wpnoff_offhand = !wpnoff_offhand;
+            break;
         case WpnOffsetMenuOpt::OffsetX:
             adjustF(ox, oInc, -oBound, oBound);
             break;
@@ -162,7 +175,7 @@ void WpnOffset_MenuDraw(void)
 
     static const auto adjustedLabels = [](auto... labels) {
         return std::array{(std::string(24 - strlen(labels), ' ') + labels)...};
-    }("Offset X", "Offset Y", "Offset Z", "Scale", "Roll", "Pitch", "Yaw");
+    }("Offhand", "Offset X", "Offset Y", "Offset Z", "Scale", "Roll", "Pitch", "Yaw");
 
     static_assert(adjustedLabels.size() == (int)WpnOffsetMenuOpt::Max);
 

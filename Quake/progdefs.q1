@@ -143,6 +143,10 @@ typedef struct
 	vec3_t	handvel;
 	float	handvelmag;
 	vec3_t	v_viewangle;
+	vec3_t	offhandpos;
+	vec3_t	offhandrot;
+	vec3_t	offhandvel;
+	float	offhandvelmag;
 } entvars_t;
 
-#define PROGHEADER_CRC 59334
+#define PROGHEADER_CRC 9449

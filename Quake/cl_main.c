@@ -528,13 +528,17 @@ void CL_RelinkEntities(void)
             if(r_lerpmodels.value != 2)
             {
                 if(ent == &cl_entities[cl.viewentity])
+                {
                     cl.viewent.lerpflags |=
                         LERP_RESETANIM |
                         LERP_RESETANIM2; // no lerping for two frames
+                }
                 else
+                {
                     ent->lerpflags |=
                         LERP_RESETANIM |
                         LERP_RESETANIM2; // no lerping for two frames
+                }
             }
             // johnfitz
         }
@@ -720,14 +724,14 @@ CL_Tracepos_f -- johnfitz
 display impact point of trace along VPN
 =============
 */
-void CL_Tracepos_f(void)
+void CL_Tracepos_f(refdef_t& refdef)
 {
     vec3_t v, w;
 
     if(cls.state != ca_connected) return;
 
-    VectorMA(r_refdef.vieworg, 8192.0, vpn, v);
-    TraceLine(r_refdef.vieworg, v, w);
+    VectorMA(refdef.vieworg, 8192.0, vpn, v);
+    TraceLine(refdef.vieworg, v, w);
 
     if(VectorLength(w) == 0)
         Con_Printf("Tracepos: trace didn't hit anything\n");
@@ -742,18 +746,18 @@ CL_Viewpos_f -- johnfitz
 display client's position and angles
 =============
 */
-void CL_Viewpos_f(void)
+void CL_Viewpos_f(refdef_t& refdef)
 {
     if(cls.state != ca_connected) return;
 #if 0
 	//camera position
 	Con_Printf ("Viewpos: (%i %i %i) %i %i %i\n",
-		(int)r_refdef.vieworg[0],
-		(int)r_refdef.vieworg[1],
-		(int)r_refdef.vieworg[2],
-		(int)r_refdef.viewangles[PITCH],
-		(int)r_refdef.viewangles[YAW],
-		(int)r_refdef.viewangles[ROLL]);
+		(int)refdef.vieworg[0],
+		(int)refdef.vieworg[1],
+		(int)refdef.vieworg[2],
+		(int)refdef.viewangles[PITCH],
+		(int)refdef.viewangles[YAW],
+		(int)refdef.viewangles[ROLL]);
 #else
     // player position
     Con_Printf("Viewpos: (%i %i %i) %i %i %i\n",
@@ -811,6 +815,7 @@ void CL_Init(void)
     Cmd_AddCommand("playdemo", CL_PlayDemo_f);
     Cmd_AddCommand("timedemo", CL_TimeDemo_f);
 
-    Cmd_AddCommand("tracepos", CL_Tracepos_f); // johnfitz
-    Cmd_AddCommand("viewpos", CL_Viewpos_f);   // johnfitz
+    // TODO VR:
+    Cmd_AddCommand("tracepos", []{ CL_Tracepos_f(r_refdef); }); // johnfitz
+    Cmd_AddCommand("viewpos",  []{ CL_Viewpos_f(r_refdef); });   // johnfitz
 }

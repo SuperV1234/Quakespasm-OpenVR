@@ -131,7 +131,7 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
             }
             break;
         case VRMenuOpt::VR_ENABLE_JOYSTICK_TURN:
-            value_string = vr_snap_turn.value == 0 ? "Off" : "On";
+            value_string = vr_enable_joystick_turn.value == 0 ? "Off" : "On";
             break;
         case VRMenuOpt::VR_SNAP_TURN:
             if(vr_snap_turn.value == 0)
@@ -297,7 +297,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
             adjustF(vr_menu_scale, 0.01f, 0.05f, 0.6f);
             break;
         case VRMenuOpt::VR_MELEE_THRESHOLD:
-            adjustF(vr_melee_threshold, 1.f, 4.f, 18.f);
+            adjustF(vr_melee_threshold, 0.5f, 4.f, 18.f);
             break;
         case VRMenuOpt::VR_GUNYAW:
             adjustF(vr_gunyaw, 0.25f, -90.f, 90.f);

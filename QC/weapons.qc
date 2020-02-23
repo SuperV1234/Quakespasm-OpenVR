@@ -5,6 +5,7 @@ void () player_run;
 void(entity bomb, entity attacker, float rad, entity ignore) T_RadiusDamage;
 void(vector org, vector vel, float damage) SpawnBlood;
 void() SuperDamageSound;
+void() PainSound;
 
 
 // called by worldspawn
@@ -43,12 +44,12 @@ void() W_FireAxe =
 	local	string	s;
 
 	// TODO VR: add damage multiplier cvar
-	xdmg = 0.63 * self.handvelmag;
+	xdmg = 0.73 * self.handvelmag;
 
-	s = ftos(xdmg);
-	sprint (self, "DMG: ");
-	sprint (self, s);
-	sprint (self, "\n");
+	// s = ftos(xdmg);
+	// sprint (self, "DMG: ");
+	// sprint (self, s);
+	// sprint (self, "\n");
 
 	makevectors (self.v_angle);
 	source = self.handpos + '0 0 0';
@@ -91,16 +92,16 @@ void() W_GunMelee =
 	local	float	xdmg;
 	local	string	s;
 
-	xdmg = 0.39 * self.handvelmag;
+	xdmg = 0.43 * self.handvelmag;
 
-	s = ftos(xdmg);
-	sprint (self, "DMG: ");
-	sprint (self, s);
-	sprint (self, "\n");
+	// s = ftos(xdmg);
+	// sprint (self, "DMG: ");
+	// sprint (self, s);
+	// sprint (self, "\n");
 
 	makevectors (self.v_angle);
 	source = self.handpos + '0 0 0';
-	traceline (source - v_forward*24, source + v_forward*24, FALSE, self);
+	traceline (source - v_forward*24, source + v_forward*26, FALSE, self);
 	if (trace_fraction == 1.0)
 		return;
 
@@ -111,6 +112,7 @@ void() W_GunMelee =
 		trace_ent.axhitme = 1;
 		SpawnBlood (org, '0 0 0', xdmg);
 		T_Damage (trace_ent, self, self, xdmg);
+		sound (self, CHAN_WEAPON, "fisthit.wav", 1.0, ATTN_NORM);
 	}
 	else
 	{	// hit wall
@@ -125,6 +127,58 @@ void() W_GunMelee =
 
 
 //============================================================================
+
+
+/*
+================
+W_FistMelee
+================
+*/
+void() W_FistMelee =
+{
+	local	vector	source;
+	local	vector	org;
+	local	float	xdmg;
+	local	string	s;
+
+	xdmg = 0.53 * self.offhandvelmag;
+
+	// s = ftos(xdmg);
+	// sprint (self, "OFFHANDDMG: ");
+	// sprint (self, s);
+	// sprint (self, "\n");
+
+	makevectors (self.v_angle);
+	source = self.offhandpos + '0 0 0';
+	traceline (source - v_forward*24, source + v_forward*24, FALSE, self);
+	if (trace_fraction == 1.0)
+		return;
+
+	org = trace_endpos - v_forward*4;
+	sound (self, CHAN_WEAPON, "fisthit.wav", 1.0, ATTN_NORM);
+
+	if (trace_ent.takedamage)
+	{
+		trace_ent.axhitme = 1;
+		SpawnBlood (org, '0 0 0', xdmg);
+		T_Damage (trace_ent, self, self, xdmg);
+	}
+	else
+	{	// hit wall
+		PainSound();
+		SpawnBlood (org, '0 0 0', xdmg);
+
+		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
+		WriteByte (MSG_BROADCAST, TE_GUNSHOT);
+		WriteCoord (MSG_BROADCAST, org_x);
+		WriteCoord (MSG_BROADCAST, org_y);
+		WriteCoord (MSG_BROADCAST, org_z);
+	}
+};
+
+
+//============================================================================
+
 
 
 vector() wall_velocity =

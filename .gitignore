@@ -1,6 +1,7 @@
 Windows/build
 id1
 Id1
+Build-qu*
 *.so
 *.dbg
 

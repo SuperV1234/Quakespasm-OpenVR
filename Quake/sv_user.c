@@ -435,33 +435,52 @@ void SV_ReadClientMove(usercmd_t* move)
         }
     };
 
+    const auto readVec = [&](auto& target)
+    {
+        target[0] = MSG_ReadFloat();
+        target[1] = MSG_ReadFloat();
+        target[2] = MSG_ReadFloat();
+    };
+
     // aimangles
     readAngles(host_client->edict->v.v_angle);
 
     // viewangles
     readAngles(host_client->edict->v.v_viewangle);
 
+    // main hand: handpos, handrot, handvel, handvelmag
     // handpos
-    move->handpos[0] = MSG_ReadFloat();
-    move->handpos[1] = MSG_ReadFloat();
-    move->handpos[2] = MSG_ReadFloat();
+    readVec(move->handpos);
     VectorCopy(move->handpos, host_client->edict->v.handpos);
 
     // handrot
-    move->handrot[0] = MSG_ReadFloat();
-    move->handrot[1] = MSG_ReadFloat();
-    move->handrot[2] = MSG_ReadFloat();
+    readVec(move->handrot);
     VectorCopy(move->handrot, host_client->edict->v.handrot);
 
     // handvel
-    move->handvel[0] = MSG_ReadFloat();
-    move->handvel[1] = MSG_ReadFloat();
-    move->handvel[2] = MSG_ReadFloat();
+    readVec(move->handvel);
     VectorCopy(move->handvel, host_client->edict->v.handvel);
 
     // handvelmag
     move->handvelmag = MSG_ReadFloat();
     host_client->edict->v.handvelmag = move->handvelmag;
+
+    // off hand: offhandpos, offhandrot, offhandvel, offhandvelmag
+    // offhandpos
+    readVec(move->offhandpos);
+    VectorCopy(move->offhandpos, host_client->edict->v.offhandpos);
+
+    // offhandrot
+    readVec(move->offhandrot);
+    VectorCopy(move->offhandrot, host_client->edict->v.offhandrot);
+
+    // offhandvel
+    readVec(move->offhandvel);
+    VectorCopy(move->offhandvel, host_client->edict->v.offhandvel);
+
+    // offhandvelmag
+    move->offhandvelmag = MSG_ReadFloat();
+    host_client->edict->v.offhandvelmag = move->offhandvelmag;
 
     // read movement
     move->forwardmove = MSG_ReadShort();

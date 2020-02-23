@@ -225,6 +225,7 @@ typedef struct
     int num_entities; // held in cl_entities array
     int num_statics;  // held in cl_staticentities array
     entity_t viewent; // the gun model
+    entity_t offhand_viewent; // the offhand gun model
 
     int cdtrack, looptrack; // cd audio
 
@@ -380,6 +381,6 @@ void Chase_Init(void);
 void TraceLine(vec3_t start, vec3_t end, vec3_t impact);
 void TraceLineToEntity(vec3_t start, vec3_t end, vec3_t impact, edict_t* ent);
 void Chase_UpdateForClient(void);  // johnfitz
-void Chase_UpdateForDrawing(void); // johnfitz
+void Chase_UpdateForDrawing(refdef_t& refdef, entity_t* viewent); // johnfitz
 
 #endif /* _CLIENT_H_ */

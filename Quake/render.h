@@ -147,6 +147,8 @@ void R_Init(void);
 void R_InitTextures(void);
 void R_InitEfrags(void);
 void R_RenderView(void); // must set r_refdef first
+void R_RenderScene(void);
+void R_DrawViewModel(entity_t* viewent, bool horizflip);
 void R_ViewChanged(vrect_t* pvrect, int lineadj, float aspect);
 // called whenever r_refdef or vid change
 // void R_InitSky (struct texture_s *mt);	// called at level load

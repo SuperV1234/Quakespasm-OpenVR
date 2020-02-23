@@ -288,6 +288,10 @@ typedef struct
     vec3_t handrot;
     vec3_t handvel;
     float handvelmag;
+    vec3_t offhandpos;
+    vec3_t offhandrot;
+    vec3_t offhandvel;
+    float offhandvelmag;
 
     // intended velocities
     float forwardmove;

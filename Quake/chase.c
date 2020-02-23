@@ -91,7 +91,7 @@ before drawing
 TODO: stay at least 8 units away from all walls in this leaf
 ==============
 */
-void Chase_UpdateForDrawing(void)
+void Chase_UpdateForDrawing(refdef_t& refdef, entity_t* viewent)
 {
     int i;
     vec3_t forward, up, right;
@@ -101,25 +101,25 @@ void Chase_UpdateForDrawing(void)
 
     // calc ideal camera location before checking for walls
     for(i = 0; i < 3; i++)
-        ideal[i] = cl.viewent.origin[i] - forward[i] * chase_back.value +
+        ideal[i] = viewent->origin[i] - forward[i] * chase_back.value +
                    right[i] * chase_right.value;
     //+ up[i]*chase_up.value;
-    ideal[2] = cl.viewent.origin[2] + chase_up.value;
+    ideal[2] = viewent->origin[2] + chase_up.value;
 
     // make sure camera is not in or behind a wall
-    TraceLine(r_refdef.vieworg, ideal, temp);
+    TraceLine(refdef.vieworg, ideal, temp);
     if(VectorLength(temp) != 0) VectorCopy(temp, ideal);
 
     // place camera
-    VectorCopy(ideal, r_refdef.vieworg);
+    VectorCopy(ideal, refdef.vieworg);
 
     // find the spot the player is looking at
-    VectorMA(cl.viewent.origin, 4096, forward, temp);
-    TraceLine(cl.viewent.origin, temp, crosshair);
+    VectorMA(viewent->origin, 4096, forward, temp);
+    TraceLine(viewent->origin, temp, crosshair);
 
     // calculate camera angles to look at the same spot
-    VectorSubtract(crosshair, r_refdef.vieworg, temp);
-    VectorAngles(temp, r_refdef.viewangles);
-    if(r_refdef.viewangles[PITCH] == 90 || r_refdef.viewangles[PITCH] == -90)
-        r_refdef.viewangles[YAW] = cl.viewangles[YAW];
+    VectorSubtract(crosshair, refdef.vieworg, temp);
+    VectorAngles(temp, refdef.viewangles);
+    if(refdef.viewangles[PITCH] == 90 || refdef.viewangles[PITCH] == -90)
+        refdef.viewangles[YAW] = cl.viewangles[YAW];
 }

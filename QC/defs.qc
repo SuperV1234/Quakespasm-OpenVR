@@ -213,6 +213,11 @@ void		end_sys_globals;		// flag for structure dumping
 .float		handvelmag;
 .vector		v_viewangle;
 
+.vector		offhandpos;
+.vector		offhandrot;
+.vector		offhandvel;
+.float		offhandvelmag;
+
 //================================================
 void		end_sys_fields;			// flag for structure dumping
 //================================================
@@ -466,7 +471,9 @@ float	AS_MISSILE		= 4;
 .float		walkframe;
 
 .float 		attack_finished;
+.float 		offhand_attack_finished;
 .float		in_melee;
+.float		offhand_in_melee;
 .float		pain_finished;
 
 .float		invincible_finished;
