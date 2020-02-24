@@ -156,13 +156,19 @@ int q_strcasecmp(const char* s1, const char* s2)
     const char* p2 = s2;
     char c1, c2;
 
-    if(p1 == p2) return 0;
+    if(p1 == p2)
+    {
+        return 0;
+    }
 
     do
     {
         c1 = q_tolower(*p1++);
         c2 = q_tolower(*p2++);
-        if(c1 == '\0') break;
+        if(c1 == '\0')
+        {
+            break;
+        }
     } while(c1 == c2);
 
     return (int)(c1 - c2);
@@ -174,13 +180,19 @@ int q_strncasecmp(const char* s1, const char* s2, size_t n)
     const char* p2 = s2;
     char c1, c2;
 
-    if(p1 == p2 || n == 0) return 0;
+    if(p1 == p2 || n == 0)
+    {
+        return 0;
+    }
 
     do
     {
         c1 = q_tolower(*p1++);
         c2 = q_tolower(*p2++);
-        if(c1 == '\0' || c1 != c2) break;
+        if(c1 == '\0' || c1 != c2)
+        {
+            break;
+        }
     } while(--n > 0);
 
     return (int)(c1 - c2);
@@ -192,29 +204,53 @@ char* q_strcasestr(const char* haystack, const char* needle)
     int c1, c2, c2f;
     int i;
     c2f = *needle;
-    if(c2f >= 'a' && c2f <= 'z') c2f -= ('a' - 'A');
-    if(!c2f) return (char*)haystack;
+    if(c2f >= 'a' && c2f <= 'z')
+    {
+        c2f -= ('a' - 'A');
+    }
+    if(!c2f)
+    {
+        return (char*)haystack;
+    }
     while(true)
     {
         c1 = *haystack;
-        if(!c1) return nullptr;
-        if(c1 >= 'a' && c1 <= 'z') c1 -= ('a' - 'A');
+        if(!c1)
+        {
+            return nullptr;
+        }
+        if(c1 >= 'a' && c1 <= 'z')
+        {
+            c1 -= ('a' - 'A');
+        }
         if(c1 == c2f)
         {
             for(i = 1;; i++)
             {
                 c1 = haystack[i];
                 c2 = needle[i];
-                if(c1 >= 'a' && c1 <= 'z') c1 -= ('a' - 'A');
-                if(c2 >= 'a' && c2 <= 'z') c2 -= ('a' - 'A');
+                if(c1 >= 'a' && c1 <= 'z')
+                {
+                    c1 -= ('a' - 'A');
+                }
+                if(c2 >= 'a' && c2 <= 'z')
+                {
+                    c2 -= ('a' - 'A');
+                }
                 if(!c2)
+                {
                     return (char*)haystack; // end of needle means we found a
-                                            // complete match
-                if(!c1) // end of haystack means we can't possibly find needle
-                        // in it any more
+                }
+                // complete match
+                if(!c1)
+                { // end of haystack means we can't possibly find needle
+                    // in it any more
                     return nullptr;
-                if(c1 != c2) // mismatch means no match starting at haystack[0]
+                }
+                if(c1 != c2)
+                { // mismatch means no match starting at haystack[0]
                     break;
+                }
             }
         }
         haystack++;
@@ -261,10 +297,18 @@ int q_vsnprintf(char* str, size_t size, const char* format, va_list args)
 
     ret = vsnprintf_func(str, size, format, args);
 
-    if(ret < 0) ret = (int)size;
-    if(size == 0) /* no buffer */
+    if(ret < 0)
+    {
+        ret = (int)size;
+    }
+    if(size == 0)
+    { /* no buffer */
         return ret;
-    if((size_t)ret >= size) str[size - 1] = '\0';
+    }
+    if((size_t)ret >= size)
+    {
+        str[size - 1] = '\0';
+    }
 
     return ret;
 }
@@ -289,10 +333,18 @@ void Q_memset(void* dest, int fill, size_t count)
     {
         count >>= 2;
         fill = fill | (fill << 8) | (fill << 16) | (fill << 24);
-        for(i = 0; i < count; i++) ((int*)dest)[i] = fill;
+        for(i = 0; i < count; i++)
+        {
+            ((int*)dest)[i] = fill;
+        }
     }
     else
-        for(i = 0; i < count; i++) ((byte*)dest)[i] = fill;
+    {
+        for(i = 0; i < count; i++)
+        {
+            ((byte*)dest)[i] = fill;
+        }
+    }
 }
 
 void Q_memcpy(void* dest, const void* src, size_t count)
@@ -302,10 +354,18 @@ void Q_memcpy(void* dest, const void* src, size_t count)
     if((((size_t)dest | (size_t)src | count) & 3) == 0)
     {
         count >>= 2;
-        for(i = 0; i < count; i++) ((int*)dest)[i] = ((int*)src)[i];
+        for(i = 0; i < count; i++)
+        {
+            ((int*)dest)[i] = ((int*)src)[i];
+        }
     }
     else
-        for(i = 0; i < count; i++) ((byte*)dest)[i] = ((byte*)src)[i];
+    {
+        for(i = 0; i < count; i++)
+        {
+            ((byte*)dest)[i] = ((byte*)src)[i];
+        }
+    }
 }
 
 int Q_memcmp(const void* m1, const void* m2, size_t count)
@@ -313,7 +373,10 @@ int Q_memcmp(const void* m1, const void* m2, size_t count)
     while(count)
     {
         count--;
-        if(((byte*)m1)[count] != ((byte*)m2)[count]) return -1;
+        if(((byte*)m1)[count] != ((byte*)m2)[count])
+        {
+            return -1;
+        }
     }
     return 0;
 }
@@ -333,7 +396,10 @@ void Q_strncpy(char* dest, const char* src, int count)
     {
         *dest++ = *src++;
     }
-    if(count) *dest++ = 0;
+    if(count)
+    {
+        *dest++ = 0;
+    }
 }
 
 int Q_strlen(const char* str)
@@ -341,7 +407,10 @@ int Q_strlen(const char* str)
     int count;
 
     count = 0;
-    while(str[count]) count++;
+    while(str[count])
+    {
+        count++;
+    }
 
     return count;
 }
@@ -352,7 +421,10 @@ char* Q_strrchr(const char* s, char c)
     s += len;
     while(len--)
     {
-        if(*--s == c) return (char*)s;
+        if(*--s == c)
+        {
+            return (char*)s;
+        }
     }
     return nullptr;
 }
@@ -367,8 +439,14 @@ int Q_strcmp(const char* s1, const char* s2)
 {
     while(true)
     {
-        if(*s1 != *s2) return -1; // strings not equal
-        if(!*s1) return 0;        // strings are equal
+        if(*s1 != *s2)
+        {
+            return -1; // strings not equal
+        }
+        if(!*s1)
+        {
+            return 0; // strings are equal
+        }
         s1++;
         s2++;
     }
@@ -380,9 +458,18 @@ int Q_strncmp(const char* s1, const char* s2, int count)
 {
     while(true)
     {
-        if(!count--) return 0;
-        if(*s1 != *s2) return -1; // strings not equal
-        if(!*s1) return 0;        // strings are equal
+        if(!count--)
+        {
+            return 0;
+        }
+        if(*s1 != *s2)
+        {
+            return -1; // strings not equal
+        }
+        if(!*s1)
+        {
+            return 0; // strings are equal
+        }
         s1++;
         s2++;
     }
@@ -402,7 +489,9 @@ int Q_atoi(const char* str)
         str++;
     }
     else
+    {
         sign = 1;
+    }
 
     val = 0;
 
@@ -416,13 +505,21 @@ int Q_atoi(const char* str)
         {
             c = *str++;
             if(c >= '0' && c <= '9')
+            {
                 val = (val << 4) + c - '0';
+            }
             else if(c >= 'a' && c <= 'f')
+            {
                 val = (val << 4) + c - 'a' + 10;
+            }
             else if(c >= 'A' && c <= 'F')
+            {
                 val = (val << 4) + c - 'A' + 10;
+            }
             else
+            {
                 return val * sign;
+            }
         }
     }
 
@@ -440,7 +537,10 @@ int Q_atoi(const char* str)
     while(true)
     {
         c = *str++;
-        if(c < '0' || c > '9') return val * sign;
+        if(c < '0' || c > '9')
+        {
+            return val * sign;
+        }
         val = val * 10 + c - '0';
     }
 
@@ -461,7 +561,9 @@ float Q_atof(const char* str)
         str++;
     }
     else
+    {
         sign = 1;
+    }
 
     val = 0;
 
@@ -475,13 +577,21 @@ float Q_atof(const char* str)
         {
             c = *str++;
             if(c >= '0' && c <= '9')
+            {
                 val = (val * 16) + c - '0';
+            }
             else if(c >= 'a' && c <= 'f')
+            {
                 val = (val * 16) + c - 'a' + 10;
+            }
             else if(c >= 'A' && c <= 'F')
+            {
                 val = (val * 16) + c - 'A' + 10;
+            }
             else
+            {
                 return val * sign;
+            }
         }
     }
 
@@ -506,12 +616,18 @@ float Q_atof(const char* str)
             decimal = total;
             continue;
         }
-        if(c < '0' || c > '9') break;
+        if(c < '0' || c > '9')
+        {
+            break;
+        }
         val = val * 10 + c - '0';
         total++;
     }
 
-    if(decimal == -1) return val * sign;
+    if(decimal == -1)
+    {
+        return val * sign;
+    }
     while(total > decimal)
     {
         val /= 10;
@@ -671,9 +787,13 @@ void MSG_WriteFloat(sizebuf_t* sb, float f)
 void MSG_WriteString(sizebuf_t* sb, const char* s)
 {
     if(!s)
+    {
         SZ_Write(sb, "", 1);
+    }
     else
+    {
         SZ_Write(sb, s, Q_strlen(s) + 1);
+    }
 }
 
 // johnfitz -- original behavior, 13.3 fixed point coords, max range +-4096
@@ -698,34 +818,52 @@ void MSG_WriteCoord32f(sizebuf_t* sb, float f)
 void MSG_WriteCoord(sizebuf_t* sb, float f, unsigned int flags)
 {
     if(flags & PRFL_FLOATCOORD)
+    {
         MSG_WriteFloat(sb, f);
+    }
     else if(flags & PRFL_INT32COORD)
+    {
         MSG_WriteLong(sb, Q_rint(f * 16));
+    }
     else if(flags & PRFL_24BITCOORD)
+    {
         MSG_WriteCoord24(sb, f);
+    }
     else
+    {
         MSG_WriteCoord16(sb, f);
+    }
 }
 
 void MSG_WriteAngle(sizebuf_t* sb, float f, unsigned int flags)
 {
     if(flags & PRFL_FLOATANGLE)
+    {
         MSG_WriteFloat(sb, f);
+    }
     else if(flags & PRFL_SHORTANGLE)
+    {
         MSG_WriteShort(sb, Q_rint(f * 65536.0 / 360.0) & 65535);
+    }
     else
+    {
         MSG_WriteByte(
             sb, Q_rint(f * 256.0 / 360.0) &
                     255); // johnfitz -- use Q_rint instead of (int)	}
+    }
 }
 
 // johnfitz -- for PROTOCOL_FITZQUAKE
 void MSG_WriteAngle16(sizebuf_t* sb, float f, unsigned int flags)
 {
     if(flags & PRFL_FLOATANGLE)
+    {
         MSG_WriteFloat(sb, f);
+    }
     else
+    {
         MSG_WriteShort(sb, Q_rint(f * 65536.0 / 360.0) & 65535);
+    }
 }
 // johnfitz
 
@@ -842,7 +980,10 @@ const char* MSG_ReadString()
     do
     {
         c = MSG_ReadByte();
-        if(c == -1 || c == 0) break;
+        if(c == -1 || c == 0)
+        {
+            break;
+        }
         string[l] = c;
         l++;
     } while(l < sizeof(string) - 1);
@@ -873,32 +1014,50 @@ float MSG_ReadCoord32f()
 float MSG_ReadCoord(unsigned int flags)
 {
     if(flags & PRFL_FLOATCOORD)
+    {
         return MSG_ReadFloat();
+    }
     else if(flags & PRFL_INT32COORD)
+    {
         return MSG_ReadLong() * (1.0 / 16.0);
+    }
     else if(flags & PRFL_24BITCOORD)
+    {
         return MSG_ReadCoord24();
+    }
     else
+    {
         return MSG_ReadCoord16();
+    }
 }
 
 float MSG_ReadAngle(unsigned int flags)
 {
     if(flags & PRFL_FLOATANGLE)
+    {
         return MSG_ReadFloat();
+    }
     else if(flags & PRFL_SHORTANGLE)
+    {
         return MSG_ReadShort() * (360.0 / 65536);
+    }
     else
+    {
         return MSG_ReadChar() * (360.0 / 256);
+    }
 }
 
 // johnfitz -- for PROTOCOL_FITZQUAKE
 float MSG_ReadAngle16(unsigned int flags)
 {
     if(flags & PRFL_FLOATANGLE)
+    {
         return MSG_ReadFloat(); // make sure
+    }
     else
+    {
         return MSG_ReadShort() * (360.0 / 65536);
+    }
 }
 // johnfitz
 
@@ -906,7 +1065,10 @@ float MSG_ReadAngle16(unsigned int flags)
 
 void SZ_Alloc(sizebuf_t* buf, int startsize)
 {
-    if(startsize < 256) startsize = 256;
+    if(startsize < 256)
+    {
+        startsize = 256;
+    }
     buf->data = (byte*)Hunk_AllocName(startsize, "sizebuf");
     buf->maxsize = startsize;
     buf->cursize = 0;
@@ -933,16 +1095,20 @@ void* SZ_GetSpace(sizebuf_t* buf, int length)
     if(buf->cursize + length > buf->maxsize)
     {
         if(!buf->allowoverflow)
+        {
             Host_Error(
                 "SZ_GetSpace: overflow without allowoverflow set"); // ericw --
-                                                                    // made
-                                                                    // Host_Error
-                                                                    // to be
-                                                                    // less
-                                                                    // annoying
+        }
+        // made
+        // Host_Error
+        // to be
+        // less
+        // annoying
 
         if(length > buf->maxsize)
+        {
             Sys_Error("SZ_GetSpace: %i is > full buffer size", length);
+        }
 
         buf->overflowed = true;
         Con_Printf("SZ_GetSpace: overflow");
@@ -989,7 +1155,10 @@ const char* COM_SkipPath(const char* pathname)
     last = pathname;
     while(*pathname)
     {
-        if(*pathname == '/') last = pathname + 1;
+        if(*pathname == '/')
+        {
+            last = pathname + 1;
+        }
         pathname++;
     }
     return last;
@@ -1009,15 +1178,23 @@ void COM_StripExtension(const char* in, char* out, size_t outsize)
         *out = '\0';
         return;
     }
-    if(in != out) /* copy when not in-place editing */
+    if(in != out)
+    { /* copy when not in-place editing */
         q_strlcpy(out, in, outsize);
+    }
     length = (int)strlen(out) - 1;
     while(length > 0 && out[length] != '.')
     {
         --length;
-        if(out[length] == '/' || out[length] == '\\') return; /* no extension */
+        if(out[length] == '/' || out[length] == '\\')
+        {
+            return; /* no extension */
+        }
     }
-    if(length > 0) out[length] = '\0';
+    if(length > 0)
+    {
+        out[length] = '\0';
+    }
 }
 
 /*
@@ -1031,13 +1208,20 @@ const char* COM_FileGetExtension(const char* in)
     size_t len;
 
     len = strlen(in);
-    if(len < 2) /* nothing meaningful */
+    if(len < 2)
+    { /* nothing meaningful */
         return "";
+    }
 
     src = in + len - 1;
-    while(src != in && src[-1] != '.') src--;
+    while(src != in && src[-1] != '.')
+    {
+        src--;
+    }
     if(src == in || strchr(src, '/') != nullptr || strchr(src, '\\') != nullptr)
+    {
         return ""; /* no extension, or parent directory has a dot */
+    }
 
     return src;
 }
@@ -1051,9 +1235,13 @@ void COM_ExtractExtension(const char* in, char* out, size_t outsize)
 {
     const char* ext = COM_FileGetExtension(in);
     if(!*ext)
+    {
         *out = '\0';
+    }
     else
+    {
         q_strlcpy(out, ext, outsize);
+    }
 }
 
 /*
@@ -1072,18 +1260,32 @@ void COM_FileBase(const char* in, char* out, size_t outsize)
     dot = nullptr;
     while(*s)
     {
-        if(*s == '/') slash = s + 1;
-        if(*s == '.') dot = s;
+        if(*s == '/')
+        {
+            slash = s + 1;
+        }
+        if(*s == '.')
+        {
+            dot = s;
+        }
         s++;
     }
-    if(dot == nullptr) dot = s;
+    if(dot == nullptr)
+    {
+        dot = s;
+    }
 
     if(dot - slash < 2)
+    {
         q_strlcpy(out, "?model?", outsize);
+    }
     else
     {
         size_t len = dot - slash;
-        if(len >= outsize) len = outsize - 1;
+        if(len >= outsize)
+        {
+            len = outsize - 1;
+        }
         memcpy(out, slash, len);
         out[len] = '\0';
     }
@@ -1125,7 +1327,9 @@ if path extension doesn't match .EXT, append it
 void COM_AddExtension(char* path, const char* extension, size_t len)
 {
     if(strcmp(COM_FileGetExtension(path), extension + 1) != 0)
+    {
         q_strlcat(path, extension, len);
+    }
 }
 
 
@@ -1144,20 +1348,29 @@ const char* COM_Parse(const char* data)
     len = 0;
     com_token[0] = 0;
 
-    if(!data) return nullptr;
+    if(!data)
+    {
+        return nullptr;
+    }
 
 // skip whitespace
 skipwhite:
     while((c = *data) <= ' ')
     {
-        if(c == 0) return nullptr; // end of file
+        if(c == 0)
+        {
+            return nullptr; // end of file
+        }
         data++;
     }
 
     // skip // comments
     if(c == '/' && data[1] == '/')
     {
-        while(*data && *data != '\n') data++;
+        while(*data && *data != '\n')
+        {
+            data++;
+        }
         goto skipwhite;
     }
 
@@ -1165,8 +1378,14 @@ skipwhite:
     if(c == '/' && data[1] == '*')
     {
         data += 2;
-        while(*data && !(*data == '*' && data[1] == '/')) data++;
-        if(*data) data += 2;
+        while(*data && !(*data == '*' && data[1] == '/'))
+        {
+            data++;
+        }
+        if(*data)
+        {
+            data += 2;
+        }
         goto skipwhite;
     }
 
@@ -1176,7 +1395,10 @@ skipwhite:
         data++;
         while(true)
         {
-            if((c = *data) != 0) ++data;
+            if((c = *data) != 0)
+            {
+                ++data;
+            }
             if(c == '\"' || !c)
             {
                 com_token[len] = 0;
@@ -1206,7 +1428,9 @@ skipwhite:
         /* commented out the check for ':' so that ip:port works */
         if(c == '{' || c == '}' || c == '(' || c == ')' ||
             c == '\'' /* || c == ':' */)
+        {
             break;
+        }
     } while(c > 32);
 
     com_token[len] = 0;
@@ -1228,8 +1452,14 @@ int COM_CheckParm(const char* parm)
 
     for(i = 1; i < com_argc; i++)
     {
-        if(!com_argv[i]) continue; // NEXTSTEP sometimes clears appkit vars.
-        if(!Q_strcmp(parm, com_argv[i])) return i;
+        if(!com_argv[i])
+        {
+            continue; // NEXTSTEP sometimes clears appkit vars.
+        }
+        if(!Q_strcmp(parm, com_argv[i]))
+        {
+            return i;
+        }
     }
 
     return 0;
@@ -1258,6 +1488,7 @@ static void COM_CheckRegistered()
         Cvar_SetROM("registered", "0");
         Con_Printf("Playing shareware version.\n");
         if(com_modified)
+        {
             Sys_Error(
                 "You must have the registered version to use modified "
                 "games.\n\n"
@@ -1267,6 +1498,7 @@ static void COM_CheckRegistered()
                 "or use the -basedir command-line option to specify another "
                 "directory.",
                 com_basedir);
+        }
         return;
     }
 
@@ -1276,12 +1508,17 @@ static void COM_CheckRegistered()
     for(i = 0; i < 128; i++)
     {
         if(pop[i] != (unsigned short)BigShort(check[i]))
+        {
             Sys_Error("Corrupted data file.");
+        }
     }
 
     for(i = 0; com_cmdline[i]; i++)
     {
-        if(com_cmdline[i] != ' ') break;
+        if(com_cmdline[i] != ' ')
+        {
+            break;
+        }
     }
 
     Cvar_SetROM("cmdline", &com_cmdline[i]);
@@ -1312,13 +1549,19 @@ void COM_InitArgv(int argc, char** argv)
         }
 
         if(n < (CMDLINE_LENGTH - 1))
+        {
             com_cmdline[n++] = ' ';
+        }
         else
+        {
             break;
+        }
     }
 
     if(n > 0 && com_cmdline[n - 1] == ' ')
+    {
         com_cmdline[n - 1] = 0; // johnfitz -- kill the trailing space
+    }
 
     Con_Printf("Command line: %s\n", com_cmdline);
 
@@ -1326,7 +1569,10 @@ void COM_InitArgv(int argc, char** argv)
         com_argc++)
     {
         largv[com_argc] = argv[com_argc];
-        if(!Q_strcmp("-safe", argv[com_argc])) safemode = 1;
+        if(!Q_strcmp("-safe", argv[com_argc]))
+        {
+            safemode = 1;
+        }
     }
 
     largv[com_argc] = argvdummy;
@@ -1378,11 +1624,17 @@ void COM_Init()
            N  U  X  I
     */
     if(*(char*)&i == 0x12)
+    {
         host_bigendian = true;
+    }
     else if(*(char*)&i == 0x78)
+    {
         host_bigendian = false;
-    else /* if ( *(char *)&i == 0x34 ) */
+    }
+    else
+    { /* if ( *(char *)&i == 0x34 ) */
         Sys_Error("Unsupported endianism.");
+    }
 
     if(host_bigendian)
     {
@@ -1403,7 +1655,10 @@ void COM_Init()
         LittleFloat = FloatNoSwap;
     }
 
-    if(COM_CheckParm("-fitz")) fitzmode = true;
+    if(COM_CheckParm("-fitz"))
+    {
+        fitzmode = true;
+    }
 #ifdef _DEBUG
     Cmd_AddCommand("fitztest", FitzTest_f); // johnfitz
 #endif
@@ -1497,7 +1752,9 @@ static void COM_Path_f()
             Con_Printf("%s (%i files)\n", s->pack->filename, s->pack->numfiles);
         }
         else
+        {
             Con_Printf("%s\n", s->filename);
+        }
     }
 }
 
@@ -1585,7 +1842,10 @@ static int COM_FindFile(
     pack_t* pak;
     int i, findtime;
 
-    if(file && handle) Sys_Error("COM_FindFile: both handle and file set");
+    if(file && handle)
+    {
+        Sys_Error("COM_FindFile: both handle and file set");
+    }
 
     file_from_pak = 0;
 
@@ -1599,11 +1859,17 @@ static int COM_FindFile(
             pak = search->pack;
             for(i = 0; i < pak->numfiles; i++)
             {
-                if(strcmp(pak->files[i].name, filename) != 0) continue;
+                if(strcmp(pak->files[i].name, filename) != 0)
+                {
+                    continue;
+                }
                 // found it!
                 com_filesize = pak->files[i].filelen;
                 file_from_pak = 1;
-                if(path_id) *path_id = search->path_id;
+                if(path_id)
+                {
+                    *path_id = search->path_id;
+                }
                 if(handle)
                 {
                     *handle = pak->handle;
@@ -1613,7 +1879,10 @@ static int COM_FindFile(
                 else if(file)
                 { /* open a new file on the pakfile */
                     *file = fopen(pak->filename, "rb");
-                    if(*file) fseek(*file, pak->files[i].filepos, SEEK_SET);
+                    if(*file)
+                    {
+                        fseek(*file, pak->files[i].filepos, SEEK_SET);
+                    }
                     return com_filesize;
                 }
                 else /* for COM_FileExists() */
@@ -1626,15 +1895,24 @@ static int COM_FindFile(
         {
             if(!registered.value)
             { /* if not a registered version, don't ever go beyond base */
-                if(strchr(filename, '/') || strchr(filename, '\\')) continue;
+                if(strchr(filename, '/') || strchr(filename, '\\'))
+                {
+                    continue;
+                }
             }
 
             q_snprintf(
                 netpath, sizeof(netpath), "%s/%s", search->filename, filename);
             findtime = Sys_FileTime(netpath);
-            if(findtime == -1) continue;
+            if(findtime == -1)
+            {
+                continue;
+            }
 
-            if(path_id) *path_id = search->path_id;
+            if(path_id)
+            {
+                *path_id = search->path_id;
+            }
             if(handle)
             {
                 com_filesize = Sys_FileOpenRead(netpath, &i);
@@ -1658,13 +1936,23 @@ static int COM_FindFile(
         strcmp(COM_FileGetExtension(filename), "tga") != 0 &&
         strcmp(COM_FileGetExtension(filename), "lit") != 0 &&
         strcmp(COM_FileGetExtension(filename), "ent") != 0)
+    {
         Con_DPrintf("FindFile: can't find %s\n", filename);
+    }
     else
+    {
         Con_DPrintf2("FindFile: can't find %s\n", filename);
+    }
     // Log pcx, tga, lit, ent misses only if (developer.value >= 2)
 
-    if(handle) *handle = -1;
-    if(file) *file = nullptr;
+    if(handle)
+    {
+        *handle = -1;
+    }
+    if(file)
+    {
+        *file = nullptr;
+    }
     com_filesize = -1;
     return com_filesize;
 }
@@ -1722,7 +2010,12 @@ void COM_CloseFile(int h)
     searchpath_t* s;
 
     for(s = com_searchpaths; s; s = s->next)
-        if(s->pack && s->pack->handle == h) return;
+    {
+        if(s->pack && s->pack->handle == h)
+        {
+            return;
+        }
+    }
 
     Sys_FileClose(h);
 }
@@ -1758,7 +2051,10 @@ byte* COM_LoadFile(const char* path, int usehunk, unsigned int* path_id)
 
     // look for it in the filesystem or pack files
     len = COM_OpenFile(path, &h, path_id);
-    if(h == -1) return nullptr;
+    if(h == -1)
+    {
+        return nullptr;
+    }
 
     // extract the filename base name for hunk tag
     COM_FileBase(path, base, sizeof(base));
@@ -1773,15 +2069,22 @@ byte* COM_LoadFile(const char* path, int usehunk, unsigned int* path_id)
             break;
         case LOADFILE_STACK:
             if(len < loadsize)
+            {
                 buf = loadbuf;
+            }
             else
+            {
                 buf = (byte*)Hunk_TempAlloc(len + 1);
+            }
             break;
         case LOADFILE_MALLOC: buf = (byte*)malloc(len + 1); break;
         default: Sys_Error("COM_LoadFile: bad usehunk");
     }
 
-    if(!buf) Sys_Error("COM_LoadFile: not enough space for %s", path);
+    if(!buf)
+    {
+        Sys_Error("COM_LoadFile: not enough space for %s", path);
+    }
 
     ((byte*)buf)[len] = 0;
 
@@ -1844,13 +2147,22 @@ byte* COM_LoadMallocFile_TextMode_OSPath(const char* path, long* len_out)
     // TODO: could handle in a way that allows loading CRLF savegames on
     // mac/linux without the junk characters appearing.
     f = fopen(path, "rt");
-    if(f == nullptr) return nullptr;
+    if(f == nullptr)
+    {
+        return nullptr;
+    }
 
     len = COM_filelength(f);
-    if(len < 0) return nullptr;
+    if(len < 0)
+    {
+        return nullptr;
+    }
 
     data = (byte*)malloc(len + 1);
-    if(data == nullptr) return nullptr;
+    if(data == nullptr)
+    {
+        return nullptr;
+    }
 
     // (actuallen < len) if CRLF to LF translation was performed
     actuallen = fread(data, 1, len, f);
@@ -1861,7 +2173,10 @@ byte* COM_LoadMallocFile_TextMode_OSPath(const char* path, long* len_out)
     }
     data[actuallen] = '\0';
 
-    if(len_out != nullptr) *len_out = actuallen;
+    if(len_out != nullptr)
+    {
+        *len_out = actuallen;
+    }
     return data;
 }
 
@@ -1908,12 +2223,17 @@ static pack_t* COM_LoadPackFile(const char* packfile)
     dpackfile_t info[MAX_FILES_IN_PACK];
     unsigned short crc;
 
-    if(Sys_FileOpenRead(packfile, &packhandle) == -1) return nullptr;
+    if(Sys_FileOpenRead(packfile, &packhandle) == -1)
+    {
+        return nullptr;
+    }
 
     Sys_FileRead(packhandle, (void*)&header, sizeof(header));
     if(header.id[0] != 'P' || header.id[1] != 'A' || header.id[2] != 'C' ||
         header.id[3] != 'K')
+    {
         Sys_Error("%s is not a packfile", packfile);
+    }
 
     header.dirofs = LittleLong(header.dirofs);
     header.dirlen = LittleLong(header.dirlen);
@@ -1932,9 +2252,14 @@ static pack_t* COM_LoadPackFile(const char* packfile)
         return nullptr;
     }
     if(numpackfiles > MAX_FILES_IN_PACK)
+    {
         Sys_Error("%s has %i files", packfile, numpackfiles);
+    }
 
-    if(numpackfiles != PAK0_COUNT) com_modified = true; // not the original file
+    if(numpackfiles != PAK0_COUNT)
+    {
+        com_modified = true; // not the original file
+    }
 
     newfiles = (packfile_t*)Z_Malloc(numpackfiles * sizeof(packfile_t));
 
@@ -1943,9 +2268,14 @@ static pack_t* COM_LoadPackFile(const char* packfile)
 
     // crc the directory to check for modifications
     CRC_Init(&crc);
-    for(i = 0; i < header.dirlen; i++) CRC_ProcessByte(&crc, ((byte*)info)[i]);
+    for(i = 0; i < header.dirlen; i++)
+    {
+        CRC_ProcessByte(&crc, ((byte*)info)[i]);
+    }
     if(crc != PAK0_CRC_V106 && crc != PAK0_CRC_V101 && crc != PAK0_CRC_V100)
+    {
         com_modified = true;
+    }
 
     // parse the directory
     for(i = 0; i < numpackfiles; i++)
@@ -1983,9 +2313,13 @@ static void COM_AddGameDirectory(const char* base, const char* dir)
 
     // assign a path_id to this game directory
     if(com_searchpaths)
+    {
         path_id = com_searchpaths->path_id << 1;
+    }
     else
+    {
         path_id = 1U;
+    }
 
 _add_path:
     // add the directory to the search path
@@ -2001,11 +2335,16 @@ _add_path:
         q_snprintf(pakfile, sizeof(pakfile), "%s/pak%i.pak", com_gamedir, i);
         pak = COM_LoadPackFile(pakfile);
         if(i != 0 || path_id != 1 || fitzmode)
+        {
             qspak = nullptr;
+        }
         else
         {
             qboolean old = com_modified;
-            if(been_here) base = host_parms->userdir;
+            if(been_here)
+            {
+                base = host_parms->userdir;
+            }
             q_snprintf(pakfile, sizeof(pakfile), "%s/quakespasm.pak", base);
             qspak = COM_LoadPackFile(pakfile);
             com_modified = old;
@@ -2026,7 +2365,10 @@ _add_path:
             search->next = com_searchpaths;
             com_searchpaths = search;
         }
-        if(!pak) break;
+        if(!pak)
+        {
+            break;
+        }
     }
 
     if(!been_here && host_parms->userdir != host_parms->basedir)
@@ -2089,16 +2431,23 @@ static void COM_Game_f()
                 {
                     // rely on QuakeSpasm extension treating '-game missionpack'
                     // as '-missionpack', otherwise would be a mess
-                    if(!q_strcasecmp(p, &p2[1])) goto _same;
+                    if(!q_strcasecmp(p, &p2[1]))
+                    {
+                        goto _same;
+                    }
                     Con_Printf("reloading game \"%s\" with \"%s\" support\n", p,
                         &p2[1]);
                 }
                 else if(!*p2 && com_searchpaths->path_id > 2)
+                {
                     Con_Printf(
                         "reloading game \"%s\" without mission pack support\n",
                         p);
+                }
                 else
+                {
                     goto _same;
+                }
             }
             else
             {
@@ -2144,11 +2493,17 @@ static void COM_Game_f()
                 COM_AddGameDirectory(com_basedir, &p2[1]);
                 standard_quake = false;
                 if(!strcmp(p2, "-hipnotic") || !strcmp(p2, "-quoth"))
+                {
                     hipnotic = true;
+                }
                 else if(!strcmp(p2, "-rogue"))
+                {
                     rogue = true;
-                if(q_strcasecmp(p, &p2[1])) // don't load twice
+                }
+                if(q_strcasecmp(p, &p2[1]))
+                { // don't load twice
                     COM_AddGameDirectory(com_basedir, p);
+                }
             }
             else
             {
@@ -2199,8 +2554,10 @@ static void COM_Game_f()
             Cbuf_AddText("map start\n");
         }
     }
-    else // Diplay the current gamedir
+    else
+    { // Diplay the current gamedir
         Con_Printf("\"game\" is \"%s\"\n", COM_SkipPath(com_gamedir));
+    }
 }
 
 /*
@@ -2219,14 +2576,23 @@ void COM_InitFilesystem() // johnfitz -- modified based on topaz's tutorial
 
     i = COM_CheckParm("-basedir");
     if(i && i < com_argc - 1)
+    {
         q_strlcpy(com_basedir, com_argv[i + 1], sizeof(com_basedir));
+    }
     else
+    {
         q_strlcpy(com_basedir, host_parms->basedir, sizeof(com_basedir));
+    }
 
     j = strlen(com_basedir);
-    if(j < 1) Sys_Error("Bad argument to -basedir");
+    if(j < 1)
+    {
+        Sys_Error("Bad argument to -basedir");
+    }
     if((com_basedir[j - 1] == '\\') || (com_basedir[j - 1] == '/'))
+    {
         com_basedir[j - 1] = 0;
+    }
 
     // start up with GAMENAME by default (id1)
     COM_AddGameDirectory(com_basedir, GAMENAME);
@@ -2238,10 +2604,18 @@ void COM_InitFilesystem() // johnfitz -- modified based on topaz's tutorial
     com_base_searchpaths = com_searchpaths;
 
     // add mission pack requests (only one should be specified)
-    if(COM_CheckParm("-rogue")) COM_AddGameDirectory(com_basedir, "rogue");
+    if(COM_CheckParm("-rogue"))
+    {
+        COM_AddGameDirectory(com_basedir, "rogue");
+    }
     if(COM_CheckParm("-hipnotic"))
+    {
         COM_AddGameDirectory(com_basedir, "hipnotic");
-    if(COM_CheckParm("-quoth")) COM_AddGameDirectory(com_basedir, "quoth");
+    }
+    if(COM_CheckParm("-quoth"))
+    {
+        COM_AddGameDirectory(com_basedir, "quoth");
+    }
 
 
     i = COM_CheckParm("-game");
@@ -2250,14 +2624,24 @@ void COM_InitFilesystem() // johnfitz -- modified based on topaz's tutorial
         const char* p = com_argv[i + 1];
         if(!*p || !strcmp(p, ".") || strstr(p, "..") || strstr(p, "/") ||
             strstr(p, "\\") || strstr(p, ":"))
+        {
             Sys_Error(
                 "gamedir should be a single directory name, not a path\n");
+        }
         com_modified = true;
         // don't load mission packs twice
-        if(COM_CheckParm("-rogue") && !q_strcasecmp(p, "rogue")) p = nullptr;
-        if(COM_CheckParm("-hipnotic") && !q_strcasecmp(p, "hipnotic"))
+        if(COM_CheckParm("-rogue") && !q_strcasecmp(p, "rogue"))
+        {
             p = nullptr;
-        if(COM_CheckParm("-quoth") && !q_strcasecmp(p, "quoth")) p = nullptr;
+        }
+        if(COM_CheckParm("-hipnotic") && !q_strcasecmp(p, "hipnotic"))
+        {
+            p = nullptr;
+        }
+        if(COM_CheckParm("-quoth") && !q_strcasecmp(p, "quoth"))
+        {
+            p = nullptr;
+        }
         if(p != nullptr)
         {
             COM_AddGameDirectory(com_basedir, p);
@@ -2308,8 +2692,10 @@ size_t FS_fread(void* ptr, size_t size, size_t nmemb, fshandle_t* fh)
     }
 
     byte_size = nmemb * size;
-    if(byte_size > fh->length - fh->pos) /* just read to end */
+    if(byte_size > fh->length - fh->pos)
+    { /* just read to end */
         byte_size = fh->length - fh->pos;
+    }
     bytes_read = fread(ptr, 1, byte_size, fh->file);
     fh->pos += bytes_read;
 
@@ -2318,7 +2704,10 @@ size_t FS_fread(void* ptr, size_t size, size_t nmemb, fshandle_t* fh)
     nmemb_read = bytes_read / size;
     /* even if the last member is only read partially
      * it is counted as a whole in the return value. */
-    if(bytes_read % size) nmemb_read++;
+    if(bytes_read % size)
+    {
+        nmemb_read++;
+    }
 
     return nmemb_read;
 }
@@ -2351,11 +2740,16 @@ int FS_fseek(fshandle_t* fh, long offset, int whence)
         return -1;
     }
 
-    if(offset > fh->length) /* just seek to end */
+    if(offset > fh->length)
+    { /* just seek to end */
         offset = fh->length;
+    }
 
     ret = fseek(fh->file, fh->start + offset, SEEK_SET);
-    if(ret < 0) return ret;
+    if(ret < 0)
+    {
+        return ret;
+    }
 
     fh->pos = offset;
     return 0;
@@ -2383,7 +2777,10 @@ long FS_ftell(fshandle_t* fh)
 
 void FS_rewind(fshandle_t* fh)
 {
-    if(!fh) return;
+    if(!fh)
+    {
+        return;
+    }
     clearerr(fh->file);
     fseek(fh->file, fh->start, SEEK_SET);
     fh->pos = 0;
@@ -2396,7 +2793,10 @@ int FS_feof(fshandle_t* fh)
         errno = EBADF;
         return -1;
     }
-    if(fh->pos >= fh->length) return -1;
+    if(fh->pos >= fh->length)
+    {
+        return -1;
+    }
     return 0;
 }
 
@@ -2417,7 +2817,10 @@ int FS_fgetc(fshandle_t* fh)
         errno = EBADF;
         return EOF;
     }
-    if(fh->pos >= fh->length) return EOF;
+    if(fh->pos >= fh->length)
+    {
+        return EOF;
+    }
     fh->pos += 1;
     return fgetc(fh->file);
 }
@@ -2426,9 +2829,15 @@ char* FS_fgets(char* s, int size, fshandle_t* fh)
 {
     char* ret;
 
-    if(FS_feof(fh)) return nullptr;
+    if(FS_feof(fh))
+    {
+        return nullptr;
+    }
 
-    if(size > (fh->length - fh->pos) + 1) size = (fh->length - fh->pos) + 1;
+    if(size > (fh->length - fh->pos) + 1)
+    {
+        size = (fh->length - fh->pos) + 1;
+    }
 
     ret = fgets(s, size, fh->file);
     fh->pos = ftell(fh->file) - fh->start;

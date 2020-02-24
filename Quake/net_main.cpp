@@ -90,9 +90,15 @@ qsocket_t* NET_NewQSocket()
 {
     qsocket_t* sock;
 
-    if(net_freeSockets == nullptr) return nullptr;
+    if(net_freeSockets == nullptr)
+    {
+        return nullptr;
+    }
 
-    if(net_activeconnections >= svs.maxclients) return nullptr;
+    if(net_activeconnections >= svs.maxclients)
+    {
+        return nullptr;
+    }
 
     // get one from free list
     sock = net_freeSockets;
@@ -129,7 +135,9 @@ void NET_FreeQSocket(qsocket_t* sock)
 
     // remove it from active list
     if(sock == net_activeSockets)
+    {
         net_activeSockets = net_activeSockets->next;
+    }
     else
     {
         for(s = net_activeSockets; s; s = s->next)
@@ -141,7 +149,10 @@ void NET_FreeQSocket(qsocket_t* sock)
             }
         }
 
-        if(!s) Sys_Error("NET_FreeQSocket: not active");
+        if(!s)
+        {
+            Sys_Error("NET_FreeQSocket: not active");
+        }
     }
 
     // add it to free list
@@ -176,7 +187,10 @@ static void NET_Listen_f()
     for(net_driverlevel = 0; net_driverlevel < net_numdrivers;
         net_driverlevel++)
     {
-        if(net_drivers[net_driverlevel].initialized == false) continue;
+        if(net_drivers[net_driverlevel].initialized == false)
+        {
+            continue;
+        }
         dfunc.Listen(listening);
     }
 }
@@ -200,22 +214,35 @@ static void MaxPlayers_f()
     }
 
     n = Q_atoi(Cmd_Argv(1));
-    if(n < 1) n = 1;
+    if(n < 1)
+    {
+        n = 1;
+    }
     if(n > svs.maxclientslimit)
     {
         n = svs.maxclientslimit;
         Con_Printf("\"maxplayers\" set to \"%d\"\n", n);
     }
 
-    if((n == 1) && listening) Cbuf_AddText("listen 0\n");
+    if((n == 1) && listening)
+    {
+        Cbuf_AddText("listen 0\n");
+    }
 
-    if((n > 1) && (!listening)) Cbuf_AddText("listen 1\n");
+    if((n > 1) && (!listening))
+    {
+        Cbuf_AddText("listen 1\n");
+    }
 
     svs.maxclients = n;
     if(n == 1)
+    {
         Cvar_Set("deathmatch", "0");
+    }
     else
+    {
         Cvar_Set("deathmatch", "1");
+    }
 }
 
 
@@ -263,11 +290,15 @@ static void PrintSlist()
     for(n = slistLastShown; n < hostCacheCount; n++)
     {
         if(hostcache[n].maxusers)
+        {
             Con_Printf("%-15.15s %-15.15s %2u/%2u\n", hostcache[n].name,
                 hostcache[n].map, hostcache[n].users, hostcache[n].maxusers);
+        }
         else
+        {
             Con_Printf(
                 "%-15.15s %-15.15s\n", hostcache[n].name, hostcache[n].map);
+        }
     }
     slistLastShown = n;
 }
@@ -276,15 +307,22 @@ static void PrintSlist()
 static void PrintSlistTrailer()
 {
     if(hostCacheCount)
+    {
         Con_Printf("== end list ==\n\n");
+    }
     else
+    {
         Con_Printf("No Quake servers found.\n\n");
+    }
 }
 
 
 void NET_Slist_f()
 {
-    if(slistInProgress) return;
+    if(slistInProgress)
+    {
+        return;
+    }
 
     if(!slistSilent)
     {
@@ -328,7 +366,10 @@ const char* NET_SlistPrintServer(int idx)
 {
     static char string[64];
 
-    if(idx < 0 || idx >= hostCacheCount) return "";
+    if(idx < 0 || idx >= hostCacheCount)
+    {
+        return "";
+    }
 
     if(hostcache[idx].maxusers)
     {
@@ -348,7 +389,10 @@ const char* NET_SlistPrintServer(int idx)
 
 const char* NET_SlistPrintServerName(int idx)
 {
-    if(idx < 0 || idx >= hostCacheCount) return "";
+    if(idx < 0 || idx >= hostCacheCount)
+    {
+        return "";
+    }
     return hostcache[idx].cname;
 }
 
@@ -360,13 +404,21 @@ static void Slist_Send(void* unused)
     for(net_driverlevel = 0; net_driverlevel < net_numdrivers;
         net_driverlevel++)
     {
-        if(!slistLocal && IS_LOOP_DRIVER(net_driverlevel)) continue;
-        if(net_drivers[net_driverlevel].initialized == false) continue;
+        if(!slistLocal && IS_LOOP_DRIVER(net_driverlevel))
+        {
+            continue;
+        }
+        if(net_drivers[net_driverlevel].initialized == false)
+        {
+            continue;
+        }
         dfunc.SearchForHosts(true);
     }
 
     if((Sys_DoubleTime() - slistStartTime) < 0.5)
+    {
         SchedulePollProcedure(&slistSendProcedure, 0.75);
+    }
 }
 
 
@@ -377,12 +429,21 @@ static void Slist_Poll(void* unused)
     for(net_driverlevel = 0; net_driverlevel < net_numdrivers;
         net_driverlevel++)
     {
-        if(!slistLocal && IS_LOOP_DRIVER(net_driverlevel)) continue;
-        if(net_drivers[net_driverlevel].initialized == false) continue;
+        if(!slistLocal && IS_LOOP_DRIVER(net_driverlevel))
+        {
+            continue;
+        }
+        if(net_drivers[net_driverlevel].initialized == false)
+        {
+            continue;
+        }
         dfunc.SearchForHosts(false);
     }
 
-    if(!slistSilent) PrintSlist();
+    if(!slistSilent)
+    {
+        PrintSlist();
+    }
 
     if((Sys_DoubleTime() - slistStartTime) < 1.5)
     {
@@ -390,7 +451,10 @@ static void Slist_Poll(void* unused)
         return;
     }
 
-    if(!slistSilent) PrintSlistTrailer();
+    if(!slistSilent)
+    {
+        PrintSlistTrailer();
+    }
     slistInProgress = false;
     slistSilent = false;
     slistLocal = true;
@@ -414,7 +478,10 @@ qsocket_t* NET_Connect(const char* host)
 
     SetNetTime();
 
-    if(host && *host == 0) host = nullptr;
+    if(host && *host == 0)
+    {
+        host = nullptr;
+    }
 
     if(host)
     {
@@ -427,23 +494,34 @@ qsocket_t* NET_Connect(const char* host)
         if(hostCacheCount)
         {
             for(n = 0; n < hostCacheCount; n++)
+            {
                 if(q_strcasecmp(host, hostcache[n].name) == 0)
                 {
                     host = hostcache[n].cname;
                     break;
                 }
-            if(n < hostCacheCount) goto JustDoIt;
+            }
+            if(n < hostCacheCount)
+            {
+                goto JustDoIt;
+            }
         }
     }
 
     slistSilent = host ? true : false;
     NET_Slist_f();
 
-    while(slistInProgress) NET_Poll();
+    while(slistInProgress)
+    {
+        NET_Poll();
+    }
 
     if(host == nullptr)
     {
-        if(hostCacheCount != 1) return nullptr;
+        if(hostCacheCount != 1)
+        {
+            return nullptr;
+        }
         host = hostcache[0].cname;
         Con_Printf("Connecting to...\n%s @ %s\n\n", hostcache[0].name, host);
     }
@@ -463,9 +541,15 @@ qsocket_t* NET_Connect(const char* host)
 JustDoIt:
     for(net_driverlevel = 0; net_driverlevel < numdrivers; net_driverlevel++)
     {
-        if(net_drivers[net_driverlevel].initialized == false) continue;
+        if(net_drivers[net_driverlevel].initialized == false)
+        {
+            continue;
+        }
         ret = dfunc.Connect(host);
-        if(ret) return ret;
+        if(ret)
+        {
+            return ret;
+        }
     }
 
     if(host)
@@ -494,8 +578,14 @@ qsocket_t* NET_CheckNewConnections()
     for(net_driverlevel = 0; net_driverlevel < net_numdrivers;
         net_driverlevel++)
     {
-        if(net_drivers[net_driverlevel].initialized == false) continue;
-        if(!IS_LOOP_DRIVER(net_driverlevel) && listening == false) continue;
+        if(net_drivers[net_driverlevel].initialized == false)
+        {
+            continue;
+        }
+        if(!IS_LOOP_DRIVER(net_driverlevel) && listening == false)
+        {
+            continue;
+        }
         ret = dfunc.CheckNewConnections();
         if(ret)
         {
@@ -513,9 +603,15 @@ NET_Close
 */
 void NET_Close(qsocket_t* sock)
 {
-    if(!sock) return;
+    if(!sock)
+    {
+        return;
+    }
 
-    if(sock->disconnected) return;
+    if(sock->disconnected)
+    {
+        return;
+    }
 
     SetNetTime();
 
@@ -541,7 +637,10 @@ int NET_GetMessage(qsocket_t* sock)
 {
     int ret;
 
-    if(!sock) return -1;
+    if(!sock)
+    {
+        return -1;
+    }
 
     if(sock->disconnected)
     {
@@ -569,9 +668,13 @@ int NET_GetMessage(qsocket_t* sock)
         {
             sock->lastMessageTime = net_time;
             if(ret == 1)
+            {
                 messagesReceived++;
+            }
             else if(ret == 2)
+            {
                 unreliableMessagesReceived++;
+            }
         }
     }
 
@@ -594,7 +697,10 @@ int NET_SendMessage(qsocket_t* sock, sizebuf_t* data)
 {
     int r;
 
-    if(!sock) return -1;
+    if(!sock)
+    {
+        return -1;
+    }
 
     if(sock->disconnected)
     {
@@ -604,7 +710,10 @@ int NET_SendMessage(qsocket_t* sock, sizebuf_t* data)
 
     SetNetTime();
     r = sfunc.QSendMessage(sock, data);
-    if(r == 1 && !IS_LOOP_DRIVER(sock->driver)) messagesSent++;
+    if(r == 1 && !IS_LOOP_DRIVER(sock->driver))
+    {
+        messagesSent++;
+    }
 
     return r;
 }
@@ -614,7 +723,10 @@ int NET_SendUnreliableMessage(qsocket_t* sock, sizebuf_t* data)
 {
     int r;
 
-    if(!sock) return -1;
+    if(!sock)
+    {
+        return -1;
+    }
 
     if(sock->disconnected)
     {
@@ -624,7 +736,10 @@ int NET_SendUnreliableMessage(qsocket_t* sock, sizebuf_t* data)
 
     SetNetTime();
     r = sfunc.SendUnreliableMessage(sock, data);
-    if(r == 1 && !IS_LOOP_DRIVER(sock->driver)) unreliableMessagesSent++;
+    if(r == 1 && !IS_LOOP_DRIVER(sock->driver))
+    {
+        unreliableMessagesSent++;
+    }
 
     return r;
 }
@@ -640,9 +755,15 @@ message to be transmitted.
 */
 qboolean NET_CanSendMessage(qsocket_t* sock)
 {
-    if(!sock) return false;
+    if(!sock)
+    {
+        return false;
+    }
 
-    if(sock->disconnected) return false;
+    if(sock->disconnected)
+    {
+        return false;
+    }
 
     SetNetTime();
 
@@ -724,7 +845,10 @@ int NET_SendToAll(sizebuf_t* data, double blocktime)
                 continue;
             }
         }
-        if((Sys_DoubleTime() - start) > blocktime) break;
+        if((Sys_DoubleTime() - start) > blocktime)
+        {
+            break;
+        }
     }
     return count;
 }
@@ -744,21 +868,37 @@ void NET_Init()
     qsocket_t* s;
 
     i = COM_CheckParm("-port");
-    if(!i) i = COM_CheckParm("-udpport");
-    if(!i) i = COM_CheckParm("-ipxport");
+    if(!i)
+    {
+        i = COM_CheckParm("-udpport");
+    }
+    if(!i)
+    {
+        i = COM_CheckParm("-ipxport");
+    }
 
     if(i)
     {
         if(i < com_argc - 1)
+        {
             DEFAULTnet_hostport = Q_atoi(com_argv[i + 1]);
+        }
         else
+        {
             Sys_Error("NET_Init: you must specify a number after -port");
+        }
     }
     net_hostport = DEFAULTnet_hostport;
 
     net_numsockets = svs.maxclientslimit;
-    if(cls.state != ca_dedicated) net_numsockets++;
-    if(COM_CheckParm("-listen") || cls.state == ca_dedicated) listening = true;
+    if(cls.state != ca_dedicated)
+    {
+        net_numsockets++;
+    }
+    if(COM_CheckParm("-listen") || cls.state == ca_dedicated)
+    {
+        listening = true;
+    }
 
     SetNetTime();
 
@@ -785,10 +925,16 @@ void NET_Init()
     for(i = net_driverlevel = 0; net_driverlevel < net_numdrivers;
         net_driverlevel++)
     {
-        if(net_drivers[net_driverlevel].Init() == -1) continue;
+        if(net_drivers[net_driverlevel].Init() == -1)
+        {
+            continue;
+        }
         i++;
         net_drivers[net_driverlevel].initialized = true;
-        if(listening) net_drivers[net_driverlevel].Listen(true);
+        if(listening)
+        {
+            net_drivers[net_driverlevel].Listen(true);
+        }
     }
 
     /* Loop_Init() returns -1 for dedicated server case,
@@ -820,7 +966,10 @@ void NET_Shutdown()
 
     SetNetTime();
 
-    for(sock = net_activeSockets; sock; sock = sock->next) NET_Close(sock);
+    for(sock = net_activeSockets; sock; sock = sock->next)
+    {
+        NET_Close(sock);
+    }
 
     //
     // shutdown the drivers
@@ -847,7 +996,10 @@ void NET_Poll()
 
     for(pp = pollProcedureList; pp; pp = pp->next)
     {
-        if(pp->nextTime > net_time) break;
+        if(pp->nextTime > net_time)
+        {
+            break;
+        }
         pollProcedureList = pp->next;
         pp->procedure(pp->arg);
     }
@@ -861,7 +1013,10 @@ void SchedulePollProcedure(PollProcedure* proc, double timeOffset)
     proc->nextTime = Sys_DoubleTime() + timeOffset;
     for(pp = pollProcedureList, prev = nullptr; pp; pp = pp->next)
     {
-        if(pp->nextTime >= proc->nextTime) break;
+        if(pp->nextTime >= proc->nextTime)
+        {
+            break;
+        }
         prev = pp;
     }
 

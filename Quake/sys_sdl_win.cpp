@@ -61,7 +61,10 @@ static int findhandle()
 
     for(i = 1; i < MAX_HANDLES; i++)
     {
-        if(!sys_handles[i]) return i;
+        if(!sys_handles[i])
+        {
+            return i;
+        }
     }
     Sys_Error("out of handles");
     return -1;
@@ -110,7 +113,10 @@ int Sys_FileOpenWrite(const char* path)
     i = findhandle();
     f = fopen(path, "wb");
 
-    if(!f) Sys_Error("Error opening %s: %s", path, strerror(errno));
+    if(!f)
+    {
+        Sys_Error("Error opening %s: %s", path, strerror(errno));
+    }
 
     sys_handles[i] = f;
     return i;
@@ -163,14 +169,22 @@ static void Sys_GetBasedir(char* argv0, char* dst, size_t dstsize)
 
     rc = GetCurrentDirectory(dstsize, dst);
     if(rc == 0 || rc > dstsize)
+    {
         Sys_Error("Couldn't determine current directory");
+    }
 
     tmp = dst;
-    while(*tmp != 0) tmp++;
+    while(*tmp != 0)
+    {
+        tmp++;
+    }
     while(*tmp == 0 && tmp != dst)
     {
         --tmp;
-        if(tmp != dst && (*tmp == '/' || *tmp == '\\')) *tmp = 0;
+        if(tmp != dst && (*tmp == '/' || *tmp == '\\'))
+        {
+            *tmp = 0;
+        }
     }
 }
 
@@ -201,13 +215,23 @@ static void Sys_SetDPIAware()
     setDPIAware = (SetProcessDPIAwareFunc)(
         hUser32 ? GetProcAddress(hUser32, "SetProcessDPIAware") : nullptr);
 
-    if(setDPIAwareness) /* Windows 8.1+ */
+    if(setDPIAwareness)
+    { /* Windows 8.1+ */
         setDPIAwareness(dpi_monitor_aware);
-    else if(setDPIAware) /* Windows Vista-8.0 */
+    }
+    else if(setDPIAware)
+    { /* Windows Vista-8.0 */
         setDPIAware();
+    }
 
-    if(hShcore) FreeLibrary(hShcore);
-    if(hUser32) FreeLibrary(hUser32);
+    if(hShcore)
+    {
+        FreeLibrary(hShcore);
+    }
+    if(hUser32)
+    {
+        FreeLibrary(hUser32);
+    }
 }
 
 static void Sys_SetTimerResolution()
@@ -238,7 +262,10 @@ void Sys_Init()
 
     vinfo.dwOSVersionInfoSize = sizeof(vinfo);
 
-    if(!GetVersionEx(&vinfo)) Sys_Error("Couldn't get OS info");
+    if(!GetVersionEx(&vinfo))
+    {
+        Sys_Error("Couldn't get OS info");
+    }
 
     if((vinfo.dwMajorVersion < 4) ||
         (vinfo.dwPlatformId == VER_PLATFORM_WIN32s))
@@ -250,10 +277,16 @@ void Sys_Init()
     {
         SYSTEM_INFO info;
         WinNT = true;
-        if(vinfo.dwMajorVersion >= 6) WinVista = true;
+        if(vinfo.dwMajorVersion >= 6)
+        {
+            WinVista = true;
+        }
         GetSystemInfo(&info);
         host_parms->numcpus = info.dwNumberOfProcessors;
-        if(host_parms->numcpus < 1) host_parms->numcpus = 1;
+        if(host_parms->numcpus < 1)
+        {
+            host_parms->numcpus = 1;
+        }
     }
     else
     {
@@ -264,7 +297,9 @@ void Sys_Init()
             Win95 = true;
             /* Win95-gold or Win95A can't switch bpp automatically */
             if(vinfo.szCSDVersion[1] != 'C' && vinfo.szCSDVersion[1] != 'B')
+            {
                 Win95old = true;
+            }
         }
     }
     Sys_Printf("Detected %d CPUs.\n", host_parms->numcpus);
@@ -284,9 +319,14 @@ void Sys_Init()
 
 void Sys_mkdir(const char* path)
 {
-    if(CreateDirectory(path, nullptr) != 0) return;
+    if(CreateDirectory(path, nullptr) != 0)
+    {
+        return;
+    }
     if(GetLastError() != ERROR_ALREADY_EXISTS)
+    {
         Sys_Error("Unable to create directory %s", path);
+    }
 }
 
 static const char errortxt1[] = "\nERROR-OUT BEGIN\n\n";
@@ -305,7 +345,9 @@ void Sys_Error(const char* error, ...)
     va_end(argptr);
 
     if(isDedicated)
+    {
         WriteFile(houtput, errortxt1, strlen(errortxt1), &dummy, nullptr);
+    }
     /* SDL will put these into its own stderr log,
        so print to stderr even in graphical mode. */
     fputs(errortxt1, stderr);
@@ -314,7 +356,9 @@ void Sys_Error(const char* error, ...)
     fputs(text, stderr);
     fputs("\n\n", stderr);
     if(!isDedicated)
+    {
         PL_ErrorDialog(text);
+    }
     else
     {
         WriteFile(houtput, errortxt2, strlen(errortxt2), &dummy, nullptr);
@@ -352,7 +396,10 @@ void Sys_Quit()
 {
     Host_Shutdown();
 
-    if(isDedicated) FreeConsole();
+    if(isDedicated)
+    {
+        FreeConsole();
+    }
 
     exit(0);
 }
@@ -373,14 +420,24 @@ const char* Sys_ConsoleInput()
     for(;;)
     {
         if(GetNumberOfConsoleInputEvents(hinput, &numevents) == 0)
+        {
             Sys_Error("Error getting # of console events");
+        }
 
-        if(!numevents) break;
+        if(!numevents)
+        {
+            break;
+        }
 
         if(ReadConsoleInput(hinput, recs, 1, &numread) == 0)
+        {
             Sys_Error("Error reading console input");
+        }
 
-        if(numread != 1) Sys_Error("Couldn't read console input");
+        if(numread != 1)
+        {
+            Sys_Error("Couldn't read console input");
+        }
 
         if(recs[0].EventType == KEY_EVENT)
         {
@@ -404,7 +461,10 @@ const char* Sys_ConsoleInput()
 
                     case '\b':
                         WriteFile(houtput, "\b \b", 3, &dummy, nullptr);
-                        if(textlen != 0) textlen--;
+                        if(textlen != 0)
+                        {
+                            textlen--;
+                        }
 
                         break;
 

@@ -62,7 +62,7 @@ typedef struct gltexture_s
     unsigned int flags;
     char source_file[MAX_QPATH]; // relative filepath to data source, or "" if
                                  // source is in memory
-    src_offset_t source_offset; // byte offset into file, or memory address
+    src_offset_t source_offset;  // byte offset into file, or memory address
     enum srcformat
         source_format; // format of pixel data (indexed, lightmap, or rgba)
     unsigned int source_width;  // size of image in source data

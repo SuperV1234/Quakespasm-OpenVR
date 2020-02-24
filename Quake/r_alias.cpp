@@ -202,7 +202,10 @@ void GLAlias_CreateShaders()
         "	gl_FragColor = result;\n"
         "}\n";
 
-    if(!gl_glsl_alias_able) return;
+    if(!gl_glsl_alias_able)
+    {
+        return;
+    }
 
     r_alias_program = GL_CreateProgram(vertSource, fragSource,
         sizeof(bindings) / sizeof(bindings[0]), bindings);
@@ -365,7 +368,10 @@ void GL_DrawAliasFrame(aliashdr_t* paliashdr, lerpdata_t lerpdata)
     {
         // get the vertex count and primitive type
         count = *commands++;
-        if(!count) break; // done
+        if(!count)
+        {
+            break; // done
+        }
 
         if(count < 0)
         {
@@ -373,7 +379,9 @@ void GL_DrawAliasFrame(aliashdr_t* paliashdr, lerpdata_t lerpdata)
             glBegin(GL_TRIANGLE_FAN);
         }
         else
+        {
             glBegin(GL_TRIANGLE_STRIP);
+        }
 
         do
         {
@@ -385,7 +393,9 @@ void GL_DrawAliasFrame(aliashdr_t* paliashdr, lerpdata_t lerpdata)
                 GL_MTexCoord2fFunc(GL_TEXTURE1_ARB, u, v);
             }
             else
+            {
                 glTexCoord2f(u, v);
+            }
 
             commands += 2;
 
@@ -472,7 +482,9 @@ void R_SetupAliasFrame(aliashdr_t* paliashdr, int frame, lerpdata_t* lerpdata)
         posenum += (int)(cl.time / e->lerptime) % numposes;
     }
     else
+    {
         e->lerptime = 0.1;
+    }
 
     if(e->lerpflags & LERP_RESETANIM) // kill any lerp in progress
     {
@@ -503,11 +515,15 @@ void R_SetupAliasFrame(aliashdr_t* paliashdr, int frame, lerpdata_t* lerpdata)
         !(e->model->flags & MOD_NOLERP && r_lerpmodels.value != 2))
     {
         if(e->lerpflags & LERP_FINISH && numposes == 1)
+        {
             lerpdata->blend = CLAMP(0,
                 (cl.time - e->lerpstart) / (e->lerpfinish - e->lerpstart), 1);
+        }
         else
+        {
             lerpdata->blend =
                 CLAMP(0, (cl.time - e->lerpstart) / e->lerptime, 1);
+        }
         lerpdata->pose1 = e->previouspose;
         lerpdata->pose2 = e->currentpose;
     }
@@ -555,12 +571,16 @@ void R_SetupEntityTransform(entity_t* e, lerpdata_t* lerpdata)
     if(r_lerpmove.value && e != &cl.viewent && e->lerpflags & LERP_MOVESTEP)
     {
         if(e->lerpflags & LERP_FINISH)
+        {
             blend = CLAMP(0,
                 (cl.time - e->movelerpstart) /
                     (e->lerpfinish - e->movelerpstart),
                 1);
+        }
         else
+        {
             blend = CLAMP(0, (cl.time - e->movelerpstart) / 0.1, 1);
+        }
 
         // translation
         VectorSubtract(e->currentorigin, e->previousorigin, d);
@@ -572,8 +592,14 @@ void R_SetupEntityTransform(entity_t* e, lerpdata_t* lerpdata)
         VectorSubtract(e->currentangles, e->previousangles, d);
         for(i = 0; i < 3; i++)
         {
-            if(d[i] > 180) d[i] -= 360;
-            if(d[i] < -180) d[i] += 360;
+            if(d[i] > 180)
+            {
+                d[i] -= 360;
+            }
+            if(d[i] < -180)
+            {
+                d[i] += 360;
+            }
         }
         lerpdata->angles[0] = e->previousangles[0] + d[0] * blend;
         lerpdata->angles[1] = e->previousangles[1] + d[1] * blend;
@@ -610,7 +636,9 @@ void R_SetupAliasLighting(entity_t* e)
             VectorSubtract(currententity->origin, cl_dlights[i].origin, dist);
             add = cl_dlights[i].radius - VectorLength(dist);
             if(add > 0)
+            {
                 VectorMA(lightcolor, add, cl_dlights[i].color, lightcolor);
+            }
         }
     }
 
@@ -643,17 +671,22 @@ void R_SetupAliasLighting(entity_t* e)
     if(overbright)
     {
         add = 288.0f / (lightcolor[0] + lightcolor[1] + lightcolor[2]);
-        if(add < 1.0f) VectorScale(lightcolor, add, lightcolor);
+        if(add < 1.0f)
+        {
+            VectorScale(lightcolor, add, lightcolor);
+        }
     }
 
     // hack up the brightness when fullbrights but no overbrights (256)
     if(gl_fullbrights.value && !gl_overbright_models.value)
+    {
         if(e->model->flags & MOD_FBRIGHTHACK)
         {
             lightcolor[0] = 256.0f;
             lightcolor[1] = 256.0f;
             lightcolor[2] = 256.0f;
         }
+    }
 
     quantizedangle =
         ((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1);
@@ -695,7 +728,10 @@ void R_DrawAliasModel(entity_t* e, bool horizflip)
     //
     // cull it
     //
-    if(R_CullModelForEntity(e)) return;
+    if(R_CullModelForEntity(e))
+    {
+        return;
+    }
 
     //
     // transform it
@@ -703,9 +739,9 @@ void R_DrawAliasModel(entity_t* e, bool horizflip)
     glPushMatrix();
     R_RotateForEntity(lerpdata.origin, lerpdata.angles);
 
-    if (horizflip)
+    if(horizflip)
     {
-        glScalef( 1.0f, -1.0f, 1.0f );
+        glScalef(1.0f, -1.0f, 1.0f);
         glFrontFace(GL_CCW);
     }
 
@@ -716,31 +752,46 @@ void R_DrawAliasModel(entity_t* e, bool horizflip)
     //
     // random stuff
     //
-    if(gl_smoothmodels.value && !r_drawflat_cheatsafe) glShadeModel(GL_SMOOTH);
+    if(gl_smoothmodels.value && !r_drawflat_cheatsafe)
+    {
+        glShadeModel(GL_SMOOTH);
+    }
     if(gl_affinemodels.value)
+    {
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+    }
     overbright = gl_overbright_models.value;
     shading = true;
 
     //
     // set up for alpha blending
     //
-    if(r_drawflat_cheatsafe ||
-        r_lightmap_cheatsafe) // no alpha in drawflat or lightmap mode
+    if(r_drawflat_cheatsafe || r_lightmap_cheatsafe)
+    { // no alpha in drawflat or lightmap mode
         entalpha = 1;
+    }
     else
+    {
         entalpha = ENTALPHA_DECODE(e->alpha);
-    if(entalpha == 0) goto cleanup;
+    }
+    if(entalpha == 0)
+    {
+        goto cleanup;
+    }
     if(entalpha < 1)
     {
         if(!gl_texture_env_combine)
+        {
             overbright = false; // overbright can't be done in a single pass
-                                // without combiners
+        }
+        // without combiners
         glDepthMask(GL_FALSE);
         glEnable(GL_BLEND);
     }
     else if(alphatest)
+    {
         glEnable(GL_ALPHA_TEST);
+    }
 
     //
     // set up lighting
@@ -767,9 +818,14 @@ void R_DrawAliasModel(entity_t* e, bool horizflip)
     {
         i = e - cl_entities;
         if (i >= 1 && i<=cl.maxclients /* && !strcmp (currententity->model->name, "progs/player.mdl") */)
+        {
             tx = playertextures[i - 1];
+        }
     }
-    if(!gl_fullbrights.value) fb = nullptr;
+    if(!gl_fullbrights.value)
+    {
+        fb = nullptr;
+    }
 
     //
     // draw it
@@ -955,11 +1011,14 @@ cleanup:
     glShadeModel(GL_FLAT);
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
-    if(alphatest) glDisable(GL_ALPHA_TEST);
+    if(alphatest)
+    {
+        glDisable(GL_ALPHA_TEST);
+    }
     glColor3f(1, 1, 1);
     glPopMatrix();
 
-    if (horizflip)
+    if(horizflip)
     {
         glFrontFace(GL_CW);
     }
@@ -987,12 +1046,21 @@ void GL_DrawAliasShadow(entity_t* e)
     aliashdr_t* paliashdr;
     lerpdata_t lerpdata;
 
-    if(R_CullModelForEntity(e)) return;
+    if(R_CullModelForEntity(e))
+    {
+        return;
+    }
 
-    if(e == &cl.viewent || e->model->flags & MOD_NOSHADOW) return;
+    if(e == &cl.viewent || e->model->flags & MOD_NOSHADOW)
+    {
+        return;
+    }
 
     entalpha = ENTALPHA_DECODE(e->alpha);
-    if(entalpha == 0) return;
+    if(entalpha == 0)
+    {
+        return;
+    }
 
     paliashdr = (aliashdr_t*)Mod_Extradata(e->model);
     R_SetupAliasFrame(paliashdr, e->frame, &lerpdata);
@@ -1039,7 +1107,10 @@ void R_DrawAliasModel_ShowTris(entity_t* e)
     aliashdr_t* paliashdr;
     lerpdata_t lerpdata;
 
-    if(R_CullModelForEntity(e)) return;
+    if(R_CullModelForEntity(e))
+    {
+        return;
+    }
 
     paliashdr = (aliashdr_t*)Mod_Extradata(e->model);
     R_SetupAliasFrame(paliashdr, e->frame, &lerpdata);

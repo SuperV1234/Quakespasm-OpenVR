@@ -77,7 +77,11 @@ Tab key down
 */
 void Sbar_ShowScores()
 {
-    if(sb_showscores) return;
+    if(sb_showscores)
+    {
+        return;
+    }
+
     sb_showscores = true;
     sb_updates = 0;
 }
@@ -331,7 +335,9 @@ void Sbar_DrawScrollString(int x, int y, int width, const char* str)
     scale = CLAMP(1.0, scr_sbarscale.value, (float)glwidth / 320.0);
     left = x * scale;
     if(cl.gametype != GAME_DEATHMATCH)
+    {
         left += (((float)glwidth - 320.0 * scale) / 2);
+    }
 
     glEnable(GL_SCISSOR_TEST);
     glScissor(left, 0, width * scale, glheight);
@@ -367,7 +373,9 @@ int Sbar_itoa(int num, char* buf)
     }
 
     for(pow10 = 10; num >= pow10; pow10 *= 10)
+    {
         ;
+    }
 
     do
     {
@@ -399,15 +407,25 @@ void Sbar_DrawNum(int x, int y, int num, int digits, int color)
 
     l = Sbar_itoa(num, str);
     ptr = str;
-    if(l > digits) ptr += (l - digits);
-    if(l < digits) x += (digits - l) * 24;
+    if(l > digits)
+    {
+        ptr += (l - digits);
+    }
+    if(l < digits)
+    {
+        x += (digits - l) * 24;
+    }
 
     while(*ptr)
     {
         if(*ptr == '-')
+        {
             frame = STAT_MINUS;
+        }
         else
+        {
             frame = *ptr - '0';
+        }
 
         Sbar_DrawPic(x, y,
             sb_nums[color][frame]); // johnfitz -- DrawTransPic is obsolete
@@ -521,9 +539,13 @@ void Sbar_SoloScoreboard()
         q_snprintf(str, sizeof(str), "%s (%s)", cl.levelname, cl.mapname);
         len = strlen(str);
         if(len > 40)
+        {
             Sbar_DrawScrollString(0, 4, 320, str);
+        }
         else
+        {
             Sbar_DrawString(160 - len * 4, 4, str);
+        }
         return;
     }
     minutes = cl.time / 60;
@@ -535,9 +557,13 @@ void Sbar_SoloScoreboard()
 
     len = strlen(cl.levelname);
     if(len > 40)
+    {
         Sbar_DrawScrollString(0, 4, 320, cl.levelname);
+    }
     else
+    {
         Sbar_DrawString(160 - len * 4, 4, cl.levelname);
+    }
 }
 
 /*
@@ -548,7 +574,10 @@ Sbar_DrawScoreboard
 void Sbar_DrawScoreboard()
 {
     Sbar_SoloScoreboard();
-    if(cl.gametype == GAME_DEATHMATCH) Sbar_DeathmatchOverlay();
+    if(cl.gametype == GAME_DEATHMATCH)
+    {
+        Sbar_DeathmatchOverlay();
+    }
 }
 
 //=============================================================================
@@ -568,11 +597,15 @@ void Sbar_DrawInventory()
     if(rogue)
     {
         if(cl.stats[STAT_ACTIVEWEAPON] >= RIT_LAVA_NAILGUN)
+        {
             Sbar_DrawPicAlpha(0, -24, rsb_invbar[0],
                 scr_sbaralpha.value); // johnfitz -- scr_sbaralpha
+        }
         else
+        {
             Sbar_DrawPicAlpha(0, -24, rsb_invbar[1],
                 scr_sbaralpha.value); // johnfitz -- scr_sbaralpha
+        }
     }
     else
     {
@@ -590,16 +623,25 @@ void Sbar_DrawInventory()
             if(flashon >= 10)
             {
                 if(cl.stats[STAT_ACTIVEWEAPON] == (IT_SHOTGUN << i))
+                {
                     flashon = 1;
+                }
                 else
+                {
                     flashon = 0;
+                }
             }
             else
+            {
                 flashon = (flashon % 5) + 2;
+            }
 
             Sbar_DrawPic(i * 24, -16, sb_weapons[flashon][i]);
 
-            if(flashon > 1) sb_updates = 0; // force update to remove flash
+            if(flashon > 1)
+            {
+                sb_updates = 0; // force update to remove flash
+            }
         }
     }
 
@@ -617,12 +659,18 @@ void Sbar_DrawInventory()
                 if(flashon >= 10)
                 {
                     if(cl.stats[STAT_ACTIVEWEAPON] == (1 << hipweapons[i]))
+                    {
                         flashon = 1;
+                    }
                     else
+                    {
                         flashon = 0;
+                    }
                 }
                 else
+                {
                     flashon = (flashon % 5) + 2;
+                }
 
                 // check grenade launcher
                 if(i == 2)
@@ -650,12 +698,19 @@ void Sbar_DrawInventory()
                         }
                     }
                     else
+                    {
                         Sbar_DrawPic(96, -16, hsb_weapons[flashon][4]);
+                    }
                 }
                 else
+                {
                     Sbar_DrawPic(176 + (i * 24), -16, hsb_weapons[flashon][i]);
+                }
 
-                if(flashon > 1) sb_updates = 0; // force update to remove flash
+                if(flashon > 1)
+                {
+                    sb_updates = 0; // force update to remove flash
+                }
             }
         }
     }
@@ -684,11 +739,17 @@ void Sbar_DrawInventory()
                   : q_min(999, val); // johnfitz -- cap displayed value to 999
         sprintf(num, "%3i", val);
         if(num[0] != ' ')
+        {
             Sbar_DrawCharacter((6 * i + 1) * 8 + 2, -24, 18 + num[0] - '0');
+        }
         if(num[1] != ' ')
+        {
             Sbar_DrawCharacter((6 * i + 2) * 8 + 2, -24, 18 + num[1] - '0');
+        }
         if(num[2] != ' ')
+        {
             Sbar_DrawCharacter((6 * i + 3) * 8 + 2, -24, 18 + num[2] - '0');
+        }
     }
 
     flashon = 0;
@@ -710,7 +771,10 @@ void Sbar_DrawInventory()
                     Sbar_DrawPic(192 + i * 16, -16, sb_items[i]);
                 }
             }
-            if(time && time > cl.time - 2) sb_updates = 0;
+            if(time && time > cl.time - 2)
+            {
+                sb_updates = 0;
+            }
         }
     }
     // MED 01/04/97 added hipnotic items
@@ -730,7 +794,10 @@ void Sbar_DrawInventory()
                 {
                     Sbar_DrawPic(288 + i * 16, -16, hsb_items[i]);
                 }
-                if(time && time > cl.time - 2) sb_updates = 0;
+                if(time && time > cl.time - 2)
+                {
+                    sb_updates = 0;
+                }
             }
         }
     }
@@ -751,7 +818,10 @@ void Sbar_DrawInventory()
                 {
                     Sbar_DrawPic(288 + i * 16, -16, rsb_items[i]);
                 }
-                if(time && time > cl.time - 2) sb_updates = 0;
+                if(time && time > cl.time - 2)
+                {
+                    sb_updates = 0;
+                }
             }
         }
     }
@@ -768,8 +838,13 @@ void Sbar_DrawInventory()
                     sb_updates = 0;
                 }
                 else
+                {
                     Sbar_DrawPic(320 - 32 + i * 8, -16, sb_sigil[i]);
-                if(time && time > cl.time - 2) sb_updates = 0;
+                }
+                if(time && time > cl.time - 2)
+                {
+                    sb_updates = 0;
+                }
             }
         }
     }
@@ -796,7 +871,10 @@ void Sbar_DrawFrags()
     for(i = 0, x = 184; i < numscores; i++, x += 32)
     {
         s = &cl.scores[fragsort[i]];
-        if(!s->name[0]) continue;
+        if(!s->name[0])
+        {
+            continue;
+        }
 
         // top color
         color = s->colors & 0xf0;
@@ -853,9 +931,13 @@ void Sbar_DrawFace()
         bottom = Sbar_ColorForMap(bottom);
 
         if(cl.gametype == GAME_DEATHMATCH)
+        {
             xofs = 113;
+        }
         else
+        {
             xofs = ((vid.width - 320) >> 1) + 113;
+        }
 
         Sbar_DrawPic(112, 0, rsb_teambord);
         Draw_Fill(xofs, /*vid.height-*/ 24 + 3, 22, 9, top,
@@ -869,9 +951,18 @@ void Sbar_DrawFace()
 
         if(top == 8)
         {
-            if(num[0] != ' ') Sbar_DrawCharacter(113, 3, 18 + num[0] - '0');
-            if(num[1] != ' ') Sbar_DrawCharacter(120, 3, 18 + num[1] - '0');
-            if(num[2] != ' ') Sbar_DrawCharacter(127, 3, 18 + num[2] - '0');
+            if(num[0] != ' ')
+            {
+                Sbar_DrawCharacter(113, 3, 18 + num[0] - '0');
+            }
+            if(num[1] != ' ')
+            {
+                Sbar_DrawCharacter(120, 3, 18 + num[1] - '0');
+            }
+            if(num[2] != ' ')
+            {
+                Sbar_DrawCharacter(127, 3, 18 + num[2] - '0');
+            }
         }
         else
         {
@@ -907,11 +998,17 @@ void Sbar_DrawFace()
     }
 
     if(cl.stats[STAT_HEALTH] >= 100)
+    {
         f = 4;
+    }
     else
+    {
         f = cl.stats[STAT_HEALTH] / 20;
-    if(f < 0) // in case we ever decide to draw when health <= 0
+    }
+    if(f < 0)
+    { // in case we ever decide to draw when health <= 0
         f = 0;
+    }
 
     if(cl.time <= cl.faceanimtime)
     {
@@ -919,7 +1016,9 @@ void Sbar_DrawFace()
         sb_updates = 0; // make sure the anim gets drawn over
     }
     else
+    {
         anim = 0;
+    }
     Sbar_DrawPic(112, 0, sb_faces[f][anim]);
 }
 
@@ -932,18 +1031,22 @@ void Sbar_Draw()
 {
     float w; // johnfitz
 
-    if(scr_con_current == vid.height) return; // console is full screen
+    if(scr_con_current == vid.height)
+    {
+        return; // console is full screen
+    }
 
     if(cl.intermission)
+    {
         return; // johnfitz -- never draw sbar during intermission
+    }
 
     if(sb_updates >= vid.numpages && !gl_clear.value &&
         scr_sbaralpha.value >= 1 // johnfitz -- gl_clear, scr_sbaralpha
-        &&
-        !(gl_glsl_gamma_able &&
-            vid_gamma.value !=
-                1)) // ericw -- must draw sbar every frame if doing glsl gamma
+        && !(gl_glsl_gamma_able && vid_gamma.value != 1))
+    { // ericw -- must draw sbar every frame if doing glsl gamma
         return;
+    }
 
     sb_updates++;
 
@@ -954,9 +1057,13 @@ void Sbar_Draw()
     if(sb_lines && glwidth > w)
     {
         if(scr_sbaralpha.value < 1)
+        {
             Draw_TileClear(0, glheight - sb_lines, glwidth, sb_lines);
+        }
         if(cl.gametype == GAME_DEATHMATCH)
+        {
             Draw_TileClear(w, glheight - sb_lines, glwidth - w, sb_lines);
+        }
         else
         {
             Draw_TileClear(
@@ -973,7 +1080,10 @@ void Sbar_Draw()
         110) // johnfitz -- check viewsize instead of sb_lines
     {
         Sbar_DrawInventory();
-        if(cl.maxclients != 1) Sbar_DrawFrags();
+        if(cl.maxclients != 1)
+        {
+            Sbar_DrawFrags();
+        }
     }
 
     if(sb_showscores || cl.stats[STAT_HEALTH] <= 0)
@@ -993,8 +1103,14 @@ void Sbar_Draw()
         // MED 01/04/97 moved keys here so they would not be overwritten
         if(hipnotic)
         {
-            if(cl.items & IT_KEY1) Sbar_DrawPic(209, 3, sb_items[0]);
-            if(cl.items & IT_KEY2) Sbar_DrawPic(209, 12, sb_items[1]);
+            if(cl.items & IT_KEY1)
+            {
+                Sbar_DrawPic(209, 3, sb_items[0]);
+            }
+            if(cl.items & IT_KEY2)
+            {
+                Sbar_DrawPic(209, 12, sb_items[1]);
+            }
         }
         // armor
         if(cl.items & IT_INVULNERABILITY)
@@ -1009,22 +1125,34 @@ void Sbar_Draw()
                 Sbar_DrawNum(
                     24, 0, cl.stats[STAT_ARMOR], 3, cl.stats[STAT_ARMOR] <= 25);
                 if(cl.items & RIT_ARMOR3)
+                {
                     Sbar_DrawPic(0, 0, sb_armor[2]);
+                }
                 else if(cl.items & RIT_ARMOR2)
+                {
                     Sbar_DrawPic(0, 0, sb_armor[1]);
+                }
                 else if(cl.items & RIT_ARMOR1)
+                {
                     Sbar_DrawPic(0, 0, sb_armor[0]);
+                }
             }
             else
             {
                 Sbar_DrawNum(
                     24, 0, cl.stats[STAT_ARMOR], 3, cl.stats[STAT_ARMOR] <= 25);
                 if(cl.items & IT_ARMOR3)
+                {
                     Sbar_DrawPic(0, 0, sb_armor[2]);
+                }
                 else if(cl.items & IT_ARMOR2)
+                {
                     Sbar_DrawPic(0, 0, sb_armor[1]);
+                }
                 else if(cl.items & IT_ARMOR1)
+                {
                     Sbar_DrawPic(0, 0, sb_armor[0]);
+                }
             }
         }
 
@@ -1039,37 +1167,62 @@ void Sbar_Draw()
         if(rogue)
         {
             if(cl.items & RIT_SHELLS)
+            {
                 Sbar_DrawPic(224, 0, sb_ammo[0]);
+            }
             else if(cl.items & RIT_NAILS)
+            {
                 Sbar_DrawPic(224, 0, sb_ammo[1]);
+            }
             else if(cl.items & RIT_ROCKETS)
+            {
                 Sbar_DrawPic(224, 0, sb_ammo[2]);
+            }
             else if(cl.items & RIT_CELLS)
+            {
                 Sbar_DrawPic(224, 0, sb_ammo[3]);
+            }
             else if(cl.items & RIT_LAVA_NAILS)
+            {
                 Sbar_DrawPic(224, 0, rsb_ammo[0]);
+            }
             else if(cl.items & RIT_PLASMA_AMMO)
+            {
                 Sbar_DrawPic(224, 0, rsb_ammo[1]);
+            }
             else if(cl.items & RIT_MULTI_ROCKETS)
+            {
                 Sbar_DrawPic(224, 0, rsb_ammo[2]);
+            }
         }
         else
         {
             if(cl.items & IT_SHELLS)
+            {
                 Sbar_DrawPic(224, 0, sb_ammo[0]);
+            }
             else if(cl.items & IT_NAILS)
+            {
                 Sbar_DrawPic(224, 0, sb_ammo[1]);
+            }
             else if(cl.items & IT_ROCKETS)
+            {
                 Sbar_DrawPic(224, 0, sb_ammo[2]);
+            }
             else if(cl.items & IT_CELLS)
+            {
                 Sbar_DrawPic(224, 0, sb_ammo[3]);
+            }
         }
 
         Sbar_DrawNum(248, 0, cl.stats[STAT_AMMO], 3, cl.stats[STAT_AMMO] <= 10);
     }
 
     // johnfitz -- removed the vid.width > 320 check here
-    if(cl.gametype == GAME_DEATHMATCH) Sbar_MiniDeathmatchOverlay();
+    if(cl.gametype == GAME_DEATHMATCH)
+    {
+        Sbar_MiniDeathmatchOverlay();
+    }
 }
 
 //=============================================================================
@@ -1088,15 +1241,25 @@ void Sbar_IntermissionNumber(int x, int y, int num, int digits, int color)
 
     l = Sbar_itoa(num, str);
     ptr = str;
-    if(l > digits) ptr += (l - digits);
-    if(l < digits) x += (digits - l) * 24;
+    if(l > digits)
+    {
+        ptr += (l - digits);
+    }
+    if(l < digits)
+    {
+        x += (digits - l) * 24;
+    }
 
     while(*ptr)
     {
         if(*ptr == '-')
+        {
             frame = STAT_MINUS;
+        }
         else
+        {
             frame = *ptr - '0';
+        }
 
         Draw_Pic(x, y, sb_nums[color][frame]); // johnfitz -- stretched menus
         x += 24;
@@ -1137,7 +1300,10 @@ void Sbar_DeathmatchOverlay()
     {
         k = fragsort[i];
         s = &cl.scores[k];
-        if(!s->name[0]) continue;
+        if(!s->name[0])
+        {
+            continue;
+        }
 
         // draw background
         top = s->colors & 0xf0;
@@ -1157,7 +1323,9 @@ void Sbar_DeathmatchOverlay()
         Draw_Character(x + 24, y, num[2]); // johnfitz -- stretched overlays
 
         if(k == cl.viewentity - 1)
+        {
             Draw_Character(x - 8, y, 12); // johnfitz -- stretched overlays
+        }
 
 #if 0
 {
@@ -1203,10 +1371,10 @@ void Sbar_MiniDeathmatchOverlay()
 
     // MAX_SCOREBOARDNAME = 32, so total width for this overlay plus sbar is
     // 632, but we can cut off some i guess
-    if(glwidth / scale < 512 ||
-        scr_viewsize.value >=
-            120) // johnfitz -- test should consider scr_sbarscale
+    if(glwidth / scale < 512 || scr_viewsize.value >= 120)
+    { // johnfitz -- test should consider scr_sbarscale
         return;
+    }
 
     // scores
     Sbar_SortFrags();
@@ -1216,13 +1384,29 @@ void Sbar_MiniDeathmatchOverlay()
 
     // find us
     for(i = 0; i < scoreboardlines; i++)
-        if(fragsort[i] == cl.viewentity - 1) break;
-    if(i == scoreboardlines) // we're not there
+    {
+        if(fragsort[i] == cl.viewentity - 1)
+        {
+            break;
+        }
+    }
+
+    if(i == scoreboardlines)
+    { // we're not there
         i = 0;
-    else // figure out start
+    }
+    else
+    { // figure out start
         i = i - numlines / 2;
-    if(i > scoreboardlines - numlines) i = scoreboardlines - numlines;
-    if(i < 0) i = 0;
+    }
+    if(i > scoreboardlines - numlines)
+    {
+        i = scoreboardlines - numlines;
+    }
+    if(i < 0)
+    {
+        i = 0;
+    }
 
     x = 324;
     y = (scr_viewsize.value >= 110) ? 24
@@ -1232,7 +1416,10 @@ void Sbar_MiniDeathmatchOverlay()
     {
         k = fragsort[i];
         s = &cl.scores[k];
-        if(!s->name[0]) continue;
+        if(!s->name[0])
+        {
+            continue;
+        }
 
         // colors
         top = s->colors & 0xf0;
@@ -1303,8 +1490,8 @@ void Sbar_IntermissionOverlay()
     Sbar_IntermissionNumber(
         152, 144, cl.stats[STAT_MONSTERS], 3, 0); // johnfitz -- was 160
     Draw_Pic(224, 144, sb_slash);                 // johnfitz -- was 232
-    Sbar_IntermissionNumber(
-        240, 144, cl.stats[STAT_TOTALMONSTERS], 3, 0); // johnfitz -- was 248
+    Sbar_IntermissionNumber(240, 144, cl.stats[STAT_TOTALMONSTERS], 3,
+        0); // johnfitz -- was 248
 }
 
 

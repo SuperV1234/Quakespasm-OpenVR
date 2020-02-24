@@ -49,9 +49,13 @@ void R_AnimateLight()
         }
         // johnfitz -- r_flatlightstyles
         if(r_flatlightstyles.value == 2)
+        {
             k = cl_lightstyle[j].peak - 'a';
+        }
         else if(r_flatlightstyles.value == 1)
+        {
             k = cl_lightstyle[j].average - 'a';
+        }
         else
         {
             k = i % cl_lightstyle[j].length;
@@ -101,15 +105,20 @@ void R_RenderDlight(dlight_t* light)
 
     glBegin(GL_TRIANGLE_FAN);
     glColor3f(0.2, 0.1, 0.0);
-    for(i = 0; i < 3; i++) v[i] = light->origin[i] - vpn[i] * rad;
+    for(i = 0; i < 3; i++)
+    {
+        v[i] = light->origin[i] - vpn[i] * rad;
+    }
     glVertex3fv(v);
     glColor3f(0, 0, 0);
     for(i = 16; i >= 0; i--)
     {
         a = i / 16.0 * M_PI * 2;
         for(j = 0; j < 3; j++)
+        {
             v[j] = light->origin[j] + vright[j] * cos(a) * rad +
                    vup[j] * sin(a) * rad;
+        }
         glVertex3fv(v);
     }
     glEnd();
@@ -125,7 +134,10 @@ void R_RenderDlights()
     int i;
     dlight_t* l;
 
-    if(!gl_flashblend.value) return;
+    if(!gl_flashblend.value)
+    {
+        return;
+    }
 
     r_dlightframecount = r_framecount + 1; // because the count hasn't
                                            //  advanced yet for this frame
@@ -138,7 +150,10 @@ void R_RenderDlights()
     l = cl_dlights;
     for(i = 0; i < MAX_DLIGHTS; i++, l++)
     {
-        if(l->die < cl.time || !l->radius) continue;
+        if(l->die < cl.time || !l->radius)
+        {
+            continue;
+        }
         R_RenderDlight(l);
     }
 
@@ -173,13 +188,20 @@ void R_MarkLights(dlight_t* light, int num, mnode_t* node)
 
 start:
 
-    if(node->contents < 0) return;
+    if(node->contents < 0)
+    {
+        return;
+    }
 
     splitplane = node->plane;
     if(splitplane->type < 3)
+    {
         dist = light->origin[splitplane->type] - splitplane->dist;
+    }
     else
+    {
         dist = DotProduct(light->origin, splitplane->normal) - splitplane->dist;
+    }
 
     if(dist > light->radius)
     {
@@ -198,23 +220,33 @@ start:
     for(unsigned int i = 0; i < node->numsurfaces; i++, surf++)
     {
         for(j = 0; j < 3; j++)
+        {
             impact[j] = light->origin[j] - surf->plane->normal[j] * dist;
+        }
         // clamp center of light to corner and check brightness
         l = DotProduct(impact, surf->texinfo->vecs[0]) +
             surf->texinfo->vecs[0][3] - surf->texturemins[0];
         s = l + 0.5;
         if(s < 0)
+        {
             s = 0;
+        }
         else if(s > surf->extents[0])
+        {
             s = surf->extents[0];
+        }
         s = l - s;
         l = DotProduct(impact, surf->texinfo->vecs[1]) +
             surf->texinfo->vecs[1][3] - surf->texturemins[1];
         t = l + 0.5;
         if(t < 0)
+        {
             t = 0;
+        }
         else if(t > surf->extents[1])
+        {
             t = surf->extents[1];
+        }
         t = l - t;
         // compare to minimum light
         if((s * s + t * t + dist * dist) < maxdist)
@@ -224,15 +256,21 @@ start:
                 surf->dlightbits[num >> 5] = 1U << (num & 31);
                 surf->dlightframe = r_dlightframecount;
             }
-            else // already dynamic
+            else
+            { // already dynamic
                 surf->dlightbits[num >> 5] |= 1U << (num & 31);
+            }
         }
     }
 
     if(node->children[0]->contents >= 0)
+    {
         R_MarkLights(light, num, node->children[0]);
+    }
     if(node->children[1]->contents >= 0)
+    {
         R_MarkLights(light, num, node->children[1]);
+    }
 }
 
 /*
@@ -245,7 +283,10 @@ void R_PushDlights()
     int i;
     dlight_t* l;
 
-    if(gl_flashblend.value) return;
+    if(gl_flashblend.value)
+    {
+        return;
+    }
 
     r_dlightframecount = r_framecount + 1; // because the count hasn't
                                            //  advanced yet for this frame
@@ -253,7 +294,10 @@ void R_PushDlights()
 
     for(i = 0; i < MAX_DLIGHTS; i++, l++)
     {
-        if(l->die < cl.time || !l->radius) continue;
+        if(l->die < cl.time || !l->radius)
+        {
+            continue;
+        }
         R_MarkLights(l, i, cl.worldmodel->nodes);
     }
 }
@@ -283,7 +327,10 @@ int RecursiveLightPoint(vec3_t color, mnode_t* node, vec3_t start, vec3_t end)
     vec3_t mid;
 
 loc0:
-    if(node->contents < 0) return false; // didn't hit anything
+    if(node->contents < 0)
+    {
+        return false; // didn't hit anything
+    }
 
     // calculate mid point
     if(node->plane->type < 3)
@@ -300,7 +347,7 @@ loc0:
     // LordHavoc: optimized recursion
     if((back < 0) == (front < 0))
     //		return RecursiveLightPoint (color, node->children[front < 0], start,
-    //end);
+    // end);
     {
         node = node->children[front < 0];
         goto loc0;
@@ -313,7 +360,9 @@ loc0:
 
     // go down front side
     if(RecursiveLightPoint(color, node->children[front < 0], start, mid))
+    {
         return true; // hit something
+    }
     else
     {
         int ds, dt;
@@ -325,7 +374,10 @@ loc0:
         surf = cl.worldmodel->surfaces + node->firstsurface;
         for(unsigned int i = 0; i < node->numsurfaces; i++, surf++)
         {
-            if(surf->flags & SURF_DRAWTILED) continue; // no lightmaps
+            if(surf->flags & SURF_DRAWTILED)
+            {
+                continue; // no lightmaps
+            }
 
             // ericw -- added double casts to force 64-bit precision.
             // Without them the zombie at the start of jam3_ericw.bsp was
@@ -337,12 +389,18 @@ loc0:
                            mid, surf->texinfo->vecs[1]) +
                        surf->texinfo->vecs[1][3]);
 
-            if(ds < surf->texturemins[0] || dt < surf->texturemins[1]) continue;
+            if(ds < surf->texturemins[0] || dt < surf->texturemins[1])
+            {
+                continue;
+            }
 
             ds -= surf->texturemins[0];
             dt -= surf->texturemins[1];
 
-            if(ds > surf->extents[0] || dt > surf->extents[1]) continue;
+            if(ds > surf->extents[0] || dt > surf->extents[1])
+            {
+                continue;
+            }
 
             if(surf->samples)
             {

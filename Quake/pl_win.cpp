@@ -47,13 +47,18 @@ void PL_SetWindowIcon()
     handle = GetModuleHandle(nullptr);
     icon = LoadIcon(handle, "icon");
 
-    if(!icon) return; /* no icon in the exe */
+    if(!icon)
+    {
+        return; /* no icon in the exe */
+    }
 
     SDL_VERSION(&wminfo.version);
 
 #if defined(USE_SDL2)
     if(SDL_GetWindowWMInfo((SDL_Window*)VID_GetWindow(), &wminfo) != SDL_TRUE)
+    {
         return; /* wrong SDL version */
+    }
 
     hwnd = wminfo.info.win.window;
 #else

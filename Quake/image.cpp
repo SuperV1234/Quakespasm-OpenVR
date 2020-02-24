@@ -64,7 +64,10 @@ static inline int Buf_GetC(stdio_buffer_t* buf)
         buf->size = fread(buf->buffer, 1, sizeof(buf->buffer), buf->f);
         buf->pos = 0;
 
-        if(buf->size == 0) return EOF;
+        if(buf->size == 0)
+        {
+            return EOF;
+        }
     }
 
     return buf->buffer[buf->pos++];
@@ -85,11 +88,17 @@ byte* Image_LoadImage(const char* name, int* width, int* height)
 
     q_snprintf(loadfilename, sizeof(loadfilename), "%s.tga", name);
     COM_FOpenFile(loadfilename, &f, nullptr);
-    if(f) return Image_LoadTGA(f, width, height);
+    if(f)
+    {
+        return Image_LoadTGA(f, width, height);
+    }
 
     q_snprintf(loadfilename, sizeof(loadfilename), "%s.pcx", name);
     COM_FOpenFile(loadfilename, &f, nullptr);
-    if(f) return Image_LoadPCX(f, width, height);
+    if(f)
+    {
+        return Image_LoadPCX(f, width, height);
+    }
 
     return nullptr;
 }
@@ -156,7 +165,10 @@ qboolean Image_WriteTGA(const char* name, byte* data, int width, int height,
                             // create it now so we don't crash
     q_snprintf(pathname, sizeof(pathname), "%s/%s", com_gamedir, name);
     handle = Sys_FileOpenWrite(pathname);
-    if(handle == -1) return false;
+    if(handle == -1)
+    {
+        return false;
+    }
 
     Q_memset(header, 0, TARGAHEADERSIZE);
     header[2] = 2; // uncompressed type
@@ -164,8 +176,11 @@ qboolean Image_WriteTGA(const char* name, byte* data, int width, int height,
     header[13] = width >> 8;
     header[14] = height & 255;
     header[15] = height >> 8;
-    header[16] = bpp;                 // pixel size
-    if(upsidedown) header[17] = 0x20; // upside-down attribute
+    header[16] = bpp; // pixel size
+    if(upsidedown)
+    {
+        header[17] = 0x20; // upside-down attribute
+    }
 
     // swap red and blue bytes
     bytes = bpp / 8;
@@ -214,13 +229,17 @@ byte* Image_LoadTGA(FILE* fin, int* width, int* height)
     targa_header.attributes = fgetc(fin);
 
     if(targa_header.image_type != 2 && targa_header.image_type != 10)
+    {
         Sys_Error("Image_LoadTGA: %s is not a type 2 or type 10 targa\n",
             loadfilename);
+    }
 
     if(targa_header.colormap_type != 0 ||
         (targa_header.pixel_size != 32 && targa_header.pixel_size != 24))
+    {
         Sys_Error(
             "Image_LoadTGA: %s is not a 24bit or 32bit targa\n", loadfilename);
+    }
 
     columns = targa_header.width;
     rows = targa_header.height;
@@ -231,8 +250,10 @@ byte* Image_LoadTGA(FILE* fin, int* width, int* height)
     targa_rgba = (byte*)Hunk_Alloc(numPixels * 4);
 
     if(targa_header.id_length != 0)
+    {
         fseek(
             fin, targa_header.id_length, SEEK_CUR); // skip TARGA image comment
+    }
 
     buf = Buf_Alloc(fin);
 
@@ -316,9 +337,13 @@ byte* Image_LoadTGA(FILE* fin, int* width, int* height)
                         {
                             column = 0;
                             if(row > 0)
+                            {
                                 row--;
+                            }
                             else
+                            {
                                 goto breakOut;
+                            }
                             // johnfitz -- fix for upside-down targas
                             realrow = upside_down ? row : rows - 1 - row;
                             pixbuf = targa_rgba + realrow * columns * 4;
@@ -360,9 +385,13 @@ byte* Image_LoadTGA(FILE* fin, int* width, int* height)
                         {
                             column = 0;
                             if(row > 0)
+                            {
                                 row--;
+                            }
                             else
+                            {
                                 goto breakOut;
+                            }
                             // johnfitz -- fix for upside-down targas
                             realrow = upside_down ? row : rows - 1 - row;
                             pixbuf = targa_rgba + realrow * columns * 4;
@@ -429,13 +458,19 @@ byte* Image_LoadPCX(FILE* f, int* width, int* height)
     pcx.bytes_per_line = (unsigned short)LittleShort(pcx.bytes_per_line);
 
     if(pcx.signature != 0x0A)
+    {
         Sys_Error("'%s' is not a valid PCX file", loadfilename);
+    }
 
     if(pcx.version != 5)
+    {
         Sys_Error("'%s' is version %i, should be 5", loadfilename, pcx.version);
+    }
 
     if(pcx.encoding != 1 || pcx.bits_per_pixel != 8 || pcx.color_planes != 1)
+    {
         Sys_Error("'%s' has wrong encoding or bit depth", loadfilename);
+    }
 
     w = pcx.xmax - pcx.xmin + 1;
     h = pcx.ymax - pcx.ymin + 1;
@@ -468,7 +503,9 @@ byte* Image_LoadPCX(FILE* f, int* width, int* height)
                 readbyte = Buf_GetC(buf);
             }
             else
+            {
                 runlength = 1;
+            }
 
             while(runlength--)
             {
@@ -503,7 +540,10 @@ static byte* CopyFlipped(const byte* data, int width, int height, int bpp)
 
     rowsize = width * (bpp / 8);
     flipped = (byte*)malloc(height * rowsize);
-    if(!flipped) return nullptr;
+    if(!flipped)
+    {
+        return nullptr;
+    }
 
     for(y = 0; y < height; y++)
     {
@@ -528,7 +568,10 @@ qboolean Image_WriteJPG(const char* name, byte* data, int width, int height,
     byte* flipped;
     int bytes_per_pixel;
 
-    if(!(bpp == 32 || bpp == 24)) Sys_Error("bpp not 24 or 32");
+    if(!(bpp == 32 || bpp == 24))
+    {
+        Sys_Error("bpp not 24 or 32");
+    }
 
     bytes_per_pixel = bpp / 8;
 
@@ -539,14 +582,22 @@ qboolean Image_WriteJPG(const char* name, byte* data, int width, int height,
     if(!upsidedown)
     {
         flipped = CopyFlipped(data, width, height, bpp);
-        if(!flipped) return false;
+        if(!flipped)
+        {
+            return false;
+        }
     }
     else
+    {
         flipped = data;
+    }
 
     error = stbi_write_jpg(
         pathname, width, height, bytes_per_pixel, flipped, quality);
-    if(!upsidedown) free(flipped);
+    if(!upsidedown)
+    {
+        free(flipped);
+    }
 
     return (error != 0);
 }
@@ -562,7 +613,10 @@ qboolean Image_WritePNG(const char* name, byte* data, int width, int height,
     size_t pngsize;
     LodePNGState state;
 
-    if(!(bpp == 32 || bpp == 24)) Sys_Error("bpp not 24 or 32");
+    if(!(bpp == 32 || bpp == 24))
+    {
+        Sys_Error("bpp not 24 or 32");
+    }
 
     Sys_mkdir(com_gamedir); // if we've switched to a nonexistant gamedir,
                             // create it now so we don't crash
@@ -572,7 +626,10 @@ qboolean Image_WritePNG(const char* name, byte* data, int width, int height,
     filters = (unsigned char*)malloc(height);
     if(!filters || !flipped)
     {
-        if(!upsidedown) free(flipped);
+        if(!upsidedown)
+        {
+            free(flipped);
+        }
         free(filters);
         return false;
     }
@@ -598,7 +655,10 @@ qboolean Image_WritePNG(const char* name, byte* data, int width, int height,
     }
 
     error = lodepng_encode(&png, &pngsize, flipped, width, height, &state);
-    if(error == 0) lodepng_save_file(png, pngsize, pathname);
+    if(error == 0)
+    {
+        lodepng_save_file(png, pngsize, pathname);
+    }
 #ifdef LODEPNG_COMPILE_ERROR_TEXT
     else
         Con_Printf("WritePNG: %s\n", lodepng_error_text(error));
@@ -607,7 +667,10 @@ qboolean Image_WritePNG(const char* name, byte* data, int width, int height,
     lodepng_state_cleanup(&state);
     free(png);
     free(filters);
-    if(!upsidedown) free(flipped);
+    if(!upsidedown)
+    {
+        free(flipped);
+    }
 
     return (error == 0);
 }

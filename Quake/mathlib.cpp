@@ -214,8 +214,14 @@ int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, mplane_t* p)
 #endif
 
     sides = 0;
-    if(dist1 >= p->dist) sides = 1;
-    if(dist2 < p->dist) sides |= 2;
+    if(dist1 >= p->dist)
+    {
+        sides = 1;
+    }
+    if(dist2 < p->dist)
+    {
+        sides |= 2;
+    }
 
 #ifdef PARANOID
     if(sides == 0) Sys_Error("BoxOnPlaneSide: sides==0");
@@ -270,7 +276,12 @@ int VectorCompare(vec3_t v1, vec3_t v2)
     int i;
 
     for(i = 0; i < 3; i++)
-        if(v1[i] != v2[i]) return 0;
+    {
+        if(v1[i] != v2[i])
+        {
+            return 0;
+        }
+    }
 
     return 1;
 }
@@ -356,7 +367,10 @@ void VectorScale(vec3_t in, vec_t scale, vec3_t out)
 int Q_log2(int val)
 {
     int answer = 0;
-    while(val >>= 1) answer++;
+    while(val >>= 1)
+    {
+        answer++;
+    }
     return answer;
 }
 
@@ -475,7 +489,10 @@ void FloorDivMod(double numer, double denom, int* quotient, int* rem)
     double x;
 
 #ifndef PARANOID
-    if(denom <= 0.0) Sys_Error("FloorDivMod: bad denominator %f\n", denom);
+    if(denom <= 0.0)
+    {
+        Sys_Error("FloorDivMod: bad denominator %f\n", denom);
+    }
 
 //	if ((floor(numer) != numer) || (floor(denom) != denom))
 //		Sys_Error ("FloorDivMod: non-integer numer or denom %f %f\n",
@@ -519,12 +536,18 @@ int GreatestCommonDivisor(int i1, int i2)
 {
     if(i1 > i2)
     {
-        if(i2 == 0) return (i1);
+        if(i2 == 0)
+        {
+            return (i1);
+        }
         return GreatestCommonDivisor(i2, i1 % i2);
     }
     else
     {
-        if(i1 == 0) return (i2);
+        if(i1 == 0)
+        {
+            return (i2);
+        }
         return GreatestCommonDivisor(i1, i2 % i1);
     }
 }
@@ -540,7 +563,10 @@ Inverts an 8.24 value to a 16.16 value
 
 fixed16_t Invert24To16(fixed16_t val)
 {
-    if(val < 256) return (0xFFFFFFFF);
+    if(val < 256)
+    {
+        return (0xFFFFFFFF);
+    }
 
     return (fixed16_t)(
         ((double)0x10000 * (double)0x1000000 / (double)val) + 0.5);

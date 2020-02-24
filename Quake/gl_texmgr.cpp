@@ -83,7 +83,9 @@ static void TexMgr_DescribeTextureModes_f()
     int i;
 
     for(i = 0; i < NUM_GLMODES; i++)
+    {
         Con_SafePrintf("   %2i: %s\n", i + 1, glmodes[i].name);
+    }
 
     Con_Printf("%i modes\n", i);
 }
@@ -145,7 +147,9 @@ static void TexMgr_TextureMode_f(cvar_t* var)
             {
                 glmode_idx = i;
                 for(glt = active_gltextures; glt; glt = glt->next)
+                {
                     TexMgr_SetFilterModes(glt);
+                }
                 Sbar_Changed(); // sbar graphics need to be redrawn with new
                                 // filter mode
                 // FIXME: warpimages need to be redrawn, too.
@@ -226,9 +230,13 @@ static void TexMgr_Imagelist_f()
     {
         Con_SafePrintf("   %4i x%4i %s\n", glt->width, glt->height, glt->name);
         if(glt->flags & TEXPREF_MIPMAP)
+        {
             texels += glt->width * glt->height * 4.0f / 3.0f;
+        }
         else
+        {
             texels += (glt->width * glt->height);
+        }
     }
 
     mb = texels * (Cvar_VariableValue("vid_bpp") / 8.0f) / 0x100000;
@@ -256,9 +264,18 @@ static void TexMgr_Imagedump_f()
     for(glt = active_gltextures; glt; glt = glt->next)
     {
         q_strlcpy(tempname, glt->name, sizeof(tempname));
-        while((c = strchr(tempname, ':'))) *c = '_';
-        while((c = strchr(tempname, '/'))) *c = '_';
-        while((c = strchr(tempname, '*'))) *c = '_';
+        while((c = strchr(tempname, ':')))
+        {
+            *c = '_';
+        }
+        while((c = strchr(tempname, '/')))
+        {
+            *c = '_';
+        }
+        while((c = strchr(tempname, '*')))
+        {
+            *c = '_';
+        }
         q_snprintf(tganame, sizeof(tganame), "imagedump/%s.tga", tempname);
 
         GL_Bind(glt);
@@ -299,9 +316,13 @@ float TexMgr_FrameUsage()
         if(glt->visframe == r_framecount)
         {
             if(glt->flags & TEXPREF_MIPMAP)
+            {
                 texels += glt->width * glt->height * 4.0f / 3.0f;
+            }
             else
+            {
                 texels += (glt->width * glt->height);
+            }
         }
     }
 
@@ -330,7 +351,10 @@ gltexture_t* TexMgr_FindTexture(qmodel_t* owner, const char* name)
     {
         for(glt = active_gltextures; glt; glt = glt->next)
         {
-            if(glt->owner == owner && !strcmp(glt->name, name)) return glt;
+            if(glt->owner == owner && !strcmp(glt->name, name))
+            {
+                return glt;
+            }
         }
     }
 
@@ -347,7 +371,9 @@ gltexture_t* TexMgr_NewTexture()
     gltexture_t* glt;
 
     if(numgltextures == MAX_GLTEXTURES)
+    {
         Sys_Error("numgltextures == MAX_GLTEXTURES\n");
+    }
 
     glt = free_gltextures;
     free_gltextures = glt->next;
@@ -374,7 +400,10 @@ void TexMgr_FreeTexture(gltexture_t* kill)
 {
     gltexture_t* glt;
 
-    if(in_reload_images) return;
+    if(in_reload_images)
+    {
+        return;
+    }
 
     if(kill == nullptr)
     {
@@ -425,7 +454,10 @@ void TexMgr_FreeTextures(unsigned int flags, unsigned int mask)
     for(glt = active_gltextures; glt; glt = next)
     {
         next = glt->next;
-        if((glt->flags & mask) == (flags & mask)) TexMgr_FreeTexture(glt);
+        if((glt->flags & mask) == (flags & mask))
+        {
+            TexMgr_FreeTexture(glt);
+        }
     }
 }
 
@@ -441,7 +473,10 @@ void TexMgr_FreeTexturesForOwner(qmodel_t* owner)
     for(glt = active_gltextures; glt; glt = next)
     {
         next = glt->next;
-        if(glt && glt->owner == owner) TexMgr_FreeTexture(glt);
+        if(glt && glt->owner == owner)
+        {
+            TexMgr_FreeTexture(glt);
+        }
     }
 }
 
@@ -481,7 +516,10 @@ void TexMgr_LoadPalette()
     FILE* f;
 
     COM_FOpenFile("gfx/palette.lmp", &f, nullptr);
-    if(!f) Sys_Error("Couldn't load gfx/palette.lmp");
+    if(!f)
+    {
+        Sys_Error("Couldn't load gfx/palette.lmp");
+    }
 
     mark = Hunk_LowMark();
     pal = (byte*)Hunk_Alloc(768);
@@ -580,8 +618,14 @@ void TexMgr_RecalcWarpImageSize()
     //
     gl_warpimagesize = TexMgr_SafeTextureSize(512);
 
-    while(gl_warpimagesize > vid.width) gl_warpimagesize >>= 1;
-    while(gl_warpimagesize > vid.height) gl_warpimagesize >>= 1;
+    while(gl_warpimagesize > vid.width)
+    {
+        gl_warpimagesize >>= 1;
+    }
+    while(gl_warpimagesize > vid.height)
+    {
+        gl_warpimagesize >>= 1;
+    }
 
     // ericw -- removed early exit if (gl_warpimagesize == oldsize).
     // after vid_restart TexMgr_ReloadImage reloads textures
@@ -629,7 +673,9 @@ void TexMgr_Init()
         MAX_GLTEXTURES * sizeof(gltexture_t), "gltextures");
     active_gltextures = nullptr;
     for(i = 0; i < MAX_GLTEXTURES - 1; i++)
+    {
         free_gltextures[i].next = &free_gltextures[i + 1];
+    }
     free_gltextures[i].next = nullptr;
     numgltextures = 0;
 
@@ -683,7 +729,9 @@ int TexMgr_Pad(int s)
 {
     int i;
     for(i = 1; i < s; i <<= 1)
+    {
         ;
+    }
     return i;
 }
 
@@ -694,9 +742,14 @@ TexMgr_SafeTextureSize -- return a size with hardware and user prefs in mind
 */
 int TexMgr_SafeTextureSize(int s)
 {
-    if(!gl_texture_NPOT) s = TexMgr_Pad(s);
+    if(!gl_texture_NPOT)
+    {
+        s = TexMgr_Pad(s);
+    }
     if((int)gl_max_size.value > 0)
+    {
         s = q_min(TexMgr_Pad((int)gl_max_size.value), s);
+    }
     s = q_min(gl_hardware_maxsize, s);
     return s;
 }
@@ -710,9 +763,13 @@ TexMgr_PadConditional -- only pad if a texture of that size would be padded.
 int TexMgr_PadConditional(int s)
 {
     if(s < TexMgr_SafeTextureSize(s))
+    {
         return TexMgr_Pad(s);
+    }
     else
+    {
         return s;
+    }
 }
 
 /*
@@ -781,7 +838,9 @@ static unsigned* TexMgr_ResampleTexture(
     int i, j, outwidth, outheight;
 
     if(inwidth == TexMgr_Pad(inwidth) && inheight == TexMgr_Pad(inheight))
+    {
         return in;
+    }
 
     outwidth = TexMgr_Pad(inwidth);
     outheight = TexMgr_Pad(inheight);
@@ -820,11 +879,15 @@ static unsigned* TexMgr_ResampleTexture(
                           swpx[2] * imodx * mody + sepx[2] * modx * mody) >>
                       16;
             if(alpha)
+            {
                 dest[3] = (nwpx[3] * imodx * imody + nepx[3] * modx * imody +
                               swpx[3] * imodx * mody + sepx[3] * modx * mody) >>
                           16;
+            }
             else
+            {
                 dest[3] = 255;
+            }
 
             x += xfrac;
         }
@@ -857,8 +920,10 @@ static void TexMgr_AlphaEdgeFix(byte* data, int width, int height)
 
         for(j = 0; j < width; j++, dest += 4)
         {
-            if(dest[3]) // not transparent
+            if(dest[3])
+            { // not transparent
                 continue;
+            }
 
             lastpix = 4 * ((j == 0) ? width - 1 : j - 1);
             thispix = 4 * j;
@@ -1034,7 +1099,10 @@ static unsigned* TexMgr_8to32(byte* in, int pixels, unsigned int* usepal)
 
     out = data = (unsigned*)Hunk_Alloc(pixels * 4);
 
-    for(i = 0; i < pixels; i++) *out++ = usepal[*in++];
+    for(i = 0; i < pixels; i++)
+    {
+        *out++ = usepal[*in++];
+    }
 
     return data;
 }
@@ -1049,7 +1117,10 @@ static byte* TexMgr_PadImageW(byte* in, int width, int height, byte padbyte)
     int i, j, outwidth;
     byte *out, *data;
 
-    if(width == TexMgr_Pad(width)) return in;
+    if(width == TexMgr_Pad(width))
+    {
+        return in;
+    }
 
     outwidth = TexMgr_Pad(width);
 
@@ -1057,8 +1128,14 @@ static byte* TexMgr_PadImageW(byte* in, int width, int height, byte padbyte)
 
     for(i = 0; i < height; i++)
     {
-        for(j = 0; j < width; j++) *out++ = *in++;
-        for(; j < outwidth; j++) *out++ = padbyte;
+        for(j = 0; j < width; j++)
+        {
+            *out++ = *in++;
+        }
+        for(; j < outwidth; j++)
+        {
+            *out++ = padbyte;
+        }
     }
 
     return data;
@@ -1075,15 +1152,24 @@ static byte* TexMgr_PadImageH(byte* in, int width, int height, byte padbyte)
     int i, srcpix, dstpix;
     byte *data, *out;
 
-    if(height == TexMgr_Pad(height)) return in;
+    if(height == TexMgr_Pad(height))
+    {
+        return in;
+    }
 
     srcpix = width * height;
     dstpix = width * TexMgr_Pad(height);
 
     out = data = (byte*)Hunk_Alloc(dstpix);
 
-    for(i = 0; i < srcpix; i++) *out++ = *in++;
-    for(; i < dstpix; i++) *out++ = padbyte;
+    for(i = 0; i < srcpix; i++)
+    {
+        *out++ = *in++;
+    }
+    for(; i < dstpix; i++)
+    {
+        *out++ = padbyte;
+    }
 
     return data;
 }
@@ -1116,14 +1202,18 @@ static void TexMgr_LoadImage32(gltexture_t* glt, unsigned* data)
         TexMgr_MipMapW(data, glt->width, glt->height);
         glt->width >>= 1;
         if(glt->flags & TEXPREF_ALPHA)
+        {
             TexMgr_AlphaEdgeFix((byte*)data, glt->width, glt->height);
+        }
     }
     while((int)glt->height > mipheight)
     {
         TexMgr_MipMapH(data, glt->width, glt->height);
         glt->height >>= 1;
         if(glt->flags & TEXPREF_ALPHA)
+        {
             TexMgr_AlphaEdgeFix((byte*)data, glt->width, glt->height);
+        }
     }
 
     // upload
@@ -1187,26 +1277,41 @@ static void TexMgr_LoadImage8(gltexture_t* glt, byte* data)
     if(glt->flags & TEXPREF_ALPHA && !(glt->flags & TEXPREF_CONCHARS))
     {
         for(i = 0; i < (int)(glt->width * glt->height); i++)
-            if(data[i] == 255) // transparent index
+        {
+            if(data[i] == 255)
+            { // transparent index
                 break;
-        if(i == (int)(glt->width * glt->height)) glt->flags -= TEXPREF_ALPHA;
+            }
+        }
+        if(i == (int)(glt->width * glt->height))
+        {
+            glt->flags -= TEXPREF_ALPHA;
+        }
     }
 
     // choose palette and padbyte
     if(glt->flags & TEXPREF_FULLBRIGHT)
     {
         if(glt->flags & TEXPREF_ALPHA)
+        {
             usepal = d_8to24table_fbright_fence;
+        }
         else
+        {
             usepal = d_8to24table_fbright;
+        }
         padbyte = 0;
     }
     else if(glt->flags & TEXPREF_NOBRIGHT && gl_fullbrights.value)
     {
         if(glt->flags & TEXPREF_ALPHA)
+        {
             usepal = d_8to24table_nobright_fence;
+        }
         else
+        {
             usepal = d_8to24table_nobright;
+        }
         padbyte = 0;
     }
     else if(glt->flags & TEXPREF_CONCHARS)
@@ -1220,7 +1325,8 @@ static void TexMgr_LoadImage8(gltexture_t* glt, byte* data)
         padbyte = 255;
     }
 
-    // pad each dimention, but only if it's not going to be downsampled later
+    // pad each dimention, but only if it's not going to be downsampled
+    // later
     if(glt->flags & TEXPREF_PAD)
     {
         if((int)glt->width < TexMgr_SafeTextureSize(glt->width))
@@ -1242,13 +1348,19 @@ static void TexMgr_LoadImage8(gltexture_t* glt, byte* data)
 
     // fix edges
     if(glt->flags & TEXPREF_ALPHA)
+    {
         TexMgr_AlphaEdgeFix(data, glt->width, glt->height);
+    }
     else
     {
         if(padw)
+        {
             TexMgr_PadEdgeFixW(data, glt->source_width, glt->source_height);
+        }
         if(padh)
+        {
             TexMgr_PadEdgeFixH(data, glt->source_width, glt->source_height);
+        }
     }
 
     // upload it
@@ -1284,7 +1396,10 @@ gltexture_t* TexMgr_LoadImage(qmodel_t* owner, const char* name, int width,
     gltexture_t* glt;
     int mark;
 
-    if(isDedicated) return nullptr;
+    if(isDedicated)
+    {
+        return nullptr;
+    }
 
     // cache check
     switch(format)
@@ -1298,10 +1413,15 @@ gltexture_t* TexMgr_LoadImage(qmodel_t* owner, const char* name, int width,
     }
     if((flags & TEXPREF_OVERWRITE) && (glt = TexMgr_FindTexture(owner, name)))
     {
-        if(glt->source_crc == crc) return glt;
+        if(glt->source_crc == crc)
+        {
+            return glt;
+        }
     }
     else
+    {
         glt = TexMgr_NewTexture();
+    }
 
     // copy data
     glt->owner = owner;
@@ -1362,23 +1482,34 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
         long size;
         FILE* f;
         COM_FOpenFile(glt->source_file, &f, nullptr);
-        if(!f) goto invalid;
+        if(!f)
+        {
+            goto invalid;
+        }
         fseek(f, glt->source_offset, SEEK_CUR);
         size = (long)(glt->source_width * glt->source_height);
         /* should be SRC_INDEXED, but no harm being paranoid:  */
         if(glt->source_format == SRC_RGBA)
+        {
             size *= 4;
+        }
         else if(glt->source_format == SRC_LIGHTMAP)
+        {
             size *= lightmap_bytes;
+        }
         data = (byte*)Hunk_Alloc(size);
         fread(data, 1, size, f);
         fclose(f);
     }
     else if(glt->source_file[0] && !glt->source_offset)
+    {
         data = Image_LoadImage(glt->source_file, (int*)&glt->source_width,
             (int*)&glt->source_height); // simple file
+    }
     else if(!glt->source_file[0] && glt->source_offset)
+    {
         data = (byte*)glt->source_offset; // image in memory
+    }
 
     if(!data)
     {
@@ -1394,7 +1525,8 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
     // apply shirt and pants colors
     //
     // if shirt and pants are -1,-1, use existing shirt and pants colors
-    // if existing shirt and pants colors are -1,-1, don't bother colormapping
+    // if existing shirt and pants colors are -1,-1, don't bother
+    // colormapping
     if(shirt > -1 && pants > -1)
     {
         if(glt->source_format == SRC_INDEXED)
@@ -1403,35 +1535,52 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
             glt->pants = pants;
         }
         else
+        {
             Con_Printf(
-                "TexMgr_ReloadImage: can't colormap a non SRC_INDEXED texture: "
+                "TexMgr_ReloadImage: can't colormap a non SRC_INDEXED "
+                "texture: "
                 "%s\n",
                 glt->name);
+        }
     }
     if(glt->shirt > -1 && glt->pants > -1)
     {
         // create new translation table
-        for(i = 0; i < 256; i++) translation[i] = i;
+        for(i = 0; i < 256; i++)
+        {
+            translation[i] = i;
+        }
 
         shirt = glt->shirt * 16;
         if(shirt < 128)
         {
-            for(i = 0; i < 16; i++) translation[TOP_RANGE + i] = shirt + i;
+            for(i = 0; i < 16; i++)
+            {
+                translation[TOP_RANGE + i] = shirt + i;
+            }
         }
         else
         {
-            for(i = 0; i < 16; i++) translation[TOP_RANGE + i] = shirt + 15 - i;
+            for(i = 0; i < 16; i++)
+            {
+                translation[TOP_RANGE + i] = shirt + 15 - i;
+            }
         }
 
         pants = glt->pants * 16;
         if(pants < 128)
         {
-            for(i = 0; i < 16; i++) translation[BOTTOM_RANGE + i] = pants + i;
+            for(i = 0; i < 16; i++)
+            {
+                translation[BOTTOM_RANGE + i] = pants + i;
+            }
         }
         else
         {
             for(i = 0; i < 16; i++)
+            {
                 translation[BOTTOM_RANGE + i] = pants + 15 - i;
+            }
         }
 
         // translate texture
@@ -1439,7 +1588,10 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
         dst = translated = (byte*)Hunk_Alloc(size);
         src = data;
 
-        for(i = 0; i < size; i++) *dst++ = translation[*src++];
+        for(i = 0; i < size; i++)
+        {
+            *dst++ = translation[*src++];
+        }
 
         data = translated;
     }
@@ -1458,7 +1610,8 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
 
 /*
 ================
-TexMgr_ReloadImages -- reloads all texture images. called only by vid_restart
+TexMgr_ReloadImages -- reloads all texture images. called only by
+vid_restart
 ================
 */
 void TexMgr_ReloadImages()
@@ -1467,12 +1620,12 @@ void TexMgr_ReloadImages()
 
     // ericw -- tricky bug: if the hunk is almost full, an allocation in
     // TexMgr_ReloadImage triggers cache items to be freed, which calls back
-    // into TexMgr to free the texture. If this frees 'glt' in the loop below,
-    // the active_gltextures list gets corrupted. A test case is jam3_tronyn.bsp
-    // with -heapsize 65536, and do several mode switches/fullscreen toggles
-    // 2015-09-04 -- Cache_Flush workaround was causing issues
-    // (http://sourceforge.net/p/quakespasm/bugs/10/) switching to a boolean
-    // flag.
+    // into TexMgr to free the texture. If this frees 'glt' in the loop
+    // below, the active_gltextures list gets corrupted. A test case is
+    // jam3_tronyn.bsp with -heapsize 65536, and do several mode
+    // switches/fullscreen toggles 2015-09-04 -- Cache_Flush workaround was
+    // causing issues (http://sourceforge.net/p/quakespasm/bugs/10/)
+    // switching to a boolean flag.
     in_reload_images = true;
 
     for(glt = active_gltextures; glt; glt = glt->next)
@@ -1495,7 +1648,12 @@ void TexMgr_ReloadNobrightImages()
     gltexture_t* glt;
 
     for(glt = active_gltextures; glt; glt = glt->next)
-        if(glt->flags & TEXPREF_NOBRIGHT) TexMgr_ReloadImage(glt, -1, -1);
+    {
+        if(glt->flags & TEXPREF_NOBRIGHT)
+        {
+            TexMgr_ReloadImage(glt, -1, -1);
+        }
+    }
 }
 
 /*
@@ -1518,7 +1676,10 @@ GL_SelectTexture -- johnfitz -- rewritten
 */
 void GL_SelectTexture(GLenum target)
 {
-    if(target == currenttarget) return;
+    if(target == currenttarget)
+    {
+        return;
+    }
 
     GL_SelectTextureFunc(target);
     currenttarget = target;
@@ -1561,7 +1722,10 @@ GL_Bind -- johnfitz -- heavy revision
 */
 void GL_Bind(gltexture_t* texture)
 {
-    if(!texture) texture = nulltexture;
+    if(!texture)
+    {
+        texture = nulltexture;
+    }
 
     if(texture->texnum != currenttexture[currenttarget - GL_TEXTURE0_ARB])
     {
@@ -1575,8 +1739,8 @@ void GL_Bind(gltexture_t* texture)
 ================
 GL_DeleteTexture -- ericw
 
-Wrapper around glDeleteTextures that also clears the given texture number
-from our per-TMU cached texture binding table.
+Wrapper around glDeleteTextures that also clears the given texture
+number from our per-TMU cached texture binding table.
 ================
 */
 static void GL_DeleteTexture(gltexture_t* texture)
@@ -1584,11 +1748,17 @@ static void GL_DeleteTexture(gltexture_t* texture)
     glDeleteTextures(1, &texture->texnum);
 
     if(texture->texnum == currenttexture[0])
+    {
         currenttexture[0] = GL_UNUSED_TEXTURE;
+    }
     if(texture->texnum == currenttexture[1])
+    {
         currenttexture[1] = GL_UNUSED_TEXTURE;
+    }
     if(texture->texnum == currenttexture[2])
+    {
         currenttexture[2] = GL_UNUSED_TEXTURE;
+    }
 
     texture->texnum = 0;
 }

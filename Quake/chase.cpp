@@ -101,8 +101,10 @@ void Chase_UpdateForDrawing(refdef_t& refdef, entity_t* viewent)
 
     // calc ideal camera location before checking for walls
     for(i = 0; i < 3; i++)
+    {
         ideal[i] = viewent->origin[i] - forward[i] * chase_back.value +
                    right[i] * chase_right.value;
+    }
     //+ up[i]*chase_up.value;
     ideal[2] = viewent->origin[2] + chase_up.value;
 
@@ -121,5 +123,7 @@ void Chase_UpdateForDrawing(refdef_t& refdef, entity_t* viewent)
     VectorSubtract(crosshair, refdef.vieworg, temp);
     VectorAngles(temp, refdef.viewangles);
     if(refdef.viewangles[PITCH] == 90 || refdef.viewangles[PITCH] == -90)
+    {
         refdef.viewangles[YAW] = cl.viewangles[YAW];
+    }
 }

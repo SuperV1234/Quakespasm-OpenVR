@@ -59,7 +59,10 @@ void SV_SetIdealPitch()
     int i, j;
     int step, dir, steps;
 
-    if(!((int)sv_player->v.flags & FL_ONGROUND)) return;
+    if(!((int)sv_player->v.flags & FL_ONGROUND))
+    {
+        return;
+    }
 
     angleval = sv_player->v.angles[YAW] * M_PI * 2 / 360;
     sinval = sin(angleval);
@@ -76,9 +79,15 @@ void SV_SetIdealPitch()
         bottom[2] = top[2] - 160;
 
         tr = SV_Move(top, vec3_origin, vec3_origin, bottom, 1, sv_player);
-        if(tr.allsolid) return; // looking at a wall, leave ideal the way is was
+        if(tr.allsolid)
+        {
+            return; // looking at a wall, leave ideal the way is was
+        }
 
-        if(tr.fraction == 1) return; // near a dropoff
+        if(tr.fraction == 1)
+        {
+            return; // near a dropoff
+        }
 
         z[i] = top[2] + tr.fraction * (bottom[2] - top[2]);
     }
@@ -88,10 +97,15 @@ void SV_SetIdealPitch()
     for(j = 1; j < i; j++)
     {
         step = z[j] - z[j - 1];
-        if(step > -ON_EPSILON && step < ON_EPSILON) continue;
+        if(step > -ON_EPSILON && step < ON_EPSILON)
+        {
+            continue;
+        }
 
         if(dir && (step - dir > ON_EPSILON || step - dir < -ON_EPSILON))
+        {
             return; // mixed changes
+        }
 
         steps++;
         dir = step;
@@ -103,7 +117,10 @@ void SV_SetIdealPitch()
         return;
     }
 
-    if(steps < 2) return;
+    if(steps < 2)
+    {
+        return;
+    }
     sv_player->v.idealpitch = -dir * sv_idealpitchscale.value;
 }
 
@@ -125,7 +142,10 @@ void SV_UserFriction()
     vel = velocity;
 
     speed = sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
-    if(!speed) return;
+    if(!speed)
+    {
+        return;
+    }
 
     // if the leading edge is over a dropoff, increase friction
     start[0] = stop[0] = origin[0] + vel[0] / speed * 16;
@@ -136,15 +156,22 @@ void SV_UserFriction()
     trace = SV_Move(start, vec3_origin, vec3_origin, stop, true, sv_player);
 
     if(trace.fraction == 1.0)
+    {
         friction = sv_friction.value * sv_edgefriction.value;
+    }
     else
+    {
         friction = sv_friction.value;
+    }
 
     // apply friction
     control = speed < sv_stopspeed.value ? sv_stopspeed.value : speed;
     newspeed = speed - host_frametime * control * friction;
 
-    if(newspeed < 0) newspeed = 0;
+    if(newspeed < 0)
+    {
+        newspeed = 0;
+    }
     newspeed /= speed;
 
     vel[0] = vel[0] * newspeed;
@@ -166,11 +193,20 @@ void SV_Accelerate(float wishspeed, const vec3_t wishdir)
 
     currentspeed = DotProduct(velocity, wishdir);
     addspeed = wishspeed - currentspeed;
-    if(addspeed <= 0) return;
+    if(addspeed <= 0)
+    {
+        return;
+    }
     accelspeed = sv_accelerate.value * host_frametime * wishspeed;
-    if(accelspeed > addspeed) accelspeed = addspeed;
+    if(accelspeed > addspeed)
+    {
+        accelspeed = addspeed;
+    }
 
-    for(i = 0; i < 3; i++) velocity[i] += accelspeed * wishdir[i];
+    for(i = 0; i < 3; i++)
+    {
+        velocity[i] += accelspeed * wishdir[i];
+    }
 }
 
 void SV_AirAccelerate(float wishspeed, vec3_t wishveloc)
@@ -179,15 +215,27 @@ void SV_AirAccelerate(float wishspeed, vec3_t wishveloc)
     float addspeed, wishspd, accelspeed, currentspeed;
 
     wishspd = VectorNormalize(wishveloc);
-    if(wishspd > 30) wishspd = 30;
+    if(wishspd > 30)
+    {
+        wishspd = 30;
+    }
     currentspeed = DotProduct(velocity, wishveloc);
     addspeed = wishspd - currentspeed;
-    if(addspeed <= 0) return;
+    if(addspeed <= 0)
+    {
+        return;
+    }
     //	accelspeed = sv_accelerate.value * host_frametime;
     accelspeed = sv_accelerate.value * wishspeed * host_frametime;
-    if(accelspeed > addspeed) accelspeed = addspeed;
+    if(accelspeed > addspeed)
+    {
+        accelspeed = addspeed;
+    }
 
-    for(i = 0; i < 3; i++) velocity[i] += accelspeed * wishveloc[i];
+    for(i = 0; i < 3; i++)
+    {
+        velocity[i] += accelspeed * wishveloc[i];
+    }
 }
 
 
@@ -198,7 +246,10 @@ void DropPunchAngle()
     len = VectorNormalize(sv_player->v.punchangle);
 
     len -= 10 * host_frametime;
-    if(len < 0) len = 0;
+    if(len < 0)
+    {
+        len = 0;
+    }
     VectorScale(sv_player->v.punchangle, len, sv_player->v.punchangle);
 }
 
@@ -220,12 +271,18 @@ void SV_WaterMove()
     AngleVectors(sv_player->v.v_angle, forward, right, up);
 
     for(i = 0; i < 3; i++)
+    {
         wishvel[i] = forward[i] * cmd.forwardmove + right[i] * cmd.sidemove;
+    }
 
     if(!cmd.forwardmove && !cmd.sidemove && !cmd.upmove)
+    {
         wishvel[2] -= 60; // drift towards bottom
+    }
     else
+    {
         wishvel[2] += cmd.upmove;
+    }
 
     wishspeed = VectorLength(wishvel);
     if(wishspeed > sv_maxspeed.value)
@@ -242,25 +299,42 @@ void SV_WaterMove()
     if(speed)
     {
         newspeed = speed - host_frametime * speed * sv_friction.value;
-        if(newspeed < 0) newspeed = 0;
+        if(newspeed < 0)
+        {
+            newspeed = 0;
+        }
         VectorScale(velocity, newspeed / speed, velocity);
     }
     else
+    {
         newspeed = 0;
+    }
 
     //
     // water acceleration
     //
-    if(!wishspeed) return;
+    if(!wishspeed)
+    {
+        return;
+    }
 
     addspeed = wishspeed - newspeed;
-    if(addspeed <= 0) return;
+    if(addspeed <= 0)
+    {
+        return;
+    }
 
     VectorNormalize(wishvel);
     accelspeed = sv_accelerate.value * wishspeed * host_frametime;
-    if(accelspeed > addspeed) accelspeed = addspeed;
+    if(accelspeed > addspeed)
+    {
+        accelspeed = addspeed;
+    }
 
-    for(i = 0; i < 3; i++) velocity[i] += accelspeed * wishvel[i];
+    for(i = 0; i < 3; i++)
+    {
+        velocity[i] += accelspeed * wishvel[i];
+    }
 }
 
 void SV_WaterJump()
@@ -315,14 +389,24 @@ void SV_AirMove()
     smove = cmd.sidemove;
 
     // hack to not let you back into teleporter
-    if(sv.time < sv_player->v.teleport_time && fmove < 0) fmove = 0;
+    if(sv.time < sv_player->v.teleport_time && fmove < 0)
+    {
+        fmove = 0;
+    }
 
-    for(i = 0; i < 3; i++) wishvel[i] = forward[i] * fmove + right[i] * smove;
+    for(i = 0; i < 3; i++)
+    {
+        wishvel[i] = forward[i] * fmove + right[i] * smove;
+    }
 
     if((int)sv_player->v.movetype != MOVETYPE_WALK)
+    {
         wishvel[2] = cmd.upmove;
+    }
     else
+    {
         wishvel[2] = 0;
+    }
 
     VectorCopy(wishvel, wishdir);
     wishspeed = VectorNormalize(wishdir);
@@ -359,7 +443,10 @@ void SV_ClientThink()
 {
     vec3_t v_angle;
 
-    if(sv_player->v.movetype == MOVETYPE_NONE) return;
+    if(sv_player->v.movetype == MOVETYPE_NONE)
+    {
+        return;
+    }
 
     onground = (int)sv_player->v.flags & FL_ONGROUND;
 
@@ -371,7 +458,10 @@ void SV_ClientThink()
     //
     // if dead, behave differently
     //
-    if(sv_player->v.health <= 0) return;
+    if(sv_player->v.health <= 0)
+    {
+        return;
+    }
 
     //
     // angles
@@ -397,12 +487,18 @@ void SV_ClientThink()
     //
     // johnfitz -- alternate noclip
     if(sv_player->v.movetype == MOVETYPE_NOCLIP && sv_altnoclip.value)
+    {
         SV_NoclipMove();
+    }
     else if(sv_player->v.waterlevel >= 2 &&
             sv_player->v.movetype != MOVETYPE_NOCLIP)
+    {
         SV_WaterMove();
+    }
     else
+    {
         SV_AirMove();
+    }
     // johnfitz
 }
 
@@ -421,22 +517,24 @@ void SV_ReadClientMove(usercmd_t* move)
         sv.time - MSG_ReadFloat();
     host_client->num_pings++;
 
-    const auto readAngles = [&](auto& target)
-    {
+    const auto readAngles = [&](auto& target) {
         // read current angles
         for(int i = 0; i < 3; i++)
         {
             // johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
             if(sv.protocol == PROTOCOL_NETQUAKE)
+            {
                 target[i] = MSG_ReadAngle(sv.protocolflags);
+            }
             else
+            {
                 target[i] = MSG_ReadAngle16(sv.protocolflags);
-        // johnfitz
+            }
+            // johnfitz
         }
     };
 
-    const auto readVec = [&](auto& target)
-    {
+    const auto readVec = [&](auto& target) {
         target[0] = MSG_ReadFloat();
         target[1] = MSG_ReadFloat();
         target[2] = MSG_ReadFloat();
@@ -493,7 +591,10 @@ void SV_ReadClientMove(usercmd_t* move)
     host_client->edict->v.button2 = (bits & 2) >> 1;
 
     i = MSG_ReadByte();
-    if(i) host_client->edict->v.impulse = i;
+    if(i)
+    {
+        host_client->edict->v.impulse = i;
+    }
 }
 
 /*
@@ -518,13 +619,19 @@ qboolean SV_ReadClientMessage()
             Sys_Printf("SV_ReadClientMessage: NET_GetMessage failed\n");
             return false;
         }
-        if(!ret) return true;
+        if(!ret)
+        {
+            return true;
+        }
 
         MSG_BeginReading();
 
         while(true)
         {
-            if(!host_client->active) return false; // a command caused an error
+            if(!host_client->active)
+            {
+                return false; // a command caused an error
+            }
 
             if(msg_badread)
             {
@@ -550,55 +657,99 @@ qboolean SV_ReadClientMessage()
                     s = MSG_ReadString();
                     ret = 0;
                     if(q_strncasecmp(s, "status", 6) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "god", 3) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "notarget", 8) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "fly", 3) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "name", 4) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "noclip", 6) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "setpos", 6) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "say", 3) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "say_team", 8) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "tell", 4) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "color", 5) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "kill", 4) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "pause", 5) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "spawn", 5) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "begin", 5) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "prespawn", 8) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "kick", 4) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "ping", 4) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "give", 4) == 0)
+                    {
                         ret = 1;
+                    }
                     else if(q_strncasecmp(s, "ban", 3) == 0)
+                    {
                         ret = 1;
+                    }
 
                     if(ret == 1)
+                    {
                         Cmd_ExecuteString(s, src_client);
+                    }
                     else
+                    {
                         Con_DPrintf("%s tried to %s\n", host_client->name, s);
+                    }
                     break;
 
                 case clc_disconnect:
                     //				Sys_Printf ("SV_ReadClientMessage: client
-                    //disconnected\n");
+                    // disconnected\n");
                     return false;
 
                 case clc_move: SV_ReadClientMove(&host_client->cmd); break;
@@ -622,7 +773,10 @@ void SV_RunClients()
     for(i = 0, host_client = svs.clients; i < svs.maxclients;
         i++, host_client++)
     {
-        if(!host_client->active) continue;
+        if(!host_client->active)
+        {
+            continue;
+        }
 
         sv_player = host_client->edict;
 
@@ -641,6 +795,8 @@ void SV_RunClients()
 
         // always pause in single player if in console or menus
         if(!sv.paused && (svs.maxclients > 1 || key_dest == key_game))
+        {
             SV_ClientThink();
+        }
     }
 }

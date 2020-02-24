@@ -64,11 +64,19 @@ void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
     maxs[0] = maxs[1] = maxs[2] = -999999999;
     v = verts;
     for(i = 0; i < numverts; i++)
+    {
         for(j = 0; j < 3; j++, v++)
         {
-            if(*v < mins[j]) mins[j] = *v;
-            if(*v > maxs[j]) maxs[j] = *v;
+            if(*v < mins[j])
+            {
+                mins[j] = *v;
+            }
+            if(*v > maxs[j])
+            {
+                maxs[j] = *v;
+            }
         }
+    }
 }
 
 void SubdividePolygon(int numverts, float* verts)
@@ -84,7 +92,10 @@ void SubdividePolygon(int numverts, float* verts)
     glpoly_t* poly;
     float s, t;
 
-    if(numverts > 60) Sys_Error("numverts = %i", numverts);
+    if(numverts > 60)
+    {
+        Sys_Error("numverts = %i", numverts);
+    }
 
     BoundPoly(numverts, verts, mins, maxs);
 
@@ -92,12 +103,21 @@ void SubdividePolygon(int numverts, float* verts)
     {
         m = (mins[i] + maxs[i]) * 0.5;
         m = gl_subdivide_size.value * floor(m / gl_subdivide_size.value + 0.5);
-        if(maxs[i] - m < 8) continue;
-        if(m - mins[i] < 8) continue;
+        if(maxs[i] - m < 8)
+        {
+            continue;
+        }
+        if(m - mins[i] < 8)
+        {
+            continue;
+        }
 
         // cut it
         v = verts + i;
-        for(j = 0; j < numverts; j++, v += 3) dist[j] = *v - m;
+        for(j = 0; j < numverts; j++, v += 3)
+        {
+            dist[j] = *v - m;
+        }
 
         // wrap cases
         dist[j] = dist[0];
@@ -118,13 +138,18 @@ void SubdividePolygon(int numverts, float* verts)
                 VectorCopy(v, back[b]);
                 b++;
             }
-            if(dist[j] == 0 || dist[j + 1] == 0) continue;
+            if(dist[j] == 0 || dist[j + 1] == 0)
+            {
+                continue;
+            }
             if((dist[j] > 0) != (dist[j + 1] > 0))
             {
                 // clip point
                 frac = dist[j] / (dist[j] - dist[j + 1]);
                 for(k = 0; k < 3; k++)
+                {
                     front[f][k] = back[b][k] = v[k] + frac * (v[3 + k] - v[k]);
+                }
                 f++;
                 b++;
             }
@@ -223,15 +248,23 @@ void R_UpdateWarpTextures()
 
     if(r_oldwater.value || cl.paused || r_drawflat_cheatsafe ||
         r_lightmap_cheatsafe)
+    {
         return;
+    }
 
     warptess = 128.0 / CLAMP(3.0, floor(r_waterquality.value), 64.0);
 
     for(i = 0; i < cl.worldmodel->numtextures; i++)
     {
-        if(!(tx = cl.worldmodel->textures[i])) continue;
+        if(!(tx = cl.worldmodel->textures[i]))
+        {
+            continue;
+        }
 
-        if(!tx->update_warp) continue;
+        if(!tx->update_warp)
+        {
+            continue;
+        }
 
         // render warp
         GL_SetCanvas(CANVAS_WARPIMAGE);
@@ -265,7 +298,10 @@ void R_UpdateWarpTextures()
 
     // if warp render went down into sbar territory, we need to be sure to
     // refresh it next frame
-    if(gl_warpimagesize + sb_lines > glheight) Sbar_Changed();
+    if(gl_warpimagesize + sb_lines > glheight)
+    {
+        Sbar_Changed();
+    }
 
     // if viewsize is less than 100, we need to redraw the frame around the
     // viewport

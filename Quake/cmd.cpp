@@ -127,7 +127,9 @@ void Cbuf_InsertText(const char* text)
         SZ_Clear(&cmd_text);
     }
     else
+    {
         temp = nullptr; // shut up compiler
+    }
 
     // add the entire text of the file
     Cbuf_AddText(text);
@@ -160,10 +162,18 @@ void Cbuf_Execute()
         quotes = 0;
         for(i = 0; i < cmd_text.cursize; i++)
         {
-            if(text[i] == '"') quotes++;
+            if(text[i] == '"')
+            {
+                quotes++;
+            }
             if(!(quotes & 1) && text[i] == ';')
+            {
                 break; // don't break if inside a quoted string
-            if(text[i] == '\n') break;
+            }
+            if(text[i] == '\n')
+            {
+                break;
+            }
         }
 
         if(i > (int)sizeof(line) - 1)
@@ -182,7 +192,9 @@ void Cbuf_Execute()
         // at the beginning of the text buffer
 
         if(i == cmd_text.cursize)
+        {
             cmd_text.cursize = 0;
+        }
         else
         {
             i++;
@@ -241,12 +253,14 @@ void Cmd_StuffCmds_f()
             }
         }
         else if(cmdline.string[i] == '-' &&
-                (i == 0 ||
-                    cmdline.string[i - 1] ==
-                        ' ')) // johnfitz -- allow hypenated map names with +map
+                (i == 0 || cmdline.string[i - 1] == ' '))
+        { // johnfitz -- allow hypenated map names with +map
             plus = false;
+        }
         else if(plus)
+        {
             cmds[j++] = cmdline.string[i];
+        }
     }
     cmds[j] = 0;
 
@@ -295,7 +309,10 @@ void Cmd_Echo_f()
 {
     int i;
 
-    for(i = 1; i < Cmd_Argc(); i++) Con_Printf("%s ", Cmd_Argv(i));
+    for(i = 1; i < Cmd_Argc(); i++)
+    {
+        Con_Printf("%s ", Cmd_Argv(i));
+    }
     Con_Printf("\n");
 }
 
@@ -318,16 +335,26 @@ void Cmd_Alias_f()
     {
         case 1: // list all aliases
             for(a = cmd_alias, i = 0; a; a = a->next, i++)
+            {
                 Con_SafePrintf("   %s: %s", a->name, a->value);
+            }
             if(i)
+            {
                 Con_SafePrintf("%i alias command(s)\n", i);
+            }
             else
+            {
                 Con_SafePrintf("no alias commands found\n");
+            }
             break;
         case 2: // output current alias string
             for(a = cmd_alias; a; a = a->next)
+            {
                 if(!strcmp(Cmd_Argv(1), a->name))
+                {
                     Con_Printf("   %s: %s", a->name, a->value);
+                }
+            }
             break;
         default: // set alias string
             s = Cmd_Argv(1);
@@ -361,7 +388,10 @@ void Cmd_Alias_f()
             for(i = 2; i < c; i++)
             {
                 q_strlcat(cmd, Cmd_Argv(i), sizeof(cmd));
-                if(i != c - 1) q_strlcat(cmd, " ", sizeof(cmd));
+                if(i != c - 1)
+                {
+                    q_strlcat(cmd, " ", sizeof(cmd));
+                }
             }
             if(q_strlcat(cmd, "\n", sizeof(cmd)) >= sizeof(cmd))
             {
@@ -395,9 +425,13 @@ void Cmd_Unalias_f()
                 if(!strcmp(Cmd_Argv(1), a->name))
                 {
                     if(prev)
+                    {
                         prev->next = a->next;
+                    }
                     else
+                    {
                         cmd_alias = a->next;
+                    }
 
                     Z_Free(a->value);
                     Z_Free(a);
@@ -454,7 +488,8 @@ static const char* cmd_args = nullptr;
 cmd_source_t cmd_source;
 
 // johnfitz -- better tab completion
-// static	cmd_function_t	*cmd_functions;		// possible commands to execute
+// static	cmd_function_t	*cmd_functions;		// possible commands to
+// execute
 cmd_function_t* cmd_functions; // possible commands to execute
 // johnfitz
 
@@ -509,7 +544,12 @@ static char* Cmd_TintSubstring(
     {
         l = strlen(substr);
         while(l-- > 0)
-            if(*m >= ' ' && *m < 127) *m++ |= 0x80;
+        {
+            if(*m >= ' ' && *m < 127)
+            {
+                *m++ |= 0x80;
+            }
+        }
     }
     return out;
 }
@@ -518,10 +558,10 @@ static char* Cmd_TintSubstring(
 ============
 Cmd_Apropos_f
 
-scans through each command and cvar names+descriptions for the given substring
-we don't support descriptions, so this isn't really all that useful, but even
-without the sake of consistency it still combines cvars+commands under a single
-command.
+scans through each command and cvar names+descriptions for the given
+substring we don't support descriptions, so this isn't really all that
+useful, but even without the sake of consistency it still combines
+cvars+commands under a single command.
 ============
 */
 void Cmd_Apropos_f()
@@ -534,7 +574,8 @@ void Cmd_Apropos_f()
     if(!*substr)
     {
         Con_SafePrintf(
-            "%s <substring> : search through commands and cvars for the given "
+            "%s <substring> : search through commands and cvars for "
+            "the given "
             "substring\n",
             Cmd_Argv(0));
         return;
@@ -559,7 +600,10 @@ void Cmd_Apropos_f()
                 var->string);
         }
     }
-    if(!hits) Con_SafePrintf("no cvars nor commands contain that substring\n");
+    if(!hits)
+    {
+        Con_SafePrintf("no cvars nor commands contain that substring\n");
+    }
 }
 
 /*
@@ -601,7 +645,10 @@ Cmd_Argv
 */
 const char* Cmd_Argv(int arg)
 {
-    if(arg < 0 || arg >= cmd_argc) return cmd_null_string;
+    if(arg < 0 || arg >= cmd_argc)
+    {
+        return cmd_null_string;
+    }
     return cmd_argv[arg];
 }
 
@@ -628,7 +675,10 @@ void Cmd_TokenizeString(const char* text)
     int i;
 
     // clear the args from the last string
-    for(i = 0; i < cmd_argc; i++) Z_Free(cmd_argv[i]);
+    for(i = 0; i < cmd_argc; i++)
+    {
+        Z_Free(cmd_argv[i]);
+    }
 
     cmd_argc = 0;
     cmd_args = nullptr;
@@ -647,12 +697,21 @@ void Cmd_TokenizeString(const char* text)
             break;
         }
 
-        if(!*text) return;
+        if(!*text)
+        {
+            return;
+        }
 
-        if(cmd_argc == 1) cmd_args = text;
+        if(cmd_argc == 1)
+        {
+            cmd_args = text;
+        }
 
         text = COM_Parse(text);
-        if(!text) return;
+        if(!text)
+        {
+            return;
+        }
 
         if(cmd_argc < MAX_ARGS)
         {
@@ -672,8 +731,10 @@ void Cmd_AddCommand(const char* cmd_name, xcommand_t function)
     cmd_function_t* cmd;
     cmd_function_t *cursor, *prev; // johnfitz -- sorted list insert
 
-    if(host_initialized) // because hunk allocation would get stomped
+    if(host_initialized)
+    { // because hunk allocation would get stomped
         Sys_Error("Cmd_AddCommand after host_initialized");
+    }
 
     // fail if the command is a variable name
     if(Cvar_VariableString(cmd_name)[0])
@@ -729,7 +790,10 @@ bool Cmd_Exists(const char* cmd_name)
 
     for(cmd = cmd_functions; cmd; cmd = cmd->next)
     {
-        if(!Q_strcmp(cmd_name, cmd->name)) return true;
+        if(!Q_strcmp(cmd_name, cmd->name))
+        {
+            return true;
+        }
     }
 
     return false;
@@ -749,12 +813,19 @@ const char* Cmd_CompleteCommand(const char* partial)
 
     len = Q_strlen(partial);
 
-    if(!len) return nullptr;
+    if(!len)
+    {
+        return nullptr;
+    }
 
     // check functions
     for(cmd = cmd_functions; cmd; cmd = cmd->next)
-        if(!Q_strncmp(partial, cmd->name, len)) return cmd->name;
-
+    {
+        if(!Q_strncmp(partial, cmd->name, len))
+        {
+            return cmd->name;
+        }
+    }
     return nullptr;
 }
 
@@ -775,7 +846,10 @@ void Cmd_ExecuteString(const char* text, cmd_source_t src)
     Cmd_TokenizeString(text);
 
     // execute the command line
-    if(!Cmd_Argc()) return; // no tokens
+    if(!Cmd_Argc())
+    {
+        return; // no tokens
+    }
 
     // check functions
     for(cmd = cmd_functions; cmd; cmd = cmd->next)
@@ -798,7 +872,10 @@ void Cmd_ExecuteString(const char* text, cmd_source_t src)
     }
 
     // check cvars
-    if(!Cvar_Command()) Con_Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
+    if(!Cvar_Command())
+    {
+        Con_Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
+    }
 }
 
 
@@ -817,7 +894,10 @@ void Cmd_ForwardToServer()
         return;
     }
 
-    if(cls.demoplayback) return; // not really connected
+    if(cls.demoplayback)
+    {
+        return; // not really connected
+    }
 
     MSG_WriteByte(&cls.message, clc_stringcmd);
     if(q_strcasecmp(Cmd_Argv(0), "cmd") != 0)
@@ -826,9 +906,13 @@ void Cmd_ForwardToServer()
         SZ_Print(&cls.message, " ");
     }
     if(Cmd_Argc() > 1)
+    {
         SZ_Print(&cls.message, Cmd_Args());
+    }
     else
+    {
         SZ_Print(&cls.message, "\n");
+    }
 }
 
 
@@ -845,10 +929,18 @@ int Cmd_CheckParm(const char* parm)
 {
     int i;
 
-    if(!parm) Sys_Error("Cmd_CheckParm: NULL");
+    if(!parm)
+    {
+        Sys_Error("Cmd_CheckParm: NULL");
+    }
 
     for(i = 1; i < Cmd_Argc(); i++)
-        if(!q_strcasecmp(parm, Cmd_Argv(i))) return i;
+    {
+        if(!q_strcasecmp(parm, Cmd_Argv(i)))
+        {
+            return i;
+        }
+    }
 
     return 0;
 }

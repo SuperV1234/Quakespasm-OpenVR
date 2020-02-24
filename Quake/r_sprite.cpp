@@ -65,7 +65,10 @@ mspriteframe_t* R_GetSpriteFrame(entity_t* currentent)
 
         for(i = 0; i < (numframes - 1); i++)
         {
-            if(pintervals[i] > targettime) break;
+            if(pintervals[i] > targettime)
+            {
+                break;
+            }
         }
 
         pspriteframe = pspritegroup->frames[i];
@@ -143,7 +146,10 @@ void R_DrawSpriteModel(entity_t* e)
     }
 
     // johnfitz: offset decals
-    if(psprite->type == SPR_ORIENTED) GL_PolygonOffset(OFFSET_DECAL);
+    if(psprite->type == SPR_ORIENTED)
+    {
+        GL_PolygonOffset(OFFSET_DECAL);
+    }
 
     glColor3f(1, 1, 1);
 
@@ -178,5 +184,8 @@ void R_DrawSpriteModel(entity_t* e)
     glDisable(GL_ALPHA_TEST);
 
     // johnfitz: offset decals
-    if(psprite->type == SPR_ORIENTED) GL_PolygonOffset(OFFSET_NONE);
+    if(psprite->type == SPR_ORIENTED)
+    {
+        GL_PolygonOffset(OFFSET_NONE);
+    }
 }

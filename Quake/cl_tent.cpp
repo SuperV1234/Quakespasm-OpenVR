@@ -76,6 +76,7 @@ void CL_ParseBeam(qmodel_t* m)
 
     // override any beam with the same entity
     for(i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++)
+    {
         if(b->entity == ent)
         {
             b->entity = ent;
@@ -85,6 +86,7 @@ void CL_ParseBeam(qmodel_t* m)
             VectorCopy(end, b->end);
             return;
         }
+    }
 
     // find a free beam
     for(i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++)
@@ -148,16 +150,24 @@ void CL_ParseTEnt()
             pos[2] = MSG_ReadCoord(cl.protocolflags);
             R_RunParticleEffect(pos, vec3_origin, 0, 10);
             if(rand() % 5)
+            {
                 S_StartSound(-1, 0, cl_sfx_tink1, pos, 1, 1);
+            }
             else
             {
                 rnd = rand() & 3;
                 if(rnd == 1)
+                {
                     S_StartSound(-1, 0, cl_sfx_ric1, pos, 1, 1);
+                }
                 else if(rnd == 2)
+                {
                     S_StartSound(-1, 0, cl_sfx_ric2, pos, 1, 1);
+                }
                 else
+                {
                     S_StartSound(-1, 0, cl_sfx_ric3, pos, 1, 1);
+                }
             }
             break;
         case TE_SUPERSPIKE: // super spike hitting wall
@@ -167,16 +177,24 @@ void CL_ParseTEnt()
             R_RunParticleEffect(pos, vec3_origin, 0, 20);
 
             if(rand() % 5)
+            {
                 S_StartSound(-1, 0, cl_sfx_tink1, pos, 1, 1);
+            }
             else
             {
                 rnd = rand() & 3;
                 if(rnd == 1)
+                {
                     S_StartSound(-1, 0, cl_sfx_ric1, pos, 1, 1);
+                }
                 else if(rnd == 2)
+                {
                     S_StartSound(-1, 0, cl_sfx_ric2, pos, 1, 1);
+                }
                 else
+                {
                     S_StartSound(-1, 0, cl_sfx_ric3, pos, 1, 1);
+                }
             }
             break;
 
@@ -270,8 +288,14 @@ entity_t* CL_NewTempEntity()
 {
     entity_t* ent;
 
-    if(cl_numvisedicts == MAX_VISEDICTS) return nullptr;
-    if(num_temp_entities == MAX_TEMP_ENTITIES) return nullptr;
+    if(cl_numvisedicts == MAX_VISEDICTS)
+    {
+        return nullptr;
+    }
+    if(num_temp_entities == MAX_TEMP_ENTITIES)
+    {
+        return nullptr;
+    }
     ent = &cl_temp_entities[num_temp_entities];
     memset(ent, 0, sizeof(*ent));
     num_temp_entities++;
@@ -306,7 +330,10 @@ void CL_UpdateTEnts()
     // update lightning
     for(i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++)
     {
-        if(!b->model || b->endtime < cl.time) continue;
+        if(!b->model || b->endtime < cl.time)
+        {
+            continue;
+        }
 
         // if coming from the player, update the start position
         if(b->entity == cl.viewentity)
@@ -320,13 +347,14 @@ void CL_UpdateTEnts()
                 // adj[2] += vr_projectilespawn_z_offset.value;
                 // VectorCopy(adj, b->start);
 
-                // TODO VR: hardcoded lightning gun muzzle position for beam effect
+                // TODO VR: hardcoded lightning gun muzzle position for beam
+                // effect
                 vec3_t forward, right, up;
                 AngleVectors(cl.handrot[1], forward, right, up);
 
-                // TODO VR: this calculation needs to take into account the scale
-                // of the gun itself, not just the global one. Also grep for other
-                // vr_gunmodelscale calculations that do not do that
+                // TODO VR: this calculation needs to take into account the
+                // scale of the gun itself, not just the global one. Also grep
+                // for other vr_gunmodelscale calculations that do not do that
                 forward[0] *= 16 * vr_gunmodelscale.value;
                 forward[1] *= 16 * vr_gunmodelscale.value;
                 forward[2] *= 16 * vr_gunmodelscale.value;
@@ -350,18 +378,28 @@ void CL_UpdateTEnts()
         {
             yaw = 0;
             if(dist[2] > 0)
+            {
                 pitch = 90;
+            }
             else
+            {
                 pitch = 270;
+            }
         }
         else
         {
             yaw = (int)(atan2(dist[1], dist[0]) * 180 / M_PI);
-            if(yaw < 0) yaw += 360;
+            if(yaw < 0)
+            {
+                yaw += 360;
+            }
 
             forward = sqrt(dist[0] * dist[0] + dist[1] * dist[1]);
             pitch = (int)(atan2(dist[2], forward) * 180 / M_PI);
-            if(pitch < 0) pitch += 360;
+            if(pitch < 0)
+            {
+                pitch += 360;
+            }
         }
 
         // add new entities for the lightning
@@ -370,7 +408,10 @@ void CL_UpdateTEnts()
         while(d > 0)
         {
             ent = CL_NewTempEntity();
-            if(!ent) return;
+            if(!ent)
+            {
+                return;
+            }
             VectorCopy(org, ent->origin);
             ent->model = b->model;
             ent->angles[0] = pitch;
@@ -379,7 +420,10 @@ void CL_UpdateTEnts()
 
             // johnfitz -- use j instead of using i twice, so we don't corrupt
             // memory
-            for(j = 0; j < 3; j++) org[j] += dist[j] * 30;
+            for(j = 0; j < 3; j++)
+            {
+                org[j] += dist[j] * 30;
+            }
             d -= 30;
         }
     }

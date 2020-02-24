@@ -83,7 +83,10 @@ const char* Con_Quakebar(int len)
     len = q_min(len, con_linewidth);
 
     bar[0] = '\35';
-    for(i = 1; i < len - 1; i++) bar[i] = '\36';
+    for(i = 1; i < len - 1; i++)
+    {
+        bar[i] = '\36';
+    }
     bar[len - 1] = '\37';
 
     if(len < con_linewidth)
@@ -92,7 +95,9 @@ const char* Con_Quakebar(int len)
         bar[len + 1] = 0;
     }
     else
+    {
         bar[len] = 0;
+    }
 
     return bar;
 }
@@ -143,8 +148,10 @@ Con_Clear_f
 static void Con_Clear_f()
 {
     if(con_text)
+    {
         Q_memset(con_text, ' ',
             con_buffersize); // johnfitz -- con_buffersize replaces CON_TEXTSIZE
+    }
     con_backscroll =
         0; // johnfitz -- if console is empty, being scrolled up is confusing
 }
@@ -176,8 +183,17 @@ static void Con_Dump_f()
     {
         line = con_text + (l % con_totallines) * con_linewidth;
         for(x = 0; x < con_linewidth; x++)
-            if(line[x] != ' ') break;
-        if(x != con_linewidth) break;
+        {
+            if(line[x] != ' ')
+            {
+                break;
+            }
+        }
+
+        if(x != con_linewidth)
+        {
+            break;
+        }
     }
 
     // write the remaining lines
@@ -189,11 +205,18 @@ static void Con_Dump_f()
         for(x = con_linewidth - 1; x >= 0; x--)
         {
             if(buffer[x] == ' ')
+            {
                 buffer[x] = 0;
+            }
             else
+            {
                 break;
+            }
         }
-        for(x = 0; buffer[x]; x++) buffer[x] &= 0x7f;
+        for(x = 0; buffer[x]; x++)
+        {
+            buffer[x] &= 0x7f;
+        }
 
         fprintf(f, "%s\n", buffer);
     }
@@ -211,7 +234,10 @@ void Con_ClearNotify()
 {
     int i;
 
-    for(i = 0; i < NUM_CON_TIMES; i++) con_times[i] = 0;
+    for(i = 0; i < NUM_CON_TIMES; i++)
+    {
+        con_times[i] = 0;
+    }
 }
 
 
@@ -222,7 +248,10 @@ Con_MessageMode_f
 */
 static void Con_MessageMode_f()
 {
-    if(cls.state != ca_connected || cls.demoplayback) return;
+    if(cls.state != ca_connected || cls.demoplayback)
+    {
+        return;
+    }
     chat_team = false;
     key_dest = key_message;
 }
@@ -234,7 +263,10 @@ Con_MessageMode2_f
 */
 static void Con_MessageMode2_f()
 {
-    if(cls.state != ca_connected || cls.demoplayback) return;
+    if(cls.state != ca_connected || cls.demoplayback)
+    {
+        return;
+    }
     chat_team = true;
     key_dest = key_message;
 }
@@ -256,7 +288,10 @@ void Con_CheckResize()
     width = (vid.conwidth >> 3) -
             2; // johnfitz -- use vid.conwidth instead of vid.width
 
-    if(width == con_linewidth) return;
+    if(width == con_linewidth)
+    {
+        return;
+    }
 
     oldwidth = con_linewidth;
     con_linewidth = width;
@@ -266,11 +301,17 @@ void Con_CheckResize()
         con_linewidth; // johnfitz -- con_buffersize replaces CON_TEXTSIZE
     numlines = oldtotallines;
 
-    if(con_totallines < numlines) numlines = con_totallines;
+    if(con_totallines < numlines)
+    {
+        numlines = con_totallines;
+    }
 
     numchars = oldwidth;
 
-    if(con_linewidth < numchars) numchars = con_linewidth;
+    if(con_linewidth < numchars)
+    {
+        numchars = con_linewidth;
+    }
 
     mark = Hunk_LowMark();                    // johnfitz
     tbuf = (char*)Hunk_Alloc(con_buffersize); // johnfitz
@@ -312,9 +353,13 @@ void Con_Init()
     // johnfitz -- user settable console buffer size
     i = COM_CheckParm("-consize");
     if(i && i < com_argc - 1)
+    {
         con_buffersize = q_max(CON_MINSIZE, Q_atoi(com_argv[i + 1]) * 1024);
+    }
     else
+    {
         con_buffersize = CON_TEXTSIZE;
+    }
     // johnfitz
 
     con_text = (char*)Hunk_AllocName(con_buffersize,
@@ -354,9 +399,14 @@ Con_Linefeed
 static void Con_Linefeed()
 {
     // johnfitz -- improved scrolling
-    if(con_backscroll) con_backscroll++;
+    if(con_backscroll)
+    {
+        con_backscroll++;
+    }
     if(con_backscroll > con_totallines - (glheight >> 3) - 1)
+    {
         con_backscroll = con_totallines - (glheight >> 3) - 1;
+    }
     // johnfitz
 
     con_x = 0;
@@ -396,7 +446,9 @@ static void Con_Print(const char* txt)
         txt++;
     }
     else
+    {
         mask = 0;
+    }
 
     boundary = true;
 
@@ -410,10 +462,18 @@ static void Con_Print(const char* txt)
         {
             // count word length
             for(l = 0; l < con_linewidth; l++)
-                if(txt[l] <= ' ') break;
+            {
+                if(txt[l] <= ' ')
+                {
+                    break;
+                }
+            }
 
             // word wrap
-            if(l != con_linewidth && (con_x + l > con_linewidth)) con_x = 0;
+            if(l != con_linewidth && (con_x + l > con_linewidth))
+            {
+                con_x = 0;
+            }
 
             boundary = false;
         }
@@ -431,7 +491,9 @@ static void Con_Print(const char* txt)
             Con_Linefeed();
             // mark time for transparent overlay
             if(con_current >= 0)
+            {
                 con_times[con_current % NUM_CON_TIMES] = realtime;
+            }
         }
 
         switch(c)
@@ -447,7 +509,10 @@ static void Con_Print(const char* txt)
                 y = con_current % con_totallines;
                 con_text[y * con_linewidth + con_x] = c | mask;
                 con_x++;
-                if(con_x >= con_linewidth) con_x = 0;
+                if(con_x >= con_linewidth)
+                {
+                    con_x = 0;
+                }
                 break;
         }
     }
@@ -466,7 +531,10 @@ Con_DebugLog
 */
 void Con_DebugLog(const char* msg)
 {
-    if(log_fd == -1) return;
+    if(log_fd == -1)
+    {
+        return;
+    }
 
     write(log_fd, msg, strlen(msg));
 }
@@ -494,11 +562,20 @@ void Con_Printf(const char* fmt, ...)
     Sys_Printf("%s", msg);
 
     // log all messages to file
-    if(con_debuglog) Con_DebugLog(msg);
+    if(con_debuglog)
+    {
+        Con_DebugLog(msg);
+    }
 
-    if(!con_initialized) return;
+    if(!con_initialized)
+    {
+        return;
+    }
 
-    if(cls.state == ca_dedicated) return; // no graphics mode
+    if(cls.state == ca_dedicated)
+    {
+        return; // no graphics mode
+    }
 
     // write it to the scrollable buffer
     Con_Print(msg);
@@ -506,8 +583,8 @@ void Con_Printf(const char* fmt, ...)
     // update the screen if the console is displayed
     if(cls.signon != SIGNONS && !scr_disabled_for_loading)
     {
-        // protect against infinite loop if something in SCR_UpdateScreen calls
-        // Con_Printd
+        // protect against infinite loop if something in
+        // SCR_UpdateScreen calls Con_Printd
         if(!inupdate)
         {
             inupdate = true;
@@ -522,8 +599,8 @@ void Con_Printf(const char* fmt, ...)
 Con_DWarning -- ericw
 
 same as Con_Warning, but only prints if "developer" cvar is set.
-use for "exceeds standard limit of" messages, which are only relevant for
-developers targetting vanilla engines
+use for "exceeds standard limit of" messages, which are only relevant
+for developers targetting vanilla engines
 ================
 */
 void Con_DWarning(const char* fmt, ...)
@@ -532,7 +609,9 @@ void Con_DWarning(const char* fmt, ...)
     char msg[MAXPRINTMSG];
 
     if(!developer.value)
+    {
         return; // don't confuse non-developers with techie stuff...
+    }
 
     va_start(argptr, fmt);
     q_vsnprintf(msg, sizeof(msg), fmt, argptr);
@@ -573,7 +652,9 @@ void Con_DPrintf(const char* fmt, ...)
     char msg[MAXPRINTMSG];
 
     if(!developer.value)
+    {
         return; // don't confuse non-developers with techie stuff...
+    }
 
     va_start(argptr, fmt);
     q_vsnprintf(msg, sizeof(msg), fmt, argptr);
@@ -629,8 +710,8 @@ void Con_SafePrintf(const char* fmt, ...)
 
 /*
 ================
-Con_CenterPrintf -- johnfitz -- pad each line with spaces to make it appear
-centered
+Con_CenterPrintf -- johnfitz -- pad each line with spaces to make it
+appear centered
 ================
 */
 void Con_CenterPrintf(int linewidth, const char* fmt, ...) FUNC_PRINTF(2, 3);
@@ -651,9 +732,15 @@ void Con_CenterPrintf(int linewidth, const char* fmt, ...)
     for(src = msg; *src;)
     {
         dst = line;
-        while(*src && *src != '\n') *dst++ = *src++;
+        while(*src && *src != '\n')
+        {
+            *dst++ = *src++;
+        }
         *dst = 0;
-        if(*src == '\n') src++;
+        if(*src == '\n')
+        {
+            src++;
+        }
 
         len = strlen(line);
         if(len < linewidth)
@@ -664,21 +751,29 @@ void Con_CenterPrintf(int linewidth, const char* fmt, ...)
             Con_Printf("%s%s\n", spaces, line);
         }
         else
+        {
             Con_Printf("%s\n", line);
+        }
     }
 }
 
 /*
 ==================
-Con_LogCenterPrint -- johnfitz -- echo centerprint message to the console
+Con_LogCenterPrint -- johnfitz -- echo centerprint message to the
+console
 ==================
 */
 void Con_LogCenterPrint(const char* str)
 {
-    if(!strcmp(str, con_lastcenterstring)) return; // ignore duplicates
+    if(!strcmp(str, con_lastcenterstring))
+    {
+        return; // ignore duplicates
+    }
 
     if(cl.gametype == GAME_DEATHMATCH && con_logcenterprint.value != 2)
+    {
         return; // don't log in deathmatch
+    }
 
     strcpy(con_lastcenterstring, str);
 
@@ -790,7 +885,10 @@ void AddToTabList(const char* name, const char* type)
         insert = tablist;
         do
         {
-            if(strcmp(name, insert->name) < 0) break;
+            if(strcmp(name, insert->name) < 0)
+            {
+                break;
+            }
             insert = insert->next;
         } while(insert != tablist);
 
@@ -863,7 +961,9 @@ const char* FindCompletion(
         for(file = filelist; file; file = file->next)
         {
             if(!strncmp(file->name, partial, plen))
+            {
                 Con_SafePrintf("   %s\n", file->name);
+            }
         }
         Con_SafePrintf("\n");
     }
@@ -891,16 +991,28 @@ void BuildTabList(const char* partial)
 
     cvar = Cvar_FindVarAfter("", CVAR_NONE);
     for(; cvar; cvar = cvar->next)
+    {
         if(!Q_strncmp(partial, cvar->name, len))
+        {
             AddToTabList(cvar->name, "cvar");
+        }
+    }
 
     for(cmd = cmd_functions; cmd; cmd = cmd->next)
+    {
         if(!Q_strncmp(partial, cmd->name, len))
+        {
             AddToTabList(cmd->name, "command");
+        }
+    }
 
     for(alias = cmd_alias; alias; alias = alias->next)
+    {
         if(!Q_strncmp(partial, alias->name, len))
+        {
             AddToTabList(alias->name, "alias");
+        }
+    }
 }
 
 /*
@@ -917,30 +1029,41 @@ void Con_TabComplete()
     int mark, i, j;
 
     // if editline is empty, return
-    if(key_lines[edit_line][1] == 0) return;
+    if(key_lines[edit_line][1] == 0)
+    {
+        return;
+    }
 
     // get partial string (space -> cursor)
-    if(!key_tabpartial[0]) // first time through, find new insert point.
-                           // (Otherwise, use previous.)
+    if(!key_tabpartial[0]) // first time through, find new
+                           // insert point. (Otherwise, use
+                           // previous.)
     {
-        // work back from cursor until you find a space, quote, semicolon, or
-        // prompt
+        // work back from cursor until you find a space,
+        // quote, semicolon, or prompt
         c = key_lines[edit_line] + key_linepos -
             1; // start one space left of cursor
         while(*c != ' ' && *c != '\"' && *c != ';' && c != key_lines[edit_line])
+        {
             c--;
-        c++; // start 1 char after the separator we just found
+        }
+        c++; // start 1 char after the separator we just
+             // found
     }
     for(i = 0; c + i < key_lines[edit_line] + key_linepos; i++)
+    {
         partial[i] = c[i];
+    }
     partial[i] = 0;
 
     // Map autocomplete function -- S.A
-    // Since we don't have argument completion, this hack will do for now...
+    // Since we don't have argument completion, this hack
+    // will do for now...
     for(j = 0; j < num_arg_completion_types; j++)
     {
-        // arg_completion contains a command we can complete the arguments
-        // for (like "map ") and a list of all the maps.
+        // arg_completion contains a command we can complete
+        // the arguments for (like "map ") and a list of all
+        // the maps.
         arg_completion_type_t arg_completion = arg_completion_types[j];
         const char* command_name = arg_completion.command;
 
@@ -950,13 +1073,19 @@ void Con_TabComplete()
             int nummatches = 0;
             const char* matched_map =
                 FindCompletion(partial, *arg_completion.filelist, &nummatches);
-            if(!*matched_map) return;
+            if(!*matched_map)
+            {
+                return;
+            }
             q_strlcpy(partial, matched_map, MAXCMDLINE);
             *c = '\0';
             q_strlcat(key_lines[edit_line], partial, MAXCMDLINE);
             key_linepos = c - key_lines[edit_line] +
                           Q_strlen(matched_map); // set new cursor position
-            if(key_linepos >= MAXCMDLINE) key_linepos = MAXCMDLINE - 1;
+            if(key_linepos >= MAXCMDLINE)
+            {
+                key_linepos = MAXCMDLINE - 1;
+            }
             // if only one match, append a space
             if(key_linepos < MAXCMDLINE - 1 &&
                 key_lines[edit_line][key_linepos] == 0 && (nummatches == 1))
@@ -971,10 +1100,17 @@ void Con_TabComplete()
     }
 
     // if partial is empty, return
-    if(partial[0] == 0) return;
+    if(partial[0] == 0)
+    {
+        return;
+    }
 
-    // trim trailing space becuase it screws up string comparisons
-    if(i > 0 && partial[i - 1] == ' ') partial[i - 1] = 0;
+    // trim trailing space becuase it screws up string
+    // comparisons
+    if(i > 0 && partial[i - 1] == ' ')
+    {
+        partial[i - 1] = 0;
+    }
 
     // find a match
     mark = Hunk_LowMark();
@@ -983,7 +1119,10 @@ void Con_TabComplete()
         q_strlcpy(key_tabpartial, partial, MAXCMDLINE);
         BuildTabList(key_tabpartial);
 
-        if(!tablist) return;
+        if(!tablist)
+        {
+            return;
+        }
 
         // print list if length > 1
         if(tablist->next != tablist)
@@ -999,17 +1138,21 @@ void Con_TabComplete()
         }
 
         //	match = tablist->name;
-        // First time, just show maximum matching chars -- S.A.
+        // First time, just show maximum matching chars --
+        // S.A.
         match = bash_partial;
     }
     else
     {
         BuildTabList(key_tabpartial);
 
-        if(!tablist) return;
+        if(!tablist)
+        {
+            return;
+        }
 
-        // find current match -- can't save a pointer because the list will be
-        // rebuilt each time
+        // find current match -- can't save a pointer
+        // because the list will be rebuilt each time
         t = tablist;
         match = keydown[K_SHIFT] ? t->prev->name : t->name;
         do
@@ -1022,31 +1165,38 @@ void Con_TabComplete()
             t = t->next;
         } while(t != tablist);
     }
-    Hunk_FreeToLowMark(mark); // it's okay to free it here because match is a
-                              // pointer to persistent data
+    Hunk_FreeToLowMark(mark); // it's okay to free it here because match is
+                              // a pointer to persistent data
 
     // insert new match into edit line
-    q_strlcpy(partial, match, MAXCMDLINE); // first copy match string
+    q_strlcpy(partial, match,
+        MAXCMDLINE); // first copy match string
     q_strlcat(partial, key_lines[edit_line] + key_linepos,
         MAXCMDLINE); // then add chars after cursor
     *c = '\0';       // now copy all of this into edit line
     q_strlcat(key_lines[edit_line], partial, MAXCMDLINE);
     key_linepos =
         c - key_lines[edit_line] + Q_strlen(match); // set new cursor position
-    if(key_linepos >= MAXCMDLINE) key_linepos = MAXCMDLINE - 1;
+    if(key_linepos >= MAXCMDLINE)
+    {
+        key_linepos = MAXCMDLINE - 1;
+    }
 
-    // if cursor is at end of string, let's append a space to make life easier
+    // if cursor is at end of string, let's append a space
+    // to make life easier
     if(key_linepos < MAXCMDLINE - 1 && key_lines[edit_line][key_linepos] == 0 &&
         bash_singlematch)
     {
         key_lines[edit_line][key_linepos] = ' ';
         key_linepos++;
         key_lines[edit_line][key_linepos] = 0;
-        // S.A.: the map argument completion (may be in combination with the
-        // bash-style display behavior changes, causes weirdness when completing
-        // the arguments for the changelevel command. the line below "fixes" it,
-        // although I'm not sure about the reason, yet, neither do I know any
-        // possible side effects of it:
+        // S.A.: the map argument completion (may be in
+        // combination with the bash-style display behavior
+        // changes, causes weirdness when completing the
+        // arguments for the changelevel command. the line
+        // below "fixes" it, although I'm not sure about the
+        // reason, yet, neither do I know any possible side
+        // effects of it:
         c = key_lines[edit_line] + key_linepos;
     }
 }
@@ -1063,7 +1213,8 @@ DRAWING
 ================
 Con_DrawNotify
 
-Draws the last few lines of output transparently over the game top
+Draws the last few lines of output transparently over the
+game top
 ================
 */
 void Con_DrawNotify()
@@ -1077,17 +1228,28 @@ void Con_DrawNotify()
 
     for(i = con_current - NUM_CON_TIMES + 1; i <= con_current; i++)
     {
-        if(i < 0) continue;
+        if(i < 0)
+        {
+            continue;
+        }
         time = con_times[i % NUM_CON_TIMES];
-        if(time == 0) continue;
+        if(time == 0)
+        {
+            continue;
+        }
         time = realtime - time;
-        if(time > con_notifytime.value) continue;
+        if(time > con_notifytime.value)
+        {
+            continue;
+        }
         text = con_text + (i % con_totallines) * con_linewidth;
 
         clearnotify = 0;
 
         for(x = 0; x < con_linewidth; x++)
+        {
             Draw_Character((x + 1) << 3, v, text[x]);
+        }
 
         v += 8;
 
@@ -1111,7 +1273,10 @@ void Con_DrawNotify()
 
         text = Key_GetChatBuffer();
         i = Key_GetChatMsgLen();
-        if(i > con_linewidth - x - 1) text += i - con_linewidth + x + 1;
+        if(i > con_linewidth - x - 1)
+        {
+            text += i - con_linewidth + x + 1;
+        }
 
         while(*text)
         {
@@ -1129,29 +1294,41 @@ void Con_DrawNotify()
 
 /*
 ================
-Con_DrawInput -- johnfitz -- modified to allow insert editing
+Con_DrawInput -- johnfitz -- modified to allow insert
+editing
 
-The input line scrolls horizontally if typing goes beyond the right edge
+The input line scrolls horizontally if typing goes beyond
+the right edge
 ================
 */
-extern qpic_t *pic_ovr, *pic_ins; // johnfitz -- new cursor handling
+extern qpic_t *pic_ovr,
+    *pic_ins; // johnfitz -- new cursor handling
 
 void Con_DrawInput()
 {
     int i, ofs;
 
-    if(key_dest != key_console && !con_forcedup) return; // don't draw anything
+    if(key_dest != key_console && !con_forcedup)
+    {
+        return; // don't draw anything
+    }
 
     // prestep if horizontally scrolling
     if(key_linepos >= con_linewidth)
+    {
         ofs = 1 + key_linepos - con_linewidth;
+    }
     else
+    {
         ofs = 0;
+    }
 
     // draw input string
     for(i = 0; key_lines[edit_line][i + ofs] && i < con_linewidth; i++)
+    {
         Draw_Character(
             (i + 1) << 3, vid.conheight - 16, key_lines[edit_line][i + ofs]);
+    }
 
     // johnfitz -- new cursor handling
     if(!((int)((realtime - key_blinktime) * con_cursorspeed) & 1))
@@ -1167,7 +1344,8 @@ void Con_DrawInput()
 Con_DrawConsole -- johnfitz -- heavy revision
 
 Draws the console with the solid background
-The typing input line at the bottom should only be drawn if typing is allowed
+The typing input line at the bottom should only be drawn if
+typing is allowed
 ================
 */
 void Con_DrawConsole(int lines, qboolean drawinput)
@@ -1176,7 +1354,10 @@ void Con_DrawConsole(int lines, qboolean drawinput)
     const char* text;
     char ver[32];
 
-    if(lines <= 0) return;
+    if(lines <= 0)
+    {
+        return;
+    }
 
     con_vislines = lines * vid.conheight / glheight;
     GL_SetCanvas(CANVAS_CONSOLE);
@@ -1193,11 +1374,16 @@ void Con_DrawConsole(int lines, qboolean drawinput)
     for(i = con_current - rows + 1; i <= con_current - sb; i++, y += 8)
     {
         j = i - con_backscroll;
-        if(j < 0) j = 0;
+        if(j < 0)
+        {
+            j = 0;
+        }
         text = con_text + (j % con_totallines) * con_linewidth;
 
         for(x = 0; x < con_linewidth; x++)
+        {
             Draw_Character((x + 1) << 3, y, text[x]);
+        }
     }
 
     // draw scrollback arrows
@@ -1205,19 +1391,26 @@ void Con_DrawConsole(int lines, qboolean drawinput)
     {
         y += 8; // blank line
         for(x = 0; x < con_linewidth; x += 4)
+        {
             Draw_Character((x + 1) << 3, y, '^');
+        }
         y += 8;
     }
 
     // draw the input prompt, user text, and cursor
-    if(drawinput) Con_DrawInput();
+    if(drawinput)
+    {
+        Con_DrawInput();
+    }
 
     // draw version number in bottom right
     y += 8;
     q_snprintf(ver, sizeof(ver), "QuakeSpasm " QUAKESPASM_VER_STRING);
     for(x = 0; x < (int)strlen(ver); x++)
+    {
         Draw_Character(
             (con_linewidth - strlen(ver) + x + 2) << 3, y, ver[x] /*+ 128*/);
+    }
 }
 
 
@@ -1265,7 +1458,10 @@ void LOG_Init(quakeparms_t* parms)
     time_t inittime;
     char session[24];
 
-    if(!COM_CheckParm("-condebug")) return;
+    if(!COM_CheckParm("-condebug"))
+    {
+        return;
+    }
 
     inittime = time(nullptr);
     strftime(
@@ -1288,7 +1484,10 @@ void LOG_Init(quakeparms_t* parms)
 
 void LOG_Close()
 {
-    if(log_fd == -1) return;
+    if(log_fd == -1)
+    {
+        return;
+    }
     close(log_fd);
     log_fd = -1;
 }

@@ -24,7 +24,8 @@ struct VrAimMode
         // Blended Aiming; Mouse aims, with YAW decoupled for limited area
         e_BLENDED = 5,
 
-        // Blended Aiming; Mouse aims, with YAW decoupled for limited area, pitch decoupled entirely
+        // Blended Aiming; Mouse aims, with YAW decoupled for limited area,
+        // pitch decoupled entirely
         e_BLENDED_NOPITCH = 6,
 
         // Controller Aiming
@@ -116,7 +117,8 @@ extern cvar_t vr_sbar_offset_pitch;
 extern cvar_t vr_sbar_offset_yaw;
 extern cvar_t vr_sbar_offset_roll;
 
-#define MAX_WEAPONS 20 // TODO VR: not sure what this number should actually be...
+#define MAX_WEAPONS \
+    20 // TODO VR: not sure what this number should actually be...
 #define VARS_PER_WEAPON 8
 
 extern cvar_t vr_weapon_offset[MAX_WEAPONS * VARS_PER_WEAPON];

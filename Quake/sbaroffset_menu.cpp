@@ -156,7 +156,8 @@ void SbarOffset_MenuDraw()
     y += 16;
     int idx = 0;
 
-    static const auto adjustedLabels = quake::util::makeAdjustedMenuLabels("Offset X", "Offset Y", "Offset Z", "Scale", "Roll", "Pitch", "Yaw");
+    static const auto adjustedLabels = quake::util::makeAdjustedMenuLabels(
+        "Offset X", "Offset Y", "Offset Z", "Scale", "Roll", "Pitch", "Yaw");
 
     static_assert(adjustedLabels.size() == (int)SbarOffsetMenuOpt::Max);
 

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CSHIFT_POWERUP 3
 #define NUM_CSHIFTS 4
 #define NAME_LENGTH 64
-#define SIGNONS 4 // signon messages to receive before connected
+#define SIGNONS 4      // signon messages to receive before connected
 #define MAX_DLIGHTS 64 // johnfitz -- was 32
 #define MAX_BEAMS 32   // johnfitz -- was 24
 #define MAX_MAPSTRING 2048
@@ -277,7 +277,6 @@ extern cvar_t m_pitch;
 extern cvar_t m_yaw;
 extern cvar_t m_forward;
 extern cvar_t m_side;
-
 
 
 

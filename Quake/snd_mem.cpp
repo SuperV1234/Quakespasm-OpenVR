@@ -37,19 +37,29 @@ static void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
     sfxcache_t* sc;
 
     sc = (sfxcache_t*)Cache_Check(&sfx->cache);
-    if(!sc) return;
+    if(!sc)
+    {
+        return;
+    }
 
     stepscale = (float)inrate / shm->speed; // this is usually 0.5, 1, or 2
 
     outcount = sc->length / stepscale;
     sc->length = outcount;
-    if(sc->loopstart != -1) sc->loopstart = sc->loopstart / stepscale;
+    if(sc->loopstart != -1)
+    {
+        sc->loopstart = sc->loopstart / stepscale;
+    }
 
     sc->speed = shm->speed;
     if(loadas8bit.value)
+    {
         sc->width = 1;
+    }
     else
+    {
         sc->width = inwidth;
+    }
     sc->stereo = 0;
 
     // resample / decimate to the current source rate
@@ -58,7 +68,9 @@ static void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
     {
         // fast special case
         for(i = 0; i < outcount; i++)
+        {
             ((signed char*)sc->data)[i] = (int)((unsigned char)(data[i]) - 128);
+        }
     }
     else
     {
@@ -70,13 +82,21 @@ static void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
             srcsample = samplefrac >> 8;
             samplefrac += fracstep;
             if(inwidth == 2)
+            {
                 sample = LittleShort(((short*)data)[srcsample]);
+            }
             else
+            {
                 sample = (int)((unsigned char)(data[srcsample]) - 128) << 8;
+            }
             if(sc->width == 2)
+            {
                 ((short*)sc->data)[i] = sample;
+            }
             else
+            {
                 ((signed char*)sc->data)[i] = sample >> 8;
+            }
         }
     }
 }
@@ -100,7 +120,10 @@ sfxcache_t* S_LoadSound(sfx_t* s)
 
     // see if still in memory
     sc = (sfxcache_t*)Cache_Check(&s->cache);
-    if(sc) return sc;
+    if(sc)
+    {
+        return sc;
+    }
 
     //	Con_Printf ("S_LoadSound: %x\n", (int)stackbuf);
 
@@ -143,7 +166,10 @@ sfxcache_t* S_LoadSound(sfx_t* s)
     }
 
     sc = (sfxcache_t*)Cache_Alloc(&s->cache, len + sizeof(sfxcache_t), s->name);
-    if(!sc) return nullptr;
+    if(!sc)
+    {
+        return nullptr;
+    }
 
     sc->length = info.samples;
     sc->loopstart = info.loopstart;
@@ -213,7 +239,10 @@ static void FindNextChunk(const char* name)
         }
         last_chunk = data_p + ((iff_chunk_len + 1) & ~1);
         data_p -= 8;
-        if(!Q_strncmp((char*)data_p, name, 4)) return;
+        if(!Q_strncmp((char*)data_p, name, 4))
+        {
+            return;
+        }
     }
 }
 
@@ -255,7 +284,10 @@ wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 
     memset(&info, 0, sizeof(info));
 
-    if(!wav) return info;
+    if(!wav)
+    {
+        return info;
+    }
 
     iff_data = wav;
     iff_end = wav + wavlength;
@@ -292,7 +324,10 @@ wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
     info.rate = GetLittleLong();
     data_p += 4 + 2;
     i = GetLittleShort();
-    if(i != 8 && i != 16) return info;
+    if(i != 8 && i != 16)
+    {
+        return info;
+    }
     info.width = i / 8;
 
     // get cue chunk
@@ -317,7 +352,9 @@ wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
         }
     }
     else
+    {
         info.loopstart = -1;
+    }
 
     // find data chunk
     FindChunk("data");
@@ -332,10 +369,15 @@ wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 
     if(info.samples)
     {
-        if(samples < info.samples) Sys_Error("%s has a bad loop length", name);
+        if(samples < info.samples)
+        {
+            Sys_Error("%s has a bad loop length", name);
+        }
     }
     else
+    {
         info.samples = samples;
+    }
 
     info.dataofs = data_p - wav;
 

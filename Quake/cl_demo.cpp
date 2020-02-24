@@ -49,7 +49,10 @@ Called when a demo file runs out, or the user starts a game
 */
 void CL_StopPlayback()
 {
-    if(!cls.demoplayback) return;
+    if(!cls.demoplayback)
+    {
+        return;
+    }
 
     fclose(cls.demofile);
     cls.demoplayback = false;
@@ -57,7 +60,10 @@ void CL_StopPlayback()
     cls.demofile = nullptr;
     cls.state = ca_disconnected;
 
-    if(cls.timedemo) CL_FinishTimeDemo();
+    if(cls.timedemo)
+    {
+        CL_FinishTimeDemo();
+    }
 }
 
 /*
@@ -89,7 +95,10 @@ static int CL_GetDemoMessage()
     int r, i;
     float f;
 
-    if(cls.demopaused) return 0;
+    if(cls.demopaused)
+    {
+        return 0;
+    }
 
     // decide if it is time to grab the next message
     if(cls.signon == SIGNONS) // always grab until fully connected
@@ -97,12 +106,16 @@ static int CL_GetDemoMessage()
         if(cls.timedemo)
         {
             if(host_framecount == cls.td_lastframe)
+            {
                 return 0; // already read this frame's message
+            }
             cls.td_lastframe = host_framecount;
             // if this is the second frame, grab the real td_starttime
             // so the bogus time on the first frame doesn't count
             if(host_framecount == cls.td_startframe + 1)
+            {
                 cls.td_starttime = realtime;
+            }
         }
         else if(/* cl.time > 0 && */ cl.time <= cl.mtime[0])
         {
@@ -120,7 +133,10 @@ static int CL_GetDemoMessage()
     }
 
     net_message.cursize = LittleLong(net_message.cursize);
-    if(net_message.cursize > MAX_MSGLEN) Sys_Error("Demo message > MAX_MSGLEN");
+    if(net_message.cursize > MAX_MSGLEN)
+    {
+        Sys_Error("Demo message > MAX_MSGLEN");
+    }
     r = fread(net_message.data, net_message.cursize, 1, cls.demofile);
     if(r != 1)
     {
@@ -142,22 +158,35 @@ int CL_GetMessage()
 {
     int r;
 
-    if(cls.demoplayback) return CL_GetDemoMessage();
+    if(cls.demoplayback)
+    {
+        return CL_GetDemoMessage();
+    }
 
     while(true)
     {
         r = NET_GetMessage(cls.netcon);
 
-        if(r != 1 && r != 2) return r;
+        if(r != 1 && r != 2)
+        {
+            return r;
+        }
 
         // discard nop keepalive message
         if(net_message.cursize == 1 && net_message.data[0] == svc_nop)
+        {
             Con_Printf("<-- server to client keepalive\n");
+        }
         else
+        {
             break;
+        }
     }
 
-    if(cls.demorecording) CL_WriteDemoMessage();
+    if(cls.demorecording)
+    {
+        CL_WriteDemoMessage();
+    }
 
     if(cls.signon < 2)
     {
@@ -180,7 +209,10 @@ stop recording a demo
 */
 void CL_Stop_f()
 {
-    if(cmd_source != src_command) return;
+    if(cmd_source != src_command)
+    {
+        return;
+    }
 
     if(!cls.demorecording)
     {
@@ -216,7 +248,10 @@ void CL_Record_f()
     char name[MAX_OSPATH];
     int track;
 
-    if(cmd_source != src_command) return;
+    if(cmd_source != src_command)
+    {
+        return;
+    }
 
     if(cls.demoplayback)
     {
@@ -224,7 +259,10 @@ void CL_Record_f()
         return;
     }
 
-    if(cls.demorecording) CL_Stop_f();
+    if(cls.demorecording)
+    {
+        CL_Stop_f();
+    }
 
     c = Cmd_Argc();
     if(c != 2 && c != 3 && c != 4)
@@ -269,7 +307,10 @@ void CL_Record_f()
     if(c > 2)
     {
         Cmd_ExecuteString(va("map %s", Cmd_Argv(2)), src_command);
-        if(cls.state != ca_connected) return;
+        if(cls.state != ca_connected)
+        {
+            return;
+        }
     }
 
     // open the demo file
@@ -374,7 +415,10 @@ void CL_PlayDemo_f()
     int i, c;
     qboolean neg;
 
-    if(cmd_source != src_command) return;
+    if(cmd_source != src_command)
+    {
+        return;
+    }
 
     if(Cmd_Argc() != 2)
     {
@@ -411,7 +455,10 @@ void CL_PlayDemo_f()
     for(i = 0; i < 13; i++)
     {
         c = getc(cls.demofile);
-        if(c == '\n') break;
+        if(c == '\n')
+        {
+            break;
+        }
         if(c == '-')
         {
             neg = true;
@@ -428,7 +475,10 @@ void CL_PlayDemo_f()
         Con_Printf("ERROR: demo \"%s\" is invalid\n", name);
         return;
     }
-    if(neg) cls.forcetrack = -cls.forcetrack;
+    if(neg)
+    {
+        cls.forcetrack = -cls.forcetrack;
+    }
 
     cls.demoplayback = true;
     cls.demopaused = false;
@@ -454,7 +504,10 @@ static void CL_FinishTimeDemo()
     // the first frame didn't count
     frames = (host_framecount - cls.td_startframe) - 1;
     time = realtime - cls.td_starttime;
-    if(!time) time = 1;
+    if(!time)
+    {
+        time = 1;
+    }
     Con_Printf(
         "%i frames %5.1f seconds %5.1f fps\n", frames, time, frames / time);
 }
@@ -468,7 +521,10 @@ timedemo [demoname]
 */
 void CL_TimeDemo_f()
 {
-    if(cmd_source != src_command) return;
+    if(cmd_source != src_command)
+    {
+        return;
+    }
 
     if(Cmd_Argc() != 2)
     {
@@ -477,7 +533,10 @@ void CL_TimeDemo_f()
     }
 
     CL_PlayDemo_f();
-    if(!cls.demofile) return;
+    if(!cls.demofile)
+    {
+        return;
+    }
 
     // cls.td_starttime will be grabbed at the second frame of the demo, so
     // all the loading time doesn't get counted

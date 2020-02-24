@@ -78,7 +78,10 @@ static void WINS_GetLocalAddress()
     in_addr_t addr;
     int err;
 
-    if(myAddr != INADDR_ANY) return;
+    if(myAddr != INADDR_ANY)
+    {
+        return;
+    }
 
     if(gethostname(buff, MAXHOSTNAMELEN) == SOCKET_ERROR)
     {
@@ -118,7 +121,10 @@ sys_socket_t WINS_Init()
     int i, err;
     char buff[MAXHOSTNAMELEN];
 
-    if(COM_CheckParm("-noudp")) return -1;
+    if(COM_CheckParm("-noudp"))
+    {
+        return -1;
+    }
 
     if(winsock_initialized == 0)
     {
@@ -150,7 +156,9 @@ sys_socket_t WINS_Init()
         {
             myAddr = inet_addr(com_argv[i + 1]);
             if(myAddr == INADDR_NONE)
+            {
                 Sys_Error("%s is not a valid IP address", com_argv[i + 1]);
+            }
             strcpy(my_tcpip_address, com_argv[i + 1]);
         }
         else
@@ -168,7 +176,10 @@ sys_socket_t WINS_Init()
     {
         Con_SafePrintf(
             "WINS_Init: Unable to open control socket, UDP disabled\n");
-        if(--winsock_initialized == 0) WSACleanup();
+        if(--winsock_initialized == 0)
+        {
+            WSACleanup();
+        }
         return INVALID_SOCKET;
     }
 
@@ -188,7 +199,10 @@ void WINS_Shutdown()
 {
     WINS_Listen(false);
     WINS_CloseSocket(net_controlsocket);
-    if(--winsock_initialized == 0) WSACleanup();
+    if(--winsock_initialized == 0)
+    {
+        WSACleanup();
+    }
 }
 
 //=============================================================================
@@ -198,15 +212,23 @@ void WINS_Listen(qboolean state)
     // enable listening
     if(state)
     {
-        if(net_acceptsocket != INVALID_SOCKET) return;
+        if(net_acceptsocket != INVALID_SOCKET)
+        {
+            return;
+        }
         WINS_GetLocalAddress();
         if((net_acceptsocket = WINS_OpenSocket(net_hostport)) == INVALID_SOCKET)
+        {
             Sys_Error("WINS_Listen: Unable to open accept socket");
+        }
         return;
     }
 
     // disable listening
-    if(net_acceptsocket == INVALID_SOCKET) return;
+    if(net_acceptsocket == INVALID_SOCKET)
+    {
+        return;
+    }
     WINS_CloseSocket(net_acceptsocket);
     net_acceptsocket = INVALID_SOCKET;
 }
@@ -228,14 +250,18 @@ sys_socket_t WINS_OpenSocket(int port)
     }
 
     if(ioctlsocket(newsocket, FIONBIO, &_true) == SOCKET_ERROR)
+    {
         goto ErrorReturn;
+    }
 
     memset(&address, 0, sizeof(struct sockaddr_in));
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = myAddr;
     address.sin_port = htons((unsigned short)port);
     if(bind(newsocket, (struct sockaddr*)&address, sizeof(address)) == 0)
+    {
         return newsocket;
+    }
 
     if(tcpipAvailable)
     {
@@ -257,7 +283,10 @@ ErrorReturn:
 
 int WINS_CloseSocket(sys_socket_t socketid)
 {
-    if(socketid == net_broadcastsocket) net_broadcastsocket = 0;
+    if(socketid == net_broadcastsocket)
+    {
+        net_broadcastsocket = 0;
+    }
     return closesocket(socketid);
 }
 
@@ -280,7 +309,10 @@ static int PartialIPAddress(const char* in, struct qsockaddr* hostaddr)
     buff[0] = '.';
     b = buff;
     strcpy(buff + 1, in);
-    if(buff[1] == '.') b++;
+    if(buff[1] == '.')
+    {
+        b++;
+    }
 
     addr = 0;
     mask = -1;
@@ -292,19 +324,31 @@ static int PartialIPAddress(const char* in, struct qsockaddr* hostaddr)
         while(!(*b < '0' || *b > '9'))
         {
             num = num * 10 + *b++ - '0';
-            if(++run > 3) return -1;
+            if(++run > 3)
+            {
+                return -1;
+            }
         }
         if((*b < '0' || *b > '9') && *b != '.' && *b != ':' && *b != 0)
+        {
             return -1;
-        if(num < 0 || num > 255) return -1;
+        }
+        if(num < 0 || num > 255)
+        {
+            return -1;
+        }
         mask <<= 8;
         addr = (addr << 8) + num;
     }
 
     if(*b++ == ':')
+    {
         port = Q_atoi(b);
+    }
     else
+    {
         port = net_hostport;
+    }
 
     hostaddr->qsa_family = AF_INET;
     ((struct sockaddr_in*)hostaddr)->sin_port = htons((unsigned short)port);
@@ -330,7 +374,10 @@ sys_socket_t WINS_CheckNewConnections()
 {
     char buf[4096];
 
-    if(net_acceptsocket == INVALID_SOCKET) return INVALID_SOCKET;
+    if(net_acceptsocket == INVALID_SOCKET)
+    {
+        return INVALID_SOCKET;
+    }
 
     if(recvfrom(net_acceptsocket, buf, sizeof(buf), MSG_PEEK, nullptr,
            nullptr) != SOCKET_ERROR)
@@ -352,7 +399,10 @@ int WINS_Read(sys_socket_t socketid, byte* buf, int len, struct qsockaddr* addr)
     if(ret == SOCKET_ERROR)
     {
         int err = SOCKETERRNO;
-        if(err == NET_EWOULDBLOCK || err == NET_ECONNREFUSED) return 0;
+        if(err == NET_EWOULDBLOCK || err == NET_ECONNREFUSED)
+        {
+            return 0;
+        }
         Con_SafePrintf("WINS_Read, recvfrom: %s\n", socketerror(err));
     }
     return ret;
@@ -386,7 +436,9 @@ int WINS_Broadcast(sys_socket_t socketid, byte* buf, int len)
     if(socketid != net_broadcastsocket)
     {
         if(net_broadcastsocket != 0)
+        {
             Sys_Error("Attempted to use multiple broadcasts sockets");
+        }
         WINS_GetLocalAddress();
         ret = WINS_MakeSocketBroadcastCapable(socketid);
         if(ret == -1)
@@ -411,7 +463,10 @@ int WINS_Write(
     if(ret == SOCKET_ERROR)
     {
         int err = SOCKETERRNO;
-        if(err == NET_EWOULDBLOCK) return 0;
+        if(err == NET_EWOULDBLOCK)
+        {
+            return 0;
+        }
         Con_SafePrintf("WINS_Write, sendto: %s\n", socketerror(err));
     }
     return ret;
@@ -458,7 +513,9 @@ int WINS_GetSocketAddr(sys_socket_t socketid, struct qsockaddr* addr)
 
     a = ((struct sockaddr_in*)addr)->sin_addr.s_addr;
     if(a == 0 || a == htonl(INADDR_LOOPBACK))
+    {
         ((struct sockaddr_in*)addr)->sin_addr.s_addr = myAddr;
+    }
 
     return 0;
 }
@@ -487,10 +544,16 @@ int WINS_GetAddrFromName(const char* name, struct qsockaddr* addr)
 {
     struct hostent* hostentry;
 
-    if(name[0] >= '0' && name[0] <= '9') return PartialIPAddress(name, addr);
+    if(name[0] >= '0' && name[0] <= '9')
+    {
+        return PartialIPAddress(name, addr);
+    }
 
     hostentry = gethostbyname(name);
-    if(!hostentry) return -1;
+    if(!hostentry)
+    {
+        return -1;
+    }
 
     addr->qsa_family = AF_INET;
     ((struct sockaddr_in*)addr)->sin_port = htons((unsigned short)net_hostport);
@@ -504,15 +567,22 @@ int WINS_GetAddrFromName(const char* name, struct qsockaddr* addr)
 
 int WINS_AddrCompare(struct qsockaddr* addr1, struct qsockaddr* addr2)
 {
-    if(addr1->qsa_family != addr2->qsa_family) return -1;
+    if(addr1->qsa_family != addr2->qsa_family)
+    {
+        return -1;
+    }
 
     if(((struct sockaddr_in*)addr1)->sin_addr.s_addr !=
         ((struct sockaddr_in*)addr2)->sin_addr.s_addr)
+    {
         return -1;
+    }
 
     if(((struct sockaddr_in*)addr1)->sin_port !=
         ((struct sockaddr_in*)addr2)->sin_port)
+    {
         return 1;
+    }
 
     return 0;
 }

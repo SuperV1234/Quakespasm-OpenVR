@@ -58,7 +58,9 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
                 case VrAimMode::e_HEAD_MYAW_MPITCH:
                     value_string = "HEAD_MYAW_MPITCH";
                     break;
-                case VrAimMode::e_MOUSE_MYAW: value_string = "MOUSE_MYAW"; break;
+                case VrAimMode::e_MOUSE_MYAW:
+                    value_string = "MOUSE_MYAW";
+                    break;
                 case VrAimMode::e_MOUSE_MYAW_MPITCH:
                     value_string = "MOUSE_MYAW_MPITCH";
                     break;
@@ -66,7 +68,9 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
                 case VrAimMode::e_BLENDED_NOPITCH:
                     value_string = "BLENDED_NOPITCH";
                     break;
-                case VrAimMode::e_CONTROLLER: value_string = "CONTROLLER"; break;
+                case VrAimMode::e_CONTROLLER:
+                    value_string = "CONTROLLER";
+                    break;
                 default: assert(false);
             }
             break;
@@ -260,7 +264,9 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
         case VRMenuOpt::VR_MOVEMENT_MODE:
             adjustI(vr_movement_mode, 1, 0, VrMovementMode::k_MAX);
             break;
-        case VRMenuOpt::VR_ENABLE_JOYSTICK_TURN: adjustI(vr_enable_joystick_turn, 1, 0, 1); break;
+        case VRMenuOpt::VR_ENABLE_JOYSTICK_TURN:
+            adjustI(vr_enable_joystick_turn, 1, 0, 1);
+            break;
         case VRMenuOpt::VR_SNAP_TURN: adjustI(vr_snap_turn, 45, 0, 90); break;
         case VRMenuOpt::VR_TURN_SPEED:
             adjustF(vr_turn_speed, 0.25f, 0.f, VR_MAX_TURN_SPEED);
@@ -384,16 +390,16 @@ void VR_MenuDraw()
     y += 16;
     int idx = 0;
 
-    static const auto adjustedLabels =
-        quake::util::makeAdjustedMenuLabels("VR Enabled", "Aim Mode", "Deadzone", "Crosshair", "Crosshair Depth",
-            "Crosshair Size", "Crosshair Alpha", "World Scale", "Movement mode",
-            "Enable Joystick Turn", "Turn", "Turn Speed", "MSAA", "Gun Angle", "Floor Offset",
-            "Gun Model Pitch", "Gun Model Scale", "Gun Model Z Offset",
-            "Crosshair Z Offset",
-            // TODO VR: consider restoring for custom QC?
-            // "Projectile Spawn Z",
-            "HUD Scale", "Menu Scale", "Melee Threshold", "Gun Yaw",
-            "Gun Z Offset", "Status Bar Mode", "Viewkick", "Impulse 9");
+    static const auto adjustedLabels = quake::util::makeAdjustedMenuLabels(
+        "VR Enabled", "Aim Mode", "Deadzone", "Crosshair", "Crosshair Depth",
+        "Crosshair Size", "Crosshair Alpha", "World Scale", "Movement mode",
+        "Enable Joystick Turn", "Turn", "Turn Speed", "MSAA", "Gun Angle",
+        "Floor Offset", "Gun Model Pitch", "Gun Model Scale",
+        "Gun Model Z Offset", "Crosshair Z Offset",
+        // TODO VR: consider restoring for custom QC?
+        // "Projectile Spawn Z",
+        "HUD Scale", "Menu Scale", "Melee Threshold", "Gun Yaw", "Gun Z Offset",
+        "Status Bar Mode", "Viewkick", "Impulse 9");
 
     static_assert(adjustedLabels.size() == (int)VRMenuOpt::VR_MAX);
 
@@ -428,7 +434,8 @@ void VR_Menu_f()
 // TODO VR:
 // * difficulty options
 // * nicer explosion particles
-// * smaller hitboxes for nails and enemies (make aimign more important) (done? test)
+// * smaller hitboxes for nails and enemies (make aimign more important) (done?
+// test)
 // * speed adjustment options, sprinting
 // * vignette?
 // * god mode in menu

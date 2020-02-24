@@ -74,7 +74,10 @@ CL_ClearState
 */
 void CL_ClearState()
 {
-    if(!sv.active) Host_ClearMemory();
+    if(!sv.active)
+    {
+        Host_ClearMemory();
+    }
 
     // wipe the entire cl structure
     memset(&cl, 0, sizeof(cl));
@@ -104,7 +107,10 @@ This is also called on Host_Error, so it shouldn't cause any errors
 */
 void CL_Disconnect()
 {
-    if(key_dest == key_message) Key_EndChat(); // don't get stuck in chat mode
+    if(key_dest == key_message)
+    {
+        Key_EndChat(); // don't get stuck in chat mode
+    }
 
     // stop sounds (especially looping!)
     S_StopAllSounds(true);
@@ -113,10 +119,15 @@ void CL_Disconnect()
 
     // if running a local server, shut it down
     if(cls.demoplayback)
+    {
         CL_StopPlayback();
+    }
     else if(cls.state == ca_connected)
     {
-        if(cls.demorecording) CL_Stop_f();
+        if(cls.demorecording)
+        {
+            CL_Stop_f();
+        }
 
         Con_DPrintf("Sending clc_disconnect\n");
         SZ_Clear(&cls.message);
@@ -126,7 +137,10 @@ void CL_Disconnect()
         NET_Close(cls.netcon);
 
         cls.state = ca_disconnected;
-        if(sv.active) Host_ShutdownServer(false);
+        if(sv.active)
+        {
+            Host_ShutdownServer(false);
+        }
     }
 
     cls.demoplayback = cls.timedemo = false;
@@ -138,7 +152,10 @@ void CL_Disconnect()
 void CL_Disconnect_f()
 {
     CL_Disconnect();
-    if(sv.active) Host_ShutdownServer(false);
+    if(sv.active)
+    {
+        Host_ShutdownServer(false);
+    }
 }
 
 
@@ -151,14 +168,23 @@ Host should be either "local" or a net address to be passed on
 */
 void CL_EstablishConnection(const char* host)
 {
-    if(cls.state == ca_dedicated) return;
+    if(cls.state == ca_dedicated)
+    {
+        return;
+    }
 
-    if(cls.demoplayback) return;
+    if(cls.demoplayback)
+    {
+        return;
+    }
 
     CL_Disconnect();
 
     cls.netcon = NET_Connect(host);
-    if(!cls.netcon) Host_Error("CL_Connect: connect failed\n");
+    if(!cls.netcon)
+    {
+        Host_Error("CL_Connect: connect failed\n");
+    }
     Con_DPrintf("CL_EstablishConnection: connected to %s\n", host);
 
     cls.demonum = -1; // not in the demo loop now
@@ -224,7 +250,10 @@ void CL_NextDemo()
 {
     char str[1024];
 
-    if(cls.demonum == -1) return; // don't play demos
+    if(cls.demonum == -1)
+    {
+        return; // don't play demos
+    }
 
     if(!cls.demos[cls.demonum][0] || cls.demonum == MAX_DEMOS)
     {
@@ -255,7 +284,10 @@ void CL_PrintEntities_f()
     entity_t* ent;
     int i;
 
-    if(cls.state != ca_connected) return;
+    if(cls.state != ca_connected)
+    {
+        return;
+    }
 
     for(i = 0, ent = cl_entities; i < cl.num_entities; i++, ent++)
     {
@@ -339,10 +371,16 @@ void CL_DecayLights()
     dl = cl_dlights;
     for(i = 0; i < MAX_DLIGHTS; i++, dl++)
     {
-        if(dl->die < cl.time || !dl->radius) continue;
+        if(dl->die < cl.time || !dl->radius)
+        {
+            continue;
+        }
 
         dl->radius -= time * dl->decay;
-        if(dl->radius < 0) dl->radius = 0;
+        if(dl->radius < 0)
+        {
+            dl->radius = 0;
+        }
     }
 }
 
@@ -377,17 +415,26 @@ float CL_LerpPoint()
 
     if(frac < 0)
     {
-        if(frac < -0.01) cl.time = cl.mtime[1];
+        if(frac < -0.01)
+        {
+            cl.time = cl.mtime[1];
+        }
         frac = 0;
     }
     else if(frac > 1)
     {
-        if(frac > 1.01) cl.time = cl.mtime[0];
+        if(frac > 1.01)
+        {
+            cl.time = cl.mtime[0];
+        }
         frac = 1;
     }
 
     // johnfitz -- better nolerp behavior
-    if(cl_nolerp.value) return 1;
+    if(cl_nolerp.value)
+    {
+        return 1;
+    }
     // johnfitz
 
     return frac;
@@ -417,8 +464,10 @@ void CL_RelinkEntities()
     // interpolate player info
     //
     for(i = 0; i < 3; i++)
+    {
         cl.velocity[i] = cl.mvelocity[1][i] +
                          frac * (cl.mvelocity[0][i] - cl.mvelocity[1][i]);
+    }
 
     if(cls.demoplayback)
     {
@@ -427,9 +476,13 @@ void CL_RelinkEntities()
         {
             d = cl.mviewangles[0][j] - cl.mviewangles[1][j];
             if(d > 180)
+            {
                 d -= 360;
+            }
             else if(d < -180)
+            {
                 d += 360;
+            }
             cl.viewangles[j] = cl.mviewangles[1][j] + frac * d;
         }
     }
@@ -487,7 +540,10 @@ void CL_RelinkEntities()
             }
 
             // johnfitz -- don't cl_lerp entities that will be r_lerped
-            if(r_lerpmove.value && (ent->lerpflags & LERP_MOVESTEP)) f = 1;
+            if(r_lerpmove.value && (ent->lerpflags & LERP_MOVESTEP))
+            {
+                f = 1;
+            }
             // johnfitz
 
             // interpolate the origin and angles
@@ -497,17 +553,27 @@ void CL_RelinkEntities()
 
                 d = ent->msg_angles[0][j] - ent->msg_angles[1][j];
                 if(d > 180)
+                {
                     d -= 360;
+                }
                 else if(d < -180)
+                {
                     d += 360;
+                }
                 ent->angles[j] = ent->msg_angles[1][j] + f * d;
             }
         }
 
         // rotate binary objects locally
-        if(ent->model->flags & EF_ROTATE) ent->angles[1] = bobjrotate;
+        if(ent->model->flags & EF_ROTATE)
+        {
+            ent->angles[1] = bobjrotate;
+        }
 
-        if(ent->effects & EF_BRIGHTFIELD) R_EntityParticles(ent);
+        if(ent->effects & EF_BRIGHTFIELD)
+        {
+            R_EntityParticles(ent);
+        }
 
         if(ent->effects & EF_MUZZLEFLASH)
         {
@@ -559,13 +625,21 @@ void CL_RelinkEntities()
         }
 
         if(ent->model->flags & EF_GIB)
+        {
             R_RocketTrail(oldorg, ent->origin, 2);
+        }
         else if(ent->model->flags & EF_ZOMGIB)
+        {
             R_RocketTrail(oldorg, ent->origin, 4);
+        }
         else if(ent->model->flags & EF_TRACER)
+        {
             R_RocketTrail(oldorg, ent->origin, 3);
+        }
         else if(ent->model->flags & EF_TRACER2)
+        {
             R_RocketTrail(oldorg, ent->origin, 5);
+        }
         else if(ent->model->flags & EF_ROCKET)
         {
             R_RocketTrail(oldorg, ent->origin, 0);
@@ -575,13 +649,20 @@ void CL_RelinkEntities()
             dl->die = cl.time + 0.01;
         }
         else if(ent->model->flags & EF_GRENADE)
+        {
             R_RocketTrail(oldorg, ent->origin, 1);
+        }
         else if(ent->model->flags & EF_TRACER3)
+        {
             R_RocketTrail(oldorg, ent->origin, 6);
+        }
 
         ent->forcelink = false;
 
-        if(i == cl.viewentity && !chase_active.value) continue;
+        if(i == cl.viewentity && !chase_active.value)
+        {
+            continue;
+        }
 
         if(cl_numvisedicts < MAX_VISEDICTS)
         {
@@ -616,14 +697,23 @@ int CL_ReadFromServer()
     do
     {
         ret = CL_GetMessage();
-        if(ret == -1) Host_Error("CL_ReadFromServer: lost server connection");
-        if(!ret) break;
+        if(ret == -1)
+        {
+            Host_Error("CL_ReadFromServer: lost server connection");
+        }
+        if(!ret)
+        {
+            break;
+        }
 
         cl.last_received_message = realtime;
         CL_ParseServerMessage();
     } while(ret && cls.state == ca_connected);
 
-    if(cl_shownet.value) Con_Printf("\n");
+    if(cl_shownet.value)
+    {
+        Con_Printf("\n");
+    }
 
     CL_RelinkEntities();
     CL_UpdateTEnts();
@@ -632,34 +722,52 @@ int CL_ReadFromServer()
 
     // visedicts
     if(cl_numvisedicts > 256 && dev_peakstats.visedicts <= 256)
+    {
         Con_DWarning("%i visedicts exceeds standard limit of 256 (max = %d).\n",
             cl_numvisedicts, MAX_VISEDICTS);
+    }
     dev_stats.visedicts = cl_numvisedicts;
     dev_peakstats.visedicts = q_max(cl_numvisedicts, dev_peakstats.visedicts);
 
     // temp entities
     if(num_temp_entities > 64 && dev_peakstats.tempents <= 64)
+    {
         Con_DWarning(
             "%i tempentities exceeds standard limit of 64 (max = %d).\n",
             num_temp_entities, MAX_TEMP_ENTITIES);
+    }
     dev_stats.tempents = num_temp_entities;
     dev_peakstats.tempents = q_max(num_temp_entities, dev_peakstats.tempents);
 
     // beams
     for(i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++)
-        if(b->model && b->endtime >= cl.time) num_beams++;
+    {
+        if(b->model && b->endtime >= cl.time)
+        {
+            num_beams++;
+        }
+    }
     if(num_beams > 24 && dev_peakstats.beams <= 24)
+    {
         Con_DWarning("%i beams exceeded standard limit of 24 (max = %d).\n",
             num_beams, MAX_BEAMS);
+    }
     dev_stats.beams = num_beams;
     dev_peakstats.beams = q_max(num_beams, dev_peakstats.beams);
 
     // dlights
     for(i = 0, l = cl_dlights; i < MAX_DLIGHTS; i++, l++)
-        if(l->die >= cl.time && l->radius) num_dlights++;
+    {
+        if(l->die >= cl.time && l->radius)
+        {
+            num_dlights++;
+        }
+    }
     if(num_dlights > 32 && dev_peakstats.dlights <= 32)
+    {
         Con_DWarning("%i dlights exceeded standard limit of 32 (max = %d).\n",
             num_dlights, MAX_DLIGHTS);
+    }
     dev_stats.dlights = num_dlights;
     dev_peakstats.dlights = q_max(num_dlights, dev_peakstats.dlights);
 
@@ -680,7 +788,10 @@ void CL_SendCmd()
 {
     usercmd_t cmd;
 
-    if(cls.state != ca_connected) return;
+    if(cls.state != ca_connected)
+    {
+        return;
+    }
 
     if(cls.signon == SIGNONS)
     {
@@ -703,7 +814,10 @@ void CL_SendCmd()
     }
 
     // send the reliable message
-    if(!cls.message.cursize) return; // no message at all
+    if(!cls.message.cursize)
+    {
+        return; // no message at all
+    }
 
     if(!NET_CanSendMessage(cls.netcon))
     {
@@ -712,7 +826,9 @@ void CL_SendCmd()
     }
 
     if(NET_SendMessage(cls.netcon, &cls.message) == -1)
+    {
         Host_Error("CL_SendCmd: lost server connection");
+    }
 
     SZ_Clear(&cls.message);
 }
@@ -728,15 +844,22 @@ void CL_Tracepos_f(refdef_t& refdef)
 {
     vec3_t v, w;
 
-    if(cls.state != ca_connected) return;
+    if(cls.state != ca_connected)
+    {
+        return;
+    }
 
     VectorMA(refdef.vieworg, 8192.0, vpn, v);
     TraceLine(refdef.vieworg, v, w);
 
     if(VectorLength(w) == 0)
+    {
         Con_Printf("Tracepos: trace didn't hit anything\n");
+    }
     else
+    {
         Con_Printf("Tracepos: (%i %i %i)\n", (int)w[0], (int)w[1], (int)w[2]);
+    }
 }
 
 /*
@@ -748,7 +871,10 @@ display client's position and angles
 */
 void CL_Viewpos_f(refdef_t& refdef)
 {
-    if(cls.state != ca_connected) return;
+    if(cls.state != ca_connected)
+    {
+        return;
+    }
 #if 0
 	//camera position
 	Con_Printf ("Viewpos: (%i %i %i) %i %i %i\n",
@@ -816,6 +942,6 @@ void CL_Init()
     Cmd_AddCommand("timedemo", CL_TimeDemo_f);
 
     // TODO VR:
-    Cmd_AddCommand("tracepos", []{ CL_Tracepos_f(r_refdef); }); // johnfitz
-    Cmd_AddCommand("viewpos",  []{ CL_Viewpos_f(r_refdef); });   // johnfitz
+    Cmd_AddCommand("tracepos", [] { CL_Tracepos_f(r_refdef); }); // johnfitz
+    Cmd_AddCommand("viewpos", [] { CL_Viewpos_f(r_refdef); });   // johnfitz
 }

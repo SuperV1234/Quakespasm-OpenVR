@@ -161,9 +161,14 @@ int Scrap_AllocBlock(int w, int h, int* x, int* y)
 
             for(j = 0; j < w; j++)
             {
-                if(scrap_allocated[texnum][i + j] >= best) break;
+                if(scrap_allocated[texnum][i + j] >= best)
+                {
+                    break;
+                }
                 if(scrap_allocated[texnum][i + j] > best2)
+                {
                     best2 = scrap_allocated[texnum][i + j];
+                }
             }
             if(j == w)
             { // this is a valid spot
@@ -172,9 +177,15 @@ int Scrap_AllocBlock(int w, int h, int* x, int* y)
             }
         }
 
-        if(best + h > BLOCK_HEIGHT) continue;
+        if(best + h > BLOCK_HEIGHT)
+        {
+            continue;
+        }
 
-        for(i = 0; i < w; i++) scrap_allocated[texnum][*x + i] = best + h;
+        for(i = 0; i < w; i++)
+        {
+            scrap_allocated[texnum][*x + i] = best + h;
+        }
 
         return texnum;
     }
@@ -217,7 +228,10 @@ qpic_t* Draw_PicFromWad(const char* name)
     src_offset_t offset; // johnfitz
 
     p = (qpic_t*)W_GetLumpName(name);
-    if(!p) return pic_nul; // johnfitz
+    if(!p)
+    {
+        return pic_nul; // johnfitz
+    }
 
     // load little ones into the scrap
     if(p->width < 64 && p->height < 64)
@@ -232,8 +246,10 @@ qpic_t* Draw_PicFromWad(const char* name)
         for(i = 0; i < p->height; i++)
         {
             for(j = 0; j < p->width; j++, k++)
+            {
                 scrap_texels[texnum][(y + i) * BLOCK_WIDTH + x + j] =
                     p->data[k];
+            }
         }
         gl.gltexture = scrap_textures[texnum]; // johnfitz -- changed to an
                                                // array
@@ -283,10 +299,15 @@ qpic_t* Draw_CachePic(const char* path)
 
     for(pic = menu_cachepics, i = 0; i < menu_numcachepics; pic++, i++)
     {
-        if(!strcmp(path, pic->name)) return &pic->pic;
+        if(!strcmp(path, pic->name))
+        {
+            return &pic->pic;
+        }
     }
     if(menu_numcachepics == MAX_CACHED_PICS)
+    {
         Sys_Error("menu_numcachepics == MAX_CACHED_PICS");
+    }
     menu_numcachepics++;
     strcpy(pic->name, path);
 
@@ -294,14 +315,19 @@ qpic_t* Draw_CachePic(const char* path)
     // load the pic from disk
     //
     dat = (qpic_t*)COM_LoadTempFile(path, nullptr);
-    if(!dat) Sys_Error("Draw_CachePic: failed to load %s", path);
+    if(!dat)
+    {
+        Sys_Error("Draw_CachePic: failed to load %s", path);
+    }
     SwapPic(dat);
 
     // HACK HACK HACK --- we need to keep the bytes for
     // the translatable player picture just for the menu
     // configuration dialog
     if(!strcmp(path, "gfx/menuplyr.lmp"))
+    {
         memcpy(menuplyr_pixels, dat->data, dat->width * dat->height);
+    }
 
     pic->pic.width = dat->width;
     pic->pic.height = dat->height;
@@ -364,7 +390,10 @@ void Draw_LoadPics()
     src_offset_t offset;
 
     data = (byte*)W_GetLumpName("conchars");
-    if(!data) Sys_Error("Draw_LoadPics: couldn't load conchars");
+    if(!data)
+    {
+        Sys_Error("Draw_LoadPics: couldn't load conchars");
+    }
     offset = (src_offset_t)data - (src_offset_t)wad_base;
     char_texture = TexMgr_LoadImage(nullptr, WADFILENAME ":conchars", 128, 128,
         SRC_INDEXED, data, WADFILENAME, offset,
@@ -398,7 +427,9 @@ void Draw_NewGame()
 
     // empty lmp cache
     for(pic = menu_cachepics, i = 0; i < menu_numcachepics; pic++, i++)
+    {
         pic->name[0] = 0;
+    }
     menu_numcachepics = 0;
 }
 
@@ -466,11 +497,17 @@ Draw_Character -- johnfitz -- modified to call Draw_CharacterQuad
 */
 void Draw_Character(int x, int y, int num)
 {
-    if(y <= -8) return; // totally off screen
+    if(y <= -8)
+    {
+        return; // totally off screen
+    }
 
     num &= 255;
 
-    if(num == 32) return; // don't waste verts on spaces
+    if(num == 32)
+    {
+        return; // don't waste verts on spaces
+    }
 
     GL_Bind(char_texture);
     glBegin(GL_QUADS);
@@ -487,15 +524,20 @@ Draw_String -- johnfitz -- modified to call Draw_CharacterQuad
 */
 void Draw_String(int x, int y, const char* str)
 {
-    if(y <= -8) return; // totally off screen
+    if(y <= -8)
+    {
+        return; // totally off screen
+    }
 
     GL_Bind(char_texture);
     glBegin(GL_QUADS);
 
     while(*str)
     {
-        if(*str != 32) // don't waste verts on spaces
+        if(*str != 32)
+        { // don't waste verts on spaces
             Draw_CharacterQuad(x, y, *str);
+        }
         str++;
         x += 8;
     }
@@ -512,7 +554,10 @@ void Draw_Pic(int x, int y, qpic_t* pic)
 {
     glpic_t* gl;
 
-    if(scrap_dirty) Scrap_Upload();
+    if(scrap_dirty)
+    {
+        Scrap_Upload();
+    }
     gl = (glpic_t*)pic->data;
     GL_Bind(gl->gltexture);
     glBegin(GL_QUADS);
@@ -658,7 +703,10 @@ Draw_FadeScreen -- johnfitz -- revised
 */
 void Draw_FadeScreen()
 {
-    if(vr_enabled.value) return;
+    if(vr_enabled.value)
+    {
+        return;
+    }
 
     GL_SetCanvas(CANVAS_DEFAULT);
 
@@ -693,11 +741,17 @@ void GL_SetCanvas(canvastype newcanvas)
     float s;
     int lines;
 
-    if(newcanvas == currentcanvas) return;
+    if(newcanvas == currentcanvas)
+    {
+        return;
+    }
 
     currentcanvas = newcanvas;
 
-    if(vr_enabled.value && !con_forcedup) return;
+    if(vr_enabled.value && !con_forcedup)
+    {
+        return;
+    }
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();

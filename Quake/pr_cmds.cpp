@@ -184,8 +184,12 @@ static void SetMinMaxSize(
     int i, j, k, l;
 
     for(i = 0; i < 3; i++)
-        if(minvec[i] > maxvec[i]) PR_RunError("backwards mins/maxs");
-
+    {
+        if(minvec[i] > maxvec[i])
+        {
+            PR_RunError("backwards mins/maxs");
+        }
+    }
     rotate = false; // FIXME: implement rotation properly again
 
     if(!rotate)
@@ -230,8 +234,14 @@ static void SetMinMaxSize(
 
                     for(l = 0; l < 3; l++)
                     {
-                        if(transformed[l] < rmin[l]) rmin[l] = transformed[l];
-                        if(transformed[l] > rmax[l]) rmax[l] = transformed[l];
+                        if(transformed[l] < rmin[l])
+                        {
+                            rmin[l] = transformed[l];
+                        }
+                        if(transformed[l] > rmax[l])
+                        {
+                            rmax[l] = transformed[l];
+                        }
                     }
                 }
             }
@@ -287,7 +297,10 @@ static void PF_setmodel()
     // check to see if model was properly precached
     for(i = 0, check = sv.model_precache; *check; i++, check++)
     {
-        if(!strcmp(*check, m)) break;
+        if(!strcmp(*check, m))
+        {
+            break;
+        }
     }
 
     if(!*check)
@@ -303,13 +316,19 @@ static void PF_setmodel()
     // johnfitz -- correct physics cullboxes for bmodels
     {
         if(mod->type == mod_brush)
+        {
             SetMinMaxSize(e, mod->clipmins, mod->clipmaxs, true);
+        }
         else
+        {
             SetMinMaxSize(e, mod->mins, mod->maxs, true);
+        }
     }
     // johnfitz
     else
+    {
         SetMinMaxSize(e, vec3_origin, vec3_origin, true);
+    }
 }
 
 /*
@@ -411,7 +430,9 @@ static void PF_normalize()
     new_temp = sqrt(new_temp);
 
     if(new_temp == 0)
+    {
         newvalue[0] = newvalue[1] = newvalue[2] = 0;
+    }
     else
     {
         new_temp = 1 / new_temp;
@@ -459,11 +480,16 @@ static void PF_vectoyaw()
     value1 = G_VECTOR(OFS_PARM0);
 
     if(value1[1] == 0 && value1[0] == 0)
+    {
         yaw = 0;
+    }
     else
     {
         yaw = (int)(atan2(value1[1], value1[0]) * 180 / M_PI);
-        if(yaw < 0) yaw += 360;
+        if(yaw < 0)
+        {
+            yaw += 360;
+        }
     }
 
     G_FLOAT(OFS_RETURN) = yaw;
@@ -489,18 +515,28 @@ static void PF_vectoangles()
     {
         yaw = 0;
         if(value1[2] > 0)
+        {
             pitch = 90;
+        }
         else
+        {
             pitch = 270;
+        }
     }
     else
     {
         yaw = (int)(atan2(value1[1], value1[0]) * 180 / M_PI);
-        if(yaw < 0) yaw += 360;
+        if(yaw < 0)
+        {
+            yaw += 360;
+        }
 
         forward = sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
         pitch = (int)(atan2(value1[2], forward) * 180 / M_PI);
-        if(pitch < 0) pitch += 360;
+        if(pitch < 0)
+        {
+            pitch += 360;
+        }
     }
 
     G_FLOAT(OFS_RETURN + 0) = pitch;
@@ -569,7 +605,10 @@ static void PF_ambientsound()
     // check to see if samp was properly precached
     for(soundnum = 0, check = sv.sound_precache; *check; check++, soundnum++)
     {
-        if(!strcmp(*check, samp)) break;
+        if(!strcmp(*check, samp))
+        {
+            break;
+        }
     }
 
     if(!*check)
@@ -582,9 +621,13 @@ static void PF_ambientsound()
     if(soundnum > 255)
     {
         if(sv.protocol == PROTOCOL_NETQUAKE)
+        {
             return; // don't send any info protocol can't support
+        }
         else
+        {
             large = true;
+        }
     }
     // johnfitz
 
@@ -592,18 +635,29 @@ static void PF_ambientsound()
 
     // johnfitz -- PROTOCOL_FITZQUAKE
     if(large)
+    {
         MSG_WriteByte(&sv.signon, svc_spawnstaticsound2);
+    }
     else
+    {
         MSG_WriteByte(&sv.signon, svc_spawnstaticsound);
+    }
     // johnfitz
 
-    for(i = 0; i < 3; i++) MSG_WriteCoord(&sv.signon, pos[i], sv.protocolflags);
+    for(i = 0; i < 3; i++)
+    {
+        MSG_WriteCoord(&sv.signon, pos[i], sv.protocolflags);
+    }
 
     // johnfitz -- PROTOCOL_FITZQUAKE
     if(large)
+    {
         MSG_WriteShort(&sv.signon, soundnum);
+    }
     else
+    {
         MSG_WriteByte(&sv.signon, soundnum);
+    }
     // johnfitz
 
     MSG_WriteByte(&sv.signon, vol * 255);
@@ -640,13 +694,19 @@ static void PF_sound()
     attenuation = G_FLOAT(OFS_PARM4);
 
     if(volume < 0 || volume > 255)
+    {
         Host_Error("SV_StartSound: volume = %i", volume);
+    }
 
     if(attenuation < 0 || attenuation > 4)
+    {
         Host_Error("SV_StartSound: attenuation = %f", attenuation);
+    }
 
     if(channel < 0 || channel > 7)
+    {
         Host_Error("SV_StartSound: channel = %i", channel);
+    }
 
     SV_StartSound(entity, channel, sample, volume, attenuation);
 }
@@ -670,8 +730,8 @@ static void PF_break()
 PF_traceline
 
 Used for use tracing and shot targeting
-Traces are blocked by bbox and exact bsp entityes, and also slide box entities
-if the tryents flag is set.
+Traces are blocked by bbox and exact bsp entityes, and also slide box
+entities if the tryents flag is set.
 
 traceline (vector1, vector2, tryents)
 =================
@@ -701,9 +761,13 @@ static void PF_traceline()
     }
 
     if(IS_NAN(v1[0]) || IS_NAN(v1[1]) || IS_NAN(v1[2]))
+    {
         v1[0] = v1[1] = v1[2] = 0;
+    }
     if(IS_NAN(v2[0]) || IS_NAN(v2[1]) || IS_NAN(v2[2]))
+    {
         v2[0] = v2[1] = v2[2] = 0;
+    }
 
     trace = SV_Move(v1, vec3_origin, vec3_origin, v2, nomonsters, ent);
 
@@ -716,9 +780,13 @@ static void PF_traceline()
     VectorCopy(trace.plane.normal, pr_global_struct->trace_plane_normal);
     pr_global_struct->trace_plane_dist = trace.plane.dist;
     if(trace.ent)
+    {
         pr_global_struct->trace_ent = EDICT_TO_PROG(trace.ent);
+    }
     else
+    {
         pr_global_struct->trace_ent = EDICT_TO_PROG(sv.edicts);
+    }
 }
 
 /*
@@ -753,25 +821,50 @@ static int PF_newcheckclient(int check)
 
     // cycle to the next one
 
-    if(check < 1) check = 1;
-    if(check > svs.maxclients) check = svs.maxclients;
+    if(check < 1)
+    {
+        check = 1;
+    }
+    if(check > svs.maxclients)
+    {
+        check = svs.maxclients;
+    }
 
     if(check == svs.maxclients)
+    {
         i = 1;
+    }
     else
+    {
         i = check + 1;
+    }
 
     for(;; i++)
     {
-        if(i == svs.maxclients + 1) i = 1;
+        if(i == svs.maxclients + 1)
+        {
+            i = 1;
+        }
 
         ent = EDICT_NUM(i);
 
-        if(i == check) break; // didn't find anything else
+        if(i == check)
+        {
+            break; // didn't find anything else
+        }
 
-        if(ent->free) continue;
-        if(ent->v.health <= 0) continue;
-        if((int)ent->v.flags & FL_NOTARGET) continue;
+        if(ent->free)
+        {
+            continue;
+        }
+        if(ent->v.health <= 0)
+        {
+            continue;
+        }
+        if((int)ent->v.flags & FL_NOTARGET)
+        {
+            continue;
+        }
 
         // anything that is a client, or has a client as an enemy
         break;
@@ -788,8 +881,10 @@ static int PF_newcheckclient(int check)
         checkpvs_capacity = pvsbytes;
         checkpvs = (byte*)realloc(checkpvs, checkpvs_capacity);
         if(!checkpvs)
+        {
             Sys_Error("PF_newcheckclient: realloc() failed on %d bytes",
                 checkpvs_capacity);
+        }
     }
     memcpy(checkpvs, pvs, pvsbytes);
 
@@ -872,7 +967,9 @@ static void PF_stuffcmd()
 
     entnum = G_EDICTNUM(OFS_PARM0);
     if(entnum < 1 || entnum > svs.maxclients)
+    {
         PR_RunError("Parm 0 not a client");
+    }
     str = G_STRING(OFS_PARM1);
 
     old = host_client;
@@ -956,12 +1053,23 @@ static void PF_findradius()
     ent = NEXT_EDICT(sv.edicts);
     for(i = 1; i < sv.num_edicts; i++, ent = NEXT_EDICT(ent))
     {
-        if(ent->free) continue;
-        if(ent->v.solid == SOLID_NOT) continue;
+        if(ent->free)
+        {
+            continue;
+        }
+        if(ent->v.solid == SOLID_NOT)
+        {
+            continue;
+        }
         for(j = 0; j < 3; j++)
+        {
             eorg[j] = org[j] - (ent->v.origin[j] +
                                    (ent->v.mins[j] + ent->v.maxs[j]) * 0.5);
-        if(VectorLength(eorg) > rad) continue;
+        }
+        if(VectorLength(eorg) > rad)
+        {
+            continue;
+        }
 
         ent->v.chain = EDICT_TO_PROG(chain);
         chain = ent;
@@ -988,9 +1096,13 @@ static void PF_ftos()
     v = G_FLOAT(OFS_PARM0);
     s = PR_GetTempString();
     if(v == (int)v)
+    {
         sprintf(s, "%d", (int)v);
+    }
     else
+    {
         sprintf(s, "%5.1f", v);
+    }
     G_INT(OFS_RETURN) = PR_SetEngineString(s);
 }
 
@@ -1040,14 +1152,23 @@ static void PF_Find()
     e = G_EDICTNUM(OFS_PARM0);
     f = G_INT(OFS_PARM1);
     s = G_STRING(OFS_PARM2);
-    if(!s) PR_RunError("PF_Find: bad search string");
+    if(!s)
+    {
+        PR_RunError("PF_Find: bad search string");
+    }
 
     for(e++; e < sv.num_edicts; e++)
     {
         ed = EDICT_NUM(e);
-        if(ed->free) continue;
+        if(ed->free)
+        {
+            continue;
+        }
         t = E_STRING(ed, f);
-        if(!t) continue;
+        if(!t)
+        {
+            continue;
+        }
         if(!strcmp(t, s))
         {
             RETURN_EDICT(ed);
@@ -1060,7 +1181,10 @@ static void PF_Find()
 
 static void PR_CheckEmptyString(const char* s)
 {
-    if(s[0] <= ' ') PR_RunError("Bad string");
+    if(s[0] <= ' ')
+    {
+        PR_RunError("Bad string");
+    }
 }
 
 static void PF_precache_file()
@@ -1074,8 +1198,10 @@ static void PF_precache_sound()
     int i;
 
     if(sv.state != ss_loading)
+    {
         PR_RunError(
             "PF_Precache_*: Precache can only be done in spawn functions");
+    }
 
     s = G_STRING(OFS_PARM0);
     G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
@@ -1088,7 +1214,10 @@ static void PF_precache_sound()
             sv.sound_precache[i] = s;
             return;
         }
-        if(!strcmp(sv.sound_precache[i], s)) return;
+        if(!strcmp(sv.sound_precache[i], s))
+        {
+            return;
+        }
     }
     PR_RunError("PF_precache_sound: overflow");
 }
@@ -1099,8 +1228,10 @@ static void PF_precache_model()
     int i;
 
     if(sv.state != ss_loading)
+    {
         PR_RunError(
             "PF_Precache_*: Precache can only be done in spawn functions");
+    }
 
     s = G_STRING(OFS_PARM0);
     G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
@@ -1114,7 +1245,10 @@ static void PF_precache_model()
             sv.models[i] = Mod_ForName(s, true);
             return;
         }
-        if(!strcmp(sv.model_precache[i], s)) return;
+        if(!strcmp(sv.model_precache[i], s))
+        {
+            return;
+        }
     }
     PR_RunError("PF_precache_model: overflow");
 }
@@ -1204,7 +1338,9 @@ static void PF_droptofloor()
     trace = SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, end, false, ent);
 
     if(trace.fraction == 1 || trace.allsolid)
+    {
         G_FLOAT(OFS_RETURN) = 0;
+    }
     else
     {
         VectorCopy(trace.endpos, ent->v.origin);
@@ -1243,7 +1379,10 @@ static void PF_lightstyle()
     sv.lightstyles[style] = val;
 
     // send message to all clients on this server
-    if(sv.state != ss_active) return;
+    if(sv.state != ss_active)
+    {
+        return;
+    }
 
     for(j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
     {
@@ -1261,9 +1400,13 @@ static void PF_rint()
     float f;
     f = G_FLOAT(OFS_PARM0);
     if(f > 0)
+    {
         G_FLOAT(OFS_RETURN) = (int)(f + 0.5);
+    }
     else
+    {
         G_FLOAT(OFS_RETURN) = (int)(f - 0.5);
+    }
 }
 
 static void PF_floor()
@@ -1380,17 +1523,30 @@ static void PF_aim()
     check = NEXT_EDICT(sv.edicts);
     for(i = 1; i < sv.num_edicts; i++, check = NEXT_EDICT(check))
     {
-        if(check->v.takedamage != DAMAGE_AIM) continue;
-        if(check == ent) continue;
+        if(check->v.takedamage != DAMAGE_AIM)
+        {
+            continue;
+        }
+        if(check == ent)
+        {
+            continue;
+        }
         if(teamplay.value && ent->v.team > 0 && ent->v.team == check->v.team)
+        {
             continue; // don't aim at teammate
+        }
         for(j = 0; j < 3; j++)
+        {
             end[j] = check->v.origin[j] +
                      0.5 * (check->v.mins[j] + check->v.maxs[j]);
+        }
         VectorSubtract(end, start, dir);
         VectorNormalize(dir);
         dist = DotProduct(dir, pr_global_struct->v_forward);
-        if(dist < bestdist) continue; // to far to turn
+        if(dist < bestdist)
+        {
+            continue; // to far to turn
+        }
         tr = SV_Move(start, vec3_origin, vec3_origin, end, false, ent);
         if(tr.ent == check)
         { // can shoot at this one
@@ -1431,23 +1587,38 @@ void PF_changeyaw()
     ideal = ent->v.ideal_yaw;
     speed = ent->v.yaw_speed;
 
-    if(current == ideal) return;
+    if(current == ideal)
+    {
+        return;
+    }
     move = ideal - current;
     if(ideal > current)
     {
-        if(move >= 180) move = move - 360;
+        if(move >= 180)
+        {
+            move = move - 360;
+        }
     }
     else
     {
-        if(move <= -180) move = move + 360;
+        if(move <= -180)
+        {
+            move = move + 360;
+        }
     }
     if(move > 0)
     {
-        if(move > speed) move = speed;
+        if(move > speed)
+        {
+            move = speed;
+        }
     }
     else
     {
-        if(move < -speed) move = -speed;
+        if(move < -speed)
+        {
+            move = -speed;
+        }
     }
 
     ent->v.angles[1] = anglemod(current + move);
@@ -1476,7 +1647,9 @@ static sizebuf_t* WriteDest()
             ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
             entnum = NUM_FOR_EDICT(ent);
             if(entnum < 1 || entnum > svs.maxclients)
+            {
                 PR_RunError("WriteDest: not a client");
+            }
             return &svs.clients[entnum - 1].message;
 
         case MSG_ALL: return &sv.reliable_datagram;
@@ -1554,16 +1727,24 @@ static void PF_makestatic()
             (int)(ent->v.frame) & 0xFF00)
         {
             ED_Free(ent);
-            return; // can't display the correct model & frame, so don't show it
-                    // at all
+            return; // can't display the correct model & frame, so don't
+                    // show it at all
         }
     }
     else
     {
         if(SV_ModelIndex(PR_GetString(ent->v.model)) & 0xFF00)
+        {
             bits |= B_LARGEMODEL;
-        if((int)(ent->v.frame) & 0xFF00) bits |= B_LARGEFRAME;
-        if(ent->alpha != ENTALPHA_DEFAULT) bits |= B_ALPHA;
+        }
+        if((int)(ent->v.frame) & 0xFF00)
+        {
+            bits |= B_LARGEFRAME;
+        }
+        if(ent->alpha != ENTALPHA_DEFAULT)
+        {
+            bits |= B_ALPHA;
+        }
     }
 
     if(bits)
@@ -1572,17 +1753,27 @@ static void PF_makestatic()
         MSG_WriteByte(&sv.signon, bits);
     }
     else
+    {
         MSG_WriteByte(&sv.signon, svc_spawnstatic);
+    }
 
     if(bits & B_LARGEMODEL)
+    {
         MSG_WriteShort(&sv.signon, SV_ModelIndex(PR_GetString(ent->v.model)));
+    }
     else
+    {
         MSG_WriteByte(&sv.signon, SV_ModelIndex(PR_GetString(ent->v.model)));
+    }
 
     if(bits & B_LARGEFRAME)
+    {
         MSG_WriteShort(&sv.signon, ent->v.frame);
+    }
     else
+    {
         MSG_WriteByte(&sv.signon, ent->v.frame);
+    }
     // johnfitz
 
     MSG_WriteByte(&sv.signon, ent->v.colormap);
@@ -1594,7 +1785,10 @@ static void PF_makestatic()
     }
 
     // johnfitz -- PROTOCOL_FITZQUAKE
-    if(bits & B_ALPHA) MSG_WriteByte(&sv.signon, ent->alpha);
+    if(bits & B_ALPHA)
+    {
+        MSG_WriteByte(&sv.signon, ent->alpha);
+    }
     // johnfitz
 
     // throw the entity away now
@@ -1616,13 +1810,18 @@ static void PF_setspawnparms()
 
     ent = G_EDICT(OFS_PARM0);
     i = NUM_FOR_EDICT(ent);
-    if(i < 1 || i > svs.maxclients) PR_RunError("Entity is not a client");
+    if(i < 1 || i > svs.maxclients)
+    {
+        PR_RunError("Entity is not a client");
+    }
 
     // copy spawn parms out of the client_t
     client = svs.clients + (i - 1);
 
     for(i = 0; i < NUM_SPAWN_PARMS; i++)
+    {
         (&pr_global_struct->parm1)[i] = client->spawn_parms[i];
+    }
 }
 
 /*
@@ -1635,7 +1834,10 @@ static void PF_changelevel()
     const char* s;
 
     // make sure we don't issue two changelevels
-    if(svs.changelevel_issued) return;
+    if(svs.changelevel_issued)
+    {
+        return;
+    }
     svs.changelevel_issued = true;
 
     s = G_STRING(OFS_PARM0);
@@ -1649,25 +1851,26 @@ static void PF_Fixme()
 
 
 static builtin_t pr_builtin[] = {PF_Fixme,
-    PF_makevectors, // void(entity e) makevectors		= #1
-    PF_setorigin,   // void(entity e, vector o) setorigin	= #2
-    PF_setmodel,    // void(entity e, string m) setmodel	= #3
-    PF_setsize,     // void(entity e, vector min, vector max) setsize	= #4
-    PF_Fixme,       // void(entity e, vector min, vector max) setabssize	= #5
-    PF_break,       // void() break				= #6
-    PF_random,      // float() random			= #7
-    PF_sound,       // void(entity e, float chan, string samp) sound	= #8
-    PF_normalize,   // vector(vector v) normalize		= #9
-    PF_error,       // void(string e) error			= #10
-    PF_objerror,    // void(string e) objerror		= #11
-    PF_vlen,        // float(vector v) vlen			= #12
-    PF_vectoyaw,    // float(vector v) vectoyaw		= #13
-    PF_Spawn,       // entity() spawn			= #14
-    PF_Remove,      // void(entity e) remove		= #15
-    PF_traceline,   // float(vector v1, vector v2, float tryents) traceline	=
-                    // #16
-    PF_checkclient, // entity() clientlist			= #17
-    PF_Find, // entity(entity start, .string fld, string match) find	= #18
+    PF_makevectors,    // void(entity e) makevectors		= #1
+    PF_setorigin,      // void(entity e, vector o) setorigin	= #2
+    PF_setmodel,       // void(entity e, string m) setmodel	= #3
+    PF_setsize,        // void(entity e, vector min, vector max) setsize	= #4
+    PF_Fixme,          // void(entity e, vector min, vector max) setabssize	= #5
+    PF_break,          // void() break				= #6
+    PF_random,         // float() random			= #7
+    PF_sound,          // void(entity e, float chan, string samp) sound	= #8
+    PF_normalize,      // vector(vector v) normalize		= #9
+    PF_error,          // void(string e) error			= #10
+    PF_objerror,       // void(string e) objerror		= #11
+    PF_vlen,           // float(vector v) vlen			= #12
+    PF_vectoyaw,       // float(vector v) vectoyaw		= #13
+    PF_Spawn,          // entity() spawn			= #14
+    PF_Remove,         // void(entity e) remove		= #15
+    PF_traceline,      // float(vector v1, vector v2, float tryents) traceline
+                       // = #16
+    PF_checkclient,    // entity() clientlist			= #17
+    PF_Find,           // entity(entity start, .string fld, string match) find	=
+                       // #18
     PF_precache_sound, // void(string s) precache_sound	= #19
     PF_precache_model, // void(string s) precache_model	= #20
     PF_stuffcmd,       // void(entity client, string s)stuffcmd	= #21

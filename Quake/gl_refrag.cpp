@@ -78,7 +78,9 @@ static efrag_t* R_GetEfrag()
             (efrag_t*)Hunk_AllocName(EXTRA_EFRAGS * sizeof(efrag_t), "efrags");
 
         for(i = 0; i < EXTRA_EFRAGS - 1; i++)
+        {
             cl.free_efrags[i].leafnext = &cl.free_efrags[i + 1];
+        }
 
         cl.free_efrags[i].leafnext = nullptr;
 
@@ -108,7 +110,10 @@ void R_SplitEntityOnNode(mnode_t* node)
 
     if(node->contents < 0)
     {
-        if(!r_pefragtopnode) r_pefragtopnode = node;
+        if(!r_pefragtopnode)
+        {
+            r_pefragtopnode = node;
+        }
 
         leaf = (mleaf_t*)node;
 
@@ -132,13 +137,22 @@ void R_SplitEntityOnNode(mnode_t* node)
     {
         // split on this plane
         // if this is the first splitter of this bmodel, remember it
-        if(!r_pefragtopnode) r_pefragtopnode = node;
+        if(!r_pefragtopnode)
+        {
+            r_pefragtopnode = node;
+        }
     }
 
     // recurse down the contacted sides
-    if(sides & 1) R_SplitEntityOnNode(node->children[0]);
+    if(sides & 1)
+    {
+        R_SplitEntityOnNode(node->children[0]);
+    }
 
-    if(sides & 2) R_SplitEntityOnNode(node->children[1]);
+    if(sides & 2)
+    {
+        R_SplitEntityOnNode(node->children[1]);
+    }
 }
 
 /*
@@ -149,12 +163,16 @@ R_CheckEfrags -- johnfitz -- check for excessive efrag count
 void R_CheckEfrags()
 {
     if(cls.signon < 2)
+    {
         return; // don't spam when still parsing signon packet full of static
-                // ents
+    }
+    // ents
 
     if(cl.num_efrags > 640 && dev_peakstats.efrags <= 640)
+    {
         Con_DWarning(
             "%i efrags exceeds standard limit of 640.\n", cl.num_efrags);
+    }
 
     dev_stats.efrags = cl.num_efrags;
     dev_peakstats.efrags = q_max(cl.num_efrags, dev_peakstats.efrags);
@@ -170,7 +188,10 @@ void R_AddEfrags(entity_t* ent)
     qmodel_t* entmodel;
     int i;
 
-    if(!ent->model) return;
+    if(!ent->model)
+    {
+        return;
+    }
 
     r_addent = ent;
 

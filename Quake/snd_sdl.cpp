@@ -51,7 +51,10 @@ static void SDLCALL paint_audio(void* unused, Uint8* stream, int len)
     }
 
     pos = (shm->samplepos * (shm->samplebits / 8));
-    if(pos >= buffersize) shm->samplepos = pos = 0;
+    if(pos >= buffersize)
+    {
+        shm->samplepos = pos = 0;
+    }
 
     tobufend = buffersize - pos; /* bytes to buffer's end. */
     len1 = len;
@@ -75,7 +78,10 @@ static void SDLCALL paint_audio(void* unused, Uint8* stream, int len)
         shm->samplepos = (len2 / (shm->samplebits / 8));
     }
 
-    if(shm->samplepos >= buffersize) shm->samplepos = 0;
+    if(shm->samplepos >= buffersize)
+    {
+        shm->samplepos = 0;
+    }
 }
 
 qboolean SNDDMA_Init(dma_t* dma)
@@ -95,15 +101,25 @@ qboolean SNDDMA_Init(dma_t* dma)
     desired.format = (loadas8bit.value) ? AUDIO_U8 : AUDIO_S16SYS;
     desired.channels = 2; /* = desired_channels; */
     if(desired.freq <= 11025)
+    {
         desired.samples = 256;
+    }
     else if(desired.freq <= 22050)
+    {
         desired.samples = 512;
+    }
     else if(desired.freq <= 44100)
+    {
         desired.samples = 1024;
+    }
     else if(desired.freq <= 56000)
+    {
         desired.samples = 2048; /* for 48 kHz */
+    }
     else
+    {
         desired.samples = 4096; /* for 96 kHz */
+    }
     desired.callback = paint_audio;
     desired.userdata = nullptr;
 
@@ -131,7 +147,10 @@ qboolean SNDDMA_Init(dma_t* dma)
     if(tmp & (tmp - 1))
     { /* make it a power of two */
         val = 1;
-        while(val < tmp) val <<= 1;
+        while(val < tmp)
+        {
+            val <<= 1;
+        }
 
         tmp = val;
     }
@@ -184,7 +203,10 @@ void SNDDMA_Shutdown()
         Con_Printf("Shutting down SDL sound\n");
         SDL_CloseAudio();
         SDL_QuitSubSystem(SDL_INIT_AUDIO);
-        if(shm->buffer) free(shm->buffer);
+        if(shm->buffer)
+        {
+            free(shm->buffer);
+        }
         shm->buffer = nullptr;
         shm = nullptr;
     }

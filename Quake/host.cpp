@@ -118,7 +118,10 @@ Max_Fps_f -- ericw
 */
 static void Max_Fps_f(cvar_t* var)
 {
-    if(var->value > 72) Con_Warning("host_maxfps above 72 breaks physics.\n");
+    if(var->value > 72)
+    {
+        Con_Warning("host_maxfps above 72 breaks physics.\n");
+    }
 }
 
 /*
@@ -136,15 +139,24 @@ void Host_EndGame(const char* message, ...)
     va_end(argptr);
     Con_DPrintf("Host_EndGame: %s\n", string);
 
-    if(sv.active) Host_ShutdownServer(false);
+    if(sv.active)
+    {
+        Host_ShutdownServer(false);
+    }
 
     if(cls.state == ca_dedicated)
+    {
         Sys_Error("Host_EndGame: %s\n", string); // dedicated servers exit
+    }
 
     if(cls.demonum != -1)
+    {
         CL_NextDemo();
+    }
     else
+    {
         CL_Disconnect();
+    }
 
     longjmp(host_abortserver, 1);
 }
@@ -162,7 +174,10 @@ void Host_Error(const char* error, ...)
     char string[1024];
     static qboolean inerror = false;
 
-    if(inerror) Sys_Error("Host_Error: recursively entered");
+    if(inerror)
+    {
+        Sys_Error("Host_Error: recursively entered");
+    }
     inerror = true;
 
     SCR_EndLoadingPlaque(); // reenable screen updates
@@ -172,10 +187,15 @@ void Host_Error(const char* error, ...)
     va_end(argptr);
     Con_Printf("Host_Error: %s\n", string);
 
-    if(sv.active) Host_ShutdownServer(false);
+    if(sv.active)
+    {
+        Host_ShutdownServer(false);
+    }
 
     if(cls.state == ca_dedicated)
+    {
         Sys_Error("Host_Error: %s\n", string); // dedicated servers exit
+    }
 
     CL_Disconnect();
     cls.demonum = -1;
@@ -207,35 +227,56 @@ void Host_FindMaxClients()
             svs.maxclients = Q_atoi(com_argv[i + 1]);
         }
         else
+        {
             svs.maxclients = 8;
+        }
     }
     else
+    {
         cls.state = ca_disconnected;
+    }
 
     i = COM_CheckParm("-listen");
     if(i)
     {
         if(cls.state == ca_dedicated)
+        {
             Sys_Error("Only one of -dedicated or -listen can be specified");
+        }
         if(i != (com_argc - 1))
+        {
             svs.maxclients = Q_atoi(com_argv[i + 1]);
+        }
         else
+        {
             svs.maxclients = 8;
+        }
     }
     if(svs.maxclients < 1)
+    {
         svs.maxclients = 8;
+    }
     else if(svs.maxclients > MAX_SCOREBOARD)
+    {
         svs.maxclients = MAX_SCOREBOARD;
+    }
 
     svs.maxclientslimit = svs.maxclients;
-    if(svs.maxclientslimit < 4) svs.maxclientslimit = 4;
+    if(svs.maxclientslimit < 4)
+    {
+        svs.maxclientslimit = 4;
+    }
     svs.clients = (struct client_s*)Hunk_AllocName(
         svs.maxclientslimit * sizeof(client_t), "clients");
 
     if(svs.maxclients > 1)
+    {
         Cvar_SetQuick(&deathmatch, "1");
+    }
     else
+    {
         Cvar_SetQuick(&deathmatch, "0");
+    }
 }
 
 void Host_Version_f()
@@ -249,8 +290,10 @@ void Host_Version_f()
 void Host_Callback_Notify(cvar_t* var)
 {
     if(sv.active)
+    {
         SV_BroadcastPrintf(
             "\"%s\" changed to \"%s\"\n", var->name, var->string);
+    }
 }
 
 /*
@@ -330,7 +373,10 @@ void Host_WriteConfiguration()
 
         // johnfitz -- extra commands to preserve state
         fprintf(f, "vid_restart\n");
-        if(in_mlook.state & 1) fprintf(f, "+mlook\n");
+        if(in_mlook.state & 1)
+        {
+            fprintf(f, "+mlook\n");
+        }
         // johnfitz
 
         fclose(f);
@@ -455,7 +501,10 @@ void SV_DropClient(qboolean crash)
     // send notification to all clients
     for(i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
     {
-        if(!client->active) continue;
+        if(!client->active)
+        {
+            continue;
+        }
         MSG_WriteByte(&client->message, svc_updatename);
         MSG_WriteByte(&client->message, host_client - svs.clients);
         MSG_WriteString(&client->message, "");
@@ -483,12 +532,18 @@ void Host_ShutdownServer(qboolean crash)
     byte message[4];
     double start;
 
-    if(!sv.active) return;
+    if(!sv.active)
+    {
+        return;
+    }
 
     sv.active = false;
 
     // stop all client sounds immediately
-    if(cls.state == ca_connected) CL_Disconnect();
+    if(cls.state == ca_connected)
+    {
+        CL_Disconnect();
+    }
 
     // flush any pending messages - like the score!!!
     start = Sys_DoubleTime();
@@ -513,7 +568,10 @@ void Host_ShutdownServer(qboolean crash)
                 }
             }
         }
-        if((Sys_DoubleTime() - start) > 3.0) break;
+        if((Sys_DoubleTime() - start) > 3.0)
+        {
+            break;
+        }
     } while(count);
 
     // make sure all the clients know we're disconnecting
@@ -523,18 +581,25 @@ void Host_ShutdownServer(qboolean crash)
     MSG_WriteByte(&buf, svc_disconnect);
     count = NET_SendToAll(&buf, 5.0);
     if(count)
+    {
         Con_Printf("Host_ShutdownServer: NET_SendToAll failed for %u clients\n",
             count);
+    }
 
     for(i = 0, host_client = svs.clients; i < svs.maxclients;
         i++, host_client++)
-        if(host_client->active) SV_DropClient(crash);
+    {
+        if(host_client->active)
+        {
+            SV_DropClient(crash);
+        }
+    }
 
     //
     // clear structures
     //
     //	memset (&sv, 0, sizeof(sv)); // ServerSpawn already do this by
-    //Host_ClearMemory
+    // Host_ClearMemory
     memset(svs.clients, 0, svs.maxclientslimit * sizeof(client_t));
 }
 
@@ -584,20 +649,29 @@ qboolean Host_FilterTime(float time)
     maxfps = CLAMP(10.0, host_maxfps.value, 1000.0);
     if(!cls.timedemo && realtime - oldrealtime < 1.0 / maxfps &&
         !vr_enabled.value)
+    {
         return false; // framerate is too high
+    }
     // johnfitz
 
     host_frametime = realtime - oldrealtime;
     oldrealtime = realtime;
 
     // johnfitz -- host_timescale is more intuitive than host_framerate
-    if(host_timescale.value > 0) host_frametime *= host_timescale.value;
-    // johnfitz
+    if(host_timescale.value > 0)
+    {
+        host_frametime *= host_timescale.value;
+        // johnfitz
+    }
     else if(host_framerate.value > 0)
+    {
         host_frametime = host_framerate.value;
-    else // don't allow really long or short frames
+    }
+    else
+    { // don't allow really long or short frames
         host_frametime =
             CLAMP(0.001, host_frametime, 0.1); // johnfitz -- use CLAMP
+    }
 
     return true;
 }
@@ -613,12 +687,18 @@ void Host_GetConsoleCommands()
 {
     const char* cmd;
 
-    if(!isDedicated) return; // no stdin necessary in graphical mode
+    if(!isDedicated)
+    {
+        return; // no stdin necessary in graphical mode
+    }
 
     while(true)
     {
         cmd = Sys_ConsoleInput();
-        if(!cmd) break;
+        if(!cmd)
+        {
+            break;
+        }
         Cbuf_AddText(cmd);
     }
 }
@@ -647,7 +727,10 @@ void Host_ServerFrame()
 
     // move things around and think
     // always pause in single player if in console or menus
-    if(!sv.paused && (svs.maxclients > 1 || key_dest == key_game)) SV_Physics();
+    if(!sv.paused && (svs.maxclients > 1 || key_dest == key_game))
+    {
+        SV_Physics();
+    }
 
     // johnfitz -- devstats
     if(cls.signon == SIGNONS)
@@ -655,12 +738,17 @@ void Host_ServerFrame()
         for(i = 0, active = 0; i < sv.num_edicts; i++)
         {
             ent = EDICT_NUM(i);
-            if(!ent->free) active++;
+            if(!ent->free)
+            {
+                active++;
+            }
         }
         if(active > 600 && dev_peakstats.edicts <= 600)
+        {
             Con_DWarning(
                 "%i edicts exceeds standard limit of 600 (max = %d).\n", active,
                 sv.max_edicts);
+        }
         dev_stats.edicts = active;
         dev_peakstats.edicts = q_max(active, dev_peakstats.edicts);
     }
@@ -685,14 +773,18 @@ void _Host_Frame(float time)
     int pass1, pass2, pass3;
 
     if(setjmp(host_abortserver))
+    {
         return; // something bad happened, or the server disconnected
+    }
 
     // keep the random time dependent
     rand();
 
     // decide the simulation time
     if(!Host_FilterTime(time))
+    {
         return; // don't run too fast, or packets will flood out
+    }
 
     // get new key events
     Key_UpdateForDest();
@@ -708,7 +800,10 @@ void _Host_Frame(float time)
     NET_Poll();
 
     // if running the server locally, make intentions now
-    if(sv.active) CL_SendCmd();
+    if(sv.active)
+    {
+        CL_SendCmd();
+    }
 
     //-------------------
     //
@@ -719,7 +814,10 @@ void _Host_Frame(float time)
     // check for commands typed to the host
     Host_GetConsoleCommands();
 
-    if(sv.active) Host_ServerFrame();
+    if(sv.active)
+    {
+        Host_ServerFrame();
+    }
 
     //-------------------
     //
@@ -729,19 +827,31 @@ void _Host_Frame(float time)
 
     // if running the server remotely, send intentions now after
     // the incoming messages have been read
-    if(!sv.active) CL_SendCmd();
+    if(!sv.active)
+    {
+        CL_SendCmd();
+    }
 
     // fetch results from server
-    if(cls.state == ca_connected) CL_ReadFromServer();
+    if(cls.state == ca_connected)
+    {
+        CL_ReadFromServer();
+    }
 
     // update video
-    if(host_speeds.value) time1 = Sys_DoubleTime();
+    if(host_speeds.value)
+    {
+        time1 = Sys_DoubleTime();
+    }
 
     SCR_UpdateScreen();
 
     CL_RunParticles(); // johnfitz -- seperated from rendering
 
-    if(host_speeds.value) time2 = Sys_DoubleTime();
+    if(host_speeds.value)
+    {
+        time2 = Sys_DoubleTime();
+    }
 
     // update audio
     BGM_Update(); // adds music raw samples and/or advances midi driver
@@ -751,7 +861,9 @@ void _Host_Frame(float time)
         CL_DecayLights();
     }
     else
+    {
         S_Update(vec3_origin, vec3_origin, vec3_origin, vec3_origin);
+    }
 
     CDAudio_Update();
 
@@ -788,7 +900,10 @@ void Host_Frame(float time)
     timetotal += time2 - time1;
     timecount++;
 
-    if(timecount < 1000) return;
+    if(timecount < 1000)
+    {
+        return;
+    }
 
     m = timetotal * 1000 / timecount;
     timecount = 0;
@@ -796,7 +911,10 @@ void Host_Frame(float time)
     c = 0;
     for(i = 0; i < svs.maxclients; i++)
     {
-        if(svs.clients[i].active) c++;
+        if(svs.clients[i].active)
+        {
+            c++;
+        }
     }
 
     Con_Printf("serverprofile: %2i clients %2i msec\n", c, m);
@@ -810,15 +928,24 @@ Host_Init
 void Host_Init()
 {
     if(standard_quake)
+    {
         minimum_memory = MINIMUM_MEMORY;
+    }
     else
+    {
         minimum_memory = MINIMUM_MEMORY_LEVELPAK;
+    }
 
-    if(COM_CheckParm("-minmemory")) host_parms->memsize = minimum_memory;
+    if(COM_CheckParm("-minmemory"))
+    {
+        host_parms->memsize = minimum_memory;
+    }
 
     if(host_parms->memsize < minimum_memory)
+    {
         Sys_Error("Only %4.1f megs of memory available, can't execute game",
             host_parms->memsize / (float)0x100000);
+    }
 
     com_argc = host_parms->argc;
     com_argv = host_parms->argv;
@@ -848,7 +975,10 @@ void Host_Init()
     if(cls.state != ca_dedicated)
     {
         host_colormap = (byte*)COM_LoadHunkFile("gfx/colormap.lmp", nullptr);
-        if(!host_colormap) Sys_Error("Couldn't load gfx/colormap.lmp");
+        if(!host_colormap)
+        {
+            Sys_Error("Couldn't load gfx/colormap.lmp");
+        }
 
         V_Init();
         Chase_Init();
@@ -878,9 +1008,9 @@ void Host_Init()
     if(cls.state != ca_dedicated)
     {
         Cbuf_InsertText("exec quake.rc\n");
-        // johnfitz -- in case the vid mode was locked during vid_init, we can
-        // unlock it now. note: two leading newlines because the command buffer
-        // swallows one of them.
+        // johnfitz -- in case the vid mode was locked during vid_init, we
+        // can unlock it now. note: two leading newlines because the command
+        // buffer swallows one of them.
         Cbuf_AddText("\n\nvid_unlock\n");
     }
 
@@ -889,7 +1019,10 @@ void Host_Init()
         Cbuf_AddText("exec autoexec.cfg\n");
         Cbuf_AddText("stuffcmds");
         Cbuf_Execute();
-        if(!sv.active) Cbuf_AddText("map start\n");
+        if(!sv.active)
+        {
+            Cbuf_AddText("map start\n");
+        }
     }
 }
 
@@ -922,7 +1055,10 @@ void Host_Shutdown()
 
     if(cls.state != ca_dedicated)
     {
-        if(con_initialized) History_Shutdown();
+        if(con_initialized)
+        {
+            History_Shutdown();
+        }
         BGM_Shutdown();
         CDAudio_Shutdown();
         S_Shutdown();

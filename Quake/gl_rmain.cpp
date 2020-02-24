@@ -179,7 +179,10 @@ static void GLSLGamma_CreateShaders()
         "	  gl_FragColor = vec4(pow(frag.rgb, vec3(GammaValue)), 1.0);\n"
         "}\n";
 
-    if(!gl_glsl_gamma_able) return;
+    if(!gl_glsl_gamma_able)
+    {
+        return;
+    }
 
     r_gamma_program = GL_CreateProgram(vertSource, fragSource, 0, nullptr);
 
@@ -198,9 +201,15 @@ void GLSLGamma_GammaCorrect()
 {
     float smax, tmax;
 
-    if(!gl_glsl_gamma_able) return;
+    if(!gl_glsl_gamma_able)
+    {
+        return;
+    }
 
-    if(vid_gamma.value == 1 && vid_contrast.value == 1) return;
+    if(vid_gamma.value == 1 && vid_contrast.value == 1)
+    {
+        return;
+    }
 
     // create render-to-texture texture if needed
     if(!r_gamma_texture ||
@@ -299,49 +308,65 @@ qboolean R_CullBox(vec3_t emins, vec3_t emaxs)
                 if(p->normal[0] * emaxs[0] + p->normal[1] * emaxs[1] +
                         p->normal[2] * emaxs[2] <
                     p->dist)
+                {
                     return true;
+                }
                 break;
             case 1:
                 if(p->normal[0] * emins[0] + p->normal[1] * emaxs[1] +
                         p->normal[2] * emaxs[2] <
                     p->dist)
+                {
                     return true;
+                }
                 break;
             case 2:
                 if(p->normal[0] * emaxs[0] + p->normal[1] * emins[1] +
                         p->normal[2] * emaxs[2] <
                     p->dist)
+                {
                     return true;
+                }
                 break;
             case 3:
                 if(p->normal[0] * emins[0] + p->normal[1] * emins[1] +
                         p->normal[2] * emaxs[2] <
                     p->dist)
+                {
                     return true;
+                }
                 break;
             case 4:
                 if(p->normal[0] * emaxs[0] + p->normal[1] * emaxs[1] +
                         p->normal[2] * emins[2] <
                     p->dist)
+                {
                     return true;
+                }
                 break;
             case 5:
                 if(p->normal[0] * emins[0] + p->normal[1] * emaxs[1] +
                         p->normal[2] * emins[2] <
                     p->dist)
+                {
                     return true;
+                }
                 break;
             case 6:
                 if(p->normal[0] * emaxs[0] + p->normal[1] * emins[1] +
                         p->normal[2] * emins[2] <
                     p->dist)
+                {
                     return true;
+                }
                 break;
             case 7:
                 if(p->normal[0] * emins[0] + p->normal[1] * emins[1] +
                         p->normal[2] * emins[2] <
                     p->dist)
+                {
                     return true;
+                }
                 break;
         }
     }
@@ -432,7 +457,10 @@ int SignbitsForPlane(mplane_t* out)
     bits = 0;
     for(j = 0; j < 3; j++)
     {
-        if(out->normal[j] < 0) bits |= 1 << j;
+        if(out->normal[j] < 0)
+        {
+            bits |= 1 << j;
+        }
     }
     return bits;
 }
@@ -471,10 +499,15 @@ void R_SetFrustum(float fovx, float fovy)
     int i;
 
     if(r_stereo.value)
+    {
         fovx += 10; // silly hack so that polygons don't drop out becuase of
-                    // stereo skew
+    }
+    // stereo skew
 
-    if(vr_enabled.value) fovx += 25; // meh
+    if(vr_enabled.value)
+    {
+        fovx += 25; // meh
+    }
 
     TurnVector(frustum[0].normal, vpn, vright, fovx / 2 - 90); // left plane
     TurnVector(frustum[1].normal, vpn, vright, 90 - fovx / 2); // right plane
@@ -534,7 +567,7 @@ void R_SetupGL()
     }
 
     //	glCullFace(GL_BACK); //johnfitz -- glquake used CCW with backwards
-    //culling -- let's do it right
+    // culling -- let's do it right
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -551,9 +584,13 @@ void R_SetupGL()
     // set drawing parms
     //
     if(gl_cull.value)
+    {
         glEnable(GL_CULL_FACE);
+    }
     else
+    {
         glDisable(GL_CULL_FACE);
+    }
 
     glDisable(GL_BLEND);
     glDisable(GL_ALPHA_TEST);
@@ -572,8 +609,14 @@ void R_Clear()
     clearbits = GL_DEPTH_BUFFER_BIT;
     // from mh -- if we get a stencil buffer, we should clear it, even though we
     // don't use it
-    if(gl_stencilbits) clearbits |= GL_STENCIL_BUFFER_BIT;
-    if(gl_clear.value) clearbits |= GL_COLOR_BUFFER_BIT;
+    if(gl_stencilbits)
+    {
+        clearbits |= GL_STENCIL_BUFFER_BIT;
+    }
+    if(gl_clear.value)
+    {
+        clearbits |= GL_COLOR_BUFFER_BIT;
+    }
     glClear(clearbits);
 }
 
@@ -624,8 +667,8 @@ void R_SetupView()
             contents == CONTENTS_LAVA)
         {
             // variance is a percentage of width, where width = 2 * tan(fov / 2)
-            // otherwise the effect is too dramatic at high FOV and too subtle at
-            // low FOV.  what a mess!
+            // otherwise the effect is too dramatic at high FOV and too subtle
+            // at low FOV.  what a mess!
             r_fovx = atan(tan(DEG2RAD(r_refdef.fov_x) / 2) *
                           (0.97 + sin(cl.time * 1.5) * 0.03)) *
                      2 / M_PI_DIV_180;
@@ -652,14 +695,23 @@ void R_SetupView()
     r_drawworld_cheatsafe = true;
     if(cl.maxclients == 1)
     {
-        if(!r_drawworld.value) r_drawworld_cheatsafe = false;
+        if(!r_drawworld.value)
+        {
+            r_drawworld_cheatsafe = false;
+        }
 
         if(r_drawflat.value)
+        {
             r_drawflat_cheatsafe = true;
+        }
         else if(r_fullbright.value || !cl.worldmodel->lightdata)
+        {
             r_fullbright_cheatsafe = true;
+        }
         else if(r_lightmap.value)
+        {
             r_lightmap_cheatsafe = true;
+        }
     }
     // johnfitz
 }
@@ -679,7 +731,10 @@ void R_DrawEntitiesOnList(qboolean alphapass) // johnfitz -- added parameter
 {
     int i;
 
-    if(!r_drawentities.value) return;
+    if(!r_drawentities.value)
+    {
+        return;
+    }
 
     // johnfitz -- sprites are not a special case
     for(i = 0; i < cl_numvisedicts; i++)
@@ -690,11 +745,15 @@ void R_DrawEntitiesOnList(qboolean alphapass) // johnfitz -- added parameter
         // if alphapass is false, draw only nonalpha entities this time
         if((ENTALPHA_DECODE(currententity->alpha) < 1 && !alphapass) ||
             (ENTALPHA_DECODE(currententity->alpha) == 1 && alphapass))
+        {
             continue;
+        }
 
         // johnfitz -- chasecam
         if(currententity == &cl_entities[cl.viewentity])
+        {
             currententity->angles[0] *= 0.3;
+        }
         // johnfitz
 
         switch(currententity->model->type)
@@ -714,26 +773,46 @@ R_DrawViewModel -- johnfitz -- gutted
 void R_DrawViewModel(entity_t* viewent, bool horizflip)
 {
     if(!r_drawviewmodel.value || !r_drawentities.value || chase_active.value)
+    {
         return;
+    }
 
-    if(cl.items & IT_INVISIBILITY || cl.stats[STAT_HEALTH] <= 0) return;
+    if(cl.items & IT_INVISIBILITY || cl.stats[STAT_HEALTH] <= 0)
+    {
+        return;
+    }
 
-    if(vr_enabled.value && vr_crosshair.value) VR_ShowCrosshair();
+    if(vr_enabled.value && vr_crosshair.value)
+    {
+        VR_ShowCrosshair();
+    }
 
     currententity = viewent;
-    if(!currententity->model) return;
+    if(!currententity->model)
+    {
+        return;
+    }
 
     // johnfitz -- this fixes a crash
-    if(currententity->model->type != mod_alias) return;
+    if(currententity->model->type != mod_alias)
+    {
+        return;
+    }
     // johnfitz
 
     // hack the depth range to prevent view model from poking into walls
     // only when not in VR
-    if(!vr_enabled.value) glDepthRange(0, 0.3);
+    if(!vr_enabled.value)
+    {
+        glDepthRange(0, 0.3);
+    }
 
     R_DrawAliasModel(currententity, horizflip);
 
-    if(!vr_enabled.value) glDepthRange(0, 1);
+    if(!vr_enabled.value)
+    {
+        glDepthRange(0, 1);
+    }
 }
 
 /*
@@ -792,7 +871,9 @@ void R_ShowBoundingBoxes()
 
     if(!r_showbboxes.value || cl.maxclients > 1 || !r_drawentities.value ||
         !sv.active)
+    {
         return;
+    }
 
     glDisable(GL_DEPTH_TEST);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -804,7 +885,10 @@ void R_ShowBoundingBoxes()
     for(i = 0, ed = NEXT_EDICT(sv.edicts); i < sv.num_edicts;
         i++, ed = NEXT_EDICT(ed))
     {
-        if(ed == sv_player) continue; // don't draw player's own bbox
+        if(ed == sv_player)
+        {
+            continue; // don't draw player's own bbox
+        }
 
         //		if (r_showbboxes.value != 2)
         //			if (!SV_VisibleToClient (sv_player, ed, sv.worldmodel))
@@ -846,9 +930,14 @@ void R_ShowTris()
     int i;
 
     if(r_showtris.value < 1 || r_showtris.value > 2 || cl.maxclients > 1)
+    {
         return;
+    }
 
-    if(r_showtris.value == 1) glDisable(GL_DEPTH_TEST);
+    if(r_showtris.value == 1)
+    {
+        glDisable(GL_DEPTH_TEST);
+    }
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     GL_PolygonOffset(OFFSET_SHOWTRIS);
     glDisable(GL_TEXTURE_2D);
@@ -867,8 +956,10 @@ void R_ShowTris()
         {
             currententity = cl_visedicts[i];
 
-            if(currententity == &cl_entities[cl.viewentity]) // chasecam
+            if(currententity == &cl_entities[cl.viewentity])
+            { // chasecam
                 currententity->angles[0] *= 0.3;
+            }
 
             switch(currententity->model->type)
             {
@@ -914,7 +1005,10 @@ void R_ShowTris()
     glEnable(GL_TEXTURE_2D);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     GL_PolygonOffset(OFFSET_NONE);
-    if(r_showtris.value == 1) glEnable(GL_DEPTH_TEST);
+    if(r_showtris.value == 1)
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
 
     Sbar_Changed(); // so we don't get dots collecting on the statusbar
 }
@@ -930,7 +1024,9 @@ void R_DrawShadows()
 
     if(!r_shadows.value || !r_drawentities.value || r_drawflat_cheatsafe ||
         r_lightmap_cheatsafe)
+    {
         return;
+    }
 
     // Use stencil buffer to prevent self-intersecting shadows, from Baker
     // (MarkV)
@@ -946,9 +1042,15 @@ void R_DrawShadows()
     {
         currententity = cl_visedicts[i];
 
-        if(currententity->model->type != mod_alias) continue;
+        if(currententity->model->type != mod_alias)
+        {
+            continue;
+        }
 
-        if(currententity == &cl.viewent) return;
+        if(currententity == &cl.viewent)
+        {
+            return;
+        }
 
         GL_DrawAliasShadow(currententity);
     }
@@ -994,7 +1096,8 @@ void R_RenderScene()
 
     Fog_DisableGFog(); // johnfitz
 
-    R_DrawViewModel(&cl.viewent, false); // johnfitz -- moved here from R_RenderView
+    R_DrawViewModel(
+        &cl.viewent, false); // johnfitz -- moved here from R_RenderView
 
     R_ShowTris(); // johnfitz
 
@@ -1038,7 +1141,10 @@ void R_ScaleView()
     srcw = r_refdef.vrect.width / scale;
     srch = r_refdef.vrect.height / scale;
 
-    if(scale == 1) return;
+    if(scale == 1)
+    {
+        return;
+    }
 
     // make sure texture unit 0 is selected
     GL_DisableMultitexture();
@@ -1116,9 +1222,15 @@ void R_RenderView()
 {
     double time1, time2;
 
-    if(r_norefresh.value) return;
+    if(r_norefresh.value)
+    {
+        return;
+    }
 
-    if(!cl.worldmodel) Sys_Error("R_RenderView: NULL worldmodel");
+    if(!cl.worldmodel)
+    {
+        Sys_Error("R_RenderView: NULL worldmodel");
+    }
 
     time1 = 0; /* avoid compiler warning */
     if(r_speeds.value)
@@ -1132,7 +1244,9 @@ void R_RenderView()
                 rs_skypasses = rs_brushpasses = 0;
     }
     else if(gl_finish.value)
+    {
         glFinish();
+    }
 
     R_SetupView(); // johnfitz -- this does everything that should be done once
                    // per frame
@@ -1178,22 +1292,28 @@ void R_RenderView()
     // johnfitz -- modified r_speeds output
     time2 = Sys_DoubleTime();
     if(r_pos.value)
+    {
         Con_Printf("x %i y %i z %i (pitch %i yaw %i roll %i)\n",
             (int)cl_entities[cl.viewentity].origin[0],
             (int)cl_entities[cl.viewentity].origin[1],
             (int)cl_entities[cl.viewentity].origin[2],
             (int)cl.viewangles[PITCH], (int)cl.viewangles[YAW],
             (int)cl.viewangles[ROLL]);
+    }
     else if(r_speeds.value == 2)
+    {
         Con_Printf(
             "%3i ms  %4i/%4i wpoly %4i/%4i epoly %3i lmap %4i/%4i sky %1.1f "
             "mtex\n",
             (int)((time2 - time1) * 1000), rs_brushpolys, rs_brushpasses,
             rs_aliaspolys, rs_aliaspasses, rs_dynamiclightmaps, rs_skypolys,
             rs_skypasses, TexMgr_FrameUsage());
+    }
     else if(r_speeds.value)
+    {
         Con_Printf("%3i ms  %4i wpoly %4i epoly %3i lmap\n",
             (int)((time2 - time1) * 1000), rs_brushpolys, rs_aliaspolys,
             rs_dynamiclightmaps);
+    }
     // johnfitz
 }

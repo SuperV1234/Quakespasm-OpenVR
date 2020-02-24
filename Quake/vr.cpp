@@ -291,7 +291,8 @@ void RecreateTextures(fbo_t* const fbo, const int width, const int height)
     return fbo;
 }
 
-void CreateMSAA(fbo_t* const fbo, const int width, const int height, const int msaa)
+void CreateMSAA(
+    fbo_t* const fbo, const int width, const int height, const int msaa)
 {
     fbo->msaa = msaa;
 
@@ -366,13 +367,17 @@ void Vec3RotateZ(vec3_t in, float angle, vec3_t out)
     vr::HmdMatrix44_t out;
 
     for(int y = 0; y < 4; y++)
+    {
         for(int x = 0; x < 4; x++)
+        {
             out.m[x][y] = in.m[y][x];
-
+        }
+    }
     return out;
 }
 
-[[nodiscard]] vr::HmdVector3_t AddVectors(const vr::HmdVector3_t& a, const vr::HmdVector3_t& b)
+[[nodiscard]] vr::HmdVector3_t AddVectors(
+    const vr::HmdVector3_t& a, const vr::HmdVector3_t& b)
 {
     vr::HmdVector3_t out;
 
@@ -433,7 +438,8 @@ void Vec3RotateZ(vec3_t in, float angle, vec3_t out)
 // Transforms a HMD Matrix34 to a Quaternion
 // Function logic nicked from
 // https://github.com/Omnifinity/OpenVR-Tracking-Example
-[[nodiscard]] vr::HmdQuaternion_t Matrix34ToQuaternion(const vr::HmdMatrix34_t& in)
+[[nodiscard]] vr::HmdQuaternion_t Matrix34ToQuaternion(
+    const vr::HmdMatrix34_t& in)
 {
     vr::HmdQuaternion_t q;
 
@@ -470,9 +476,15 @@ static void VR_Enabled_f(cvar_t* var)
 
     VID_VR_Disable();
 
-    if(!vr_enabled.value) return;
+    if(!vr_enabled.value)
+    {
+        return;
+    }
 
-    if(!VR_Enable()) Cvar_SetValueQuick(&vr_enabled, 0);
+    if(!VR_Enable())
+    {
+        Cvar_SetValueQuick(&vr_enabled, 0);
+    }
 }
 
 
@@ -502,8 +514,7 @@ void ApplyMod_Weapon(const int cvarEntry, aliashdr_t* const hdr)
         vr_gunmodelscale.value; // initial version had 0.75 default world
                                 // scale, so weapons reflect that
     VectorScale(hdr->original_scale,
-        vr_weapon_offset[cvarEntry * VARS_PER_WEAPON + 3].value *
-            scaleCorrect,
+        vr_weapon_offset[cvarEntry * VARS_PER_WEAPON + 3].value * scaleCorrect,
         hdr->scale);
 
     // TODO VR: repetition of ofs calculation
@@ -735,15 +746,15 @@ bool VR_Enable()
         eyes[i].fov_y = (atan(-UpTan) + atan(DownTan)) / float(M_PI_DIV_180);
     }
 
-    VR_SetTrackingSpace(
-        vr::TrackingUniverseStanding); // Put us into standing tracking position
-    VR_ResetOrientation();             // Recenter the HMD
+    VR_SetTrackingSpace(vr::TrackingUniverseStanding); // Put us into standing
+                                                       // tracking position
+    VR_ResetOrientation();                             // Recenter the HMD
 
     wglSwapIntervalEXT(0); // Disable V-Sync
 
     Cbuf_AddText(
-        "exec vr_autoexec.cfg\n"); // Load the vr autosec config file incase the
-                                   // user has settings they want
+        "exec vr_autoexec.cfg\n"); // Load the vr autosec config file incase
+                                   // the user has settings they want
 
     vr_initialized = true;
     return true;
@@ -762,7 +773,10 @@ void VID_VR_Shutdown()
 
 void VID_VR_Disable()
 {
-    if(!vr_initialized) return;
+    if(!vr_initialized)
+    {
+        return;
+    }
 
     vr::VR_Shutdown();
     ovrHMD = nullptr;
@@ -779,8 +793,8 @@ static void RenderScreenForCurrentEye_OVR()
 {
     assert(current_eye != nullptr);
 
-    // Remember the current glwidht/height; we have to modify it here for each
-    // eye
+    // Remember the current glwidht/height; we have to modify it here for
+    // each eye
     int oldglheight = glheight;
     int oldglwidth = glwidth;
 
@@ -887,11 +901,10 @@ void SetHandPos(int index, entity_t* player)
 
     // handvelmag
     const auto length = VectorLength(controllers[index].velocity);
-    const auto bestSingle = std::max({
-        std::abs(controllers[index].velocity[0]),
-        std::abs(controllers[index].velocity[1]),
-        std::abs(controllers[index].velocity[2])
-    }) * 1.5f;
+    const auto bestSingle = std::max({std::abs(controllers[index].velocity[0]),
+                                std::abs(controllers[index].velocity[1]),
+                                std::abs(controllers[index].velocity[2])}) *
+                            1.5f;
     cl.handvelmag[index] = std::max(length, bestSingle);
 }
 
@@ -901,8 +914,9 @@ void VR_UpdateScreenContent()
 {
     GLint w, h;
 
-    // Last chance to enable VR Mode - we get here when the game already start
-    // up with vr_enabled 1 If enabling fails, unset the cvar and return.
+    // Last chance to enable VR Mode - we get here when the game already
+    // start up with vr_enabled 1 If enabling fails, unset the cvar and
+    // return.
     if(!vr_initialized && !VR_Enable())
     {
         Cvar_Set("vr_enabled", "0");
@@ -1039,7 +1053,8 @@ void VR_UpdateScreenContent()
 
     switch((int)vr_aimmode.value)
     {
-            // 1: (Default) Head Aiming; View YAW is mouse+head, PITCH is head
+            // 1: (Default) Head Aiming; View YAW is mouse+head, PITCH is
+            // head
         default:
         case VrAimMode::e_HEAD_MYAW:
             cl.viewangles[PITCH] = cl.aimangles[PITCH] = orientation[PITCH];
@@ -1047,7 +1062,8 @@ void VR_UpdateScreenContent()
                 cl.aimangles[YAW] + orientation[YAW] - lastOrientation[YAW];
             break;
 
-            // 2: Head Aiming; View YAW and PITCH is mouse+head (this is stupid)
+            // 2: Head Aiming; View YAW and PITCH is mouse+head (this is
+            // stupid)
         case VrAimMode::e_HEAD_MYAW_MPITCH:
             cl.viewangles[PITCH] = cl.aimangles[PITCH] = cl.aimangles[PITCH] +
                                                          orientation[PITCH] -
@@ -1104,10 +1120,11 @@ void VR_UpdateScreenContent()
             // TODO VR: this affects aim, not just drawing
             /*
             vec3_t rotOfs = {
-                vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 5].value +
-            vr_gunangle.value, vr_weapon_offset[weaponCVarEntry *
+                vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON +
+            5].value + vr_gunangle.value, vr_weapon_offset[weaponCVarEntry *
             VARS_PER_WEAPON + 6].value + vr_gunyaw.value,
-                vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON + 7].value
+                vr_weapon_offset[weaponCVarEntry * VARS_PER_WEAPON +
+            7].value
             };
             */
 
@@ -1219,11 +1236,13 @@ void VR_UpdateScreenContent()
 
             if(cl.offhand_viewent.model)
             {
-                // aliashdr_t* hdr = (aliashdr_t*)Mod_Extradata(cl.offhand_viewent.model);
+                // aliashdr_t* hdr =
+                // (aliashdr_t*)Mod_Extradata(cl.offhand_viewent.model);
                 // Mod_Weapon(cl.offhand_viewent.model->name, hdr);
 
                 // TODO VR: hardcoded fist cvar entry number
-                ApplyMod_Weapon(16, (aliashdr_t*)Mod_Extradata(cl.offhand_viewent.model));
+                ApplyMod_Weapon(
+                    16, (aliashdr_t*)Mod_Extradata(cl.offhand_viewent.model));
             }
 
             SetHandPos(0, player);
@@ -1250,8 +1269,9 @@ void VR_UpdateScreenContent()
 
         vec3_t temp;
 
-        // We need to scale the view offset position to quake units and rotate
-        // it by the current input angles (viewangle - eye orientation)
+        // We need to scale the view offset position to quake units and
+        // rotate it by the current input angles (viewangle - eye
+        // orientation)
         const auto orientation = QuatToYawPitchRoll(current_eye->orientation);
         temp[0] = -current_eye->position.v[2] * meters_to_units; // X
         temp[1] = -current_eye->position.v[0] * meters_to_units; // Y
@@ -1301,14 +1321,23 @@ void VR_ShowCrosshair()
     vec3_t start, end, impact;
     float size, alpha;
 
-    if(!sv_player) return;
+    if(!sv_player)
+    {
+        return;
+    }
 
-    if((int)(sv_player->v.weapon) == IT_AXE) return;
+    if((int)(sv_player->v.weapon) == IT_AXE)
+    {
+        return;
+    }
 
     size = CLAMP(0.0, vr_crosshair_size.value, 32.0);
     alpha = CLAMP(0.0, vr_crosshair_alpha.value, 1.0);
 
-    if(size <= 0 || alpha <= 0) return;
+    if(size <= 0 || alpha <= 0)
+    {
+        return;
+    }
 
     // setup gl
     glDisable(GL_DEPTH_TEST);
@@ -1437,14 +1466,16 @@ void VR_Draw2D()
     }
     else
     {
-        // TODO: Make the menus' position sperate from the right hand. Centered
-        // on last view dir?
+        // TODO: Make the menus' position sperate from the right hand.
+        // Centered on last view dir?
         VectorCopy(cl.viewangles, menu_angles)
 
-        // TODO VR: ?
-        if(vr_aimmode.value == VrAimMode::e_HEAD_MYAW ||
-            vr_aimmode.value == VrAimMode::e_HEAD_MYAW_MPITCH)
+            // TODO VR: ?
+            if(vr_aimmode.value == VrAimMode::e_HEAD_MYAW ||
+                vr_aimmode.value == VrAimMode::e_HEAD_MYAW_MPITCH)
+        {
             menu_angles[PITCH] = 0;
+        }
 
         AngleVectors(menu_angles, forward, right, up);
 
@@ -1452,8 +1483,7 @@ void VR_Draw2D()
     }
 
     // TODO VR: control smoothing with cvar
-    const auto smoothedTarget =
-        glm::mix(lastMenuPosition, toVec3(target), 0.9);
+    const auto smoothedTarget = glm::mix(lastMenuPosition, toVec3(target), 0.9);
     lastMenuPosition = smoothedTarget;
 
     glTranslatef(smoothedTarget[0], smoothedTarget[1], smoothedTarget[2]);
@@ -1469,9 +1499,13 @@ void VR_Draw2D()
     if(scr_drawdialog) // new game confirm
     {
         if(con_forcedup)
+        {
             Draw_ConsoleBackground();
+        }
         else
+        {
             draw_sbar = true; // Sbar_Draw ();
+        }
         Draw_FadeScreen();
         SCR_DrawNotifyString();
     }
@@ -1557,7 +1591,9 @@ void VR_DrawSbar()
 
         if(vr_aimmode.value == VrAimMode::e_HEAD_MYAW ||
             vr_aimmode.value == VrAimMode::e_HEAD_MYAW_MPITCH)
+        {
             sbar_angles[PITCH] = 0;
+        }
 
         AngleVectors(sbar_angles, forward, right, up);
 
@@ -1628,7 +1664,9 @@ void VR_ResetOrientation()
 void VR_SetTrackingSpace(int n)
 {
     if(n >= 0 || n < 3)
+    {
         vr::VRCompositor()->SetTrackingSpace((vr::ETrackingUniverseOrigin)n);
+    }
 }
 
 int axisTrackpad = -1;
@@ -1638,7 +1676,10 @@ bool identified = false;
 
 void IdentifyAxes(int device)
 {
-    if(identified) return;
+    if(identified)
+    {
+        return;
+    }
 
     for(uint32_t i = 0; i < vr::k_unControllerStateAxisCount; i++)
     {
@@ -1647,13 +1688,22 @@ void IdentifyAxes(int device)
             nullptr))
         {
             case vr::k_eControllerAxis_TrackPad:
-                if(axisTrackpad == -1) axisTrackpad = i;
+                if(axisTrackpad == -1)
+                {
+                    axisTrackpad = i;
+                }
                 break;
             case vr::k_eControllerAxis_Joystick:
-                if(axisJoystick == -1) axisJoystick = i;
+                if(axisJoystick == -1)
+                {
+                    axisJoystick = i;
+                }
                 break;
             case vr::k_eControllerAxis_Trigger:
-                if(axisTrigger == -1) axisTrigger = i;
+                if(axisTrigger == -1)
+                {
+                    axisTrigger = i;
+                }
                 break;
         }
     }
@@ -1667,13 +1717,25 @@ float GetAxis(vr::VRControllerState_t* state, int axis, double deadzoneExtra)
 
     if(axis == 0)
     {
-        if(axisTrackpad != -1) v += state->rAxis[axisTrackpad].x;
-        if(axisJoystick != -1) v += state->rAxis[axisJoystick].x;
+        if(axisTrackpad != -1)
+        {
+            v += state->rAxis[axisTrackpad].x;
+        }
+        if(axisJoystick != -1)
+        {
+            v += state->rAxis[axisJoystick].x;
+        }
     }
     else
     {
-        if(axisTrackpad != -1) v += state->rAxis[axisTrackpad].y;
-        if(axisJoystick != -1) v += state->rAxis[axisJoystick].y;
+        if(axisTrackpad != -1)
+        {
+            v += state->rAxis[axisTrackpad].y;
+        }
+        if(axisJoystick != -1)
+        {
+            v += state->rAxis[axisJoystick].y;
+        }
     }
 
     int sign = (v > 0) - (v < 0);
@@ -1746,7 +1808,10 @@ void DoAxis(vr_controller* controller, int axis, int quakeKeyNeg,
 
 void VR_Move(usercmd_t* cmd)
 {
-    if(!vr_enabled.value) return;
+    if(!vr_enabled.value)
+    {
+        return;
+    }
 
     // TODO VR: repetition of ofs calculation
     // TODO VR: adj unused? could be used to find position of muzzle
@@ -1879,8 +1944,8 @@ void VR_Move(usercmd_t* cmd)
             float fwd = DotProduct(move, vfwd);
             float right = DotProduct(move, vright);
 
-            // Quake run doesn't affect the value of cl_sidespeed.value, so just
-            // use forward speed here for consistency
+            // Quake run doesn't affect the value of cl_sidespeed.value, so
+            // just use forward speed here for consistency
             cmd->forwardmove += cl_forwardspeed.value * fwd;
             cmd->sidemove += cl_forwardspeed.value * right;
         }
@@ -1890,7 +1955,9 @@ void VR_Move(usercmd_t* cmd)
             cl_upspeed.value * GetAxis(&controllers[0].state, 1, 0.0) * lfwd[2];
 
         if(cl_forwardspeed.value > 200 && cl_movespeedkey.value)
+        {
             cmd->forwardmove /= cl_movespeedkey.value;
+        }
         if((cl_forwardspeed.value > 200) ^ (in_speed.state & 1))
         {
             cmd->forwardmove *= cl_movespeedkey.value;
@@ -1915,8 +1982,8 @@ void VR_Move(usercmd_t* cmd)
             else
             {
                 vrYaw -= (yawMove * host_frametime * 100.0f *
-                            vr_joystick_yaw_multi.value) *
-                        vr_turn_speed.value;
+                             vr_joystick_yaw_multi.value) *
+                         vr_turn_speed.value;
             }
         }
     }

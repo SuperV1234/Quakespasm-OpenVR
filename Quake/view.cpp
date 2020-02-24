@@ -76,9 +76,9 @@ float v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
 extern int in_forward, in_forward2, in_back;
 
-vec3_t
-    v_punchangles[2]; // johnfitz -- copied from cl.punchangle.  0 is current, 1
-                      // is previous value. never the same unless map just loaded
+vec3_t v_punchangles[2]; // johnfitz -- copied from cl.punchangle.  0 is
+                         // current, 1 is previous value. never the same unless
+                         // map just loaded
 
 
 
@@ -103,18 +103,26 @@ float V_CalcRoll(vec3_t angles, vec3_t velocity)
 
     // Don't roll view in VR
     if(vr_enabled.value /* TODO VR: create CVAR */)
+    {
         value = 0;
+    }
     else
+    {
         value = cl_rollangle.value;
+    }
 
 
     //	if (cl.inwater)
     //		value *= 6;
 
     if(side < cl_rollspeed.value)
+    {
         side = side * value / cl_rollspeed.value;
+    }
     else
+    {
         side = value;
+    }
 
     return side * sign;
 }
@@ -140,9 +148,13 @@ float V_CalcBob()
     cycle = cl.time - (int)(cl.time / cl_bobcycle.value) * cl_bobcycle.value;
     cycle /= cl_bobcycle.value;
     if(cycle < cl_bobup.value)
+    {
         cycle = M_PI * cycle / cl_bobup.value;
+    }
     else
+    {
         cycle = M_PI + M_PI * (cycle - cl_bobup.value) / (1.0 - cl_bobup.value);
+    }
 
     // bob is proportional to velocity in the xy plane
     // (don't count Z, or jumping messes it up)
@@ -153,9 +165,13 @@ float V_CalcBob()
     // Con_Printf ("speed: %5.1f\n", VectorLength(cl.velocity));
     bob = bob * 0.3 + bob * 0.7 * sin(cycle);
     if(bob > 4)
+    {
         bob = 4;
+    }
     else if(bob < -7)
+    {
         bob = -7;
+    }
     return bob;
 }
 
@@ -225,13 +241,20 @@ void V_DriftPitch()
     if(cl.nodrift)
     {
         if(fabs(cl.cmd.forwardmove) < cl_forwardspeed.value)
+        {
             cl.driftmove = 0;
+        }
         else
+        {
             cl.driftmove += host_frametime;
+        }
 
         if(cl.driftmove > v_centermove.value)
         {
-            if(lookspring.value) V_StartPitchDrift();
+            if(lookspring.value)
+            {
+                V_StartPitchDrift();
+            }
         }
         return;
     }
@@ -304,18 +327,28 @@ void V_ParseDamage()
 
     armor = MSG_ReadByte();
     blood = MSG_ReadByte();
-    for(i = 0; i < 3; i++) from[i] = MSG_ReadCoord(cl.protocolflags);
+    for(i = 0; i < 3; i++)
+    {
+        from[i] = MSG_ReadCoord(cl.protocolflags);
+    }
 
     count = blood * 0.5 + armor * 0.5;
-    if(count < 10) count = 10;
+    if(count < 10)
+    {
+        count = 10;
+    }
 
     cl.faceanimtime = cl.time + 0.2; // but sbar face into pain frame
 
     cl.cshifts[CSHIFT_DAMAGE].percent += 3 * count;
     if(cl.cshifts[CSHIFT_DAMAGE].percent < 0)
+    {
         cl.cshifts[CSHIFT_DAMAGE].percent = 0;
+    }
     if(cl.cshifts[CSHIFT_DAMAGE].percent > 150)
+    {
         cl.cshifts[CSHIFT_DAMAGE].percent = 150;
+    }
 
     if(armor > blood)
     {
@@ -340,8 +373,7 @@ void V_ParseDamage()
     // calculate view angle kicks
     //
     // check if we're out of vr or if vr viewkick is enabled
-    if(!vr_enabled.value ||
-        (vr_enabled.value && vr_viewkick.value))
+    if(!vr_enabled.value || (vr_enabled.value && vr_viewkick.value))
     {
         ent = &cl_entities[cl.viewentity];
 
@@ -448,7 +480,9 @@ void V_CalcPowerupCshift()
         cl.cshifts[CSHIFT_POWERUP].percent = 30;
     }
     else
+    {
         cl.cshifts[CSHIFT_POWERUP].percent = 0;
+    }
 }
 
 /*
@@ -471,17 +505,26 @@ void V_CalcBlend()
 
     for(j = 0; j < NUM_CSHIFTS; j++)
     {
-        if(!gl_cshiftpercent.value) continue;
+        if(!gl_cshiftpercent.value)
+        {
+            continue;
+        }
 
         // johnfitz -- only apply leaf contents color shifts during intermission
-        if(cl.intermission && j != CSHIFT_CONTENTS) continue;
+        if(cl.intermission && j != CSHIFT_CONTENTS)
+        {
+            continue;
+        }
         // johnfitz
 
         a2 = ((cl.cshifts[j].percent * gl_cshiftpercent.value) / 100.0) / 255.0;
         // QuakeSpasm -- also scale by the specific gl_cshiftpercent_* cvar
         a2 *= (cshiftpercent_cvars[j]->value / 100.0);
         // QuakeSpasm
-        if(!a2) continue;
+        if(!a2)
+        {
+            continue;
+        }
         a = a + a2 * (1 - a);
         a2 = a2 / a;
         r = r * (1 - a2) + cl.cshifts[j].destcolor[0] * a2;
@@ -493,8 +536,14 @@ void V_CalcBlend()
     v_blend[1] = g / 255.0;
     v_blend[2] = b / 255.0;
     v_blend[3] = a;
-    if(v_blend[3] > 1) v_blend[3] = 1;
-    if(v_blend[3] < 0) v_blend[3] = 0;
+    if(v_blend[3] > 1)
+    {
+        v_blend[3] = 1;
+    }
+    if(v_blend[3] < 0)
+    {
+        v_blend[3] = 0;
+    }
 }
 
 /*
@@ -519,24 +568,33 @@ void V_UpdateBlend()
             cl.prev_cshifts[i].percent = cl.cshifts[i].percent;
         }
         for(j = 0; j < 3; j++)
+        {
             if(cl.cshifts[i].destcolor[j] != cl.prev_cshifts[i].destcolor[j])
             {
                 blend_changed = true;
                 cl.prev_cshifts[i].destcolor[j] = cl.cshifts[i].destcolor[j];
             }
+        }
     }
 
     // drop the damage value
     cl.cshifts[CSHIFT_DAMAGE].percent -= host_frametime * 150;
     if(cl.cshifts[CSHIFT_DAMAGE].percent <= 0)
+    {
         cl.cshifts[CSHIFT_DAMAGE].percent = 0;
+    }
 
     // drop the bonus value
     cl.cshifts[CSHIFT_BONUS].percent -= host_frametime * 100;
     if(cl.cshifts[CSHIFT_BONUS].percent <= 0)
+    {
         cl.cshifts[CSHIFT_BONUS].percent = 0;
+    }
 
-    if(blend_changed) V_CalcBlend();
+    if(blend_changed)
+    {
+        V_CalcBlend();
+    }
 }
 
 /*
@@ -547,7 +605,10 @@ glOrtho
 */
 void V_PolyBlend()
 {
-    if(!gl_polyblend.value || !v_blend[3]) return;
+    if(!gl_polyblend.value || !v_blend[3])
+    {
+        return;
+    }
 
     GL_DisableMultitexture();
 
@@ -603,7 +664,10 @@ void V_PolyBlend()
 float angledelta(float a)
 {
     a = anglemod(a);
-    if(a > 180) a -= 360;
+    if(a > 180)
+    {
+        a -= 360;
+    }
     return a;
 }
 
@@ -612,7 +676,8 @@ float angledelta(float a)
 CalcGunAngle
 ==================
 */
-void CalcGunAngle(const int wpnCvarEntry, entity_t* viewent, const vec3_t& handrot)
+void CalcGunAngle(
+    const int wpnCvarEntry, entity_t* viewent, const vec3_t& handrot)
 {
     float yaw, pitch, move;
     static float oldyaw = 0;
@@ -624,11 +689,9 @@ void CalcGunAngle(const int wpnCvarEntry, entity_t* viewent, const vec3_t& handr
         // TODO VR: ofs repetition
         vec3_t rotOfs = {
             vr_weapon_offset[wpnCvarEntry * VARS_PER_WEAPON + 5].value +
-                vr_gunmodelpitch.value, // Pitch
-            vr_weapon_offset[wpnCvarEntry * VARS_PER_WEAPON + 6]
-                .value, // Yaw
-            vr_weapon_offset[wpnCvarEntry * VARS_PER_WEAPON + 7]
-                .value // Roll
+                vr_gunmodelpitch.value,                                 // Pitch
+            vr_weapon_offset[wpnCvarEntry * VARS_PER_WEAPON + 6].value, // Yaw
+            vr_weapon_offset[wpnCvarEntry * VARS_PER_WEAPON + 7].value  // Roll
         };
 
         viewent->angles[PITCH] = -(handrot[PITCH]) + rotOfs[0];
@@ -641,28 +704,52 @@ void CalcGunAngle(const int wpnCvarEntry, entity_t* viewent, const vec3_t& handr
     pitch = -r_refdef.aimangles[PITCH];
 
     yaw = angledelta(yaw - r_refdef.viewangles[YAW]) * 0.4;
-    if(yaw > 10) yaw = 10;
-    if(yaw < -10) yaw = -10;
+    if(yaw > 10)
+    {
+        yaw = 10;
+    }
+    if(yaw < -10)
+    {
+        yaw = -10;
+    }
     pitch = angledelta(-pitch - r_refdef.viewangles[PITCH]) * 0.4;
-    if(pitch > 10) pitch = 10;
-    if(pitch < -10) pitch = -10;
+    if(pitch > 10)
+    {
+        pitch = 10;
+    }
+    if(pitch < -10)
+    {
+        pitch = -10;
+    }
     move = host_frametime * 20;
     if(yaw > oldyaw)
     {
-        if(oldyaw + move < yaw) yaw = oldyaw + move;
+        if(oldyaw + move < yaw)
+        {
+            yaw = oldyaw + move;
+        }
     }
     else
     {
-        if(oldyaw - move > yaw) yaw = oldyaw - move;
+        if(oldyaw - move > yaw)
+        {
+            yaw = oldyaw - move;
+        }
     }
 
     if(pitch > oldpitch)
     {
-        if(oldpitch + move < pitch) pitch = oldpitch + move;
+        if(oldpitch + move < pitch)
+        {
+            pitch = oldpitch + move;
+        }
     }
     else
     {
-        if(oldpitch - move > pitch) pitch = oldpitch - move;
+        if(oldpitch - move > pitch)
+        {
+            pitch = oldpitch - move;
+        }
     }
 
     oldyaw = yaw;
@@ -672,14 +759,14 @@ void CalcGunAngle(const int wpnCvarEntry, entity_t* viewent, const vec3_t& handr
     viewent->angles[PITCH] = -(r_refdef.viewangles[PITCH] + pitch);
 
     viewent->angles[ROLL] -= v_idlescale.value *
-                               sin(cl.time * v_iroll_cycle.value) *
-                               v_iroll_level.value;
+                             sin(cl.time * v_iroll_cycle.value) *
+                             v_iroll_level.value;
     viewent->angles[PITCH] -= v_idlescale.value *
-                                sin(cl.time * v_ipitch_cycle.value) *
-                                v_ipitch_level.value;
+                              sin(cl.time * v_ipitch_cycle.value) *
+                              v_ipitch_level.value;
     viewent->angles[YAW] -= v_idlescale.value *
-                              sin(cl.time * v_iyaw_cycle.value) *
-                              v_iyaw_level.value;
+                            sin(cl.time * v_iyaw_cycle.value) *
+                            v_iyaw_level.value;
 }
 
 /*
@@ -697,17 +784,29 @@ void V_BoundOffsets()
     // so the view can never be inside a solid wall
 
     if(r_refdef.vieworg[0] < ent->origin[0] - 14)
+    {
         r_refdef.vieworg[0] = ent->origin[0] - 14;
+    }
     else if(r_refdef.vieworg[0] > ent->origin[0] + 14)
+    {
         r_refdef.vieworg[0] = ent->origin[0] + 14;
+    }
     if(r_refdef.vieworg[1] < ent->origin[1] - 14)
+    {
         r_refdef.vieworg[1] = ent->origin[1] - 14;
+    }
     else if(r_refdef.vieworg[1] > ent->origin[1] + 14)
+    {
         r_refdef.vieworg[1] = ent->origin[1] + 14;
+    }
     if(r_refdef.vieworg[2] < ent->origin[2] - 22)
+    {
         r_refdef.vieworg[2] = ent->origin[2] - 22;
+    }
     else if(r_refdef.vieworg[2] > ent->origin[2] + 30)
+    {
         r_refdef.vieworg[2] = ent->origin[2] + 30;
+    }
 }
 
 /*
@@ -753,7 +852,8 @@ void V_CalcViewRoll()
         v_dmg_time -= host_frametime;
     }
 
-    if(cl.stats[STAT_HEALTH] <= 0 && !vr_enabled.value /* TODO VR: create CVAR */)
+    if(cl.stats[STAT_HEALTH] <= 0 &&
+        !vr_enabled.value /* TODO VR: create CVAR */)
     {
         r_refdef.viewangles[ROLL] = 80; // dead view angle
         return;
@@ -859,12 +959,15 @@ void V_CalcRefdef()
 
     AngleVectors(angles, forward, right, up);
 
-    if(cl.maxclients <=
-        1) // johnfitz -- moved cheat-protection here from V_RenderView
+    if(cl.maxclients <= 1)
+    { // johnfitz -- moved cheat-protection here from V_RenderView
         for(i = 0; i < 3; i++)
+        {
             r_refdef.vieworg[i] += scr_ofsx.value * forward[i] +
                                    scr_ofsy.value * right[i] +
                                    scr_ofsz.value * up[i];
+        }
+    }
 
     if(!vr_enabled.value)
     {
@@ -888,30 +991,41 @@ void V_CalcRefdef()
 
             view->origin[2] += cl.viewheight;
 
-        for(i = 0; i < 3; i++) view->origin[i] += forward[i] * bob * 0.4;
+        for(i = 0; i < 3; i++)
+        {
+            view->origin[i] += forward[i] * bob * 0.4;
+        }
         view->origin[2] += bob;
     }
 
-    // johnfitz -- removed all gun position fudging code (was used to keep gun
-    // from getting covered by sbar) MarkV -- restored this with
+    // johnfitz -- removed all gun position fudging code (was used to keep
+    // gun from getting covered by sbar) MarkV -- restored this with
     // r_viewmodel_quake cvar
     if(r_viewmodel_quake.value)
     {
         if(scr_viewsize.value == 110)
+        {
             view->origin[2] += 1;
+        }
         else if(scr_viewsize.value == 100)
+        {
             view->origin[2] += 2;
+        }
         else if(scr_viewsize.value == 90)
+        {
             view->origin[2] += 1;
+        }
         else if(scr_viewsize.value == 80)
+        {
             view->origin[2] += 0.5;
+        }
     }
 
     view->model =
-        cl.model_precache[cl.stats[STAT_WEAPON]]; // TODO VR: this is where the
-                                                  // weapon is rendered? got
-                                                  // through .weaponmodel from
-                                                  // QC
+        cl.model_precache[cl.stats[STAT_WEAPON]]; // TODO VR: this is where
+                                                  // the weapon is rendered?
+                                                  // got through
+                                                  // .weaponmodel from QC
     // TODO VR: think about offhand weapon? dual wielding? flashlight?
     view->frame = cl.stats[STAT_WEAPONFRAME];
     view->colormap = vid.colormap;
@@ -925,18 +1039,24 @@ void V_CalcRefdef()
             !vr_viewkick.value)) // lerped kick /* TODO VR: create CVAR */
     {
         for(i = 0; i < 3; i++)
+        {
             if(punch[i] != v_punchangles[0][i])
             {
-                // speed determined by how far we need to lerp in 1/10th of a
-                // second
+                // speed determined by how far we need to lerp in 1/10th of
+                // a second
                 delta = (v_punchangles[0][i] - v_punchangles[1][i]) *
                         host_frametime * 10;
 
                 if(delta > 0)
+                {
                     punch[i] = q_min(punch[i] + delta, v_punchangles[0][i]);
+                }
                 else if(delta < 0)
+                {
                     punch[i] = q_max(punch[i] + delta, v_punchangles[0][i]);
+                }
             }
+        }
 
         VectorAdd(r_refdef.viewangles, punch, r_refdef.viewangles);
     }
@@ -945,32 +1065,45 @@ void V_CalcRefdef()
     // smooth out stair step ups
     if(!noclip_anglehack && cl.onground &&
         ent->origin[2] - oldz > 0) // johnfitz -- added exception for noclip
-    // FIXME: noclip_anglehack is set on the server, so in a nonlocal game this
-    // won't work.
+    // FIXME: noclip_anglehack is set on the server, so in a nonlocal game
+    // this won't work.
     {
         float steptime;
 
         steptime = cl.time - cl.oldtime;
         if(steptime < 0)
+        {
             // FIXME	I_Error ("steptime < 0");
             steptime = 0;
+        }
 
         oldz += steptime * 80;
-        if(oldz > ent->origin[2]) oldz = ent->origin[2];
-        if(ent->origin[2] - oldz > 12) oldz = ent->origin[2] - 12;
+        if(oldz > ent->origin[2])
+        {
+            oldz = ent->origin[2];
+        }
+        if(ent->origin[2] - oldz > 12)
+        {
+            oldz = ent->origin[2] - 12;
+        }
         r_refdef.vieworg[2] += oldz - ent->origin[2];
         view->origin[2] += oldz - ent->origin[2];
     }
     else
+    {
         oldz = ent->origin[2];
+    }
 
-    if(chase_active.value) Chase_UpdateForDrawing(r_refdef, view); // johnfitz
+    if(chase_active.value)
+    {
+        Chase_UpdateForDrawing(r_refdef, view); // johnfitz
+    }
 }
 
 void V_CalcRefdef2Test()
 {
     // view is the weapon model (only visible from inside body)
-    entity_t *view = &cl.offhand_viewent;
+    entity_t* view = &cl.offhand_viewent;
 
     // set up gun position
     VectorCopy(cl.viewangles, view->angles);
@@ -988,32 +1121,44 @@ void V_CalcRefdef2Test()
         // No off-hand without VR
     }
 
-    // johnfitz -- removed all gun position fudging code (was used to keep gun
-    // from getting covered by sbar) MarkV -- restored this with
+    // johnfitz -- removed all gun position fudging code (was used to keep
+    // gun from getting covered by sbar) MarkV -- restored this with
     // r_viewmodel_quake cvar
     if(r_viewmodel_quake.value)
     {
         if(scr_viewsize.value == 110)
+        {
             view->origin[2] += 1;
+        }
         else if(scr_viewsize.value == 100)
+        {
             view->origin[2] += 2;
+        }
         else if(scr_viewsize.value == 90)
+        {
             view->origin[2] += 1;
+        }
         else if(scr_viewsize.value == 80)
+        {
             view->origin[2] += 0.5;
+        }
     }
 
     view->model = Mod_ForName("progs/hand.mdl", true);
-        /*cl.model_precache[cl.stats[STAT_WEAPON]]; // TODO VR: this is where the
-                                                  // weapon is rendered? got
-                                                  // through .weaponmodel from
-                                                  // QC*/
+    /*cl.model_precache[cl.stats[STAT_WEAPON]]; // TODO VR: this is where
+       the
+                                              // weapon is rendered? got
+                                              // through .weaponmodel from
+                                              // QC*/
 
     // TODO VR: think about offhand weapon? dual wielding? flashlight?
     view->frame = cl.stats[STAT_WEAPONFRAME];
     view->colormap = vid.colormap;
 
-    if(chase_active.value) Chase_UpdateForDrawing(r_refdef, view); // johnfitz
+    if(chase_active.value)
+    {
+        Chase_UpdateForDrawing(r_refdef, view); // johnfitz
+    }
 }
 
 /*
@@ -1028,7 +1173,10 @@ extern vrect_t scr_vrect;
 
 void V_RenderView()
 {
-    if(con_forcedup) return;
+    if(con_forcedup)
+    {
+        return;
+    }
 
     if(cl.intermission)
     {
@@ -1041,7 +1189,8 @@ void V_RenderView()
         R_RenderView();
 
         V_CalcRefdef2Test();
-        R_DrawViewModel(&cl.offhand_viewent, true); // TODO VR: change to offhand entity
+        R_DrawViewModel(
+            &cl.offhand_viewent, true); // TODO VR: change to offhand entity
     }
 
     // johnfitz -- removed lcd code

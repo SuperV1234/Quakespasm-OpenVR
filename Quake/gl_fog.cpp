@@ -183,21 +183,42 @@ void Fog_ParseWorldspawn()
     fade_done = 0.0;
 
     data = COM_Parse(cl.worldmodel->entities);
-    if(!data) return;               // error
-    if(com_token[0] != '{') return; // error
+    if(!data)
+    {
+        return; // error
+    }
+    if(com_token[0] != '{')
+    {
+        return; // error
+    }
     while(true)
     {
         data = COM_Parse(data);
-        if(!data) return;              // error
-        if(com_token[0] == '}') break; // end of worldspawn
+        if(!data)
+        {
+            return; // error
+        }
+        if(com_token[0] == '}')
+        {
+            break; // end of worldspawn
+        }
         if(com_token[0] == '_')
+        {
             q_strlcpy(key, com_token + 1, sizeof(key));
+        }
         else
+        {
             q_strlcpy(key, com_token, sizeof(key));
-        while(key[0] && key[strlen(key) - 1] == ' ') // remove trailing spaces
+        }
+        while(key[0] && key[strlen(key) - 1] == ' ')
+        { // remove trailing spaces
             key[strlen(key) - 1] = 0;
+        }
         data = COM_Parse(data);
-        if(!data) return; // error
+        if(!data)
+        {
+            return; // error
+        }
         q_strlcpy(value, com_token, sizeof(value));
 
         if(!strcmp("fog", key))
@@ -239,7 +260,10 @@ float* Fog_GetColor()
 
     // find closest 24-bit RGB value, so solid-colored sky can match the fog
     // perfectly
-    for(i = 0; i < 3; i++) c[i] = (float)(Q_rint(c[i] * 255)) / 255.0f;
+    for(i = 0; i < 3; i++)
+    {
+        c[i] = (float)(Q_rint(c[i] * 255)) / 255.0f;
+    }
 
     return c;
 }
@@ -261,7 +285,9 @@ float Fog_GetDensity()
         return f * old_density + (1.0 - f) * fog_density;
     }
     else
+    {
         return fog_density;
+    }
 }
 
 /*
@@ -286,7 +312,10 @@ called before drawing stuff that should be fogged
 */
 void Fog_EnableGFog()
 {
-    if(Fog_GetDensity() > 0) glEnable(GL_FOG);
+    if(Fog_GetDensity() > 0)
+    {
+        glEnable(GL_FOG);
+    }
 }
 
 /*
@@ -298,7 +327,10 @@ called after drawing stuff that should be fogged
 */
 void Fog_DisableGFog()
 {
-    if(Fog_GetDensity() > 0) glDisable(GL_FOG);
+    if(Fog_GetDensity() > 0)
+    {
+        glDisable(GL_FOG);
+    }
 }
 
 /*
@@ -312,7 +344,10 @@ void Fog_StartAdditive()
 {
     vec3_t color = {0, 0, 0};
 
-    if(Fog_GetDensity() > 0) glFogfv(GL_FOG_COLOR, color);
+    if(Fog_GetDensity() > 0)
+    {
+        glFogfv(GL_FOG_COLOR, color);
+    }
 }
 
 /*
@@ -324,7 +359,10 @@ called after drawing stuff that is additive blended -- restores fog color
 */
 void Fog_StopAdditive()
 {
-    if(Fog_GetDensity() > 0) glFogfv(GL_FOG_COLOR, Fog_GetColor());
+    if(Fog_GetDensity() > 0)
+    {
+        glFogfv(GL_FOG_COLOR, Fog_GetColor());
+    }
 }
 
 //==============================================================================

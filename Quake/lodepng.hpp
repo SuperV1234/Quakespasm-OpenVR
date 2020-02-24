@@ -360,7 +360,7 @@ typedef struct LodePNGColorMode
     unsigned char* palette; /*palette in RGBARGBA... order. When allocated, must
                                be either 0, or have size 1024*/
     size_t palettesize; /*palette size in number of colors (amount of bytes is 4
-                           * palettesize)*/
+                         * palettesize)*/
 
     /*
     transparent color key (tRNS)

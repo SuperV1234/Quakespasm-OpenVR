@@ -48,13 +48,22 @@ void W_CleanupName(const char* in, char* out)
     for(i = 0; i < 16; i++)
     {
         c = in[i];
-        if(!c) break;
+        if(!c)
+        {
+            break;
+        }
 
-        if(c >= 'A' && c <= 'Z') c += ('a' - 'A');
+        if(c >= 'A' && c <= 'Z')
+        {
+            c += ('a' - 'A');
+        }
         out[i] = c;
     }
 
-    for(; i < 16; i++) out[i] = 0;
+    for(; i < 16; i++)
+    {
+        out[i] = 0;
+    }
 }
 
 /*
@@ -72,9 +81,13 @@ void W_LoadWadFile() // johnfitz -- filename is now hard-coded for honesty
 
     // johnfitz -- modified to use malloc
     // TODO: use cache_alloc
-    if(wad_base) free(wad_base);
+    if(wad_base)
+    {
+        free(wad_base);
+    }
     wad_base = COM_LoadMallocFile(filename, nullptr);
     if(!wad_base)
+    {
         Sys_Error(
             "W_LoadWadFile: couldn't load %s\n\n"
             "Basedir is: %s\n\n"
@@ -83,12 +96,15 @@ void W_LoadWadFile() // johnfitz -- filename is now hard-coded for honesty
             "or use the -basedir command-line option to specify another "
             "directory.",
             filename, com_basedir);
+    }
 
     header = (wadinfo_t*)wad_base;
 
     if(header->identification[0] != 'W' || header->identification[1] != 'A' ||
         header->identification[2] != 'D' || header->identification[3] != '2')
+    {
         Sys_Error("Wad file %s doesn't have WAD2 id\n", filename);
+    }
 
     wad_numlumps = LittleLong(header->numlumps);
     infotableofs = LittleLong(header->infotableofs);
@@ -101,7 +117,9 @@ void W_LoadWadFile() // johnfitz -- filename is now hard-coded for honesty
         W_CleanupName(
             lump_p->name, lump_p->name); // CAUTION: in-place editing!!!
         if(lump_p->type == TYP_QPIC)
+        {
             SwapPic((qpic_t*)(wad_base + lump_p->filepos));
+        }
     }
 }
 
@@ -121,7 +139,10 @@ lumpinfo_t* W_GetLumpinfo(const char* name)
 
     for(lump_p = wad_lumps, i = 0; i < wad_numlumps; i++, lump_p++)
     {
-        if(!strcmp(clean, lump_p->name)) return lump_p;
+        if(!strcmp(clean, lump_p->name))
+        {
+            return lump_p;
+        }
     }
 
     Con_SafePrintf(
@@ -135,7 +156,10 @@ void* W_GetLumpName(const char* name)
 
     lump = W_GetLumpinfo(name);
 
-    if(!lump) return nullptr; // johnfitz
+    if(!lump)
+    {
+        return nullptr; // johnfitz
+    }
 
     return (void*)(wad_base + lump->filepos);
 }
@@ -145,7 +169,9 @@ void* W_GetLumpNum(int num)
     lumpinfo_t* lump;
 
     if(num < 0 || num > wad_numlumps)
+    {
         Sys_Error("W_GetLumpNum: bad number: %i", num);
+    }
 
     lump = wad_lumps + num;
 

@@ -91,7 +91,7 @@ enum ptype_t
     pt_explode2,
     pt_blob,
     pt_blob2
-} ;
+};
 
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
 struct particle_t

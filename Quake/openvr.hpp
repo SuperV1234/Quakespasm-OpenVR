@@ -621,8 +621,8 @@ namespace vr
         // Properties that are set internally based on other information
         // provided by drivers
         Prop_ControllerType_String = 7000,
-        // Prop_LegacyInputProfile_String				= 7001, // This is no longer used.
-        // See "legacy_binding" in the input profile instead.
+        // Prop_LegacyInputProfile_String				= 7001, // This is no
+        // longer used. See "legacy_binding" in the input profile instead.
         Prop_ControllerHandSelectionPriority_Int32 =
             7002, // Allows hand assignments to prefer some controllers over
                   // others. High numbers are selected over low numbers
@@ -867,7 +867,8 @@ namespace vr
         VREvent_OverlayHidden = 501,
         VREvent_DashboardActivated = 502,
         VREvent_DashboardDeactivated = 503,
-        // VREvent_DashboardThumbSelected		= 504, // Sent to the overlay manager
+        // VREvent_DashboardThumbSelected		= 504, // Sent to the overlay
+        // manager
         // - data is overlay - No longer sent
         VREvent_DashboardRequested =
             505, // Sent to the overlay manager - data is overlay
@@ -2954,8 +2955,8 @@ namespace vr
          * has been told to quit. Wait for a VREvent_ProcessQuit and try again.
          *   VRApplicationError_ApplicationAlreadyStarting - This application is
          * already starting. This is a permanent failure.
-         *   VRApplicationError_LaunchInProgress	      - A different application
-         * is already starting. This is a permanent failure.
+         *   VRApplicationError_LaunchInProgress	      - A different
+         * application is already starting. This is a permanent failure.
          *   VRApplicationError_None                   - Go ahead and launch.
          * Everything is clear.
          */

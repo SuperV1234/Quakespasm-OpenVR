@@ -84,12 +84,12 @@ typedef struct entity_s
                              //  that splits bmodel, or nullptr if
                              //  not split
 
-    byte alpha;       // johnfitz -- alpha
-    byte lerpflags;   // johnfitz -- lerping
-    float lerpstart;  // johnfitz -- animation lerping
-    float lerptime;   // johnfitz -- animation lerping
-    float lerpfinish; // johnfitz -- lerping -- server sent us a more accurate
-                      // interval, use it instead of 0.1
+    byte alpha;         // johnfitz -- alpha
+    byte lerpflags;     // johnfitz -- lerping
+    float lerpstart;    // johnfitz -- animation lerping
+    float lerptime;     // johnfitz -- animation lerping
+    float lerpfinish;   // johnfitz -- lerping -- server sent us a more accurate
+                        // interval, use it instead of 0.1
     short previouspose; // johnfitz -- animation lerping
     short currentpose;  // johnfitz -- animation lerping
     //	short					futurepose;		//johnfitz -- animation lerping

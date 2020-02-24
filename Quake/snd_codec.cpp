@@ -131,7 +131,10 @@ snd_stream_t* S_CodecOpenStreamType(const char* filename, unsigned int type)
     codec = codecs;
     while(codec)
     {
-        if(type == codec->type) break;
+        if(type == codec->type)
+        {
+            break;
+        }
         codec = codec->next;
     }
     if(!codec)
@@ -143,9 +146,13 @@ snd_stream_t* S_CodecOpenStreamType(const char* filename, unsigned int type)
     if(stream)
     {
         if(codec->codec_open(stream))
+        {
             stream->status = STREAM_PLAY;
+        }
         else
+        {
             S_CodecUtilClose(&stream);
+        }
     }
     return stream;
 }
@@ -166,7 +173,10 @@ snd_stream_t* S_CodecOpenStreamExt(const char* filename)
     codec = codecs;
     while(codec)
     {
-        if(!q_strcasecmp(ext, codec->ext)) break;
+        if(!q_strcasecmp(ext, codec->ext))
+        {
+            break;
+        }
         codec = codec->next;
     }
     if(!codec)
@@ -178,9 +188,13 @@ snd_stream_t* S_CodecOpenStreamExt(const char* filename)
     if(stream)
     {
         if(codec->codec_open(stream))
+        {
             stream->status = STREAM_PLAY;
+        }
         else
+        {
             S_CodecUtilClose(&stream);
+        }
     }
     return stream;
 }
@@ -220,7 +234,10 @@ snd_stream_t* S_CodecOpenStreamAny(const char* filename)
         codec = codecs;
         while(codec)
         {
-            if(!q_strcasecmp(ext, codec->ext)) break;
+            if(!q_strcasecmp(ext, codec->ext))
+            {
+                break;
+            }
             codec = codec->next;
         }
         if(!codec)
@@ -232,9 +249,13 @@ snd_stream_t* S_CodecOpenStreamAny(const char* filename)
         if(stream)
         {
             if(codec->codec_open(stream))
+            {
                 stream->status = STREAM_PLAY;
+            }
             else
+            {
                 S_CodecUtilClose(&stream);
+            }
         }
         return stream;
     }
@@ -246,10 +267,16 @@ qboolean S_CodecForwardStream(snd_stream_t* stream, unsigned int type)
 
     while(codec)
     {
-        if(type == codec->type) break;
+        if(type == codec->type)
+        {
+            break;
+        }
         codec = codec->next;
     }
-    if(!codec) return false;
+    if(!codec)
+    {
+        return false;
+    }
     stream->codec = codec;
     return codec->codec_open(stream);
 }
@@ -313,7 +340,10 @@ int S_CodecIsAvailable(unsigned int type)
     snd_codec_t* codec = codecs;
     while(codec)
     {
-        if(type == codec->type) return codec->initialized;
+        if(type == codec->type)
+        {
+            return codec->initialized;
+        }
         codec = codec->next;
     }
     return -1;

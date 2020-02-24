@@ -52,10 +52,18 @@ void R_ClearTextureChains(qmodel_t* mod, texchain_t chain)
 
     // set all chains to null
     for(i = 0; i < mod->numtextures; i++)
-        if(mod->textures[i]) mod->textures[i]->texturechains[chain] = nullptr;
+    {
+        if(mod->textures[i])
+        {
+            mod->textures[i]->texturechains[chain] = nullptr;
+        }
+    }
 
     // clear lightmap chains
-    for(i = 0; i < lightmap_count; i++) lightmap[i].polys = nullptr;
+    for(i = 0; i < lightmap_count; i++)
+    {
+        lightmap[i].polys = nullptr;
+    }
 }
 
 /*
@@ -85,23 +93,37 @@ void R_MarkSurfaces()
     qboolean nearwaterportal;
 
     // clear lightmap chains
-    for(i = 0; i < lightmap_count; i++) lightmap[i].polys = nullptr;
+    for(i = 0; i < lightmap_count; i++)
+    {
+        lightmap[i].polys = nullptr;
+    }
 
     // check this leaf for water portals
     // TODO: loop through all water surfs and use distance to leaf cullbox
     nearwaterportal = false;
     for(i = 0, mark = r_viewleaf->firstmarksurface;
         i < r_viewleaf->nummarksurfaces; i++, mark++)
-        if((*mark)->flags & SURF_DRAWTURB) nearwaterportal = true;
+    {
+        if((*mark)->flags & SURF_DRAWTURB)
+        {
+            nearwaterportal = true;
+        }
+    }
 
     // choose vis data
     if(r_novis.value || r_viewleaf->contents == CONTENTS_SOLID ||
         r_viewleaf->contents == CONTENTS_SKY)
+    {
         vis = Mod_NoVisPVS(cl.worldmodel);
+    }
     else if(nearwaterportal)
+    {
         vis = SV_FatPVS(r_origin, cl.worldmodel);
+    }
     else
+    {
         vis = Mod_LeafPVS(r_viewleaf, cl.worldmodel);
+    }
 
     // if surface chains don't need regenerating, just add static entities and
     // return
@@ -109,9 +131,16 @@ void R_MarkSurfaces()
     {
         leaf = &cl.worldmodel->leafs[1];
         for(i = 0; i < cl.worldmodel->numleafs; i++, leaf++)
+        {
             if(vis[i >> 3] & (1 << (i & 7)))
-                if(leaf->efrags) R_StoreEfrags(&leaf->efrags);
-        return;
+            {
+                if(leaf->efrags)
+                {
+                    R_StoreEfrags(&leaf->efrags);
+                }
+                return;
+            }
+        }
     }
 
     vis_changed = false;
@@ -125,21 +154,32 @@ void R_MarkSurfaces()
         if(vis[i >> 3] & (1 << (i & 7)))
         {
             if(r_oldskyleaf.value || leaf->contents != CONTENTS_SKY)
+            {
                 for(j = 0, mark = leaf->firstmarksurface;
                     j < leaf->nummarksurfaces; j++, mark++)
+                {
                     (*mark)->visframe = r_visframecount;
+                }
 
-            // add static models
-            if(leaf->efrags) R_StoreEfrags(&leaf->efrags);
+                // add static models
+                if(leaf->efrags)
+                {
+                    R_StoreEfrags(&leaf->efrags);
+                }
+            }
         }
     }
 
     // set all chains to null
     for(i = 0; i < cl.worldmodel->numtextures; i++)
+    {
         if(cl.worldmodel->textures[i])
+        {
             cl.worldmodel->textures[i]->texturechains[chain_world] = nullptr;
+        }
+    }
 
-            // rebuild chains
+    // rebuild chains
 
 #if 1
     // iterate through surfaces one node at a time to rebuild chains
@@ -153,10 +193,12 @@ void R_MarkSurfaces()
         assert(node->numsurfaces < decltype(node->numsurfaces)(INT_MAX));
         for(j = 0, surf = &cl.worldmodel->surfaces[node->firstsurface];
             j < (int)node->numsurfaces; j++, surf++)
+        {
             if(surf->visframe == r_visframecount)
             {
                 R_ChainSurface(surf, chain_world);
             }
+        }
     }
 #else
     // the old way
@@ -192,7 +234,10 @@ qboolean R_BackFaceCull(msurface_t* surf)
             break;
     }
 
-    if((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK)) return true;
+    if((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK))
+    {
+        return true;
+    }
 
     return false;
 }
@@ -208,7 +253,10 @@ void R_CullSurfaces()
     int i;
     texture_t* t;
 
-    if(!r_drawworld_cheatsafe) return;
+    if(!r_drawworld_cheatsafe)
+    {
+        return;
+    }
 
     // ericw -- instead of testing (s->visframe == r_visframecount) on all world
     // surfaces, use the chained surfaces, which is exactly the same set of
@@ -217,18 +265,25 @@ void R_CullSurfaces()
     {
         t = cl.worldmodel->textures[i];
 
-        if(!t || !t->texturechains[chain_world]) continue;
+        if(!t || !t->texturechains[chain_world])
+        {
+            continue;
+        }
 
         for(s = t->texturechains[chain_world]; s; s = s->texturechain)
         {
             if(R_CullBox(s->mins, s->maxs) || R_BackFaceCull(s))
+            {
                 s->culled = true;
+            }
             else
             {
                 s->culled = false;
                 rs_brushpolys++; // count wpolys here
                 if(s->texinfo->texture->warpimage)
+                {
                     s->texinfo->texture->update_warp = true;
+                }
             }
         }
     }
@@ -250,17 +305,28 @@ void R_BuildLightmapChains(qmodel_t* model, texchain_t chain)
 
     // clear lightmap chains (already done in r_marksurfaces, but clearing them
     // here to be safe becuase of r_stereo)
-    for(i = 0; i < lightmap_count; i++) lightmap[i].polys = nullptr;
+    for(i = 0; i < lightmap_count; i++)
+    {
+        lightmap[i].polys = nullptr;
+    }
 
     // now rebuild them
     for(i = 0; i < model->numtextures; i++)
     {
         t = model->textures[i];
 
-        if(!t || !t->texturechains[chain]) continue;
+        if(!t || !t->texturechains[chain])
+        {
+            continue;
+        }
 
         for(s = t->texturechains[chain]; s; s = s->texturechain)
-            if(!s->culled) R_RenderDynamicLightmaps(s);
+        {
+            if(!s->culled)
+            {
+                R_RenderDynamicLightmaps(s);
+            }
+        }
     }
 }
 
@@ -317,25 +383,34 @@ void R_DrawTextureChains_ShowTris(qmodel_t* model, texchain_t chain)
     for(i = 0; i < model->numtextures; i++)
     {
         t = model->textures[i];
-        if(!t) continue;
+        if(!t)
+        {
+            continue;
+        }
 
         if(r_oldwater.value && t->texturechains[chain] &&
             (t->texturechains[chain]->flags & SURF_DRAWTURB))
         {
             for(s = t->texturechains[chain]; s; s = s->texturechain)
+            {
                 if(!s->culled)
+                {
                     for(p = s->polys->next; p; p = p->next)
                     {
                         DrawGLTriangleFan(p);
                     }
+                }
+            }
         }
         else
         {
             for(s = t->texturechains[chain]; s; s = s->texturechain)
+            {
                 if(!s->culled)
                 {
                     DrawGLTriangleFan(s->polys);
                 }
+            }
         }
     }
 }
@@ -355,13 +430,18 @@ void R_DrawTextureChains_Drawflat(qmodel_t* model, texchain_t chain)
     for(i = 0; i < model->numtextures; i++)
     {
         t = model->textures[i];
-        if(!t) continue;
+        if(!t)
+        {
+            continue;
+        }
 
         if(r_oldwater.value && t->texturechains[chain] &&
             (t->texturechains[chain]->flags & SURF_DRAWTURB))
         {
             for(s = t->texturechains[chain]; s; s = s->texturechain)
+            {
                 if(!s->culled)
+                {
                     for(p = s->polys->next; p; p = p->next)
                     {
                         srand((unsigned int)(uintptr_t)p);
@@ -370,10 +450,13 @@ void R_DrawTextureChains_Drawflat(qmodel_t* model, texchain_t chain)
                         DrawGLPoly(p);
                         rs_brushpasses++;
                     }
+                }
+            }
         }
         else
         {
             for(s = t->texturechains[chain]; s; s = s->texturechain)
+            {
                 if(!s->culled)
                 {
                     srand((unsigned int)(uintptr_t)s->polys);
@@ -382,6 +465,7 @@ void R_DrawTextureChains_Drawflat(qmodel_t* model, texchain_t chain)
                     DrawGLPoly(s->polys);
                     rs_brushpasses++;
                 }
+            }
         }
     }
     glColor3f(1, 1, 1);
@@ -408,14 +492,18 @@ void R_DrawTextureChains_Glow(qmodel_t* model, entity_t* ent, texchain_t chain)
         if(!t || !t->texturechains[chain] ||
             !(glt = R_TextureAnimation(t, ent != nullptr ? ent->frame : 0)
                         ->fullbright))
+        {
             continue;
+        }
 
         bound = false;
 
         for(s = t->texturechains[chain]; s; s = s->texturechain)
+        {
             if(!s->culled)
             {
-                if(!bound) // only bind once we are sure we need this texture
+                if(!bound) // only bind once we are sure we need this
+                           // texture
                 {
                     GL_Bind(glt);
                     bound = true;
@@ -423,6 +511,7 @@ void R_DrawTextureChains_Glow(qmodel_t* model, entity_t* ent, texchain_t chain)
                 DrawGLPoly(s->polys);
                 rs_brushpasses++;
             }
+        }
     }
 }
 
@@ -475,8 +564,8 @@ static void R_ClearBatch()
 ================
 R_FlushBatch
 
-Draw the current batch if non-empty and clears it, ready for more R_BatchSurface
-calls.
+Draw the current batch if non-empty and clears it, ready for more
+R_BatchSurface calls.
 ================
 */
 static void R_FlushBatch()
@@ -493,8 +582,8 @@ static void R_FlushBatch()
 ================
 R_BatchSurface
 
-Add the surface to the current batch, or just draw it immediately if we're not
-using VBOs.
+Add the surface to the current batch, or just draw it immediately if we're
+not using VBOs.
 ================
 */
 static void R_BatchSurface(msurface_t* s)
@@ -503,7 +592,10 @@ static void R_BatchSurface(msurface_t* s)
 
     num_surf_indices = R_NumTriangleIndicesForSurf(s);
 
-    if(num_vbo_indices + num_surf_indices > MAX_BATCH_SIZE) R_FlushBatch();
+    if(num_vbo_indices + num_surf_indices > MAX_BATCH_SIZE)
+    {
+        R_FlushBatch();
+    }
 
     R_TriangleIndicesForSurf(s, &vbo_indices[num_vbo_indices]);
     num_vbo_indices += num_surf_indices;
@@ -529,20 +621,26 @@ void R_DrawTextureChains_Multitexture(
 
         if(!t || !t->texturechains[chain] ||
             t->texturechains[chain]->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
+        {
             continue;
+        }
 
         bound = false;
         for(s = t->texturechains[chain]; s; s = s->texturechain)
+        {
             if(!s->culled)
             {
-                if(!bound) // only bind once we are sure we need this texture
+                if(!bound) // only bind once we are sure we need this
+                           // texture
                 {
                     GL_Bind(
                         (R_TextureAnimation(t, ent != nullptr ? ent->frame : 0))
                             ->gltexture);
 
                     if(t->texturechains[chain]->flags & SURF_DRAWFENCE)
+                    {
                         glEnable(GL_ALPHA_TEST); // Flip alpha test back on
+                    }
 
                     GL_EnableMultitexture(); // selects TEXTURE1
                     bound = true;
@@ -559,10 +657,13 @@ void R_DrawTextureChains_Multitexture(
                 glEnd();
                 rs_brushpasses++;
             }
+        }
         GL_DisableMultitexture(); // selects TEXTURE0
 
         if(bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
+        {
             glDisable(GL_ALPHA_TEST); // Flip alpha test back off
+        }
     }
 }
 
@@ -586,14 +687,18 @@ void R_DrawTextureChains_NoTexture(qmodel_t* model, texchain_t chain)
 
         if(!t || !t->texturechains[chain] ||
             !(t->texturechains[chain]->flags & SURF_NOTEXTURE))
+        {
             continue;
+        }
 
         bound = false;
 
         for(s = t->texturechains[chain]; s; s = s->texturechain)
+        {
             if(!s->culled)
             {
-                if(!bound) // only bind once we are sure we need this texture
+                if(!bound) // only bind once we are sure we need this
+                           // texture
                 {
                     GL_Bind(t->gltexture);
                     bound = true;
@@ -601,6 +706,7 @@ void R_DrawTextureChains_NoTexture(qmodel_t* model, texchain_t chain)
                 DrawGLPoly(s->polys);
                 rs_brushpasses++;
             }
+        }
     }
 }
 
@@ -623,30 +729,39 @@ void R_DrawTextureChains_TextureOnly(
 
         if(!t || !t->texturechains[chain] ||
             t->texturechains[chain]->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
+        {
             continue;
+        }
 
         bound = false;
 
         for(s = t->texturechains[chain]; s; s = s->texturechain)
+        {
             if(!s->culled)
             {
-                if(!bound) // only bind once we are sure we need this texture
+                if(!bound) // only bind once we are sure we need this
+                           // texture
                 {
                     GL_Bind(
                         (R_TextureAnimation(t, ent != nullptr ? ent->frame : 0))
                             ->gltexture);
 
                     if(t->texturechains[chain]->flags & SURF_DRAWFENCE)
+                    {
                         glEnable(GL_ALPHA_TEST); // Flip alpha test back on
+                    }
 
                     bound = true;
                 }
                 DrawGLPoly(s->polys);
                 rs_brushpasses++;
             }
+        }
 
         if(bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
+        {
             glDisable(GL_ALPHA_TEST); // Flip alpha test back off
+        }
     }
 }
 
@@ -661,9 +776,13 @@ float GL_WaterAlphaForEntitySurface(entity_t* ent, msurface_t* s)
 {
     float entalpha;
     if(ent == nullptr || ent->alpha == ENTALPHA_DEFAULT)
+    {
         entalpha = GL_WaterAlphaForSurface(s);
+    }
     else
+    {
         entalpha = ENTALPHA_DECODE(ent->alpha);
+    }
     return entalpha;
 }
 
@@ -681,10 +800,11 @@ void R_DrawTextureChains_Water(qmodel_t* model, entity_t* ent, texchain_t chain)
     qboolean bound;
     float entalpha;
 
-    if(r_drawflat_cheatsafe ||
-        r_lightmap_cheatsafe) // ericw -- !r_drawworld_cheatsafe check moved to
-                              // R_DrawWorld_Water ()
+    if(r_drawflat_cheatsafe || r_lightmap_cheatsafe)
+    { // ericw -- !r_drawworld_cheatsafe check moved to
+        // R_DrawWorld_Water ()
         return;
+    }
 
     if(r_oldwater.value)
     {
@@ -693,10 +813,13 @@ void R_DrawTextureChains_Water(qmodel_t* model, entity_t* ent, texchain_t chain)
             t = model->textures[i];
             if(!t || !t->texturechains[chain] ||
                 !(t->texturechains[chain]->flags & SURF_DRAWTURB))
+            {
                 continue;
+            }
             bound = false;
             entalpha = 1.0f;
             for(s = t->texturechains[chain]; s; s = s->texturechain)
+            {
                 if(!s->culled)
                 {
                     if(!bound) // only bind once we are sure we need this
@@ -713,6 +836,7 @@ void R_DrawTextureChains_Water(qmodel_t* model, entity_t* ent, texchain_t chain)
                         rs_brushpasses++;
                     }
                 }
+            }
             R_EndTransparentDrawing(entalpha);
         }
     }
@@ -723,10 +847,13 @@ void R_DrawTextureChains_Water(qmodel_t* model, entity_t* ent, texchain_t chain)
             t = model->textures[i];
             if(!t || !t->texturechains[chain] ||
                 !(t->texturechains[chain]->flags & SURF_DRAWTURB))
+            {
                 continue;
+            }
             bound = false;
             entalpha = 1.0f;
             for(s = t->texturechains[chain]; s; s = s->texturechain)
+            {
                 if(!s->culled)
                 {
                     if(!bound) // only bind once we are sure we need this
@@ -739,8 +866,8 @@ void R_DrawTextureChains_Water(qmodel_t* model, entity_t* ent, texchain_t chain)
                         if(model != cl.worldmodel)
                         {
                             // ericw -- this is copied from
-                            // R_DrawSequentialPoly. If the poly is not part of
-                            // the world we have to set this flag
+                            // R_DrawSequentialPoly. If the poly is not part
+                            // of the world we have to set this flag
                             t->update_warp = true; // FIXME: one frame too late!
                         }
 
@@ -749,6 +876,7 @@ void R_DrawTextureChains_Water(qmodel_t* model, entity_t* ent, texchain_t chain)
                     DrawGLPoly(s->polys);
                     rs_brushpasses++;
                 }
+            }
             R_EndTransparentDrawing(entalpha);
         }
     }
@@ -756,8 +884,8 @@ void R_DrawTextureChains_Water(qmodel_t* model, entity_t* ent, texchain_t chain)
 
 /*
 ================
-R_DrawTextureChains_White -- johnfitz -- draw sky and water as white polys when
-r_lightmap is 1
+R_DrawTextureChains_White -- johnfitz -- draw sky and water as white polys
+when r_lightmap is 1
 ================
 */
 void R_DrawTextureChains_White(qmodel_t* model, texchain_t chain)
@@ -773,14 +901,18 @@ void R_DrawTextureChains_White(qmodel_t* model, texchain_t chain)
 
         if(!t || !t->texturechains[chain] ||
             !(t->texturechains[chain]->flags & SURF_DRAWTILED))
+        {
             continue;
+        }
 
         for(s = t->texturechains[chain]; s; s = s->texturechain)
+        {
             if(!s->culled)
             {
                 DrawGLPoly(s->polys);
                 rs_brushpasses++;
             }
+        }
     }
     glEnable(GL_TEXTURE_2D);
 }
@@ -799,7 +931,10 @@ void R_DrawLightmapChains()
 
     for(i = 0; i < lightmap_count; i++)
     {
-        if(!lightmap[i].polys) continue;
+        if(!lightmap[i].polys)
+        {
+            continue;
+        }
 
         GL_Bind(lightmap[i].texture);
         for(p = lightmap[i].polys; p; p = p->chain)
@@ -847,8 +982,9 @@ void GLWorld_CreateShaders()
     // Driver bug workarounds:
     // - "Intel(R) UHD Graphics 600" version "4.6.0 - Build 26.20.100.7263"
     //    crashing on glUseProgram with `vec3 Vert` and
-    //    `gl_ModelViewProjectionMatrix * vec4(Vert, 1.0);`. Work around with
-    //    making Vert a vec4. (https://sourceforge.net/p/quakespasm/bugs/39/)
+    //    `gl_ModelViewProjectionMatrix * vec4(Vert, 1.0);`. Work around
+    //    with making Vert a vec4.
+    //    (https://sourceforge.net/p/quakespasm/bugs/39/)
     const GLchar* vertSource =
         "#version 110\n"
         "\n"
@@ -890,7 +1026,8 @@ void GLWorld_CreateShaders()
         "	if (UseFullbrightTex)\n"
         "		result += texture2D(FullbrightTex, gl_TexCoord[0].xy);\n"
         "	result = clamp(result, 0.0, 1.0);\n"
-        "	float fog = exp(-gl_Fog.density * gl_Fog.density * FogFragCoord * "
+        "	float fog = exp(-gl_Fog.density * gl_Fog.density * "
+        "FogFragCoord * "
         "FogFragCoord);\n"
         "	fog = clamp(fog, 0.0, 1.0);\n"
         "	result = mix(gl_Fog.color, result, fog);\n"
@@ -899,7 +1036,10 @@ void GLWorld_CreateShaders()
         "	gl_FragColor = result;\n"
         "}\n";
 
-    if(!gl_glsl_alias_able) return;
+    if(!gl_glsl_alias_able)
+    {
+        return;
+    }
 
     r_world_program = GL_CreateProgram(vertSource, fragSource,
         sizeof(bindings) / sizeof(bindings[0]), bindings);
@@ -983,7 +1123,9 @@ void R_DrawTextureChains_GLSL(qmodel_t* model, entity_t* ent, texchain_t chain)
 
         if(!t || !t->texturechains[chain] ||
             t->texturechains[chain]->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
+        {
             continue;
+        }
 
         // Enable/disable TMU 2 (fullbrights)
         // FIXME: Move below to where we bind GL_TEXTURE0
@@ -996,16 +1138,20 @@ void R_DrawTextureChains_GLSL(qmodel_t* model, entity_t* ent, texchain_t chain)
             GL_Uniform1iFunc(useFullbrightTexLoc, 1);
         }
         else
+        {
             GL_Uniform1iFunc(useFullbrightTexLoc, 0);
+        }
 
         R_ClearBatch();
 
         bound = false;
         lastlightmap = 0; // avoid compiler warning
         for(s = t->texturechains[chain]; s; s = s->texturechain)
+        {
             if(!s->culled)
             {
-                if(!bound) // only bind once we are sure we need this texture
+                if(!bound) // only bind once we are sure we need this
+                           // texture
                 {
                     GL_SelectTexture(GL_TEXTURE0);
                     GL_Bind(
@@ -1013,14 +1159,19 @@ void R_DrawTextureChains_GLSL(qmodel_t* model, entity_t* ent, texchain_t chain)
                             ->gltexture);
 
                     if(t->texturechains[chain]->flags & SURF_DRAWFENCE)
+                    {
                         GL_Uniform1iFunc(
                             useAlphaTestLoc, 1); // Flip alpha test back on
+                    }
 
                     bound = true;
                     lastlightmap = s->lightmaptexturenum;
                 }
 
-                if(s->lightmaptexturenum != lastlightmap) R_FlushBatch();
+                if(s->lightmaptexturenum != lastlightmap)
+                {
+                    R_FlushBatch();
+                }
 
                 GL_SelectTexture(GL_TEXTURE1);
                 GL_Bind(lightmap[s->lightmaptexturenum].texture);
@@ -1029,11 +1180,14 @@ void R_DrawTextureChains_GLSL(qmodel_t* model, entity_t* ent, texchain_t chain)
 
                 rs_brushpasses++;
             }
+        }
 
         R_FlushBatch();
 
         if(bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
+        {
             GL_Uniform1iFunc(useAlphaTestLoc, 0); // Flip alpha test back off
+        }
     }
 
     // clean up
@@ -1061,15 +1215,20 @@ void R_DrawTextureChains(qmodel_t* model, entity_t* ent, texchain_t chain)
     float entalpha;
 
     if(ent != nullptr)
+    {
         entalpha = ENTALPHA_DECODE(ent->alpha);
+    }
     else
+    {
         entalpha = 1;
+    }
 
-    // ericw -- the mh dynamic lightmap speedup: make a first pass through all
-    // surfaces we are going to draw, and rebuild any lightmaps that need it.
-    // this also chains surfaces by lightmap which is used by r_lightmap 1.
-    // the previous implementation of the speedup uploaded lightmaps one frame
-    // late which was visible under some conditions, this method avoids that.
+    // ericw -- the mh dynamic lightmap speedup: make a first pass through
+    // all surfaces we are going to draw, and rebuild any lightmaps that
+    // need it. this also chains surfaces by lightmap which is used by
+    // r_lightmap 1. the previous implementation of the speedup uploaded
+    // lightmaps one frame late which was visible under some conditions,
+    // this method avoids that.
     R_BuildLightmapChains(model, chain);
     R_UploadLightmaps();
 
@@ -1122,8 +1281,8 @@ void R_DrawTextureChains(qmodel_t* model, entity_t* ent, texchain_t chain)
     if(gl_overbright.value)
     {
         if(gl_texture_env_combine &&
-            gl_mtexable) // case 1: texture and lightmap in one pass, overbright
-                         // using texture combiners
+            gl_mtexable) // case 1: texture and lightmap in one pass,
+                         // overbright using texture combiners
         {
             GL_EnableMultitexture();
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
@@ -1139,17 +1298,17 @@ void R_DrawTextureChains(qmodel_t* model, entity_t* ent, texchain_t chain)
             GL_DisableMultitexture();
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
         }
-        else if(entalpha < 1) // case 2: can't do multipass if entity has alpha,
-                              // so just draw the texture
+        else if(entalpha < 1) // case 2: can't do multipass if entity has
+                              // alpha, so just draw the texture
         {
             R_DrawTextureChains_TextureOnly(model, ent, chain);
         }
-        else // case 3: texture in one pass, lightmap in second pass using 2x
-             // modulation blend func, fog in third pass
+        else // case 3: texture in one pass, lightmap in second pass using
+             // 2x modulation blend func, fog in third pass
         {
-            // to make fog work with multipass lightmapping, need to do one pass
-            // with no fog, one modulate pass with black fog, and one additive
-            // pass with black geometry and normal fog
+            // to make fog work with multipass lightmapping, need to do one
+            // pass with no fog, one modulate pass with black fog, and one
+            // additive pass with black geometry and normal fog
             Fog_DisableGFog();
             R_DrawTextureChains_TextureOnly(model, ent, chain);
             Fog_EnableGFog();
@@ -1184,17 +1343,17 @@ void R_DrawTextureChains(qmodel_t* model, entity_t* ent, texchain_t chain)
             R_DrawTextureChains_Multitexture(model, ent, chain);
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
         }
-        else if(entalpha < 1) // case 5: can't do multipass if entity has alpha,
-                              // so just draw the texture
+        else if(entalpha < 1) // case 5: can't do multipass if entity has
+                              // alpha, so just draw the texture
         {
             R_DrawTextureChains_TextureOnly(model, ent, chain);
         }
-        else // case 6: texture in one pass, lightmap in a second pass, fog in
-             // third pass
+        else // case 6: texture in one pass, lightmap in a second pass, fog
+             // in third pass
         {
-            // to make fog work with multipass lightmapping, need to do one pass
-            // with no fog, one modulate pass with black fog, and one additive
-            // pass with black geometry and normal fog
+            // to make fog work with multipass lightmapping, need to do one
+            // pass with no fog, one modulate pass with black fog, and one
+            // additive pass with black geometry and normal fog
             Fog_DisableGFog();
             R_DrawTextureChains_TextureOnly(model, ent, chain);
             Fog_EnableGFog();
@@ -1248,33 +1407,42 @@ specific to the world.
 */
 void R_DrawWorld()
 {
-    if(!r_drawworld_cheatsafe) return;
+    if(!r_drawworld_cheatsafe)
+    {
+        return;
+    }
 
     R_DrawTextureChains(cl.worldmodel, nullptr, chain_world);
 }
 
 /*
 =============
-R_DrawWorld_Water -- ericw -- moved from R_DrawTextureChains_Water, which is no
-longer specific to the world.
+R_DrawWorld_Water -- ericw -- moved from R_DrawTextureChains_Water, which is
+no longer specific to the world.
 =============
 */
 void R_DrawWorld_Water()
 {
-    if(!r_drawworld_cheatsafe) return;
+    if(!r_drawworld_cheatsafe)
+    {
+        return;
+    }
 
     R_DrawTextureChains_Water(cl.worldmodel, nullptr, chain_world);
 }
 
 /*
 =============
-R_DrawWorld_ShowTris -- ericw -- moved from R_DrawTextureChains_ShowTris, which
-is no longer specific to the world.
+R_DrawWorld_ShowTris -- ericw -- moved from R_DrawTextureChains_ShowTris,
+which is no longer specific to the world.
 =============
 */
 void R_DrawWorld_ShowTris()
 {
-    if(!r_drawworld_cheatsafe) return;
+    if(!r_drawworld_cheatsafe)
+    {
+        return;
+    }
 
     R_DrawTextureChains_ShowTris(cl.worldmodel, chain_world);
 }

@@ -103,18 +103,28 @@ static void BGM_Loop_f()
     {
         if(q_strcasecmp(Cmd_Argv(1), "0") == 0 ||
             q_strcasecmp(Cmd_Argv(1), "off") == 0)
+        {
             bgmloop = false;
+        }
         else if(q_strcasecmp(Cmd_Argv(1), "1") == 0 ||
                 q_strcasecmp(Cmd_Argv(1), "on") == 0)
+        {
             bgmloop = true;
+        }
         else if(q_strcasecmp(Cmd_Argv(1), "toggle") == 0)
+        {
             bgmloop = !bgmloop;
+        }
     }
 
     if(bgmloop)
+    {
         Con_Printf("Music will be looped\n");
+    }
     else
+    {
         Con_Printf("Music will not be looped\n");
+    }
 }
 
 static void BGM_Stop_f()
@@ -134,7 +144,10 @@ qboolean BGM_Init()
     Cmd_AddCommand("music_loop", BGM_Loop_f);
     Cmd_AddCommand("music_stop", BGM_Stop_f);
 
-    if(COM_CheckParm("-noextmusic") != 0) no_extmusic = true;
+    if(COM_CheckParm("-noextmusic") != 0)
+    {
+        no_extmusic = true;
+    }
 
     bgmloop = true;
 
@@ -205,7 +218,10 @@ static void BGM_Play_noext(const char* filename, unsigned int allowed_types)
                 break;
             case BGM_STREAMER:
                 bgmstream = S_CodecOpenStreamType(tmp, handler->type);
-                if(bgmstream) return; /* success */
+                if(bgmstream)
+                {
+                    return; /* success */
+                }
                 break;
             case BGM_NONE:
             default: break;
@@ -224,7 +240,10 @@ void BGM_Play(const char* filename)
 
     BGM_Stop();
 
-    if(music_handlers == nullptr) return;
+    if(music_handlers == nullptr)
+    {
+        return;
+    }
 
     if(!filename || !*filename)
     {
@@ -242,7 +261,10 @@ void BGM_Play(const char* filename)
     handler = music_handlers;
     while(handler)
     {
-        if(handler->is_available && !q_strcasecmp(ext, handler->ext)) break;
+        if(handler->is_available && !q_strcasecmp(ext, handler->ext))
+        {
+            break;
+        }
         handler = handler->next;
     }
     if(!handler)
@@ -258,7 +280,10 @@ void BGM_Play(const char* filename)
             break;
         case BGM_STREAMER:
             bgmstream = S_CodecOpenStreamType(tmp, handler->type);
-            if(bgmstream) return; /* success */
+            if(bgmstream)
+            {
+                return; /* success */
+            }
             break;
         case BGM_NONE:
         default: break;
@@ -282,11 +307,20 @@ void BGM_PlayCDtrack(byte track, qboolean looping)
     music_handler_t* handler;
 
     BGM_Stop();
-    if(CDAudio_Play(track, looping) == 0) return; /* success */
+    if(CDAudio_Play(track, looping) == 0)
+    {
+        return; /* success */
+    }
 
-    if(music_handlers == nullptr) return;
+    if(music_handlers == nullptr)
+    {
+        return;
+    }
 
-    if(no_extmusic || !bgm_extmusic.value) return;
+    if(no_extmusic || !bgm_extmusic.value)
+    {
+        return;
+    }
 
     prev_id = 0;
     type = 0;
@@ -294,11 +328,20 @@ void BGM_PlayCDtrack(byte track, qboolean looping)
     handler = music_handlers;
     while(handler)
     {
-        if(!handler->is_available) goto _next;
-        if(!CDRIPTYPE(handler->type)) goto _next;
+        if(!handler->is_available)
+        {
+            goto _next;
+        }
+        if(!CDRIPTYPE(handler->type))
+        {
+            goto _next;
+        }
         q_snprintf(tmp, sizeof(tmp), "%s/track%02d.%s", MUSIC_DIRNAME,
             (int)track, handler->ext);
-        if(!COM_FileExists(tmp, &path_id)) goto _next;
+        if(!COM_FileExists(tmp, &path_id))
+        {
+            goto _next;
+        }
         if(path_id > prev_id)
         {
             prev_id = path_id;
@@ -309,13 +352,18 @@ void BGM_PlayCDtrack(byte track, qboolean looping)
         handler = handler->next;
     }
     if(ext == nullptr)
+    {
         Con_Printf("Couldn't find a cdrip for track %d\n", (int)track);
+    }
     else
     {
         q_snprintf(tmp, sizeof(tmp), "%s/track%02d.%s", MUSIC_DIRNAME,
             (int)track, ext);
         bgmstream = S_CodecOpenStreamType(tmp, type);
-        if(!bgmstream) Con_Printf("Couldn't handle music file %s\n", tmp);
+        if(!bgmstream)
+        {
+            Con_Printf("Couldn't handle music file %s\n", tmp);
+        }
     }
 }
 
@@ -334,7 +382,10 @@ void BGM_Pause()
 {
     if(bgmstream)
     {
-        if(bgmstream->status == STREAM_PLAY) bgmstream->status = STREAM_PAUSE;
+        if(bgmstream->status == STREAM_PLAY)
+        {
+            bgmstream->status = STREAM_PAUSE;
+        }
     }
 }
 
@@ -342,7 +393,10 @@ void BGM_Resume()
 {
     if(bgmstream)
     {
-        if(bgmstream->status == STREAM_PAUSE) bgmstream->status = STREAM_PLAY;
+        if(bgmstream->status == STREAM_PAUSE)
+        {
+            bgmstream->status = STREAM_PLAY;
+        }
     }
 }
 
@@ -355,13 +409,22 @@ static void BGM_UpdateStream()
     int fileBytes;
     byte raw[16384];
 
-    if(bgmstream->status != STREAM_PLAY) return;
+    if(bgmstream->status != STREAM_PLAY)
+    {
+        return;
+    }
 
     /* don't bother playing anything if musicvolume is 0 */
-    if(bgmvolume.value <= 0) return;
+    if(bgmvolume.value <= 0)
+    {
+        return;
+    }
 
     /* see how many samples should be copied into the raw buffer */
-    if(s_rawend < paintedtime) s_rawend = paintedtime;
+    if(s_rawend < paintedtime)
+    {
+        s_rawend = paintedtime;
+    }
 
     while(s_rawend < paintedtime + MAX_RAW_SAMPLES)
     {
@@ -369,7 +432,10 @@ static void BGM_UpdateStream()
 
         /* decide how much data needs to be read from the file */
         fileSamples = bufferSamples * bgmstream->info.rate / shm->speed;
-        if(!fileSamples) return;
+        if(!fileSamples)
+        {
+            return;
+        }
 
         /* our max buffer size */
         fileBytes =
@@ -437,10 +503,17 @@ void BGM_Update()
     if(old_volume != bgmvolume.value)
     {
         if(bgmvolume.value < 0)
+        {
             Cvar_SetQuick(&bgmvolume, "0");
+        }
         else if(bgmvolume.value > 1)
+        {
             Cvar_SetQuick(&bgmvolume, "1");
+        }
         old_volume = bgmvolume.value;
     }
-    if(bgmstream) BGM_UpdateStream();
+    if(bgmstream)
+    {
+        BGM_UpdateStream();
+    }
 }

@@ -129,12 +129,18 @@ int main(int argc, char* argv[])
     if(COM_CheckParm("-heapsize"))
     {
         t = COM_CheckParm("-heapsize") + 1;
-        if(t < com_argc) parms.memsize = Q_atoi(com_argv[t]) * 1024;
+        if(t < com_argc)
+        {
+            parms.memsize = Q_atoi(com_argv[t]) * 1024;
+        }
     }
 
     parms.membase = malloc(parms.memsize);
 
-    if(!parms.membase) Sys_Error("Not enough memory free; check disk space\n");
+    if(!parms.membase)
+    {
+        Sys_Error("Not enough memory free; check disk space\n");
+    }
 
     Sys_Printf("Quake %1.2f (c) id Software\n", VERSION);
     Sys_Printf("GLQuake %1.2f (c) id Software\n", GLQUAKE_VERSION);
@@ -166,6 +172,7 @@ int main(int argc, char* argv[])
         }
     }
     else
+    {
         while(true)
         {
             /* If we have no input focus at all, sleep a bit */
@@ -188,10 +195,14 @@ int main(int argc, char* argv[])
 
             Host_Frame(time);
 
-            if(time < sys_throttle.value && !cls.timedemo) SDL_Delay(1);
+            if(time < sys_throttle.value && !cls.timedemo)
+            {
+                SDL_Delay(1);
+            }
 
             oldtime = newtime;
         }
+    }
 
     return 0;
 }

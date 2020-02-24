@@ -167,13 +167,21 @@ GL_WaterAlphaForSurfface -- ericw
 float GL_WaterAlphaForSurface(msurface_t* fa)
 {
     if(fa->flags & SURF_DRAWLAVA)
+    {
         return map_lavaalpha > 0 ? map_lavaalpha : map_wateralpha;
+    }
     else if(fa->flags & SURF_DRAWTELE)
+    {
         return map_telealpha > 0 ? map_telealpha : map_wateralpha;
+    }
     else if(fa->flags & SURF_DRAWSLIME)
+    {
         return map_slimealpha > 0 ? map_slimealpha : map_wateralpha;
+    }
     else
+    {
         return map_wateralpha;
+    }
 }
 
 
@@ -275,15 +283,19 @@ void R_TranslatePlayerSkin(int playernum)
     // FIXME: if gl_nocolors is on, then turned off, the textures may be out of
     // sync with the scoreboard colors.
     if(!gl_nocolors.value)
+    {
         if(playertextures[playernum])
+        {
             TexMgr_ReloadImage(playertextures[playernum], top, bottom);
+        }
+    }
 }
 
 /*
 ===============
-R_TranslateNewPlayerSkin -- johnfitz -- split off of TranslatePlayerSkin -- this
-is called when the skin or model actually changes, instead of just new colors
-added bug fix from bengt jardup
+R_TranslateNewPlayerSkin -- johnfitz -- split off of TranslatePlayerSkin --
+this is called when the skin or model actually changes, instead of just new
+colors added bug fix from bengt jardup
 ===============
 */
 void R_TranslateNewPlayerSkin(int playernum)
@@ -296,14 +308,17 @@ void R_TranslateNewPlayerSkin(int playernum)
     // get correct texture pixels
     currententity = &cl_entities[1 + playernum];
 
-    if(!currententity->model || currententity->model->type != mod_alias) return;
+    if(!currententity->model || currententity->model->type != mod_alias)
+    {
+        return;
+    }
 
     paliashdr = (aliashdr_t*)Mod_Extradata(currententity->model);
 
     skinnum = currententity->skinnum;
 
-    // TODO: move these tests to the place where skinnum gets received from the
-    // server
+    // TODO: move these tests to the place where skinnum gets received from
+    // the server
     if(skinnum < 0 || skinnum >= paliashdr->numskins)
     {
         Con_DPrintf("(%d): Invalid player skin #%d\n", playernum, skinnum);
@@ -336,7 +351,10 @@ void R_NewGame()
 
     // clear playertexture pointers (the textures themselves were freed by
     // texmgr_newgame)
-    for(i = 0; i < MAX_SCOREBOARD; i++) playertextures[i] = nullptr;
+    for(i = 0; i < MAX_SCOREBOARD; i++)
+    {
+        playertextures[i] = nullptr;
+    }
 }
 
 /*
@@ -357,30 +375,63 @@ static void R_ParseWorldspawn()
     map_slimealpha = r_slimealpha.value;
 
     data = COM_Parse(cl.worldmodel->entities);
-    if(!data) return;               // error
-    if(com_token[0] != '{') return; // error
+    if(!data)
+    {
+        return; // error
+    }
+    if(com_token[0] != '{')
+    {
+        return; // error
+    }
     while(true)
     {
         data = COM_Parse(data);
-        if(!data) return;              // error
-        if(com_token[0] == '}') break; // end of worldspawn
+        if(!data)
+        {
+            return; // error
+        }
+        if(com_token[0] == '}')
+        {
+            break; // end of worldspawn
+        }
         if(com_token[0] == '_')
+        {
             q_strlcpy(key, com_token + 1, sizeof(key));
+        }
         else
+        {
             q_strlcpy(key, com_token, sizeof(key));
-        while(key[0] && key[strlen(key) - 1] == ' ') // remove trailing spaces
+        }
+        while(key[0] && key[strlen(key) - 1] == ' ')
+        { // remove trailing spaces
             key[strlen(key) - 1] = 0;
+        }
         data = COM_Parse(data);
-        if(!data) return; // error
+        if(!data)
+        {
+            return; // error
+        }
         q_strlcpy(value, com_token, sizeof(value));
 
-        if(!strcmp("wateralpha", key)) map_wateralpha = atof(value);
+        if(!strcmp("wateralpha", key))
+        {
+            map_wateralpha = atof(value);
+        }
 
-        if(!strcmp("lavaalpha", key)) map_lavaalpha = atof(value);
+        if(!strcmp("lavaalpha", key))
+        {
+            map_lavaalpha = atof(value);
+        }
 
-        if(!strcmp("telealpha", key)) map_telealpha = atof(value);
+        if(!strcmp("telealpha", key))
+        {
+            map_telealpha = atof(value);
+        }
 
-        if(!strcmp("slimealpha", key)) map_slimealpha = atof(value);
+        if(!strcmp("slimealpha", key))
+        {
+            map_slimealpha = atof(value);
+        }
     }
 }
 
@@ -394,12 +445,17 @@ void R_NewMap()
 {
     int i;
 
-    for(i = 0; i < 256; i++) d_lightstylevalue[i] = 264; // normal light value
+    for(i = 0; i < 256; i++)
+    {
+        d_lightstylevalue[i] = 264; // normal light value
+    }
 
     // clear out efrags in case the level hasn't been reloaded
     // FIXME: is this one short?
     for(i = 0; i < cl.worldmodel->numleafs; i++)
+    {
         cl.worldmodel->leafs[i].efrags = nullptr;
+    }
 
     r_viewleaf = nullptr;
     R_ClearParticles();
@@ -509,7 +565,10 @@ GLint GL_GetUniformLocation(GLuint* programPtr, const char* name)
 {
     GLint location;
 
-    if(!programPtr) return -1;
+    if(!programPtr)
+    {
+        return -1;
+    }
 
     location = GL_GetUniformLocationFunc(*programPtr, name);
     if(location == -1)
@@ -533,7 +592,10 @@ GLuint GL_CreateProgram(const GLchar* vertSource, const GLchar* fragSource,
     int i;
     GLuint program, vertShader, fragShader;
 
-    if(!gl_glsl_able) return 0;
+    if(!gl_glsl_able)
+    {
+        return 0;
+    }
 
     vertShader = GL_CreateShaderFunc(GL_VERTEX_SHADER);
     GL_ShaderSourceFunc(vertShader, 1, &vertSource, nullptr);
@@ -576,7 +638,9 @@ GLuint GL_CreateProgram(const GLchar* vertSource, const GLchar* fragSource,
     else
     {
         if(gl_num_programs == (sizeof(gl_programs) / sizeof(GLuint)))
+        {
             Host_Error("gl_programs overflow");
+        }
 
         gl_programs[gl_num_programs] = program;
         gl_num_programs++;
@@ -596,7 +660,10 @@ void R_DeleteShaders()
 {
     int i;
 
-    if(!gl_glsl_able) return;
+    if(!gl_glsl_able)
+    {
+        return;
+    }
 
     for(i = 0; i < gl_num_programs; i++)
     {
@@ -618,7 +685,10 @@ void GL_BindBuffer(GLenum target, GLuint buffer)
 {
     GLuint* cache;
 
-    if(!gl_vbo_able) return;
+    if(!gl_vbo_able)
+    {
+        return;
+    }
 
     switch(target)
     {
@@ -648,7 +718,10 @@ invalid (e.g. manually binding, destroying the context).
 */
 void GL_ClearBufferBindings()
 {
-    if(!gl_vbo_able) return;
+    if(!gl_vbo_able)
+    {
+        return;
+    }
 
     current_array_buffer = 0;
     current_element_array_buffer = 0;

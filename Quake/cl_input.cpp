@@ -67,24 +67,38 @@ void KeyDown(kbutton_t* b)
 
     c = Cmd_Argv(1);
     if(c[0])
+    {
         k = atoi(c);
+    }
     else
+    {
         k = -1; // typed manually at the console for continuous down
+    }
 
-    if(k == b->down[0] || k == b->down[1]) return; // repeating key
+    if(k == b->down[0] || k == b->down[1])
+    {
+        return; // repeating key
+    }
 
     if(!b->down[0])
+    {
         b->down[0] = k;
+    }
     else if(!b->down[1])
+    {
         b->down[1] = k;
+    }
     else
     {
         Con_Printf("Three keys down for a button!\n");
         return;
     }
 
-    if(b->state & 1) return; // still down
-    b->state |= 1 + 2;       // down + impulse down
+    if(b->state & 1)
+    {
+        return; // still down
+    }
+    b->state |= 1 + 2; // down + impulse down
 }
 
 void KeyUp(kbutton_t* b)
@@ -94,7 +108,9 @@ void KeyUp(kbutton_t* b)
 
     c = Cmd_Argv(1);
     if(c[0])
+    {
         k = atoi(c);
+    }
     else
     { // typed manually at the console, assume for unsticking, so clear all
         b->down[0] = b->down[1] = 0;
@@ -103,17 +119,28 @@ void KeyUp(kbutton_t* b)
     }
 
     if(b->down[0] == k)
+    {
         b->down[0] = 0;
+    }
     else if(b->down[1] == k)
+    {
         b->down[1] = 0;
+    }
     else
+    {
         return; // key up without coresponding down (menu pass through)
+    }
     if(b->down[0] || b->down[1])
+    {
         return; // some other key is still holding it down
+    }
 
-    if(!(b->state & 1)) return; // still up (this should not happen)
-    b->state &= ~1;             // now up
-    b->state |= 4;              // impulse up
+    if(!(b->state & 1))
+    {
+        return; // still up (this should not happen)
+    }
+    b->state &= ~1; // now up
+    b->state |= 4;  // impulse up
 }
 
 void IN_KLookDown()
@@ -131,7 +158,10 @@ void IN_MLookDown()
 void IN_MLookUp()
 {
     KeyUp(&in_mlook);
-    if(!(in_mlook.state & 1) && lookspring.value) V_StartPitchDrift();
+    if(!(in_mlook.state & 1) && lookspring.value)
+    {
+        V_StartPitchDrift();
+    }
 }
 void IN_UpDown()
 {
@@ -285,30 +315,46 @@ float CL_KeyState(kbutton_t* key)
     if(impulsedown && !impulseup)
     {
         if(down)
+        {
             val = 0.5; // pressed and held this frame
+        }
         else
+        {
             val = 0; //	I_Error ();
+        }
     }
     if(impulseup && !impulsedown)
     {
         if(down)
+        {
             val = 0; //	I_Error ();
+        }
         else
+        {
             val = 0; // released this frame
+        }
     }
     if(!impulsedown && !impulseup)
     {
         if(down)
+        {
             val = 1.0; // held the entire frame
+        }
         else
+        {
             val = 0; // up the entire frame
+        }
     }
     if(impulsedown && impulseup)
     {
         if(down)
+        {
             val = 0.75; // released and re-pressed this frame
+        }
         else
+        {
             val = 0.25; // pressed and released this frame
+        }
     }
 
     key->state &= 1; // clear impulses
@@ -347,9 +393,13 @@ void CL_AdjustAngles()
     float up, down;
 
     if((in_speed.state & 1) ^ (cl_alwaysrun.value != 0.0))
+    {
         speed = host_frametime * cl_anglespeedkey.value;
+    }
     else
+    {
         speed = host_frametime;
+    }
 
     if(!(in_strafe.state & 1))
     {
@@ -372,17 +422,30 @@ void CL_AdjustAngles()
     cl.aimangles[PITCH] -= speed * cl_pitchspeed.value * up;
     cl.aimangles[PITCH] += speed * cl_pitchspeed.value * down;
 
-    if(up || down) V_StopPitchDrift();
+    if(up || down)
+    {
+        V_StopPitchDrift();
+    }
 
     // johnfitz -- variable pitch clamping
     if(cl.aimangles[PITCH] > cl_maxpitch.value)
+    {
         cl.aimangles[PITCH] = cl_maxpitch.value;
+    }
     if(cl.aimangles[PITCH] < cl_minpitch.value)
+    {
         cl.aimangles[PITCH] = cl_minpitch.value;
+    }
     // johnfitz
 
-    if(cl.aimangles[ROLL] > 50) cl.aimangles[ROLL] = 50;
-    if(cl.aimangles[ROLL] < -50) cl.aimangles[ROLL] = -50;
+    if(cl.aimangles[ROLL] > 50)
+    {
+        cl.aimangles[ROLL] = 50;
+    }
+    if(cl.aimangles[ROLL] < -50)
+    {
+        cl.aimangles[ROLL] = -50;
+    }
 }
 
 /*
@@ -394,7 +457,10 @@ Send the intended movement message to the server
 */
 void CL_BaseMove(usercmd_t* cmd)
 {
-    if(cls.signon != SIGNONS) return;
+    if(cls.signon != SIGNONS)
+    {
+        return;
+    }
 
     CL_AdjustAngles();
 
@@ -456,21 +522,23 @@ void CL_SendMove(const usercmd_t* cmd)
 
     MSG_WriteFloat(&buf, cl.mtime[0]); // so server can get ping times
 
-    const auto writeAngles = [&](const auto& angles)
-    {
+    const auto writeAngles = [&](const auto& angles) {
         for(int i = 0; i < 3; i++)
         {
             // johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
             if(cl.protocol == PROTOCOL_NETQUAKE)
+            {
                 MSG_WriteAngle(&buf, angles[i], cl.protocolflags);
+            }
             else
+            {
                 MSG_WriteAngle16(&buf, angles[i], cl.protocolflags);
-        // johnfitz
+            }
+            // johnfitz
         }
     };
 
-    const auto writeVec = [&](const auto& vec)
-    {
+    const auto writeVec = [&](const auto& vec) {
         MSG_WriteFloat(&buf, vec[0]);
         MSG_WriteFloat(&buf, vec[1]);
         MSG_WriteFloat(&buf, vec[2]);
@@ -503,10 +571,16 @@ void CL_SendMove(const usercmd_t* cmd)
     //
     bits = 0;
 
-    if(in_attack.state & 3) bits |= 1;
+    if(in_attack.state & 3)
+    {
+        bits |= 1;
+    }
     in_attack.state &= ~2;
 
-    if(in_jump.state & 3) bits |= 2;
+    if(in_jump.state & 3)
+    {
+        bits |= 2;
+    }
     in_jump.state &= ~2;
 
     MSG_WriteByte(&buf, bits);
@@ -517,13 +591,19 @@ void CL_SendMove(const usercmd_t* cmd)
     //
     // deliver the message
     //
-    if(cls.demoplayback) return;
+    if(cls.demoplayback)
+    {
+        return;
+    }
 
     //
     // allways dump the first two message, because it may contain leftover
     // inputs from the last level
     //
-    if(++cl.movemessages <= 2) return;
+    if(++cl.movemessages <= 2)
+    {
+        return;
+    }
 
     if(NET_SendUnreliableMessage(cls.netcon, &buf) == -1)
     {

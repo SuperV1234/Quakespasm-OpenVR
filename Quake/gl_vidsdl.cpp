@@ -199,16 +199,23 @@ VID_Gamma_SetGamma -- apply gamma correction
 */
 static void VID_Gamma_SetGamma()
 {
-    if(gl_glsl_gamma_able) return;
+    if(gl_glsl_gamma_able)
+    {
+        return;
+    }
 
     if(draw_context && gammaworks)
     {
         float value;
 
         if(vid_gamma.value > (1.0f / GAMMA_MAX))
+        {
             value = 1.0f / vid_gamma.value;
+        }
         else
+        {
             value = GAMMA_MAX;
+        }
 
 #if defined(USE_SDL2)
 #if USE_GAMMA_RAMPS
@@ -218,8 +225,10 @@ static void VID_Gamma_SetGamma()
                 "VID_Gamma_SetGamma: failed on SDL_SetWindowGammaRamp\n");
 #else
         if(SDL_SetWindowBrightness(draw_context, value) != 0)
+        {
             Con_Printf(
                 "VID_Gamma_SetGamma: failed on SDL_SetWindowBrightness\n");
+        }
 #endif
 #else /* USE_SDL2 */
 #if USE_GAMMA_RAMPS
@@ -241,7 +250,10 @@ VID_Gamma_Restore -- restore system gamma
 */
 static void VID_Gamma_Restore()
 {
-    if(gl_glsl_gamma_able) return;
+    if(gl_glsl_gamma_able)
+    {
+        return;
+    }
 
     if(draw_context && gammaworks)
     {
@@ -252,8 +264,10 @@ static void VID_Gamma_Restore()
             Con_Printf("VID_Gamma_Restore: failed on SDL_SetWindowGammaRamp\n");
 #else
         if(SDL_SetWindowBrightness(draw_context, 1) != 0)
+        {
             Con_Printf(
                 "VID_Gamma_Restore: failed on SDL_SetWindowBrightness\n");
+        }
 #endif
 #else /* USE_SDL2 */
 #if USE_GAMMA_RAMPS
@@ -287,7 +301,10 @@ static void VID_Gamma_f(cvar_t* var)
 {
     (void)var;
 
-    if(gl_glsl_gamma_able) return;
+    if(gl_glsl_gamma_able)
+    {
+        return;
+    }
 
 #if USE_GAMMA_RAMPS
     int i;
@@ -319,7 +336,10 @@ static void VID_Gamma_Init()
     Cvar_SetCallback(&vid_gamma, VID_Gamma_f);
     Cvar_SetCallback(&vid_contrast, VID_Gamma_f);
 
-    if(gl_glsl_gamma_able) return;
+    if(gl_glsl_gamma_able)
+    {
+        return;
+    }
 
 #if defined(USE_SDL2)
 #if USE_GAMMA_RAMPS
@@ -343,7 +363,10 @@ static void VID_Gamma_Init()
 #endif
 #endif /* USE_SDL2 */
 
-    if(!gammaworks) Con_SafePrintf("gamma adjustment not available\n");
+    if(!gammaworks)
+    {
+        Con_SafePrintf("gamma adjustment not available\n");
+    }
 }
 
 /*
@@ -392,7 +415,9 @@ static int VID_GetCurrentRefreshRate()
     current_display = SDL_GetWindowDisplayIndex(draw_context);
 
     if(0 != SDL_GetCurrentDisplayMode(current_display, &mode))
+    {
         return DEFAULT_REFRESHRATE;
+    }
 
     return mode.refresh_rate;
 #else
@@ -535,7 +560,10 @@ static SDL_DisplayMode* VID_SDL2_GetDisplayMode(
 
     for(i = 0; i < sdlmodes; i++)
     {
-        if(SDL_GetDisplayMode(0, i, &mode) != 0) continue;
+        if(SDL_GetDisplayMode(0, i, &mode) != 0)
+        {
+            continue;
+        }
 
         if(mode.w == width && mode.h == height &&
             SDL_BITSPERPIXEL(mode.format) == bpp &&
@@ -557,16 +585,27 @@ static qboolean VID_ValidMode(
     int width, int height, int refreshrate, int bpp, qboolean fullscreen)
 {
     // ignore width / height / bpp if vid_desktopfullscreen is enabled
-    if(fullscreen && vid_desktopfullscreen.value) return true;
+    if(fullscreen && vid_desktopfullscreen.value)
+    {
+        return true;
+    }
 
-    if(width < 320) return false;
+    if(width < 320)
+    {
+        return false;
+    }
 
-    if(height < 200) return false;
+    if(height < 200)
+    {
+        return false;
+    }
 
 #if defined(USE_SDL2)
     if(fullscreen &&
         VID_SDL2_GetDisplayMode(width, height, refreshrate, bpp) == nullptr)
+    {
         bpp = 0;
+    }
 #else
     {
         Uint32 flags = DEFAULT_SDL_FLAGS;
@@ -637,7 +676,10 @@ static qboolean VID_SetMode(
     {
         flags = SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN;
 
-        if(vid_borderless.value) flags |= SDL_WINDOW_BORDERLESS;
+        if(vid_borderless.value)
+        {
+            flags |= SDL_WINDOW_BORDERLESS;
+        }
 
         draw_context = SDL_CreateWindow(caption, SDL_WINDOWPOS_UNDEFINED,
             SDL_WINDOWPOS_UNDEFINED, width, height, flags);
@@ -660,7 +702,10 @@ static qboolean VID_SetMode(
             draw_context = SDL_CreateWindow(caption, SDL_WINDOWPOS_UNDEFINED,
                 SDL_WINDOWPOS_UNDEFINED, width, height, flags);
         }
-        if(!draw_context) Sys_Error("Couldn't create window");
+        if(!draw_context)
+        {
+            Sys_Error("Couldn't create window");
+        }
 
         previous_display = -1;
     }
@@ -673,18 +718,24 @@ static qboolean VID_SetMode(
     if(VID_GetFullscreen())
     {
         if(SDL_SetWindowFullscreen(draw_context, 0) != 0)
+        {
             Sys_Error("Couldn't set fullscreen state mode");
+        }
     }
 
     /* Set window size and display mode */
     SDL_SetWindowSize(draw_context, width, height);
     if(previous_display >= 0)
+    {
         SDL_SetWindowPosition(draw_context,
             SDL_WINDOWPOS_CENTERED_DISPLAY(previous_display),
             SDL_WINDOWPOS_CENTERED_DISPLAY(previous_display));
+    }
     else
+    {
         SDL_SetWindowPosition(
             draw_context, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+    }
     SDL_SetWindowDisplayMode(
         draw_context, VID_SDL2_GetDisplayMode(width, height, refreshrate, bpp));
     SDL_SetWindowBordered(
@@ -698,7 +749,9 @@ static qboolean VID_SetMode(
                            ? SDL_WINDOW_FULLSCREEN_DESKTOP
                            : SDL_WINDOW_FULLSCREEN;
         if(SDL_SetWindowFullscreen(draw_context, flags) != 0)
+        {
             Sys_Error("Couldn't set fullscreen state mode");
+        }
     }
 
     SDL_ShowWindow(draw_context);
@@ -707,12 +760,17 @@ static qboolean VID_SetMode(
     if(!gl_context)
     {
         gl_context = SDL_GL_CreateContext(draw_context);
-        if(!gl_context) Sys_Error("Couldn't create GL context");
+        if(!gl_context)
+        {
+            Sys_Error("Couldn't create GL context");
+        }
     }
 
     gl_swap_control = true;
     if(SDL_GL_SetSwapInterval((vid_vsync.value) ? 1 : 0) == -1)
+    {
         gl_swap_control = false;
+    }
 
 #else  /* !defined(USE_SDL2) */
 
@@ -756,15 +814,22 @@ static qboolean VID_SetMode(
     vid.numpages = 2;
 
     // read the obtained z-buffer depth
-    if(SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &depthbits) == -1) depthbits = 0;
+    if(SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &depthbits) == -1)
+    {
+        depthbits = 0;
+    }
 
     // read obtained fsaa samples
     if(SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &fsaa_obtained) == -1)
+    {
         fsaa_obtained = 0;
+    }
 
     // read stencil bits
     if(SDL_GL_GetAttribute(SDL_GL_STENCIL_SIZE, &gl_stencilbits) == -1)
+    {
         gl_stencilbits = 0;
+    }
 
     modestate = VID_GetFullscreen() ? MS_FULLSCREEN : MS_WINDOWED;
 
@@ -811,9 +876,15 @@ static void VID_Restart()
     int width, height, refreshrate, bpp;
     qboolean fullscreen;
 
-    if(vid_locked || !vid_changed) return;
+    if(vid_locked || !vid_changed)
+    {
+        return;
+    }
 
-    if(vr_enabled.value) VID_VR_Disable();
+    if(vr_enabled.value)
+    {
+        VID_VR_Disable();
+    }
 
     width = (int)vid_width.value;
     height = (int)vid_height.value;
@@ -879,9 +950,13 @@ static void VID_Restart()
     if(key_dest == key_console || key_dest == key_menu)
     {
         if(modestate == MS_WINDOWED)
+        {
             IN_Deactivate(true);
+        }
         else if(modestate == MS_FULLSCREEN)
+        {
             IN_Activate();
+        }
     }
 
     if(vr_enabled.value)
@@ -900,7 +975,10 @@ static void VID_Test()
 {
     int old_width, old_height, old_refreshrate, old_bpp, old_fullscreen;
 
-    if(vid_locked || !vid_changed) return;
+    if(vid_locked || !vid_changed)
+    {
+        return;
+    }
     //
     // now try the switch
     //
@@ -969,13 +1047,19 @@ static char* GL_MakeNiceExtensionsList(const char* in)
     char *copy, *token, *out;
     int i, count;
 
-    if(!in) return Z_Strdup("(none)");
+    if(!in)
+    {
+        return Z_Strdup("(none)");
+    }
 
     // each space will be replaced by 4 chars, so count the spaces before we
     // malloc
     for(i = 0, count = 1; i < (int)strlen(in); i++)
     {
-        if(in[i] == ' ') count++;
+        if(in[i] == ' ')
+        {
+            count++;
+        }
     }
 
     assert(count >= 0);
@@ -1017,18 +1101,31 @@ static qboolean GL_ParseExtensionList(const char* list, const char* name)
     const char* start;
     const char *where, *terminator;
 
-    if(!list || !name || !*name) return false;
+    if(!list || !name || !*name)
+    {
+        return false;
+    }
     if(strchr(name, ' ') != nullptr)
+    {
         return false; // extension names must not have spaces
+    }
 
     start = list;
     while(1)
     {
         where = strstr(start, name);
-        if(!where) break;
+        if(!where)
+        {
+            break;
+        }
         terminator = where + strlen(name);
         if(where == start || where[-1] == ' ')
-            if(*terminator == ' ' || *terminator == '\0') return true;
+        {
+            if(*terminator == ' ' || *terminator == '\0')
+            {
+                return true;
+            }
+        }
         start = terminator;
     }
     return false;
@@ -1041,11 +1138,16 @@ static void GL_CheckExtensions()
     // ARB_vertex_buffer_object
     //
     if(COM_CheckParm("-novbo"))
+    {
         Con_Warning("Vertex buffer objects disabled at command line\n");
+    }
     else if(gl_version_major < 1 ||
             (gl_version_major == 1 && gl_version_minor < 5))
+    {
         Con_Warning(
-            "OpenGL version < 1.5, skipping ARB_vertex_buffer_object check\n");
+            "OpenGL version < 1.5, skipping ARB_vertex_buffer_object "
+            "check\n");
+    }
     else
     {
         GL_BindBufferFunc =
@@ -1073,7 +1175,9 @@ static void GL_CheckExtensions()
     // multitexture
     //
     if(COM_CheckParm("-nomtex"))
+    {
         Con_Warning("Mutitexture disabled at command line\n");
+    }
     else if(GL_ParseExtensionList(gl_extensions, "GL_ARB_multitexture"))
     {
         GL_MTexCoord2fFunc = (PFNGLMULTITEXCOORD2FARBPROC)SDL_GL_GetProcAddress(
@@ -1105,7 +1209,9 @@ static void GL_CheckExtensions()
     // texture_env_combine
     //
     if(COM_CheckParm("-nocombine"))
+    {
         Con_Warning("texture_env_combine disabled at command line\n");
+    }
     else if(GL_ParseExtensionList(gl_extensions, "GL_ARB_texture_env_combine"))
     {
         Con_Printf("FOUND: ARB_texture_env_combine\n");
@@ -1124,7 +1230,9 @@ static void GL_CheckExtensions()
     // texture_env_add
     //
     if(COM_CheckParm("-noadd"))
+    {
         Con_Warning("texture_env_add disabled at command line\n");
+    }
     else if(GL_ParseExtensionList(gl_extensions, "GL_ARB_texture_env_add"))
     {
         Con_Printf("FOUND: ARB_texture_env_add\n");
@@ -1146,7 +1254,8 @@ static void GL_CheckExtensions()
     {
 #if defined(USE_SDL2)
         Con_Warning(
-            "vertical sync not supported (SDL_GL_SetSwapInterval failed)\n");
+            "vertical sync not supported (SDL_GL_SetSwapInterval "
+            "failed)\n");
 #else
         Con_Warning(
             "vertical sync not supported (SDL_GL_SetAttribute failed)\n");
@@ -1161,7 +1270,8 @@ static void GL_CheckExtensions()
         gl_swap_control = false;
 #if defined(USE_SDL2)
         Con_Warning(
-            "vertical sync not supported (SDL_GL_GetSwapInterval failed)\n");
+            "vertical sync not supported (SDL_GL_GetSwapInterval "
+            "failed)\n");
 #else
         Con_Warning(
             "vertical sync not supported (SDL_GL_GetAttribute failed)\n");
@@ -1235,7 +1345,9 @@ static void GL_CheckExtensions()
     // texture_non_power_of_two
     //
     if(COM_CheckParm("-notexturenpot"))
+    {
         Con_Warning("texture_non_power_of_two disabled at command line\n");
+    }
     else if(GL_ParseExtensionList(
                 gl_extensions, "GL_ARB_texture_non_power_of_two"))
     {
@@ -1250,7 +1362,9 @@ static void GL_CheckExtensions()
     // GLSL
     //
     if(COM_CheckParm("-noglsl"))
+    {
         Con_Warning("GLSL disabled at command line\n");
+    }
     else if(gl_version_major >= 2)
     {
         GL_CreateShaderFunc =
@@ -1335,7 +1449,9 @@ static void GL_CheckExtensions()
     // GLSL gamma
     //
     if(COM_CheckParm("-noglslgamma"))
+    {
         Con_Warning("GLSL gamma disabled at command line\n");
+    }
     else if(gl_glsl_able)
     {
         gl_glsl_gamma_able = true;
@@ -1348,7 +1464,9 @@ static void GL_CheckExtensions()
     // GLSL alias model rendering
     //
     if(COM_CheckParm("-noglslalias"))
+    {
         Con_Warning("GLSL alias model rendering disabled at command line\n");
+    }
     else if(gl_glsl_able && gl_vbo_able && gl_max_texture_units >= 3)
     {
         gl_glsl_alias_able = true;
@@ -1356,7 +1474,8 @@ static void GL_CheckExtensions()
     else
     {
         Con_Warning(
-            "GLSL alias model rendering not available, using Fitz renderer\n");
+            "GLSL alias model rendering not available, using Fitz "
+            "renderer\n");
     }
 }
 
@@ -1364,8 +1483,8 @@ static void GL_CheckExtensions()
 ===============
 GL_SetupState -- johnfitz
 
-does all the stuff from GL_Init that needs to be done every time a new GL render
-context is created
+does all the stuff from GL_Init that needs to be done every time a new GL
+render context is created
 ===============
 */
 static void GL_SetupState()
@@ -1373,8 +1492,8 @@ static void GL_SetupState()
     glClearColor(0.15, 0.15, 0.15, 0); // johnfitz -- originally 1,0,0,0
     glCullFace(GL_BACK); // johnfitz -- glquake used CCW with backwards culling
                          // -- let's do it right
-    glFrontFace(GL_CW); // johnfitz -- glquake used CCW with backwards culling
-                        // -- let's do it right
+    glFrontFace(GL_CW);  // johnfitz -- glquake used CCW with backwards culling
+                         // -- let's do it right
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.666);
@@ -1414,7 +1533,10 @@ static void GL_Init()
         gl_version_minor = 0;
     }
 
-    if(gl_extensions_nice != nullptr) Z_Free(gl_extensions_nice);
+    if(gl_extensions_nice != nullptr)
+    {
+        Z_Free(gl_extensions_nice);
+    }
     gl_extensions_nice = GL_MakeNiceExtensionsList(gl_extensions);
 
     GL_CheckExtensions(); // johnfitz
@@ -1521,16 +1643,18 @@ VID_DescribeCurrentMode_f
 static void VID_DescribeCurrentMode_f()
 {
     if(draw_context)
+    {
         Con_Printf("%dx%dx%d %dHz %s\n", VID_GetCurrentWidth(),
             VID_GetCurrentHeight(), VID_GetCurrentBPP(),
             VID_GetCurrentRefreshRate(),
             VID_GetFullscreen() ? "fullscreen" : "windowed");
+    }
 }
 
 /*
 =================
-VID_DescribeModes_f -- johnfitz -- changed formatting, and added refresh rates
-after each mode.
+VID_DescribeModes_f -- johnfitz -- changed formatting, and added refresh
+rates after each mode.
 =================
 */
 static void VID_DescribeModes_f()
@@ -1545,7 +1669,10 @@ static void VID_DescribeModes_f()
         if(lastwidth != modelist[i].width || lastheight != modelist[i].height ||
             lastbpp != modelist[i].bpp)
         {
-            if(count > 0) Con_SafePrintf("\n");
+            if(count > 0)
+            {
+                Con_SafePrintf("\n");
+            }
             Con_SafePrintf("   %4i x %4i x %i : %i", modelist[i].width,
                 modelist[i].height, modelist[i].bpp, modelist[i].refreshrate);
             lastwidth = modelist[i].width;
@@ -1566,8 +1693,10 @@ static void VID_FSAA_f(cvar_t* var)
 {
     // don't print the warning if vid_fsaa is set during startup
     if(vid_initialized)
+    {
         Con_Printf("%s %d requires engine restart to take effect\n", var->name,
             (int)var->value);
+    }
 }
 
 //==========================================================================
@@ -1592,7 +1721,10 @@ static void VID_InitModelist()
     {
         SDL_DisplayMode mode;
 
-        if(nummodes >= MAX_MODE_LIST) break;
+        if(nummodes >= MAX_MODE_LIST)
+        {
+            break;
+        }
         if(SDL_GetDisplayMode(0, i, &mode) == 0)
         {
             modelist[nummodes].width = mode.w;
@@ -1701,13 +1833,17 @@ void VID_Init()
     putenv(vid_center); /* SDL_putenv is problematic in versions <= 1.2.9 */
 
     if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
+    {
         Sys_Error("Couldn't init SDL video: %s", SDL_GetError());
+    }
 
 #if defined(USE_SDL2)
     {
         SDL_DisplayMode mode;
         if(SDL_GetDesktopDisplayMode(0, &mode) != 0)
+        {
             Sys_Error("Could not get desktop display mode");
+        }
 
         display_width = mode.w;
         display_height = mode.h;
@@ -1757,7 +1893,10 @@ void VID_Init()
         {
             width = Q_atoi(com_argv[p + 1]);
 
-            if(!COM_CheckParm("-height")) height = width * 3 / 4;
+            if(!COM_CheckParm("-height"))
+            {
+                height = width * 3 / 4;
+            }
         }
 
         p = COM_CheckParm("-height");
@@ -1765,23 +1904,39 @@ void VID_Init()
         {
             height = Q_atoi(com_argv[p + 1]);
 
-            if(!COM_CheckParm("-width")) width = height * 4 / 3;
+            if(!COM_CheckParm("-width"))
+            {
+                width = height * 4 / 3;
+            }
         }
 
         p = COM_CheckParm("-refreshrate");
-        if(p && p < com_argc - 1) refreshrate = Q_atoi(com_argv[p + 1]);
+        if(p && p < com_argc - 1)
+        {
+            refreshrate = Q_atoi(com_argv[p + 1]);
+        }
 
         p = COM_CheckParm("-bpp");
-        if(p && p < com_argc - 1) bpp = Q_atoi(com_argv[p + 1]);
+        if(p && p < com_argc - 1)
+        {
+            bpp = Q_atoi(com_argv[p + 1]);
+        }
 
         if(COM_CheckParm("-window") || COM_CheckParm("-w"))
+        {
             fullscreen = false;
+        }
         else if(COM_CheckParm("-fullscreen") || COM_CheckParm("-f"))
+        {
             fullscreen = true;
+        }
     }
 
     p = COM_CheckParm("-fsaa");
-    if(p && p < com_argc - 1) fsaa = atoi(com_argv[p + 1]);
+    if(p && p < com_argc - 1)
+    {
+        fsaa = atoi(com_argv[p + 1]);
+    }
 
     if(!VID_ValidMode(width, height, refreshrate, bpp, fullscreen))
     {
@@ -1826,18 +1981,18 @@ void VID_Init()
     VID_Gamma_Init(); // johnfitz
     VID_Menu_Init();  // johnfitz
 
-    // QuakeSpasm: current vid settings should override config file settings.
-    // so we have to lock the vid mode from now until after all config files are
-    // read.
+    // QuakeSpasm: current vid settings should override config file
+    // settings. so we have to lock the vid mode from now until after all
+    // config files are read.
     vid_locked = true;
 }
 
 // new proc by S.A., called by alt-return key binding.
 void VID_Toggle()
 {
-    // disabling the fast path completely because SDL_SetWindowFullscreen was
-    // changing the window size on SDL2/WinXP and we weren't set up to handle
-    // it. --ericw
+    // disabling the fast path completely because SDL_SetWindowFullscreen
+    // was changing the window size on SDL2/WinXP and we weren't set up to
+    // handle it. --ericw
     //
     // TODO: Clear out the dead code, reinstate the fast path using
     // SDL_SetWindowFullscreen inside VID_SetMode, check window size to fix
@@ -1851,16 +2006,18 @@ void VID_Toggle()
     S_ClearBuffer();
 
     if(!vid_toggle_works)
+    {
         goto vrestart;
+    }
     else if(gl_vbo_able)
     {
         // disabling the fast path because with SDL 1.2 it invalidates VBOs
         // (using them causes a crash, sugesting that the fullscreen toggle
-        // created a new GL context, although texture objects remain valid for
-        // some reason).
+        // created a new GL context, although texture objects remain valid
+        // for some reason).
         //
-        // SDL2 does promise window resizes / fullscreen changes preserve the GL
-        // context, so we could use the fast path with SDL2. --ericw
+        // SDL2 does promise window resizes / fullscreen changes preserve
+        // the GL context, so we could use the fast path with SDL2. --ericw
         vid_toggle_works = false;
         goto vrestart;
     }
@@ -1889,9 +2046,13 @@ void VID_Toggle()
         if(key_dest == key_console || key_dest == key_menu)
         {
             if(modestate == MS_WINDOWED)
+            {
                 IN_Deactivate(true);
+            }
             else if(modestate == MS_FULLSCREEN)
+            {
                 IN_Activate();
+            }
         }
     }
     else
@@ -1981,7 +2142,9 @@ static void VID_Menu_Init()
         for(j = 0; j < vid_menu_nummodes; j++)
         {
             if(vid_menu_modes[j].width == w && vid_menu_modes[j].height == h)
+            {
                 break;
+            }
         }
 
         if(j == vid_menu_nummodes)
@@ -2008,18 +2171,26 @@ static void VID_Menu_RebuildBppList()
 
     for(i = 0; i < nummodes; i++)
     {
-        if(vid_menu_numbpps >= MAX_BPPS_LIST) break;
+        if(vid_menu_numbpps >= MAX_BPPS_LIST)
+        {
+            break;
+        }
 
         // bpp list is limited to bpps available with current width/height
         if(modelist[i].width != vid_width.value ||
             modelist[i].height != vid_height.value)
+        {
             continue;
+        }
 
         b = modelist[i].bpp;
 
         for(j = 0; j < vid_menu_numbpps; j++)
         {
-            if(vid_menu_bpps[j] == b) break;
+            if(vid_menu_bpps[j] == b)
+            {
+                break;
+            }
         }
 
         if(j == vid_menu_numbpps)
@@ -2029,8 +2200,8 @@ static void VID_Menu_RebuildBppList()
         }
     }
 
-    // if there are no valid fullscreen bpps for this width/height, just pick
-    // one
+    // if there are no valid fullscreen bpps for this width/height, just
+    // pick one
     if(vid_menu_numbpps == 0)
     {
         Cvar_SetValueQuick(&vid_bpp, (float)modelist[0].bpp);
@@ -2039,10 +2210,17 @@ static void VID_Menu_RebuildBppList()
 
     // if vid_bpp is not in the new list, change vid_bpp
     for(i = 0; i < vid_menu_numbpps; i++)
-        if(vid_menu_bpps[i] == (int)(vid_bpp.value)) break;
+    {
+        if(vid_menu_bpps[i] == (int)(vid_bpp.value))
+        {
+            break;
+        }
+    }
 
     if(i == vid_menu_numbpps)
+    {
         Cvar_SetValueQuick(&vid_bpp, (float)vid_menu_bpps[0]);
+    }
 }
 
 /*
@@ -2060,17 +2238,23 @@ static void VID_Menu_RebuildRateList()
 
     for(i = 0; i < nummodes; i++)
     {
-        // rate list is limited to rates available with current width/height/bpp
+        // rate list is limited to rates available with current
+        // width/height/bpp
         if(modelist[i].width != vid_width.value ||
             modelist[i].height != vid_height.value ||
             modelist[i].bpp != vid_bpp.value)
+        {
             continue;
+        }
 
         r = modelist[i].refreshrate;
 
         for(j = 0; j < vid_menu_numrates; j++)
         {
-            if(vid_menu_rates[j] == r) break;
+            if(vid_menu_rates[j] == r)
+            {
+                break;
+            }
         }
 
         if(j == vid_menu_numrates)
@@ -2080,8 +2264,8 @@ static void VID_Menu_RebuildRateList()
         }
     }
 
-    // if there are no valid fullscreen refreshrates for this width/height, just
-    // pick one
+    // if there are no valid fullscreen refreshrates for this
+    // width/height, just pick one
     if(vid_menu_numrates == 0)
     {
         Cvar_SetValue("vid_refreshrate", (float)modelist[0].refreshrate);
@@ -2090,10 +2274,17 @@ static void VID_Menu_RebuildRateList()
 
     // if vid_refreshrate is not in the new list, change vid_refreshrate
     for(i = 0; i < vid_menu_numrates; i++)
-        if(vid_menu_rates[i] == (int)(vid_refreshrate.value)) break;
+    {
+        if(vid_menu_rates[i] == (int)(vid_refreshrate.value))
+        {
+            break;
+        }
+    }
 
     if(i == vid_menu_numrates)
+    {
         Cvar_SetValue("vid_refreshrate", (float)vid_menu_rates[0]);
+    }
 }
 
 /*
@@ -2114,11 +2305,13 @@ static void VID_Menu_ChooseNextMode(int dir)
         {
             if(vid_menu_modes[i].width == vid_width.value &&
                 vid_menu_modes[i].height == vid_height.value)
+            {
                 break;
+            }
         }
 
-        if(i == vid_menu_nummodes) // can't find it in list, so it must be a
-                                   // custom windowed res
+        if(i == vid_menu_nummodes) // can't find it in list, so it
+                                   // must be a custom windowed res
         {
             i = 0;
         }
@@ -2126,9 +2319,13 @@ static void VID_Menu_ChooseNextMode(int dir)
         {
             i += dir;
             if(i >= vid_menu_nummodes)
+            {
                 i = 0;
+            }
             else if(i < 0)
+            {
                 i = vid_menu_nummodes - 1;
+            }
         }
 
         Cvar_SetValueQuick(&vid_width, (float)vid_menu_modes[i].width);
@@ -2153,7 +2350,10 @@ static void VID_Menu_ChooseNextBpp(int dir)
     {
         for(i = 0; i < vid_menu_numbpps; i++)
         {
-            if(vid_menu_bpps[i] == vid_bpp.value) break;
+            if(vid_menu_bpps[i] == vid_bpp.value)
+            {
+                break;
+            }
         }
 
         if(i == vid_menu_numbpps) // can't find it in list
@@ -2164,9 +2364,13 @@ static void VID_Menu_ChooseNextBpp(int dir)
         {
             i += dir;
             if(i >= vid_menu_numbpps)
+            {
                 i = 0;
+            }
             else if(i < 0)
+            {
                 i = vid_menu_numbpps - 1;
+            }
         }
 
         Cvar_SetValueQuick(&vid_bpp, (float)vid_menu_bpps[i]);
@@ -2177,7 +2381,8 @@ static void VID_Menu_ChooseNextBpp(int dir)
 ================
 VID_Menu_ChooseNextRate
 
-chooses next refresh rate in order, then updates vid_refreshrate cvar
+chooses next refresh rate in order, then updates vid_refreshrate
+cvar
 ================
 */
 static void VID_Menu_ChooseNextRate(int dir)
@@ -2186,7 +2391,10 @@ static void VID_Menu_ChooseNextRate(int dir)
 
     for(i = 0; i < vid_menu_numrates; i++)
     {
-        if(vid_menu_rates[i] == vid_refreshrate.value) break;
+        if(vid_menu_rates[i] == vid_refreshrate.value)
+        {
+            break;
+        }
     }
 
     if(i == vid_menu_numrates) // can't find it in list
@@ -2197,9 +2405,13 @@ static void VID_Menu_ChooseNextRate(int dir)
     {
         i += dir;
         if(i >= vid_menu_numrates)
+        {
             i = 0;
+        }
         else if(i < 0)
+        {
             i = vid_menu_numrates - 1;
+        }
     }
 
     Cvar_SetValue("vid_refreshrate", (float)vid_menu_rates[i]);
@@ -2216,8 +2428,9 @@ static void VID_MenuKey(int key)
     {
         case K_ESCAPE:
         case K_BBUTTON:
-            VID_SyncCvars(); // sync cvars before leaving menu. FIXME: there are
-                             // other ways to leave menu
+            VID_SyncCvars(); // sync cvars before leaving menu.
+                             // FIXME: there are other ways to leave
+                             // menu
             S_LocalSound("misc/menu1.wav");
             M_Menu_Options_f();
             break;
@@ -2226,14 +2439,18 @@ static void VID_MenuKey(int key)
             S_LocalSound("misc/menu1.wav");
             video_options_cursor--;
             if(video_options_cursor < 0)
+            {
                 video_options_cursor = VIDEO_OPTIONS_ITEMS - 1;
+            }
             break;
 
         case K_DOWNARROW:
             S_LocalSound("misc/menu1.wav");
             video_options_cursor++;
             if(video_options_cursor >= VIDEO_OPTIONS_ITEMS)
+            {
                 video_options_cursor = 0;
+            }
             break;
 
         case K_LEFTARROW:
@@ -2350,9 +2567,13 @@ static void VID_MenuDraw()
             case VID_OPT_VSYNC:
                 M_Print(16, y, "     Vertical sync");
                 if(gl_swap_control)
+                {
                     M_DrawCheckbox(184, y, (int)vid_vsync.value);
+                }
                 else
+                {
                     M_Print(184, y, "N/A");
+                }
                 break;
             case VID_OPT_TEST:
                 y += 8; // separate the test and apply items
@@ -2362,7 +2583,9 @@ static void VID_MenuDraw()
         }
 
         if(video_options_cursor == i)
+        {
             M_DrawCharacter(168, y, 12 + ((int)(realtime * 4) & 1));
+        }
 
         y += 8;
     }
@@ -2380,7 +2603,8 @@ static void VID_Menu_f()
     m_state = m_video;
     m_entersound = true;
 
-    // set all the cvars to match the current mode when entering the menu
+    // set all the cvars to match the current mode when entering the
+    // menu
     VID_SyncCvars();
 
     // set up bpp and rate lists based on current cvars

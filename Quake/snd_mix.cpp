@@ -40,19 +40,31 @@ static void Snd_WriteLinearBlastStereo16()
     {
         val = snd_p[i] / 256;
         if(val > 0x7fff)
+        {
             snd_out[i] = 0x7fff;
+        }
         else if(val < (short)0x8000)
+        {
             snd_out[i] = (short)0x8000;
+        }
         else
+        {
             snd_out[i] = val;
+        }
 
         val = snd_p[i + 1] / 256;
         if(val > 0x7fff)
+        {
             snd_out[i + 1] = 0x7fff;
+        }
         else if(val < (short)0x8000)
+        {
             snd_out[i + 1] = (short)0x8000;
+        }
         else
+        {
             snd_out[i + 1] = val;
+        }
     }
 }
 
@@ -73,7 +85,9 @@ static void S_TransferStereo16(int endtime)
 
         snd_linear_count = (shm->samples >> 1) - lpos;
         if(lpaintedtime + snd_linear_count > endtime)
+        {
             snd_linear_count = endtime - lpaintedtime;
+        }
 
         snd_linear_count <<= 1;
 
@@ -111,9 +125,13 @@ static void S_TransferPaintBuffer(int endtime)
             val = *p / 256;
             p += step;
             if(val > 0x7fff)
+            {
                 val = 0x7fff;
+            }
             else if(val < (short)0x8000)
+            {
                 val = (short)0x8000;
+            }
             out[out_idx] = val;
             out_idx = (out_idx + 1) & out_mask;
         }
@@ -126,9 +144,13 @@ static void S_TransferPaintBuffer(int endtime)
             val = *p / 256;
             p += step;
             if(val > 0x7fff)
+            {
                 val = 0x7fff;
+            }
             else if(val < (short)0x8000)
+            {
                 val = (short)0x8000;
+            }
             out[out_idx] = (val / 256) + 128;
             out_idx = (out_idx + 1) & out_mask;
         }
@@ -141,9 +163,13 @@ static void S_TransferPaintBuffer(int endtime)
             val = *p / 256;
             p += step;
             if(val > 0x7fff)
+            {
                 val = 0x7fff;
+            }
             else if(val < (short)0x8000)
+            {
                 val = (short)0x8000;
+            }
             out[out_idx] = (val / 256);
             out_idx = (out_idx + 1) & out_mask;
         }
@@ -209,8 +235,14 @@ static void S_UpdateFilter(filter_t* filter, int M, float f_c)
 {
     if(filter->f_c != f_c || filter->M != M)
     {
-        if(filter->memory != nullptr) free(filter->memory);
-        if(filter->kernel != nullptr) free(filter->kernel);
+        if(filter->memory != nullptr)
+        {
+            free(filter->memory);
+        }
+        if(filter->kernel != nullptr)
+        {
+            free(filter->kernel);
+        }
 
         filter->M = M;
         filter->f_c = f_c;
@@ -360,7 +392,9 @@ void S_PaintChannels(int endtime)
         // if paintbuffer is smaller than DMA buffer
         end = endtime;
         if(endtime - paintedtime > PAINTBUFFER_SIZE)
+        {
             end = paintedtime + PAINTBUFFER_SIZE;
+        }
 
         // clear the paint buffer
         memset(paintbuffer, 0,
@@ -370,30 +404,47 @@ void S_PaintChannels(int endtime)
         ch = snd_channels;
         for(i = 0; i < total_channels; i++, ch++)
         {
-            if(!ch->sfx) continue;
-            if(!ch->leftvol && !ch->rightvol) continue;
+            if(!ch->sfx)
+            {
+                continue;
+            }
+            if(!ch->leftvol && !ch->rightvol)
+            {
+                continue;
+            }
             sc = S_LoadSound(ch->sfx);
-            if(!sc) continue;
+            if(!sc)
+            {
+                continue;
+            }
 
             ltime = paintedtime;
 
             while(ltime < end)
             { // paint up to end
                 if(ch->end < end)
+                {
                     count = ch->end - ltime;
+                }
                 else
+                {
                     count = end - ltime;
+                }
 
                 if(count > 0)
                 {
                     // the last param to SND_PaintChannelFrom is the index
                     // to start painting to in the paintbuffer, usually 0.
                     if(sc->width == 1)
+                    {
                         SND_PaintChannelFrom8(
                             ch, sc, count, ltime - paintedtime);
+                    }
                     else
+                    {
                         SND_PaintChannelFrom16(
                             ch, sc, count, ltime - paintedtime);
+                    }
 
                     ltime += count;
                 }
@@ -493,8 +544,14 @@ static void SND_PaintChannelFrom8(
     unsigned char* sfx;
     int i;
 
-    if(ch->leftvol > 255) ch->leftvol = 255;
-    if(ch->rightvol > 255) ch->rightvol = 255;
+    if(ch->leftvol > 255)
+    {
+        ch->leftvol = 255;
+    }
+    if(ch->rightvol > 255)
+    {
+        ch->rightvol = 255;
+    }
 
     lscale = snd_scaletable[ch->leftvol >> 3];
     rscale = snd_scaletable[ch->rightvol >> 3];
