@@ -34,22 +34,22 @@ cvar_t bgm_extmusic = {"bgm_extmusic", "1", CVAR_ARCHIVE};
 static qboolean no_extmusic = false;
 static float old_volume = -1.0f;
 
-typedef enum _bgm_player
+enum bgm_player_t
 {
     BGM_NONE = -1,
     BGM_MIDIDRV = 1,
     BGM_STREAMER
-} bgm_player_t;
+};
 
-typedef struct music_handler_s
+struct music_handler_t
 {
     unsigned int type;   /* 1U << n (see snd_codec.h)	*/
     bgm_player_t player; /* Enumerated bgm player type	*/
     int is_available;    /* -1 means not present		*/
     const char* ext;     /* Expected file extension	*/
     const char* dir;     /* Where to look for music file */
-    struct music_handler_s* next;
-} music_handler_t;
+    struct music_handler_t* next;
+};
 
 static music_handler_t wanted_handlers[] = {
     {CODECTYPE_VORBIS, BGM_STREAMER, -1, "ogg", MUSIC_DIRNAME, nullptr},

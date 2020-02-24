@@ -173,8 +173,8 @@ void(vector st) ZombieFireGrenade =
 
 // calc org
 	org = self.origin + st_x * v_forward + st_y * v_right + (st_z - 24) * v_up;
-	
-// set missile speed	
+
+// set missile speed
 
 	makevectors (self.angles);
 
@@ -185,13 +185,13 @@ void(vector st) ZombieFireGrenade =
 	missile.avelocity = '3000 1000 2000';
 
 	missile.touch = ZombieGrenadeTouch;
-	
+
 // set missile duration
 	missile.nextthink = time + 2.5;
 	missile.think = SUB_Remove;
 
 	setmodel (missile, "progs/zom_gib.mdl");
-	setsize (missile, '0 0 0', '0 0 0');		
+	setsize (missile, '0 0 0', '0 0 0');
 	setorigin (missile, org);
 };
 
@@ -241,9 +241,9 @@ void() zombie_attc12	=[	$attc12,	zombie_run1		] {ai_face();ZombieFireGrenade('-1
 void() zombie_missile =
 {
 	local float	r;
-	
+
 	r = random();
-	
+
 	if (r < 0.3)
 		zombie_atta1 ();
 	else if (r < 0.6)
@@ -431,14 +431,14 @@ void(entity attacker, float take) zombie_pain =
 		zombie_paine1 ();
 		return;
 	}
-	
+
 	if (self.inpain)
 	{
 // if hit again in next gre seconds while not in pain frames, definately drop
 		self.pain_finished = time + 3;
 		return;			// currently going through an animation, don't change
 	}
-	
+
 	if (self.pain_finished > time)
 	{
 // hit again, so drop down
@@ -447,7 +447,7 @@ void(entity attacker, float take) zombie_pain =
 		return;
 	}
 
-// gp into one of the fast pain animations	
+// gp into one of the fast pain animations
 	self.inpain = 1;
 
 	r = random();
@@ -495,7 +495,8 @@ void() monster_zombie =
 
 	setmodel (self, "progs/zombie.mdl");
 
-	setsize (self, '-16 -16 -24', '16 16 40');
+	// setsize (self, '-16 -16 -24', '16 16 40');
+	setsize (self, '-12 -12 -24', '12 12 24');
 	self.health = 60;
 
 	self.th_stand = zombie_stand1;

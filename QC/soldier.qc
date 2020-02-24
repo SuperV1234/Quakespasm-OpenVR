@@ -181,6 +181,7 @@ void() army_fire =
 
 	sound (self, CHAN_WEAPON, "soldier/sattck1.wav", 1, ATTN_NORM);
 
+// TODO VR: opportunity for extra difficulty
 // fire somewhat behind the player, so a dodging player is harder to hit
 	en = self.enemy;
 
@@ -270,7 +271,8 @@ void() monster_army =
 
 	setmodel (self, "progs/soldier.mdl");
 
-	setsize (self, '-16 -16 -24', '16 16 40');
+	//setsize (self, '-16 -16 -24', '16 16 40');
+	setsize (self, '-12 -12 -24', '12 12 24');
 	self.health = 30;
 
 	self.th_stand = army_stand1;

@@ -384,9 +384,9 @@ pointer to entity
 void R_RotateForEntity(vec3_t origin, vec3_t angles)
 {
     glTranslatef(origin[0], origin[1], origin[2]);
-    glRotatef(angles[1], 0, 0, 1);
-    glRotatef(-angles[0], 0, 1, 0);
-    glRotatef(angles[2], 1, 0, 0);
+    glRotatef(angles[YAW], 0, 0, 1);
+    glRotatef(-angles[PITCH], 0, 1, 0);
+    glRotatef(angles[ROLL], 1, 0, 0);
 }
 
 /*
