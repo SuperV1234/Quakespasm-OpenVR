@@ -756,9 +756,11 @@ bool VR_Enable()
         eyes[i].fov_y = (atan(-UpTan) + atan(DownTan)) / float(M_PI_DIV_180);
     }
 
-    VR_SetTrackingSpace(vr::TrackingUniverseStanding); // Put us into standing
-                                                       // tracking position
-    VR_ResetOrientation();                             // Recenter the HMD
+    // TODO VR: seated mode?
+    // Put us into standing tracking position
+    vr::VRCompositor()->SetTrackingSpace(vr::TrackingUniverseStanding);
+
+    VR_ResetOrientation(); // Recenter the HMD
 
     wglSwapIntervalEXT(0); // Disable V-Sync
 
@@ -1708,14 +1710,6 @@ void VR_ResetOrientation()
     {
         // IVRSystem_ResetSeatedZeroPose(ovrHMD);
         VectorCopy(cl.aimangles, lastAim);
-    }
-}
-
-void VR_SetTrackingSpace(int n)
-{
-    if(n >= 0 || n < 3)
-    {
-        vr::VRCompositor()->SetTrackingSpace((vr::ETrackingUniverseOrigin)n);
     }
 }
 

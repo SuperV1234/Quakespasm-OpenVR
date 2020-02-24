@@ -1104,8 +1104,8 @@ trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type,
     {
         for(i = 0; i < 3; i++)
         {
-            clip.mins2[i] = -15;
-            clip.maxs2[i] = 15;
+            clip.mins2[i] = -2;
+            clip.maxs2[i] = 2;
         }
     }
     else
