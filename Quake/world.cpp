@@ -899,6 +899,7 @@ trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type,
     clip.type = type;
     clip.passedict = passedict;
 
+    // TODO VR: is this what makes spikes bigger?
     if(type == MOVE_MISSILE)
     {
         for(i = 0; i < 3; i++)

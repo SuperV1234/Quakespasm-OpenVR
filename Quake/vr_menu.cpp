@@ -428,4 +428,7 @@ void VR_Menu_f()
 // TODO VR:
 // * difficulty options
 // * nicer explosion particles
-// * smaller hitboxes for nails and enemies (make aimign more important)
+// * smaller hitboxes for nails and enemies (make aimign more important) (done? test)
+// * speed adjustment options, sprinting
+// * vignette?
+// * god mode in menu
