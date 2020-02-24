@@ -813,6 +813,7 @@ void SV_ClipToLinks(areanode_t* node, moveclip_t* clip)
                 continue; // don't clip against owner
         }
 
+        // TODO VR: this is also causing spikes to be bigger.
         if((int)touch->v.flags & FL_MONSTER)
             trace = SV_ClipMoveToEntity(
                 touch, clip->start, clip->mins2, clip->maxs2, clip->end);
