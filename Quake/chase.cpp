@@ -94,8 +94,16 @@ TODO: stay at least 8 units away from all walls in this leaf
 void Chase_UpdateForDrawing(refdef_t& refdef, entity_t* viewent)
 {
     int i;
-    vec3_t forward, up, right;
-    vec3_t ideal, crosshair, temp;
+    vec3_t forward;
+
+    vec3_t up;
+
+    vec3_t right;
+    vec3_t ideal;
+
+    vec3_t crosshair;
+
+    vec3_t temp;
 
     AngleVectors(cl.viewangles, forward, right, up);
 

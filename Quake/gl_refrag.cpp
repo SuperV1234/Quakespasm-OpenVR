@@ -70,23 +70,33 @@ static efrag_t* R_GetEfrag()
 
         return ef;
     }
-    else
+
+    int i;
+
+
+
+    cl.free_efrags =
+
+        (efrag_t*)Hunk_AllocName(EXTRA_EFRAGS * sizeof(efrag_t), "efrags");
+
+
+
+    for(i = 0; i < EXTRA_EFRAGS - 1; i++)
+
     {
-        int i;
 
-        cl.free_efrags =
-            (efrag_t*)Hunk_AllocName(EXTRA_EFRAGS * sizeof(efrag_t), "efrags");
-
-        for(i = 0; i < EXTRA_EFRAGS - 1; i++)
-        {
-            cl.free_efrags[i].leafnext = &cl.free_efrags[i + 1];
-        }
-
-        cl.free_efrags[i].leafnext = nullptr;
-
-        // call recursively to get a newly allocated free efrag
-        return R_GetEfrag();
+        cl.free_efrags[i].leafnext = &cl.free_efrags[i + 1];
     }
+
+
+
+    cl.free_efrags[i].leafnext = nullptr;
+
+
+
+    // call recursively to get a newly allocated free efrag
+
+    return R_GetEfrag();
 }
 
 /*

@@ -52,12 +52,24 @@ SV_SetIdealPitch
 #define MAX_FORWARD 6
 void SV_SetIdealPitch()
 {
-    float angleval, sinval, cosval;
+    float angleval;
+
+    float sinval;
+
+    float cosval;
     trace_t tr;
-    vec3_t top, bottom;
+    vec3_t top;
+
+    vec3_t bottom;
     float z[MAX_FORWARD];
-    int i, j;
-    int step, dir, steps;
+    int i;
+
+    int j;
+    int step;
+
+    int dir;
+
+    int steps;
 
     if(!((int)sv_player->v.flags & FL_ONGROUND))
     {
@@ -134,8 +146,14 @@ SV_UserFriction
 void SV_UserFriction()
 {
     float* vel;
-    float speed, newspeed, control;
-    vec3_t start, stop;
+    float speed;
+
+    float newspeed;
+
+    float control;
+    vec3_t start;
+
+    vec3_t stop;
     float friction;
     trace_t trace;
 
@@ -189,7 +207,11 @@ cvar_t sv_accelerate = {"sv_accelerate", "10", CVAR_NONE};
 void SV_Accelerate(float wishspeed, const vec3_t wishdir)
 {
     int i;
-    float addspeed, accelspeed, currentspeed;
+    float addspeed;
+
+    float accelspeed;
+
+    float currentspeed;
 
     currentspeed = DotProduct(velocity, wishdir);
     addspeed = wishspeed - currentspeed;
@@ -212,7 +234,13 @@ void SV_Accelerate(float wishspeed, const vec3_t wishdir)
 void SV_AirAccelerate(float wishspeed, vec3_t wishveloc)
 {
     int i;
-    float addspeed, wishspd, accelspeed, currentspeed;
+    float addspeed;
+
+    float wishspd;
+
+    float accelspeed;
+
+    float currentspeed;
 
     wishspd = VectorNormalize(wishveloc);
     if(wishspd > 30)
@@ -263,7 +291,15 @@ void SV_WaterMove()
 {
     int i;
     vec3_t wishvel;
-    float speed, newspeed, wishspeed, addspeed, accelspeed;
+    float speed;
+
+    float newspeed;
+
+    float wishspeed;
+
+    float addspeed;
+
+    float accelspeed;
 
     //
     // user intentions
@@ -379,9 +415,13 @@ SV_AirMove
 void SV_AirMove()
 {
     int i;
-    vec3_t wishvel, wishdir;
+    vec3_t wishvel;
+
+    vec3_t wishdir;
     float wishspeed;
-    float fmove, smove;
+    float fmove;
+
+    float smove;
 
     AngleVectors(sv_player->v.v_viewangle, forward, right, up);
 

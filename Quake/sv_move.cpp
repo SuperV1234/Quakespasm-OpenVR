@@ -38,10 +38,20 @@ int c_yes, c_no;
 
 qboolean SV_CheckBottom(edict_t* ent)
 {
-    vec3_t mins, maxs, start, stop;
+    vec3_t mins;
+
+    vec3_t maxs;
+
+    vec3_t start;
+
+    vec3_t stop;
     trace_t trace;
-    int x, y;
-    float mid, bottom;
+    int x;
+
+    int y;
+    float mid;
+
+    float bottom;
 
     VectorAdd(ent->v.origin, ent->v.mins, mins);
     VectorAdd(ent->v.origin, ent->v.maxs, maxs);
@@ -124,7 +134,11 @@ pr_global_struct->trace_normal is set to the normal of the blocking wall
 qboolean SV_movestep(edict_t* ent, vec3_t move, qboolean relink)
 {
     float dz;
-    vec3_t oldorg, neworg, end;
+    vec3_t oldorg;
+
+    vec3_t neworg;
+
+    vec3_t end;
     trace_t trace;
     int i;
     edict_t* enemy;
@@ -269,7 +283,9 @@ facing it.
 void PF_changeyaw();
 qboolean SV_StepDirection(edict_t* ent, float yaw, float dist)
 {
-    vec3_t move, oldorigin;
+    vec3_t move;
+
+    vec3_t oldorigin;
     float delta;
 
     ent->v.ideal_yaw = yaw;
@@ -320,9 +336,15 @@ SV_NewChaseDir
 #define DI_NODIR -1
 void SV_NewChaseDir(edict_t* actor, edict_t* enemy, float dist)
 {
-    float deltax, deltay;
+    float deltax;
+
+    float deltay;
     float d[3];
-    float tdir, olddir, turnaround;
+    float tdir;
+
+    float olddir;
+
+    float turnaround;
 
     olddir = anglemod((int)(actor->v.ideal_yaw / 45) * 45);
     turnaround = anglemod(olddir - 180);
@@ -471,7 +493,9 @@ SV_MoveToGoal
 */
 void SV_MoveToGoal()
 {
-    edict_t *ent, *goal;
+    edict_t* ent;
+
+    edict_t* goal;
     float dist;
 
     ent = PROG_TO_EDICT(pr_global_struct->self);

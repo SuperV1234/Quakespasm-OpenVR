@@ -101,8 +101,14 @@ static void S_TransferStereo16(int endtime)
 
 static void S_TransferPaintBuffer(int endtime)
 {
-    int out_idx, out_mask;
-    int count, step, val;
+    int out_idx;
+
+    int out_mask;
+    int count;
+
+    int step;
+
+    int val;
     int* p;
 
     if(shm->samplebits == 16 && shm->channels == 2)
@@ -271,7 +277,9 @@ known to be 0 and skip 3/4 of the filter kernel.
 */
 static void S_ApplyFilter(filter_t* filter, int* data, int stride, int count)
 {
-    int i, j;
+    int i;
+
+    int j;
     float* input;
     const int kernelsize = filter->kernelsize;
     const float* kernel = filter->kernel;
@@ -332,7 +340,9 @@ memory should be a zero-filled filter_t struct
 static void S_LowpassFilter(int* data, int stride, int count, filter_t* memory)
 {
     int M;
-    float bw, f_c;
+    float bw;
+
+    float f_c;
 
     switch((int)snd_filterquality.value)
     {
@@ -381,7 +391,11 @@ static void SND_PaintChannelFrom16(
 void S_PaintChannels(int endtime)
 {
     int i;
-    int end, ltime, count;
+    int end;
+
+    int ltime;
+
+    int count;
     channel_t* ch;
     sfxcache_t* sc;
 
@@ -480,7 +494,9 @@ void S_PaintChannels(int endtime)
         // apply a lowpass filter
         if(sndspeed.value == 11025 && shm->speed == 44100)
         {
-            static filter_t memory_l, memory_r;
+            static filter_t memory_l;
+
+            static filter_t memory_r;
             S_LowpassFilter((int*)paintbuffer, 2, end - paintedtime, &memory_l);
             S_LowpassFilter(
                 ((int*)paintbuffer) + 1, 2, end - paintedtime, &memory_r);
@@ -515,7 +531,9 @@ void S_PaintChannels(int endtime)
 
 void SND_InitScaletable()
 {
-    int i, j;
+    int i;
+
+    int j;
     int scale;
 
     for(i = 0; i < 32; i++)
@@ -540,7 +558,9 @@ static void SND_PaintChannelFrom8(
     channel_t* ch, sfxcache_t* sc, int count, int paintbufferstart)
 {
     int data;
-    int *lscale, *rscale;
+    int* lscale;
+
+    int* rscale;
     unsigned char* sfx;
     int i;
 
@@ -571,8 +591,12 @@ static void SND_PaintChannelFrom16(
     channel_t* ch, sfxcache_t* sc, int count, int paintbufferstart)
 {
     int data;
-    int left, right;
-    int leftvol, rightvol;
+    int left;
+
+    int right;
+    int leftvol;
+
+    int rightvol;
     signed short* sfx;
     int i;
 

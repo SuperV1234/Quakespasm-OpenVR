@@ -66,7 +66,7 @@ qpic_t* hsb_items[2];
 
 void Sbar_MiniDeathmatchOverlay();
 void Sbar_DeathmatchOverlay();
-void M_DrawPic(int x, int y, qpic_t* pic);
+
 
 /*
 ===============
@@ -330,7 +330,11 @@ scroll the string inside a glscissor region
 void Sbar_DrawScrollString(int x, int y, int width, const char* str)
 {
     float scale;
-    int len, ofs, left;
+    int len;
+
+    int ofs;
+
+    int left;
 
     scale = CLAMP(1.0, scr_sbarscale.value, (float)glwidth / 320.0);
     left = x * scale;
@@ -400,7 +404,9 @@ void Sbar_DrawNum(int x, int y, int num, int digits, int color)
 {
     char str[12];
     char* ptr;
-    int l, frame;
+    int l;
+
+    int frame;
 
     num = q_min(
         999, num); // johnfitz -- cap high values rather than truncating number
@@ -451,7 +457,11 @@ Sbar_SortFrags
 */
 void Sbar_SortFrags()
 {
-    int i, j, k;
+    int i;
+
+    int j;
+
+    int k;
 
     // sort by frags
     scoreboardlines = 0;
@@ -490,8 +500,12 @@ Sbar_UpdateScoreboard
 */
 void Sbar_UpdateScoreboard()
 {
-    int i, k;
-    int top, bottom;
+    int i;
+
+    int k;
+    int top;
+
+    int bottom;
     scoreboard_t* s;
 
     Sbar_SortFrags();
@@ -520,7 +534,13 @@ Sbar_SoloScoreboard -- johnfitz -- new layout
 void Sbar_SoloScoreboard()
 {
     char str[256];
-    int minutes, seconds, tens, units;
+    int minutes;
+
+    int seconds;
+
+    int tens;
+
+    int units;
     int len;
 
     sprintf(str, "Kills: %i/%i", cl.stats[STAT_MONSTERS],
@@ -589,7 +609,9 @@ Sbar_DrawInventory
 */
 void Sbar_DrawInventory()
 {
-    int i, val;
+    int i;
+
+    int val;
     char num[6];
     float time;
     int flashon;
@@ -859,7 +881,13 @@ Sbar_DrawFrags -- johnfitz -- heavy revision
 */
 void Sbar_DrawFrags()
 {
-    int numscores, i, x, color;
+    int numscores;
+
+    int i;
+
+    int x;
+
+    int color;
     char num[12];
     scoreboard_t* s;
 
@@ -911,14 +939,18 @@ Sbar_DrawFace
 */
 void Sbar_DrawFace()
 {
-    int f, anim;
+    int f;
+
+    int anim;
 
     // PGM 01/19/97 - team color drawing
     // PGM 03/02/97 - fixed so color swatch only appears in CTF modes
     if(rogue && (cl.maxclients != 1) && (teamplay.value > 3) &&
         (teamplay.value < 7))
     {
-        int top, bottom;
+        int top;
+
+        int bottom;
         int xofs;
         char num[12];
         scoreboard_t* s;
@@ -1237,7 +1269,9 @@ void Sbar_IntermissionNumber(int x, int y, int num, int digits, int color)
 {
     char str[12];
     char* ptr;
-    int l, frame;
+    int l;
+
+    int frame;
 
     l = Sbar_itoa(num, str);
     ptr = str;
@@ -1276,9 +1310,19 @@ Sbar_DeathmatchOverlay
 void Sbar_DeathmatchOverlay()
 {
     qpic_t* pic;
-    int i, k, l;
-    int top, bottom;
-    int x, y, f;
+    int i;
+
+    int k;
+
+    int l;
+    int top;
+
+    int bottom;
+    int x;
+
+    int y;
+
+    int f;
     char num[12];
     scoreboard_t* s;
 
@@ -1362,7 +1406,21 @@ Sbar_MiniDeathmatchOverlay
 */
 void Sbar_MiniDeathmatchOverlay()
 {
-    int i, k, top, bottom, x, y, f, numlines;
+    int i;
+
+    int k;
+
+    int top;
+
+    int bottom;
+
+    int x;
+
+    int y;
+
+    int f;
+
+    int numlines;
     char num[12];
     float scale; // johnfitz
     scoreboard_t* s;

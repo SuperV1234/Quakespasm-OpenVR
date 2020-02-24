@@ -513,7 +513,9 @@ R_DrawBrushModel
 */
 void R_DrawBrushModel(entity_t* e)
 {
-    int i, k;
+    int i;
+
+    int k;
     msurface_t* psurf;
     float dot;
     mplane_t* pplane;
@@ -531,7 +533,11 @@ void R_DrawBrushModel(entity_t* e)
     if(e->angles[0] || e->angles[1] || e->angles[2])
     {
         vec3_t temp;
-        vec3_t forward, right, up;
+        vec3_t forward;
+
+        vec3_t right;
+
+        vec3_t up;
 
         VectorCopy(modelorg, temp);
         AngleVectors(e->angles, forward, right, up);
@@ -620,7 +626,11 @@ void R_DrawBrushModel_ShowTris(entity_t* e)
     if(e->angles[0] || e->angles[1] || e->angles[2])
     {
         vec3_t temp;
-        vec3_t forward, right, up;
+        vec3_t forward;
+
+        vec3_t right;
+
+        vec3_t up;
 
         VectorCopy(modelorg, temp);
         AngleVectors(e->angles, forward, right, up);
@@ -682,7 +692,9 @@ void R_RenderDynamicLightmaps(msurface_t* fa)
     byte* base;
     int maps;
     glRect_t* theRect;
-    int smax, tmax;
+    int smax;
+
+    int tmax;
 
     if(fa->flags & SURF_DRAWTILED)
     { // johnfitz -- not a lightmapped surface
@@ -752,8 +764,12 @@ AllocBlock -- returns a texture number and the position inside it
 */
 int AllocBlock(int w, int h, int* x, int* y)
 {
-    int i, j;
-    int best, best2;
+    int i;
+
+    int j;
+    int best;
+
+    int best2;
 
     // ericw -- rather than searching starting at lightmap 0 every time,
     // start at the last lightmap we allocated a surface in.
@@ -834,7 +850,9 @@ GL_CreateSurfaceLightmap
 */
 void GL_CreateSurfaceLightmap(msurface_t* surf)
 {
-    int smax, tmax;
+    int smax;
+
+    int tmax;
     byte* base;
 
     smax = (surf->extents[0] >> 4) + 1;
@@ -854,10 +872,18 @@ BuildSurfaceDisplayList -- called at level load time
 */
 void BuildSurfaceDisplayList(msurface_t* fa)
 {
-    int i, lindex, lnumverts;
-    medge_t *pedges, *r_pedge;
+    int i;
+
+    int lindex;
+
+    int lnumverts;
+    medge_t* pedges;
+
+    medge_t* r_pedge;
     float* vec;
-    float s, t;
+    float s;
+
+    float t;
     glpoly_t* poly;
 
     // reconstruct the polygon
@@ -932,7 +958,9 @@ with all the surfaces from all brush models
 void GL_BuildLightmaps()
 {
     char name[24];
-    int i, j;
+    int i;
+
+    int j;
     struct lightmap_s* lm;
     qmodel_t* m;
 
@@ -1050,8 +1078,14 @@ surfaces from world + all brush models
 */
 void GL_BuildBModelVertexBuffer()
 {
-    unsigned int numverts, varray_bytes, varray_index;
-    int i, j;
+    unsigned int numverts;
+
+    unsigned int varray_bytes;
+
+    unsigned int varray_index;
+    int i;
+
+    int j;
     qmodel_t* m;
     float* varray;
 
@@ -1120,15 +1154,33 @@ R_AddDynamicLights
 void R_AddDynamicLights(msurface_t* surf)
 {
     int lnum;
-    int sd, td;
-    float dist, rad, minlight;
-    vec3_t impact, local;
-    int s, t;
+    int sd;
+
+    int td;
+    float dist;
+
+    float rad;
+
+    float minlight;
+    vec3_t impact;
+
+    vec3_t local;
+    int s;
+
+    int t;
     int i;
-    int smax, tmax;
+    int smax;
+
+    int tmax;
     mtexinfo_t* tex;
     // johnfitz -- lit support via lordhavoc
-    float cred, cgreen, cblue, brightness;
+    float cred;
+
+    float cgreen;
+
+    float cblue;
+
+    float brightness;
     unsigned* bl;
     // johnfitz
 
@@ -1219,9 +1271,19 @@ Combine and scale multiple lightmaps into the 8.8 format in blocklights
 */
 void R_BuildLightMap(msurface_t* surf, byte* dest, int stride)
 {
-    int smax, tmax;
-    int r, g, b;
-    int i, j, size;
+    int smax;
+
+    int tmax;
+    int r;
+
+    int g;
+
+    int b;
+    int i;
+
+    int j;
+
+    int size;
     byte* lightmap;
     unsigned scale;
     int maps;
@@ -1389,7 +1451,9 @@ toggled
 */
 void R_RebuildAllLightmaps()
 {
-    int i, j;
+    int i;
+
+    int j;
     qmodel_t* mod;
     msurface_t* fa;
     byte* base;

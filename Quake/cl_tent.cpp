@@ -60,7 +60,9 @@ CL_ParseBeam
 void CL_ParseBeam(qmodel_t* m)
 {
     int ent;
-    vec3_t start, end;
+    vec3_t start;
+
+    vec3_t end;
     beam_t* b;
     int i;
 
@@ -123,7 +125,9 @@ void CL_ParseTEnt()
     vec3_t pos;
     dlight_t* dl;
     int rnd;
-    int colorStart, colorLength;
+    int colorStart;
+
+    int colorLength;
 
     type = MSG_ReadByte();
     switch(type)
@@ -314,13 +318,19 @@ CL_UpdateTEnts
 */
 void CL_UpdateTEnts()
 {
-    int i, j; // johnfitz -- use j instead of using i twice, so we don't corrupt
-              // memory
+    int i;
+
+    int j; // johnfitz -- use j instead of using i twice, so we don't corrupt
+           // memory
     beam_t* b;
-    vec3_t dist, org;
+    vec3_t dist;
+
+    vec3_t org;
     float d;
     entity_t* ent;
-    float yaw, pitch;
+    float yaw;
+
+    float pitch;
     float forward;
 
     num_temp_entities = 0;
@@ -349,7 +359,11 @@ void CL_UpdateTEnts()
 
                 // TODO VR: hardcoded lightning gun muzzle position for beam
                 // effect
-                vec3_t forward, right, up;
+                vec3_t forward;
+
+                vec3_t right;
+
+                vec3_t up;
                 AngleVectors(cl.handrot[1], forward, right, up);
 
                 // TODO VR: this calculation needs to take into account the

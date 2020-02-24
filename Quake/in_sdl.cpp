@@ -351,11 +351,10 @@ void IN_StartupJoystick()
                 joy_active_controller = gamecontroller;
                 break;
             }
-            else
-            {
-                Con_Warning("failed to open controller: %s\n",
-                    controllername != nullptr ? controllername : "NULL");
-            }
+
+            Con_Warning("failed to open controller: %s\n",
+
+                controllername != nullptr ? controllername : "NULL");
         }
         else
         {
@@ -740,8 +739,16 @@ void IN_JoyMove(usercmd_t* cmd)
 {
 #if defined(USE_SDL2)
     float speed;
-    joyaxis_t moveRaw, moveDeadzone, moveEased;
-    joyaxis_t lookRaw, lookDeadzone, lookEased;
+    joyaxis_t moveRaw;
+
+    joyaxis_t moveDeadzone;
+
+    joyaxis_t moveEased;
+    joyaxis_t lookRaw;
+
+    joyaxis_t lookDeadzone;
+
+    joyaxis_t lookEased;
 
     if(!joy_enable.value)
     {
@@ -807,7 +814,9 @@ void IN_JoyMove(usercmd_t* cmd)
 
 void IN_MouseMove(usercmd_t* cmd)
 {
-    int dmx, dmy;
+    int dmx;
+
+    int dmy;
 
     dmx = total_dx * sensitivity.value;
     dmy = total_dy * sensitivity.value;

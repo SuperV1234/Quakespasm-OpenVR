@@ -91,7 +91,11 @@ Used by view and sv_user
 */
 float V_CalcRoll(vec3_t angles, vec3_t velocity)
 {
-    vec3_t forward, right, up;
+    vec3_t forward;
+
+    vec3_t right;
+
+    vec3_t up;
     float sign;
     float side;
     float value;
@@ -226,7 +230,9 @@ lookspring is non 0, or when
 */
 void V_DriftPitch()
 {
-    float delta, move;
+    float delta;
+
+    float move;
 
     if(noclip_anglehack || !cl.onground || cls.demoplayback || vr_enabled.value)
     // FIXME: noclip_anglehack is set on the server, so in a nonlocal game this
@@ -317,10 +323,16 @@ V_ParseDamage
 */
 void V_ParseDamage()
 {
-    int armor, blood;
+    int armor;
+
+    int blood;
     vec3_t from;
     int i;
-    vec3_t forward, right, up;
+    vec3_t forward;
+
+    vec3_t right;
+
+    vec3_t up;
     entity_t* ent;
     float side;
     float count;
@@ -492,7 +504,15 @@ V_CalcBlend
 */
 void V_CalcBlend()
 {
-    float r, g, b, a, a2;
+    float r;
+
+    float g;
+
+    float b;
+
+    float a;
+
+    float a2;
     int j;
     cvar_t* cshiftpercent_cvars[NUM_CSHIFTS] = {&gl_cshiftpercent_contents,
         &gl_cshiftpercent_damage, &gl_cshiftpercent_bonus,
@@ -553,7 +573,9 @@ V_UpdateBlend -- johnfitz -- V_UpdatePalette cleaned up and renamed
 */
 void V_UpdateBlend()
 {
-    int i, j;
+    int i;
+
+    int j;
     qboolean blend_changed;
 
     V_CalcPowerupCshift();
@@ -679,7 +701,11 @@ CalcGunAngle
 void CalcGunAngle(
     const int wpnCvarEntry, entity_t* viewent, const vec3_t& handrot)
 {
-    float yaw, pitch, move;
+    float yaw;
+
+    float pitch;
+
+    float move;
     static float oldyaw = 0;
     static float oldpitch = 0;
 
@@ -868,7 +894,9 @@ V_CalcIntermissionRefdef
 */
 void V_CalcIntermissionRefdef()
 {
-    entity_t *ent, *view;
+    entity_t* ent;
+
+    entity_t* view;
     float old;
 
     // ent is the player model (visible when out of body)
@@ -902,9 +930,15 @@ V_CalcRefdef
 */
 void V_CalcRefdef()
 {
-    entity_t *ent, *view;
+    entity_t* ent;
+
+    entity_t* view;
     int i;
-    vec3_t forward, right, up;
+    vec3_t forward;
+
+    vec3_t right;
+
+    vec3_t up;
     vec3_t angles;
     float bob;
     static float oldz = 0;

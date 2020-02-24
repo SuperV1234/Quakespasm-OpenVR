@@ -179,9 +179,13 @@ PR_Profile_f
 */
 void PR_Profile_f()
 {
-    int i, num;
+    int i;
+
+    int num;
     int pmax;
-    dfunction_t *f, *best;
+    dfunction_t* f;
+
+    dfunction_t* best;
 
     if(!sv.active)
     {
@@ -251,7 +255,13 @@ Returns the new program statement counter
 */
 static int PR_EnterFunction(dfunction_t* f)
 {
-    int i, j, c, o;
+    int i;
+
+    int j;
+
+    int c;
+
+    int o;
 
     pr_stack[pr_depth].s = pr_xstatement;
     pr_stack[pr_depth].f = pr_xfunction;
@@ -296,7 +306,9 @@ PR_LeaveFunction
 */
 static int PR_LeaveFunction()
 {
-    int i, c;
+    int i;
+
+    int c;
 
     if(pr_depth <= 0)
     {
@@ -339,8 +351,12 @@ void PR_ExecuteProgram(func_t fnum)
 {
     eval_t* ptr;
     dstatement_t* st;
-    dfunction_t *f, *newf;
-    int profile, startprofile;
+    dfunction_t* f;
+
+    dfunction_t* newf;
+    int profile;
+
+    int startprofile;
     edict_t* ed;
     int exitdepth;
 

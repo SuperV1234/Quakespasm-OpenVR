@@ -154,7 +154,9 @@ int q_strcasecmp(const char* s1, const char* s2)
 {
     const char* p1 = s1;
     const char* p2 = s2;
-    char c1, c2;
+    char c1;
+
+    char c2;
 
     if(p1 == p2)
     {
@@ -178,7 +180,9 @@ int q_strncasecmp(const char* s1, const char* s2, size_t n)
 {
     const char* p1 = s1;
     const char* p2 = s2;
-    char c1, c2;
+    char c1;
+
+    char c2;
 
     if(p1 == p2 || n == 0)
     {
@@ -201,7 +205,11 @@ int q_strncasecmp(const char* s1, const char* s2, size_t n)
 // spike -- grabbed this from fte, because its useful to me
 char* q_strcasestr(const char* haystack, const char* needle)
 {
-    int c1, c2, c2f;
+    int c1;
+
+    int c2;
+
+    int c2f;
     int i;
     c2f = *needle;
     if(c2f >= 'a' && c2f <= 'z')
@@ -553,7 +561,9 @@ float Q_atof(const char* str)
     double val;
     int sign;
     int c;
-    int decimal, total;
+    int decimal;
+
+    int total;
 
     if(*str == '-')
     {
@@ -656,7 +666,9 @@ float (*LittleFloat)(float l);
 
 short ShortSwap(short l)
 {
-    byte b1, b2;
+    byte b1;
+
+    byte b2;
 
     b1 = l & 255;
     b2 = (l >> 8) & 255;
@@ -671,7 +683,13 @@ short ShortNoSwap(short l)
 
 int LongSwap(int l)
 {
-    byte b1, b2, b3, b4;
+    byte b1;
+
+    byte b2;
+
+    byte b3;
+
+    byte b4;
 
     b1 = l & 255;
     b2 = (l >> 8) & 255;
@@ -1017,16 +1035,24 @@ float MSG_ReadCoord(unsigned int flags)
     {
         return MSG_ReadFloat();
     }
-    else if(flags & PRFL_INT32COORD)
+    if(flags & PRFL_INT32COORD)
+
     {
+
         return MSG_ReadLong() * (1.0 / 16.0);
     }
+
     else if(flags & PRFL_24BITCOORD)
+
     {
+
         return MSG_ReadCoord24();
     }
+
     else
+
     {
+
         return MSG_ReadCoord16();
     }
 }
@@ -1037,12 +1063,17 @@ float MSG_ReadAngle(unsigned int flags)
     {
         return MSG_ReadFloat();
     }
-    else if(flags & PRFL_SHORTANGLE)
+    if(flags & PRFL_SHORTANGLE)
+
     {
+
         return MSG_ReadShort() * (360.0 / 65536);
     }
+
     else
+
     {
+
         return MSG_ReadChar() * (360.0 / 256);
     }
 }
@@ -1054,10 +1085,8 @@ float MSG_ReadAngle16(unsigned int flags)
     {
         return MSG_ReadFloat(); // make sure
     }
-    else
-    {
-        return MSG_ReadShort() * (360.0 / 65536);
-    }
+
+    return MSG_ReadShort() * (360.0 / 65536);
 }
 // johnfitz
 
@@ -1253,7 +1282,11 @@ write only 'filename' to the output
 */
 void COM_FileBase(const char* in, char* out, size_t outsize)
 {
-    const char *dot, *slash, *s;
+    const char* dot;
+
+    const char* slash;
+
+    const char* s;
 
     s = in;
     slash = in;
@@ -1534,7 +1567,11 @@ COM_InitArgv
 */
 void COM_InitArgv(int argc, char** argv)
 {
-    int i, j, n;
+    int i;
+
+    int j;
+
+    int n;
 
     // reconstitute the command line for the cmdline externally visible cvar
     n = 0;
@@ -1814,7 +1851,9 @@ COM_filelength
 */
 long COM_filelength(FILE* f)
 {
-    long pos, end;
+    long pos;
+
+    long end;
 
     pos = ftell(f);
     fseek(f, 0, SEEK_END);
@@ -1840,7 +1879,9 @@ static int COM_FindFile(
     searchpath_t* search;
     char netpath[MAX_OSPATH];
     pack_t* pak;
-    int i, findtime;
+    int i;
+
+    int findtime;
 
     if(file && handle)
     {
@@ -1876,17 +1917,26 @@ static int COM_FindFile(
                     Sys_FileSeek(pak->handle, pak->files[i].filepos);
                     return com_filesize;
                 }
-                else if(file)
+                if(file)
+
                 { /* open a new file on the pakfile */
+
                     *file = fopen(pak->filename, "rb");
+
                     if(*file)
+
                     {
+
                         fseek(*file, pak->files[i].filepos, SEEK_SET);
                     }
+
                     return com_filesize;
                 }
+
                 else /* for COM_FileExists() */
+
                 {
+
                     return com_filesize;
                 }
             }
@@ -1919,14 +1969,21 @@ static int COM_FindFile(
                 *handle = i;
                 return com_filesize;
             }
-            else if(file)
+            if(file)
+
             {
+
                 *file = fopen(netpath, "rb");
+
                 com_filesize = (*file == nullptr) ? -1 : COM_filelength(*file);
+
                 return com_filesize;
             }
+
             else
+
             {
+
                 return 0; /* dummy valid value for COM_FileExists() */
             }
         }
@@ -2139,7 +2196,9 @@ byte* COM_LoadMallocFile_TextMode_OSPath(const char* path, long* len_out)
 {
     FILE* f;
     byte* data;
-    long len, actuallen;
+    long len;
+
+    long actuallen;
 
     // ericw -- this is used by Host_Loadgame_f. Translate CRLF to LF on load
     // games, othewise multiline messages have a garbage character at the end of
@@ -2305,7 +2364,9 @@ static void COM_AddGameDirectory(const char* base, const char* dir)
     int i;
     unsigned int path_id;
     searchpath_t* search;
-    pack_t *pak, *qspak;
+    pack_t* pak;
+
+    pack_t* qspak;
     char pakfile[MAX_OSPATH];
     qboolean been_here = false;
 
@@ -2567,7 +2628,9 @@ COM_InitFilesystem
 */
 void COM_InitFilesystem() // johnfitz -- modified based on topaz's tutorial
 {
-    int i, j;
+    int i;
+
+    int j;
 
     Cvar_RegisterVariable(&registered);
     Cvar_RegisterVariable(&cmdline);

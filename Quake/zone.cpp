@@ -74,7 +74,9 @@ Z_Free
 */
 void Z_Free(void* ptr)
 {
-    memblock_t *block, *other;
+    memblock_t* block;
+
+    memblock_t* other;
 
     if(!ptr)
     {
@@ -123,7 +125,13 @@ void Z_Free(void* ptr)
 static void* Z_TagMalloc(int size, int tag)
 {
     int extra;
-    memblock_t *start, *rover, *newblock, *base;
+    memblock_t* start;
+
+    memblock_t* rover;
+
+    memblock_t* newblock;
+
+    memblock_t* base;
 
     if(!tag)
     {
@@ -391,8 +399,18 @@ Otherwise, allocations with the same name will be totaled up before printing.
 */
 void Hunk_Print(qboolean all)
 {
-    hunk_t *h, *next, *endlow, *starthigh, *endhigh;
-    int count, sum;
+    hunk_t* h;
+
+    hunk_t* next;
+
+    hunk_t* endlow;
+
+    hunk_t* starthigh;
+
+    hunk_t* endhigh;
+    int count;
+
+    int sum;
     int totalblocks;
     char name[HUNKNAME_LEN];
 
@@ -748,7 +766,9 @@ Throw things out until the hunk can be expanded to the given point
 */
 void Cache_FreeHigh(int new_high_hunk)
 {
-    cache_system_t *c, *prev;
+    cache_system_t* c;
+
+    cache_system_t* prev;
 
     prev = nullptr;
     while(true)
@@ -811,7 +831,9 @@ Size should already include the header and padding
 */
 cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
 {
-    cache_system_t *cs, *new_cs;
+    cache_system_t* cs;
+
+    cache_system_t* new_cs;
 
     // is the cache completely empty?
 

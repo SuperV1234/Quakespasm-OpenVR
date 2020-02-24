@@ -813,7 +813,6 @@ Error:
 Done:
     dfunc.Close_Socket(test2Socket);
     test2InProgress = false;
-    return;
 }
 
 static void Test2_f()
@@ -898,7 +897,9 @@ JustDoIt:
 
 int Datagram_Init()
 {
-    int i, num_inited;
+    int i;
+
+    int num_inited;
     sys_socket_t csock;
 
 #ifdef BAN_TEST

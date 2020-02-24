@@ -176,12 +176,24 @@ static void SetMinMaxSize(
     edict_t* e, float* minvec, float* maxvec, qboolean rotate)
 {
     float* angles;
-    vec3_t rmin, rmax;
+    vec3_t rmin;
+
+    vec3_t rmax;
     float bounds[2][3];
-    float xvector[2], yvector[2];
+    float xvector[2];
+
+    float yvector[2];
     float a;
-    vec3_t base, transformed;
-    int i, j, k, l;
+    vec3_t base;
+
+    vec3_t transformed;
+    int i;
+
+    int j;
+
+    int k;
+
+    int l;
 
     for(i = 0; i < 3; i++)
     {
@@ -268,7 +280,9 @@ setsize (entity, minvector, maxvector)
 static void PF_setsize()
 {
     edict_t* e;
-    float *minvec, *maxvec;
+    float* minvec;
+
+    float* maxvec;
 
     e = G_EDICT(OFS_PARM0);
     minvec = G_VECTOR(OFS_PARM1);
@@ -287,7 +301,9 @@ setmodel(entity, model)
 static void PF_setmodel()
 {
     int i;
-    const char *m, **check;
+    const char* m;
+
+    const char** check;
     qmodel_t* mod;
     edict_t* e;
 
@@ -507,7 +523,9 @@ static void PF_vectoangles()
 {
     float* value1;
     float forward;
-    float yaw, pitch;
+    float yaw;
+
+    float pitch;
 
     value1 = G_VECTOR(OFS_PARM0);
 
@@ -571,7 +589,9 @@ particle(origin, color, count)
 */
 static void PF_particle()
 {
-    float *org, *dir;
+    float* org;
+
+    float* dir;
     float color;
     float count;
 
@@ -591,10 +611,16 @@ PF_ambientsound
 */
 static void PF_ambientsound()
 {
-    const char *samp, **check;
+    const char* samp;
+
+    const char** check;
     float* pos;
-    float vol, attenuation;
-    int i, soundnum;
+    float vol;
+
+    float attenuation;
+    int i;
+
+    int soundnum;
     int large = false; // johnfitz -- PROTOCOL_FITZQUAKE
 
     pos = G_VECTOR(OFS_PARM0);
@@ -624,10 +650,8 @@ static void PF_ambientsound()
         {
             return; // don't send any info protocol can't support
         }
-        else
-        {
-            large = true;
-        }
+
+        large = true;
     }
     // johnfitz
 
@@ -738,7 +762,9 @@ traceline (vector1, vector2, tryents)
 */
 static void PF_traceline()
 {
-    float *v1, *v2;
+    float* v1;
+
+    float* v2;
     trace_t trace;
     int nomonsters;
     edict_t* ent;
@@ -910,7 +936,9 @@ name checkclient ()
 static int c_invis, c_notvis;
 static void PF_checkclient()
 {
-    edict_t *ent, *self;
+    edict_t* ent;
+
+    edict_t* self;
     mleaf_t* leaf;
     int l;
     vec3_t view;
@@ -1020,7 +1048,9 @@ float cvar (string)
 */
 static void PF_cvar_set()
 {
-    const char *var, *val;
+    const char* var;
+
+    const char* val;
 
     var = G_STRING(OFS_PARM0);
     val = G_STRING(OFS_PARM1);
@@ -1039,11 +1069,15 @@ findradius (origin, radius)
 */
 static void PF_findradius()
 {
-    edict_t *ent, *chain;
+    edict_t* ent;
+
+    edict_t* chain;
     float rad;
     float* org;
     vec3_t eorg;
-    int i, j;
+    int i;
+
+    int j;
 
     chain = (edict_t*)sv.edicts;
 
@@ -1146,7 +1180,9 @@ static void PF_Find()
 {
     int e;
     int f;
-    const char *s, *t;
+    const char* s;
+
+    const char* t;
     edict_t* ed;
 
     e = G_EDICTNUM(OFS_PARM0);
@@ -1284,7 +1320,9 @@ float(float yaw, float dist) walkmove
 static void PF_walkmove()
 {
     edict_t* ent;
-    float yaw, dist;
+    float yaw;
+
+    float dist;
     vec3_t move;
     dfunction_t* oldf;
     int oldself;
@@ -1490,11 +1528,25 @@ cvar_t sv_aim = {
     "sv_aim", "1", CVAR_NONE}; // ericw -- turn autoaim off by default. was 0.93
 static void PF_aim()
 {
-    edict_t *ent, *check, *bestent;
-    vec3_t start, dir, end, bestdir;
-    int i, j;
+    edict_t* ent;
+
+    edict_t* check;
+
+    edict_t* bestent;
+    vec3_t start;
+
+    vec3_t dir;
+
+    vec3_t end;
+
+    vec3_t bestdir;
+    int i;
+
+    int j;
     trace_t tr;
-    float dist, bestdist;
+    float dist;
+
+    float bestdist;
     float speed;
 
     ent = G_EDICT(OFS_PARM0);
@@ -1580,7 +1632,13 @@ This was a major timewaster in progs, so it was converted to C
 void PF_changeyaw()
 {
     edict_t* ent;
-    float ideal, current, move, speed;
+    float ideal;
+
+    float current;
+
+    float move;
+
+    float speed;
 
     ent = PROG_TO_EDICT(pr_global_struct->self);
     current = anglemod(ent->v.angles[1]);

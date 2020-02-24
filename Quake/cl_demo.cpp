@@ -92,7 +92,9 @@ static void CL_WriteDemoMessage()
 
 static int CL_GetDemoMessage()
 {
-    int r, i;
+    int r;
+
+    int i;
     float f;
 
     if(cls.demopaused)
@@ -412,7 +414,9 @@ play [demoname]
 void CL_PlayDemo_f()
 {
     char name[MAX_OSPATH];
-    int i, c;
+    int i;
+
+    int c;
     qboolean neg;
 
     if(cmd_source != src_command)

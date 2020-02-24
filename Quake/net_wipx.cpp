@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "net_defs.hpp"
 #include "net_wipx.hpp"
 
-extern cvar_t hostname;
+
 
 static sys_socket_t net_acceptsocket =
     INVALID_SOCKET; // socket for fielding new connections
@@ -39,7 +39,7 @@ static struct sockaddr_ipx broadcastaddr;
 /* externs from net_wins.c: */
 extern qboolean winsock_initialized;
 extern WSADATA winsockdata;
-extern const char* __WSAE_StrError(int);
+
 
 #define IPXSOCKETS 18
 static sys_socket_t ipxsocket[IPXSOCKETS];
@@ -49,7 +49,9 @@ static int sequence[IPXSOCKETS];
 
 sys_socket_t WIPX_Init()
 {
-    int i, err;
+    int i;
+
+    int err;
     char* colon;
     char buff[MAXHOSTNAMELEN];
     struct qsockaddr addr;
@@ -162,7 +164,9 @@ void WIPX_Listen(qboolean state)
 sys_socket_t WIPX_OpenSocket(int port)
 {
     int err;
-    sys_socket_t handle, newsocket;
+    sys_socket_t handle;
+
+    sys_socket_t newsocket;
     struct sockaddr_ipx address;
     u_long _true = 1;
 

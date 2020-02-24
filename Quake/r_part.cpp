@@ -75,7 +75,9 @@ R_InitParticleTextures -- johnfitz -- rewritten
 */
 void R_InitParticleTextures()
 {
-    int x, y;
+    int x;
+
+    int y;
     static byte particle1_data[64 * 64 * 4];
     static byte particle2_data[2 * 2 * 4];
     static byte particle3_data[64 * 64 * 4];
@@ -212,7 +214,13 @@ void R_EntityParticles(entity_t* ent)
     int i;
     particle_t* p;
     float angle;
-    float sp, sy, cp, cy;
+    float sp;
+
+    float sy;
+
+    float cp;
+
+    float cy;
     //	float		sr, cr;
     //	int		count;
     vec3_t forward;
@@ -358,8 +366,16 @@ Parse an effect out of the server message
 */
 void R_ParseParticleEffect()
 {
-    vec3_t org, dir;
-    int i, count, msgcount, color;
+    vec3_t org;
+
+    vec3_t dir;
+    int i;
+
+    int count;
+
+    int msgcount;
+
+    int color;
 
     for(i = 0; i < 3; i++)
     {
@@ -391,7 +407,9 @@ R_ParticleExplosion
 */
 void R_ParticleExplosion(vec3_t org)
 {
-    int i, j;
+    int i;
+
+    int j;
     particle_t* p;
 
     for(i = 0; i < 1024; i++)
@@ -436,7 +454,9 @@ R_ParticleExplosion2
 */
 void R_ParticleExplosion2(vec3_t org, int colorStart, int colorLength)
 {
-    int i, j;
+    int i;
+
+    int j;
     particle_t* p;
     int colorMod = 0;
 
@@ -471,7 +491,9 @@ R_BlobExplosion
 */
 void R_BlobExplosion(vec3_t org)
 {
-    int i, j;
+    int i;
+
+    int j;
     particle_t* p;
 
     for(i = 0; i < 1024; i++)
@@ -517,7 +539,9 @@ R_RunParticleEffect
 */
 void R_RunParticleEffect(vec3_t org, vec3_t dir, int color, int count)
 {
-    int i, j;
+    int i;
+
+    int j;
     particle_t* p;
 
     for(i = 0; i < count; i++)
@@ -577,7 +601,11 @@ R_LavaSplash
 */
 void R_LavaSplash(vec3_t org)
 {
-    int i, j, k;
+    int i;
+
+    int j;
+
+    int k;
     particle_t* p;
     float vel;
     vec3_t dir;
@@ -624,7 +652,11 @@ R_TeleportSplash
 */
 void R_TeleportSplash(vec3_t org)
 {
-    int i, j, k;
+    int i;
+
+    int j;
+
+    int k;
     particle_t* p;
     float vel;
     vec3_t dir;
@@ -800,9 +832,21 @@ R_DrawParticles
 */
 void CL_RunParticles()
 {
-    particle_t *p, *kill;
+    particle_t* p;
+
+    particle_t* kill;
     int i;
-    float time1, time2, time3, dvel, frametime, grav;
+    float time1;
+
+    float time2;
+
+    float time3;
+
+    float dvel;
+
+    float frametime;
+
+    float grav;
     extern cvar_t sv_gravity;
 
     frametime = cl.time - cl.oldtime;
@@ -926,10 +970,19 @@ void R_DrawParticles()
 {
     particle_t* p;
     float scale;
-    vec3_t up, right, p_up, p_right,
-        p_upright;             // johnfitz -- p_ vectors
-    GLubyte color[4], *c;      // johnfitz -- particle transparency
-    extern cvar_t r_particles; // johnfitz
+    vec3_t up;
+
+    vec3_t right;
+
+    vec3_t p_up;
+
+    vec3_t p_right;
+
+    vec3_t p_upright; // johnfitz -- p_ vectors
+    GLubyte color[4];
+
+    GLubyte* c; // johnfitz -- particle transparency
+    // johnfitz
     // float			alpha; //johnfitz -- particle transparency
 
     if(!r_particles.value)
@@ -1080,8 +1133,16 @@ void R_DrawParticles_ShowTris()
 {
     particle_t* p;
     float scale;
-    vec3_t up, right, p_up, p_right, p_upright;
-    extern cvar_t r_particles;
+    vec3_t up;
+
+    vec3_t right;
+
+    vec3_t p_up;
+
+    vec3_t p_right;
+
+    vec3_t p_upright;
+
 
     if(!r_particles.value)
     {

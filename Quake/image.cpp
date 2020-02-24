@@ -124,7 +124,9 @@ targaheader_t targa_header;
 
 int fgetLittleShort(FILE* f)
 {
-    byte b1, b2;
+    byte b1;
+
+    byte b2;
 
     b1 = fgetc(f);
     b2 = fgetc(f);
@@ -134,7 +136,13 @@ int fgetLittleShort(FILE* f)
 
 int fgetLittleLong(FILE* f)
 {
-    byte b1, b2, b3, b4;
+    byte b1;
+
+    byte b2;
+
+    byte b3;
+
+    byte b4;
 
     b1 = fgetc(f);
     b2 = fgetc(f);
@@ -157,7 +165,15 @@ have to swap)
 qboolean Image_WriteTGA(const char* name, byte* data, int width, int height,
     int bpp, qboolean upsidedown)
 {
-    int handle, i, size, temp, bytes;
+    int handle;
+
+    int i;
+
+    int size;
+
+    int temp;
+
+    int bytes;
     char pathname[MAX_OSPATH];
     byte header[TARGAHEADERSIZE];
 
@@ -206,9 +222,15 @@ Image_LoadTGA
 */
 byte* Image_LoadTGA(FILE* fin, int* width, int* height)
 {
-    int columns, rows, numPixels;
+    int columns;
+
+    int rows;
+
+    int numPixels;
     byte* pixbuf;
-    int row, column;
+    int row;
+
+    int column;
     byte* targa_rgba;
     int realrow;          // johnfitz -- fix for upside-down targas
     qboolean upside_down; // johnfitz -- fix for upside-down targas
@@ -267,7 +289,13 @@ byte* Image_LoadTGA(FILE* fin, int* width, int* height)
             // johnfitz
             for(column = 0; column < columns; column++)
             {
-                unsigned char red, green, blue, alphabyte;
+                unsigned char red;
+
+                unsigned char green;
+
+                unsigned char blue;
+
+                unsigned char alphabyte;
                 switch(targa_header.pixel_size)
                 {
                     case 24:
@@ -295,7 +323,19 @@ byte* Image_LoadTGA(FILE* fin, int* width, int* height)
     }
     else if(targa_header.image_type == 10) // Runlength encoded RGB images
     {
-        unsigned char red, green, blue, alphabyte, packetHeader, packetSize, j;
+        unsigned char red;
+
+        unsigned char green;
+
+        unsigned char blue;
+
+        unsigned char alphabyte;
+
+        unsigned char packetHeader;
+
+        unsigned char packetSize;
+
+        unsigned char j;
         for(row = rows - 1; row >= 0; row--)
         {
             // johnfitz -- fix for upside-down targas
@@ -442,8 +482,22 @@ Image_LoadPCX
 byte* Image_LoadPCX(FILE* f, int* width, int* height)
 {
     pcxheader_t pcx;
-    int x, y, w, h, readbyte, runlength, start;
-    byte *p, *data;
+    int x;
+
+    int y;
+
+    int w;
+
+    int h;
+
+    int readbyte;
+
+    int runlength;
+
+    int start;
+    byte* p;
+
+    byte* data;
     byte palette[768];
     stdio_buffer_t* buf;
 
@@ -535,7 +589,9 @@ byte* Image_LoadPCX(FILE* f, int* width, int* height)
 
 static byte* CopyFlipped(const byte* data, int width, int height, int bpp)
 {
-    int y, rowsize;
+    int y;
+
+    int rowsize;
     byte* flipped;
 
     rowsize = width * (bpp / 8);

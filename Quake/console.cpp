@@ -163,7 +163,9 @@ Con_Dump_f -- johnfitz -- adapted from quake2 source
 */
 static void Con_Dump_f()
 {
-    int l, x;
+    int l;
+
+    int x;
     const char* line;
     FILE* f;
     char buffer[1024];
@@ -281,7 +283,19 @@ If the line width has changed, reformat the buffer.
 */
 void Con_CheckResize()
 {
-    int i, j, width, oldwidth, oldtotallines, numlines, numchars;
+    int i;
+
+    int j;
+
+    int width;
+
+    int oldwidth;
+
+    int oldtotallines;
+
+    int numlines;
+
+    int numchars;
     char* tbuf; // johnfitz -- tbuf no longer a static array
     int mark;   // johnfitz
 
@@ -427,7 +441,9 @@ If no console is visible, the notify window will pop up.
 static void Con_Print(const char* txt)
 {
     int y;
-    int c, l;
+    int c;
+
+    int l;
     static int cr;
     int mask;
     qboolean boundary;
@@ -721,8 +737,12 @@ void Con_CenterPrintf(int linewidth, const char* fmt, ...)
     char msg[MAXPRINTMSG];  // the original message
     char line[MAXPRINTMSG]; // one line from the message
     char spaces[21];        // buffer for spaces
-    char *src, *dst;
-    int len, s;
+    char* src;
+
+    char* dst;
+    int len;
+
+    int s;
 
     va_start(argptr, fmt);
     q_vsnprintf(msg, sizeof(msg), fmt, argptr);
@@ -839,7 +859,9 @@ static qboolean bash_singlematch;
 
 void AddToTabList(const char* name, const char* type)
 {
-    tab_t *t, *insert;
+    tab_t* t;
+
+    tab_t* insert;
     char* i_bash;
     const char* i_name;
 
@@ -921,9 +943,15 @@ const char* FindCompletion(
     const char* partial, filelist_item_t* filelist, int* nummatches_out)
 {
     static char matched[32];
-    char *i_matched, *i_name;
+    char* i_matched;
+
+    char* i_name;
     filelist_item_t* file;
-    int init, match, plen;
+    int init;
+
+    int match;
+
+    int plen;
 
     memset(matched, 0, sizeof(matched));
     plen = strlen(partial);
@@ -1026,7 +1054,11 @@ void Con_TabComplete()
     const char* match;
     static char* c;
     tab_t* t;
-    int mark, i, j;
+    int mark;
+
+    int i;
+
+    int j;
 
     // if editline is empty, return
     if(key_lines[edit_line][1] == 0)
@@ -1219,7 +1251,11 @@ game top
 */
 void Con_DrawNotify()
 {
-    int i, x, v;
+    int i;
+
+    int x;
+
+    int v;
     const char* text;
     float time;
 
@@ -1306,7 +1342,9 @@ extern qpic_t *pic_ovr,
 
 void Con_DrawInput()
 {
-    int i, ofs;
+    int i;
+
+    int ofs;
 
     if(key_dest != key_console && !con_forcedup)
     {
@@ -1350,7 +1388,17 @@ typing is allowed
 */
 void Con_DrawConsole(int lines, qboolean drawinput)
 {
-    int i, x, y, j, sb, rows;
+    int i;
+
+    int x;
+
+    int y;
+
+    int j;
+
+    int sb;
+
+    int rows;
     const char* text;
     char ver[32];
 
@@ -1421,8 +1469,12 @@ Con_NotifyBox
 */
 void Con_NotifyBox(const char* text)
 {
-    double t1, t2;
-    int lastkey, lastchar;
+    double t1;
+
+    double t2;
+    int lastkey;
+
+    int lastchar;
 
     // during startup for sound / cd warnings
     Con_Printf("\n\n%s", Con_Quakebar(40)); // johnfitz

@@ -60,9 +60,13 @@ StripLength
 */
 int StripLength(int starttri, int startv)
 {
-    int m1, m2;
+    int m1;
+
+    int m2;
     int j;
-    mtriangle_t *last, *check;
+    mtriangle_t* last;
+
+    mtriangle_t* check;
     int k;
 
     used[starttri] = 2;
@@ -146,9 +150,13 @@ FanLength
 */
 int FanLength(int starttri, int startv)
 {
-    int m1, m2;
+    int m1;
+
+    int m2;
     int j;
-    mtriangle_t *last, *check;
+    mtriangle_t* last;
+
+    mtriangle_t* check;
     int k;
 
     used[starttri] = 2;
@@ -230,10 +238,20 @@ for the model, which holds for all frames
 */
 void BuildTris()
 {
-    int i, j, k;
+    int i;
+
+    int j;
+
+    int k;
     int startv;
-    float s, t;
-    int len, bestlen, besttype;
+    float s;
+
+    float t;
+    int len;
+
+    int bestlen;
+
+    int besttype;
     int bestverts[1024];
     int besttris[1024];
     int type;
@@ -346,12 +364,16 @@ GL_MakeAliasModelDisplayLists
 */
 void GL_MakeAliasModelDisplayLists(qmodel_t* m, aliashdr_t* hdr)
 {
-    int i, j;
+    int i;
+
+    int j;
     int* cmds;
     trivertx_t* verts;
-    float hscale, vscale; // johnfitz -- padded skins
-    int count;            // johnfitz -- precompute texcoords for padded skins
-    int* loadcmds;        // johnfitz
+    float hscale;
+
+    float vscale;  // johnfitz -- padded skins
+    int count;     // johnfitz -- precompute texcoords for padded skins
+    int* loadcmds; // johnfitz
 
     // johnfitz -- padded skins
     hscale =
@@ -428,7 +450,9 @@ Original code by MH from RMQEngine
 */
 void GL_MakeAliasModelDisplayLists_VBO()
 {
-    int i, j;
+    int i;
+
+    int j;
     int maxverts_vbo;
     trivertx_t* verts;
     unsigned short* indexes;
@@ -623,7 +647,9 @@ static void GLMesh_LoadVertexBuffer(qmodel_t* m, const aliashdr_t* hdr)
     // fill in the ST coords at the end of the buffer
     {
         meshst_t* st;
-        float hscale, vscale;
+        float hscale;
+
+        float vscale;
 
         // johnfitz -- padded skins
         hscale = (float)hdr->skinwidth /

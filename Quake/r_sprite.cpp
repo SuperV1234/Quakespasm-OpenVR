@@ -33,8 +33,18 @@ mspriteframe_t* R_GetSpriteFrame(entity_t* currentent)
     msprite_t* psprite;
     mspritegroup_t* pspritegroup;
     mspriteframe_t* pspriteframe;
-    int i, numframes, frame;
-    float *pintervals, fullinterval, targettime, time;
+    int i;
+
+    int numframes;
+
+    int frame;
+    float* pintervals;
+
+    float fullinterval;
+
+    float targettime;
+
+    float time;
 
     psprite = (msprite_t*)currentent->model->cache.data;
     frame = currentent->frame;
@@ -84,11 +94,23 @@ R_DrawSpriteModel -- johnfitz -- rewritten: now supports all orientations
 */
 void R_DrawSpriteModel(entity_t* e)
 {
-    vec3_t point, v_forward, v_right, v_up;
+    vec3_t point;
+
+    vec3_t v_forward;
+
+    vec3_t v_right;
+
+    vec3_t v_up;
     msprite_t* psprite;
     mspriteframe_t* frame;
-    float *s_up, *s_right;
-    float angle, sr, cr;
+    float* s_up;
+
+    float* s_right;
+    float angle;
+
+    float sr;
+
+    float cr;
 
     // TODO: frustum cull it?
 

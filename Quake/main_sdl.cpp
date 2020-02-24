@@ -107,7 +107,11 @@ static quakeparms_t parms;
 int main(int argc, char* argv[])
 {
     int t;
-    double time, oldtime, newtime;
+    double time;
+
+    double oldtime;
+
+    double newtime;
 
     host_parms = &parms;
     parms.basedir = ".";

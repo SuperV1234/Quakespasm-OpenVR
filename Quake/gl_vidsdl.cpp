@@ -377,7 +377,9 @@ VID_GetCurrentWidth
 static int VID_GetCurrentWidth()
 {
 #if defined(USE_SDL2)
-    int w = 0, h = 0;
+    int w = 0;
+
+    int h = 0;
     SDL_GetWindowSize(draw_context, &w, &h);
     return w;
 #else
@@ -393,7 +395,9 @@ VID_GetCurrentHeight
 static int VID_GetCurrentHeight()
 {
 #if defined(USE_SDL2)
-    int w = 0, h = 0;
+    int w = 0;
+
+    int h = 0;
     SDL_GetWindowSize(draw_context, &w, &h);
     return h;
 #else
@@ -637,7 +641,9 @@ static qboolean VID_SetMode(
     int temp;
     Uint32 flags;
     char caption[50];
-    int depthbits, stencilbits;
+    int depthbits;
+
+    int stencilbits;
     int fsaa_obtained;
 #if defined(USE_SDL2)
     int previous_display;
@@ -873,7 +879,13 @@ VID_Restart -- johnfitz -- change video modes on the fly
 */
 static void VID_Restart()
 {
-    int width, height, refreshrate, bpp;
+    int width;
+
+    int height;
+
+    int refreshrate;
+
+    int bpp;
     qboolean fullscreen;
 
     if(vid_locked || !vid_changed)
@@ -973,7 +985,15 @@ switching modes
 */
 static void VID_Test()
 {
-    int old_width, old_height, old_refreshrate, old_bpp, old_fullscreen;
+    int old_width;
+
+    int old_height;
+
+    int old_refreshrate;
+
+    int old_bpp;
+
+    int old_fullscreen;
 
     if(vid_locked || !vid_changed)
     {
@@ -1044,8 +1064,14 @@ GL_MakeNiceExtensionsList -- johnfitz
 */
 static char* GL_MakeNiceExtensionsList(const char* in)
 {
-    char *copy, *token, *out;
-    int i, count;
+    char* copy;
+
+    char* token;
+
+    char* out;
+    int i;
+
+    int count;
 
     if(!in)
     {
@@ -1099,7 +1125,9 @@ GL_CheckExtensions
 static qboolean GL_ParseExtensionList(const char* list, const char* name)
 {
     const char* start;
-    const char *where, *terminator;
+    const char* where;
+
+    const char* terminator;
 
     if(!list || !name || !*name)
     {
@@ -1299,7 +1327,9 @@ static void GL_CheckExtensions()
     if(GL_ParseExtensionList(
            gl_extensions, "GL_EXT_texture_filter_anisotropic"))
     {
-        float test1, test2;
+        float test1;
+
+        float test2;
         GLuint tex;
 
         // test to make sure we really have control over it
@@ -1660,7 +1690,13 @@ rates after each mode.
 static void VID_DescribeModes_f()
 {
     int i;
-    int lastwidth, lastheight, lastbpp, count;
+    int lastwidth;
+
+    int lastheight;
+
+    int lastbpp;
+
+    int count;
 
     lastwidth = lastheight = lastbpp = count = 0;
 
@@ -1797,8 +1833,22 @@ VID_Init
 void VID_Init()
 {
     static char vid_center[] = "SDL_VIDEO_CENTERED=center";
-    int p, width, height, refreshrate, bpp;
-    int display_width, display_height, display_refreshrate, display_bpp;
+    int p;
+
+    int width;
+
+    int height;
+
+    int refreshrate;
+
+    int bpp;
+    int display_width;
+
+    int display_height;
+
+    int display_refreshrate;
+
+    int display_bpp;
     qboolean fullscreen;
     const char* read_vars[] = {"vid_fullscreen", "vid_width", "vid_height",
         "vid_refreshrate", "vid_bpp", "vid_vsync", "vid_fsaa",
@@ -2132,7 +2182,13 @@ VID_Menu_Init
 */
 static void VID_Menu_Init()
 {
-    int i, j, h, w;
+    int i;
+
+    int j;
+
+    int h;
+
+    int w;
 
     for(i = 0; i < nummodes; i++)
     {
@@ -2165,7 +2221,11 @@ regenerates bpp list based on current vid_width and vid_height
 */
 static void VID_Menu_RebuildBppList()
 {
-    int i, j, b;
+    int i;
+
+    int j;
+
+    int b;
 
     vid_menu_numbpps = 0;
 
@@ -2232,7 +2292,11 @@ regenerates rate list based on current vid_width, vid_height and vid_bpp
 */
 static void VID_Menu_RebuildRateList()
 {
-    int i, j, r;
+    int i;
+
+    int j;
+
+    int r;
 
     vid_menu_numrates = 0;
 
@@ -2520,7 +2584,9 @@ VID_MenuDraw
 */
 static void VID_MenuDraw()
 {
-    int i, y;
+    int i;
+
+    int y;
     qpic_t* p;
     const char* title;
 

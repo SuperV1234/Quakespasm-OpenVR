@@ -303,7 +303,11 @@ void BGM_PlayCDtrack(byte track, qboolean looping)
      */
     char tmp[MAX_QPATH];
     const char* ext;
-    unsigned int path_id, prev_id, type;
+    unsigned int path_id;
+
+    unsigned int prev_id;
+
+    unsigned int type;
     music_handler_t* handler;
 
     BGM_Stop();

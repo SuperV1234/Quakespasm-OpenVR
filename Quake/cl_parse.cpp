@@ -131,7 +131,9 @@ CL_ParseStartSoundPacket
 void CL_ParseStartSoundPacket()
 {
     vec3_t pos;
-    int channel, ent;
+    int channel;
+
+    int ent;
     int sound_num;
     int volume;
     int field_mask;
@@ -280,7 +282,9 @@ void CL_ParseServerInfo()
 {
     const char* str;
     int i;
-    int nummodels, numsounds;
+    int nummodels;
+
+    int numsounds;
     char model_precache[MAX_MODELS][MAX_QPATH];
     char sound_precache[MAX_SOUNDS][MAX_QPATH];
 
@@ -708,7 +712,9 @@ void CL_ParseUpdate(int bits)
         // HACK: if this bit is set, assume this is PROTOCOL_NEHAHRA
         if(bits & U_TRANS)
         {
-            float a, b;
+            float a;
+
+            float b;
 
             if(warn_about_nehahra_protocol)
             {
@@ -816,7 +822,9 @@ Server information pertaining to this client only
 */
 void CL_ParseClientdata()
 {
-    int i, j;
+    int i;
+
+    int j;
     int bits; // johnfitz
 
     bits =
@@ -1045,9 +1053,15 @@ CL_NewTranslation
 */
 void CL_NewTranslation(int slot)
 {
-    int i, j;
-    int top, bottom;
-    byte *dest, *source;
+    int i;
+
+    int j;
+    int top;
+
+    int bottom;
+    byte* dest;
+
+    byte* source;
 
     if(slot > cl.maxclients)
     {
@@ -1132,7 +1146,11 @@ CL_ParseStaticSound
 void CL_ParseStaticSound(int version) // johnfitz -- added argument
 {
     vec3_t org;
-    int sound_num, vol, atten;
+    int sound_num;
+
+    int vol;
+
+    int atten;
     int i;
 
     for(i = 0; i < 3; i++)
@@ -1170,8 +1188,12 @@ void CL_ParseServerMessage()
 {
     int cmd;
     int i;
-    const char* str;       // johnfitz
-    int total, j, lastcmd; // johnfitz
+    const char* str; // johnfitz
+    int total;
+
+    int j;
+
+    int lastcmd; // johnfitz
 
     //
     // if recording demos, copy the message out

@@ -119,10 +119,10 @@ extern void SCR_DrawConsole();
 
 // rendering
 extern void R_SetupView();
-extern void R_RenderScene();
+
 extern int glx, gly, glwidth, glheight;
-extern refdef_t r_refdef;
-extern vec3_t vright;
+
+
 
 static float vrYaw;
 static bool readbackYaw;
@@ -154,8 +154,8 @@ vec3_t vr_room_scale_move;
 
 extern cvar_t gl_farclip;
 extern int glwidth, glheight;
-extern void SCR_UpdateScreenContent();
-extern refdef_t r_refdef;
+
+
 
 static std::vector<cvar_t*> cvarsToRegister;
 
@@ -394,7 +394,9 @@ void Vec3RotateZ(vec3_t in, float angle, vec3_t out)
 [[nodiscard]] vr::HmdVector3_t RotateVectorByQuaternion(
     const vr::HmdVector3_t& v, const vr::HmdQuaternion_t& q)
 {
-    vr::HmdVector3_t u, result;
+    vr::HmdVector3_t u;
+
+    vr::HmdVector3_t result;
     u.v[0] = q.x;
     u.v[1] = q.y;
     u.v[2] = q.z;
@@ -733,8 +735,16 @@ bool VR_Enable()
 
     for(int i = 0; i < 2; i++)
     {
-        uint32_t vrwidth, vrheight;
-        float LeftTan, RightTan, UpTan, DownTan;
+        uint32_t vrwidth;
+
+        uint32_t vrheight;
+        float LeftTan;
+
+        float RightTan;
+
+        float UpTan;
+
+        float DownTan;
 
         ovrHMD->GetRecommendedRenderTargetSize(&vrwidth, &vrheight);
         ovrHMD->GetProjectionRaw(
@@ -912,7 +922,9 @@ void IdentifyAxes(int device);
 
 void VR_UpdateScreenContent()
 {
-    GLint w, h;
+    GLint w;
+
+    GLint h;
 
     // Last chance to enable VR Mode - we get here when the game already
     // start up with vr_enabled 1 If enabling fails, unset the cvar and
@@ -1130,8 +1142,15 @@ void VR_UpdateScreenContent()
 
             vec3_t rotOfs = {vr_gunangle.value, vr_gunyaw.value, 0};
 
-            vec3_t mat[3], matTmp[3], gunMatPitch[3], gunMatYaw[3],
-                gunMatRoll[3];
+            vec3_t mat[3];
+
+            vec3_t matTmp[3];
+
+            vec3_t gunMatPitch[3];
+
+            vec3_t gunMatYaw[3];
+
+            vec3_t gunMatRoll[3];
             CreateRotMat(0, rotOfs[0], gunMatPitch); // pitch
             CreateRotMat(1, rotOfs[1], gunMatYaw);   // yaw
             CreateRotMat(2, rotOfs[2], gunMatRoll);  // roll
@@ -1317,9 +1336,19 @@ void VR_AddOrientationToViewAngles(vec3_t angles)
 
 void VR_ShowCrosshair()
 {
-    vec3_t forward, up, right;
-    vec3_t start, end, impact;
-    float size, alpha;
+    vec3_t forward;
+
+    vec3_t up;
+
+    vec3_t right;
+    vec3_t start;
+
+    vec3_t end;
+
+    vec3_t impact;
+    float size;
+
+    float alpha;
 
     if(!sv_player)
     {
@@ -1435,11 +1464,24 @@ void VR_ShowCrosshair()
 void VR_Draw2D()
 {
     qboolean draw_sbar = false;
-    vec3_t menu_angles, forward, right, up, target;
+    vec3_t menu_angles;
+
+    vec3_t forward;
+
+    vec3_t right;
+
+    vec3_t up;
+
+    vec3_t target;
     float scale_hud = vr_menu_scale.value;
 
-    int oldglwidth = glwidth, oldglheight = glheight,
-        oldconwidth = vid.conwidth, oldconheight = vid.conheight;
+    int oldglwidth = glwidth;
+
+    int oldglheight = glheight;
+
+    int oldconwidth = vid.conwidth;
+
+    int oldconheight = vid.conheight;
 
     glwidth = 320;
     glheight = 200;
@@ -1557,7 +1599,15 @@ void VR_Draw2D()
 
 void VR_DrawSbar()
 {
-    vec3_t sbar_angles, forward, right, up, target;
+    vec3_t sbar_angles;
+
+    vec3_t forward;
+
+    vec3_t right;
+
+    vec3_t up;
+
+    vec3_t target;
     float scale_hud = vr_hud_scale.value;
 
     glPushMatrix();
@@ -1891,7 +1941,11 @@ void VR_Move(usercmd_t* cmd)
     {
         DoTrigger(&controllers[1], K_MOUSE1);
 
-        vec3_t lfwd, lright, lup;
+        vec3_t lfwd;
+
+        vec3_t lright;
+
+        vec3_t lup;
         AngleVectors(cl.handrot[0], lfwd, lright, lup);
 
         if(vr_movement_mode.value == VrMovementMode::e_RAW_INPUT)
@@ -1904,7 +1958,11 @@ void VR_Move(usercmd_t* cmd)
         }
         else
         {
-            vec3_t vfwd, vright, vup;
+            vec3_t vfwd;
+
+            vec3_t vright;
+
+            vec3_t vup;
             vec3_t playerYawOnly = {0, sv_player->v.v_viewangle[YAW], 0};
 
             AngleVectors(playerYawOnly, vfwd, vright, vup);

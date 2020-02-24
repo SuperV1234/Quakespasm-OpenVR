@@ -332,11 +332,17 @@ entalpha, multitexture, and r_drawflat
 void GL_DrawAliasFrame(aliashdr_t* paliashdr, lerpdata_t lerpdata)
 {
     float vertcolor[4];
-    trivertx_t *verts1, *verts2;
+    trivertx_t* verts1;
+
+    trivertx_t* verts2;
     int* commands;
     int count;
-    float u, v;
-    float blend, iblend;
+    float u;
+
+    float v;
+    float blend;
+
+    float iblend;
     qboolean lerping;
 
     if(lerpdata.pose1 != lerpdata.pose2)
@@ -464,7 +470,9 @@ R_SetupAliasFrame -- johnfitz -- rewritten to support lerping
 void R_SetupAliasFrame(aliashdr_t* paliashdr, int frame, lerpdata_t* lerpdata)
 {
     entity_t* e = currententity;
-    int posenum, numposes;
+    int posenum;
+
+    int numposes;
 
     if((frame >= paliashdr->numframes) || (frame < 0))
     {
@@ -712,8 +720,14 @@ R_DrawAliasModel -- johnfitz -- almost completely rewritten
 void R_DrawAliasModel(entity_t* e, bool horizflip)
 {
     aliashdr_t* paliashdr;
-    int i, anim, skinnum;
-    gltexture_t *tx, *fb;
+    int i;
+
+    int anim;
+
+    int skinnum;
+    gltexture_t* tx;
+
+    gltexture_t* fb;
     lerpdata_t lerpdata;
     qboolean alphatest = !!(e->model->flags & MF_HOLEY);
 

@@ -41,8 +41,12 @@ static void SDLCALL paint_audio(void* unused, Uint8* stream, int len)
 {
     (void)unused;
 
-    int pos, tobufend;
-    int len1, len2;
+    int pos;
+
+    int tobufend;
+    int len1;
+
+    int len2;
 
     if(!shm)
     { /* shouldn't happen, but just in case */
@@ -87,7 +91,9 @@ static void SDLCALL paint_audio(void* unused, Uint8* stream, int len)
 qboolean SNDDMA_Init(dma_t* dma)
 {
     SDL_AudioSpec desired;
-    int tmp, val;
+    int tmp;
+
+    int val;
     char drivername[128];
 
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)

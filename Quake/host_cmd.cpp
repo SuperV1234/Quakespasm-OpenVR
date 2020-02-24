@@ -63,7 +63,11 @@ FileList_Add
 */
 void FileList_Add(const char* name, filelist_item_t** list)
 {
-    filelist_item_t *item, *cursor, *prev;
+    filelist_item_t* item;
+
+    filelist_item_t* cursor;
+
+    filelist_item_t* prev;
 
     // ignore duplicate
     for(item = *list; item; item = item->next)
@@ -245,7 +249,9 @@ void Modlist_Init()
     WIN32_FIND_DATA fdat;
     HANDLE fhnd;
     DWORD attribs;
-    char dir_string[MAX_OSPATH], mod_string[MAX_OSPATH];
+    char dir_string[MAX_OSPATH];
+
+    char mod_string[MAX_OSPATH];
 
     q_snprintf(dir_string, sizeof(dir_string), "%s/*", com_basedir);
     fhnd = FindFirstFile(dir_string, &fdat);
@@ -804,7 +810,9 @@ Host_Ping_f
 */
 void Host_Ping_f()
 {
-    int i, j;
+    int i;
+
+    int j;
     float total;
     client_t* client;
 
@@ -852,7 +860,9 @@ command from the console.  Active clients are kicked off.
 void Host_Map_f()
 {
     int i;
-    char name[MAX_QPATH], *p;
+    char name[MAX_QPATH];
+
+    char* p;
 
     if(Cmd_Argc() < 2) // no map name given
     {
@@ -931,7 +941,11 @@ Loads a random map from the "maps" list.
 */
 void Host_Randmap_f()
 {
-    int i, randlevel, numlevels;
+    int i;
+
+    int randlevel;
+
+    int numlevels;
     filelist_item_t* level;
 
     if(cmd_source != src_command)
@@ -1237,7 +1251,9 @@ void Host_Loadgame_f()
 
     char name[MAX_OSPATH];
     char mapname[MAX_QPATH];
-    float time, tfloat;
+    float time;
+
+    float tfloat;
     const char* data;
     int i;
     edict_t* ent;
@@ -1456,7 +1472,9 @@ void Host_Say(qboolean teamonly)
     client_t* client;
     client_t* save;
     const char* p;
-    char text[MAXCMDLINE], *p2;
+    char text[MAXCMDLINE];
+
+    char* p2;
     qboolean quoted;
     qboolean fromServer = false;
 
@@ -1561,7 +1579,9 @@ void Host_Tell_f()
     client_t* client;
     client_t* save;
     const char* p;
-    char text[MAXCMDLINE], *p2;
+    char text[MAXCMDLINE];
+
+    char* p2;
     qboolean quoted;
 
     if(cmd_source == src_command)
@@ -1635,7 +1655,9 @@ Host_Color_f
 */
 void Host_Color_f()
 {
-    int top, bottom;
+    int top;
+
+    int bottom;
     int playercolor;
 
     if(Cmd_Argc() == 1)
@@ -2486,7 +2508,9 @@ Host_Startdemos_f
 */
 void Host_Startdemos_f()
 {
-    int i, c;
+    int i;
+
+    int c;
 
     if(cls.state == ca_dedicated)
     {

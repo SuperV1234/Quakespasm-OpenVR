@@ -214,7 +214,15 @@ static int PartialIPAddress(const char* in, struct qsockaddr* hostaddr)
 {
     char buff[256];
     char* b;
-    int addr, mask, num, port, run;
+    int addr;
+
+    int mask;
+
+    int num;
+
+    int port;
+
+    int run;
 
     buff[0] = '.';
     b = buff;
@@ -412,7 +420,17 @@ const char* UDP_AddrToString(struct qsockaddr* addr)
 
 int UDP_StringToAddr(const char* string, struct qsockaddr* addr)
 {
-    int ha1, ha2, ha3, ha4, hp, ipaddr;
+    int ha1;
+
+    int ha2;
+
+    int ha3;
+
+    int ha4;
+
+    int hp;
+
+    int ipaddr;
 
     sscanf(string, "%d.%d.%d.%d:%d", &ha1, &ha2, &ha3, &ha4, &hp);
     ipaddr = (ha1 << 24) | (ha2 << 16) | (ha3 << 8) | ha4;

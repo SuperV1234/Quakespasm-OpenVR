@@ -395,7 +395,9 @@ should be put at.
 */
 float CL_LerpPoint()
 {
-    float f, frac;
+    float f;
+
+    float frac;
 
     f = cl.mtime[0] - cl.mtime[1];
 
@@ -448,8 +450,14 @@ CL_RelinkEntities
 void CL_RelinkEntities()
 {
     entity_t* ent;
-    int i, j;
-    float frac, f, d;
+    int i;
+
+    int j;
+    float frac;
+
+    float f;
+
+    float d;
     vec3_t delta;
     float bobjrotate;
     vec3_t oldorg;
@@ -577,7 +585,11 @@ void CL_RelinkEntities()
 
         if(ent->effects & EF_MUZZLEFLASH)
         {
-            vec3_t fv, rv, uv;
+            vec3_t fv;
+
+            vec3_t rv;
+
+            vec3_t uv;
 
             dl = CL_AllocDlight(i);
             VectorCopy(ent->origin, dl->origin);
@@ -842,7 +854,9 @@ display impact point of trace along VPN
 */
 void CL_Tracepos_f(refdef_t& refdef)
 {
-    vec3_t v, w;
+    vec3_t v;
+
+    vec3_t w;
 
     if(cls.state != ca_connected)
     {

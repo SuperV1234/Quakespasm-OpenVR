@@ -192,7 +192,9 @@ void SV_Impact(edict_t* e1, edict_t* e2)
 {
     // TODO VR: implement handtouch to press buttons?
 
-    int old_self, old_other;
+    int old_self;
+
+    int old_other;
 
     old_self = pr_global_struct->self;
     old_other = pr_global_struct->other;
@@ -231,7 +233,9 @@ int ClipVelocity(vec3_t in, vec3_t normal, vec3_t out, float overbounce)
 {
     float backoff;
     float change;
-    int i, blocked;
+    int i;
+
+    int blocked;
 
     blocked = 0;
     if(normal[2] > 0)
@@ -274,13 +278,21 @@ If steptrace is not nullptr, the trace of any vertical wall hit will be stored
 #define MAX_CLIP_PLANES 5
 int SV_FlyMove(edict_t* ent, float time, trace_t* steptrace)
 {
-    int bumpcount, numbumps;
+    int bumpcount;
+
+    int numbumps;
     vec3_t dir;
     float d;
     int numplanes;
     vec3_t planes[MAX_CLIP_PLANES];
-    vec3_t primal_velocity, original_velocity, new_velocity;
-    int i, j;
+    vec3_t primal_velocity;
+
+    vec3_t original_velocity;
+
+    vec3_t new_velocity;
+    int i;
+
+    int j;
     trace_t trace;
     vec3_t end;
     float time_left;
@@ -512,10 +524,20 @@ SV_PushMove
 */
 void SV_PushMove(edict_t* pusher, float movetime)
 {
-    int i, e;
-    edict_t *check, *block;
-    vec3_t mins, maxs, move;
-    vec3_t entorig, pushorig;
+    int i;
+
+    int e;
+    edict_t* check;
+
+    edict_t* block;
+    vec3_t mins;
+
+    vec3_t maxs;
+
+    vec3_t move;
+    vec3_t entorig;
+
+    vec3_t pushorig;
     int num_moved;
     edict_t** moved_edict; // johnfitz -- dynamically allocate
     vec3_t* moved_from;    // johnfitz -- dynamically allocate
@@ -711,7 +733,9 @@ clipping hull.
 */
 void SV_CheckStuck(edict_t* ent)
 {
-    int i, j;
+    int i;
+
+    int j;
     int z;
     vec3_t org;
 
@@ -800,9 +824,17 @@ SV_WallFriction
 */
 void SV_WallFriction(edict_t* ent, trace_t* trace)
 {
-    vec3_t forward, right, up;
-    float d, i;
-    vec3_t into, side;
+    vec3_t forward;
+
+    vec3_t right;
+
+    vec3_t up;
+    float d;
+
+    float i;
+    vec3_t into;
+
+    vec3_t side;
 
     AngleVectors(ent->v.v_angle, forward, right, up);
     d = DotProduct(trace->plane.normal, forward);
@@ -917,12 +949,20 @@ Only used by players
 #define STEPSIZE 18
 void SV_WalkMove(edict_t* ent)
 {
-    vec3_t upmove, downmove;
-    vec3_t oldorg, oldvel;
-    vec3_t nosteporg, nostepvel;
+    vec3_t upmove;
+
+    vec3_t downmove;
+    vec3_t oldorg;
+
+    vec3_t oldvel;
+    vec3_t nosteporg;
+
+    vec3_t nostepvel;
     int clip;
     int oldonground;
-    trace_t steptrace, downtrace;
+    trace_t steptrace;
+
+    trace_t downtrace;
 
     //
     // do a regular slide move unless it looks like you ran into a step

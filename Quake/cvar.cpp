@@ -43,7 +43,9 @@ void Cvar_List_f()
 {
     cvar_t* cvar;
     const char* partial;
-    int len, count;
+    int len;
+
+    int count;
 
     if(Cmd_Argc() > 1)
     {
@@ -482,7 +484,9 @@ void Cvar_SetQuick(cvar_t* var, const char* value)
 
 void Cvar_SetValueQuick(cvar_t* var, const float value)
 {
-    char val[32], *ptr = val;
+    char val[32];
+
+    char* ptr = val;
 
     if(value == (float)((int)value))
     {
@@ -531,7 +535,9 @@ Cvar_SetValue
 */
 void Cvar_SetValue(const char* var_name, const float value)
 {
-    char val[32], *ptr = val;
+    char val[32];
+
+    char* ptr = val;
 
     if(value == (float)((int)value))
     {
@@ -597,7 +603,9 @@ void Cvar_RegisterVariable(cvar_t* variable)
 {
     char value[512];
     qboolean set_rom;
-    cvar_t *cursor, *prev; // johnfitz -- sorted list insert
+    cvar_t* cursor;
+
+    cvar_t* prev; // johnfitz -- sorted list insert
 
     // first check to see if it has already been defined
     if(Cvar_FindVar(variable->name))

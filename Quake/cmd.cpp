@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.hpp"
 
-void Cmd_ForwardToServer();
+
 
 #define MAX_ALIAS_NAME 32
 
@@ -237,7 +237,11 @@ void Cmd_StuffCmds_f()
 {
     extern cvar_t cmdline;
     char cmds[CMDLINE_LENGTH];
-    int i, j, plus;
+    int i;
+
+    int j;
+
+    int plus;
 
     plus = false; // On Unix, argv[0] is command name
 
@@ -327,7 +331,9 @@ void Cmd_Alias_f()
 {
     cmdalias_t* a;
     char cmd[1024];
-    int i, c;
+    int i;
+
+    int c;
     const char* s;
 
 
@@ -412,7 +418,9 @@ Cmd_Unalias_f -- johnfitz
 */
 void Cmd_Unalias_f()
 {
-    cmdalias_t *a, *prev;
+    cmdalias_t* a;
+
+    cmdalias_t* prev;
 
     switch(Cmd_Argc())
     {
@@ -502,7 +510,9 @@ void Cmd_List_f()
 {
     cmd_function_t* cmd;
     const char* partial;
-    int len, count;
+    int len;
+
+    int count;
 
     if(Cmd_Argc() > 1)
     {
@@ -729,7 +739,9 @@ Cmd_AddCommand
 void Cmd_AddCommand(const char* cmd_name, xcommand_t function)
 {
     cmd_function_t* cmd;
-    cmd_function_t *cursor, *prev; // johnfitz -- sorted list insert
+    cmd_function_t* cursor;
+
+    cmd_function_t* prev; // johnfitz -- sorted list insert
 
     if(host_initialized)
     { // because hunk allocation would get stomped

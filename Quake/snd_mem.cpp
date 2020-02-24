@@ -33,7 +33,11 @@ static void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
     int srcsample;
     float stepscale;
     int i;
-    int sample, samplefrac, fracstep;
+    int sample;
+
+    int samplefrac;
+
+    int fracstep;
     sfxcache_t* sc;
 
     sc = (sfxcache_t*)Cache_Check(&sfx->cache);

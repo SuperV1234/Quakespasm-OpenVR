@@ -147,8 +147,12 @@ returns an index into scrap_texnums[] and the position inside it
 */
 int Scrap_AllocBlock(int w, int h, int* x, int* y)
 {
-    int i, j;
-    int best, best2;
+    int i;
+
+    int j;
+    int best;
+
+    int best2;
     int texnum;
 
     for(texnum = 0; texnum < MAX_SCRAPS; texnum++)
@@ -236,8 +240,14 @@ qpic_t* Draw_PicFromWad(const char* name)
     // load little ones into the scrap
     if(p->width < 64 && p->height < 64)
     {
-        int x, y;
-        int i, j, k;
+        int x;
+
+        int y;
+        int i;
+
+        int j;
+
+        int k;
         int texnum;
 
         texnum = Scrap_AllocBlock(p->width, p->height, &x, &y);
@@ -470,8 +480,14 @@ Draw_CharacterQuad -- johnfitz -- seperate function to spit out verts
 */
 void Draw_CharacterQuad(int x, int y, char num)
 {
-    int row, col;
-    float frow, fcol, size;
+    int row;
+
+    int col;
+    float frow;
+
+    float fcol;
+
+    float size;
 
     row = num >> 4;
     col = num & 15;

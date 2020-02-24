@@ -154,7 +154,9 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
 {
-    int i, v;
+    int i;
+
+    int v;
 
     if(sv.datagram.cursize > MAX_DATAGRAM - 16)
     {
@@ -199,8 +201,12 @@ Larger attenuations will drop off.  (max 4 attenuation)
 void SV_StartSound(edict_t* entity, int channel, const char* sample, int volume,
     float attenuation)
 {
-    int sound_num, ent;
-    int i, field_mask;
+    int sound_num;
+
+    int ent;
+    int i;
+
+    int field_mask;
 
     if(volume < 0 || volume > 255)
     {
@@ -257,10 +263,8 @@ void SV_StartSound(edict_t* entity, int channel, const char* sample, int volume,
         {
             return; // don't send any info protocol can't support
         }
-        else
-        {
-            field_mask |= SND_LARGEENTITY;
-        }
+
+        field_mask |= SND_LARGEENTITY;
     }
     if(sound_num >= 256 || channel >= 8)
     {
@@ -268,10 +272,8 @@ void SV_StartSound(edict_t* entity, int channel, const char* sample, int volume,
         {
             return; // don't send any info protocol can't support
         }
-        else
-        {
-            field_mask |= SND_LARGESOUND;
-        }
+
+        field_mask |= SND_LARGESOUND;
     }
     // johnfitz
 
@@ -657,7 +659,9 @@ SV_WriteEntitiesToClient
 */
 void SV_WriteEntitiesToClient(edict_t* clent, sizebuf_t* msg)
 {
-    int e, i;
+    int e;
+
+    int i;
     int bits;
     byte* pvs;
     vec3_t org;
@@ -1313,7 +1317,9 @@ SV_UpdateToReliableMessages
 */
 void SV_UpdateToReliableMessages()
 {
-    int i, j;
+    int i;
+
+    int j;
     client_t* client;
 
     // check for changes to be sent over the reliable streams
@@ -1682,7 +1688,9 @@ transition to another level
 */
 void SV_SaveSpawnparms()
 {
-    int i, j;
+    int i;
+
+    int j;
 
     svs.serverflags = pr_global_struct->serverflags;
 

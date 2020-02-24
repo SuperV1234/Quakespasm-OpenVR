@@ -465,9 +465,21 @@ Mod_LoadTextures
 */
 void Mod_LoadTextures(lump_t* l)
 {
-    int i, j, pixels, num, maxanim, altmax;
+    int i;
+
+    int j;
+
+    int pixels;
+
+    int num;
+
+    int maxanim;
+
+    int altmax;
     miptex_t* mt;
-    texture_t *tx, *tx2;
+    texture_t* tx;
+
+    texture_t* tx2;
     texture_t* anims[10];
     texture_t* altanims[10];
     dmiptexlump_t* m;
@@ -475,8 +487,16 @@ void Mod_LoadTextures(lump_t* l)
     char texturename[64];
     int nummiptex;
     src_offset_t offset;
-    int mark, fwidth, fheight;
-    char filename[MAX_OSPATH], filename2[MAX_OSPATH], mapname[MAX_OSPATH];
+    int mark;
+
+    int fwidth;
+
+    int fheight;
+    char filename[MAX_OSPATH];
+
+    char filename2[MAX_OSPATH];
+
+    char mapname[MAX_OSPATH];
     byte* data;
     extern byte* hunk_base;
     // johnfitz
@@ -832,8 +852,14 @@ lordhavoc
 */
 void Mod_LoadLighting(lump_t* l)
 {
-    int i, mark;
-    byte *in, *out, *data;
+    int i;
+
+    int mark;
+    byte* in;
+
+    byte* out;
+
+    byte* data;
     byte d;
     char litfilename[MAX_OSPATH];
     unsigned int path_id;
@@ -985,7 +1011,9 @@ void Mod_LoadVertexes(lump_t* l)
 {
     dvertex_t* in;
     mvertex_t* out;
-    int i, count;
+    int i;
+
+    int count;
 
     in = (dvertex_t*)(mod_base + l->fileofs);
     if(l->filelen % sizeof(*in))
@@ -1014,7 +1042,9 @@ Mod_LoadEdges
 void Mod_LoadEdges(lump_t* l, int bsp2)
 {
     medge_t* out;
-    int i, count;
+    int i;
+
+    int count;
 
     if(bsp2)
     {
@@ -1069,8 +1099,16 @@ void Mod_LoadTexinfo(lump_t* l)
 {
     texinfo_t* in;
     mtexinfo_t* out;
-    int i, j, count, miptex;
-    float len1, len2;
+    int i;
+
+    int j;
+
+    int count;
+
+    int miptex;
+    float len1;
+
+    float len2;
     int missing = 0; // johnfitz
 
     in = (texinfo_t*)(mod_base + l->fileofs);
@@ -1159,11 +1197,21 @@ Fills in s->texturemins[] and s->extents[]
 */
 void CalcSurfaceExtents(msurface_t* s)
 {
-    float mins[2], maxs[2], val;
-    int i, j, e;
+    float mins[2];
+
+    float maxs[2];
+
+    float val;
+    int i;
+
+    int j;
+
+    int e;
     mvertex_t* v;
     mtexinfo_t* tex;
-    int bmins[2], bmaxs[2];
+    int bmins[2];
+
+    int bmaxs[2];
 
     mins[0] = mins[1] = 999999;
     maxs[0] = maxs[1] = -999999; // FIXME: change these two to FLT_MAX/-FLT_MAX
@@ -1241,7 +1289,11 @@ TODO: merge this into BuildSurfaceDisplayList?
 void Mod_PolyForUnlitSurface(msurface_t* fa)
 {
     vec3_t verts[64];
-    int numverts, i, lindex;
+    int numverts;
+
+    int i;
+
+    int lindex;
     float* vec;
     glpoly_t* poly;
     float texscale;
@@ -1295,7 +1347,9 @@ per-surface frustum culling
 */
 void Mod_CalcSurfaceBounds(msurface_t* s)
 {
-    int i, e;
+    int i;
+
+    int e;
     mvertex_t* v;
 
     s->mins[0] = s->mins[1] = s->mins[2] = 9999;
@@ -1351,8 +1405,18 @@ void Mod_LoadFaces(lump_t* l, qboolean bsp2)
     dsface_t* ins;
     dlface_t* inl;
     msurface_t* out;
-    int i, count, surfnum, lofs;
-    int planenum, side, texinfon;
+    int i;
+
+    int count;
+
+    int surfnum;
+
+    int lofs;
+    int planenum;
+
+    int side;
+
+    int texinfon;
 
     if(bsp2)
     {
@@ -1524,7 +1588,13 @@ Mod_LoadNodes
 */
 void Mod_LoadNodes_S(lump_t* l)
 {
-    int i, j, count, p;
+    int i;
+
+    int j;
+
+    int count;
+
+    int p;
     dsnode_t* in;
     mnode_t* out;
 
@@ -1600,7 +1670,13 @@ void Mod_LoadNodes_S(lump_t* l)
 
 void Mod_LoadNodes_L1(lump_t* l)
 {
-    int i, j, count, p;
+    int i;
+
+    int j;
+
+    int count;
+
+    int p;
     dl1node_t* in;
     mnode_t* out;
 
@@ -1668,7 +1744,13 @@ void Mod_LoadNodes_L1(lump_t* l)
 
 void Mod_LoadNodes_L2(lump_t* l)
 {
-    int i, j, count, p;
+    int i;
+
+    int j;
+
+    int count;
+
+    int p;
     dl2node_t* in;
     mnode_t* out;
 
@@ -1755,7 +1837,13 @@ void Mod_LoadNodes(lump_t* l, int bsp2)
 void Mod_ProcessLeafs_S(dsleaf_t* in, int filelen)
 {
     mleaf_t* out;
-    int i, j, count, p;
+    int i;
+
+    int j;
+
+    int count;
+
+    int p;
 
     if(filelen % sizeof(*in))
     {
@@ -1815,7 +1903,13 @@ void Mod_ProcessLeafs_S(dsleaf_t* in, int filelen)
 void Mod_ProcessLeafs_L1(dl1leaf_t* in, int filelen)
 {
     mleaf_t* out;
-    int i, j, count, p;
+    int i;
+
+    int j;
+
+    int count;
+
+    int p;
 
     if(filelen % sizeof(*in))
     {
@@ -1869,7 +1963,13 @@ void Mod_ProcessLeafs_L1(dl1leaf_t* in, int filelen)
 void Mod_ProcessLeafs_L2(dl2leaf_t* in, int filelen)
 {
     mleaf_t* out;
-    int i, j, count, p;
+    int i;
+
+    int j;
+
+    int count;
+
+    int p;
 
     if(filelen % sizeof(*in))
     {
@@ -1954,7 +2054,9 @@ void Mod_LoadClipnodes(lump_t* l, qboolean bsp2)
     dlclipnode_t* inl;
 
     mclipnode_t* out; // johnfitz -- was dclipnode_t
-    int i, count;
+    int i;
+
+    int count;
     hull_t* hull;
 
     if(bsp2)
@@ -2074,9 +2176,15 @@ Duplicate the drawing hull structure as a clipping hull
 */
 void Mod_MakeHull0()
 {
-    mnode_t *in, *child;
+    mnode_t* in;
+
+    mnode_t* child;
     mclipnode_t* out; // johnfitz -- was dclipnode_t
-    int i, j, count;
+    int i;
+
+    int j;
+
+    int count;
     hull_t* hull;
 
     hull = &loadmodel->hulls[0];
@@ -2115,7 +2223,11 @@ Mod_LoadMarksurfaces
 */
 void Mod_LoadMarksurfaces(lump_t* l, int bsp2)
 {
-    int i, j, count;
+    int i;
+
+    int j;
+
+    int count;
     msurface_t** out;
     if(bsp2)
     {
@@ -2187,8 +2299,12 @@ Mod_LoadSurfedges
 */
 void Mod_LoadSurfedges(lump_t* l)
 {
-    int i, count;
-    int *in, *out;
+    int i;
+
+    int count;
+    int* in;
+
+    int* out;
 
     in = (int*)(mod_base + l->fileofs);
     if(l->filelen % sizeof(*in))
@@ -2215,7 +2331,9 @@ Mod_LoadPlanes
 */
 void Mod_LoadPlanes(lump_t* l)
 {
-    int i, j;
+    int i;
+
+    int j;
     mplane_t* out;
     dplane_t* in;
     int count;
@@ -2278,7 +2396,11 @@ void Mod_LoadSubmodels(lump_t* l)
 {
     dmodel_t* in;
     dmodel_t* out;
-    int i, j, count;
+    int i;
+
+    int j;
+
+    int count;
 
     in = (dmodel_t*)(mod_base + l->fileofs);
     if(l->filelen % sizeof(*in))
@@ -2398,7 +2520,9 @@ Mod_LoadBrushModel
 */
 void Mod_LoadBrushModel(qmodel_t* mod, void* buffer)
 {
-    int i, j;
+    int i;
+
+    int j;
     int bsp2;
     dheader_t* header;
     dmodel_t* bm;
@@ -2592,7 +2716,9 @@ Mod_LoadAliasGroup
 void* Mod_LoadAliasGroup(void* pin, maliasframedesc_t* frame)
 {
     daliasgroup_t* pingroup;
-    int i, numframes;
+    int i;
+
+    int numframes;
     daliasinterval_t* pin_intervals;
     void* ptemp;
 
@@ -2668,7 +2794,9 @@ void Mod_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 {
     byte fillcolor = *skin; // assume this is the pixel to fill
     floodfill_t fifo[FLOODFILL_FIFO_SIZE];
-    int inpt = 0, outpt = 0;
+    int inpt = 0;
+
+    int outpt = 0;
     int filledcolor = -1;
     int i;
 
@@ -2700,7 +2828,9 @@ void Mod_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 
     while(outpt != inpt)
     {
-        int x = fifo[outpt].x, y = fifo[outpt].y;
+        int x = fifo[outpt].x;
+
+        int y = fifo[outpt].y;
         int fdc = filledcolor;
         byte* pos = &skin[x + skinwidth * y];
 
@@ -2733,9 +2863,19 @@ Mod_LoadAllSkins
 */
 void* Mod_LoadAllSkins(int numskins, daliasskintype_t* pskintype)
 {
-    int i, j, k, size, groupskins;
+    int i;
+
+    int j;
+
+    int k;
+
+    int size;
+
+    int groupskins;
     char name[MAX_QPATH];
-    byte *skin, *texels;
+    byte* skin;
+
+    byte* texels;
     daliasskingroup_t* pinskingroup;
     daliasskininterval_t* pinskinintervals;
     char fbr_mask_name[MAX_QPATH]; // johnfitz -- added for fullbright
@@ -2872,8 +3012,16 @@ nonrotated, yawrotated, and fullrotated cases
 */
 void Mod_CalcAliasBounds(aliashdr_t* a)
 {
-    int i, j, k;
-    float dist, yawradius, radius;
+    int i;
+
+    int j;
+
+    int k;
+    float dist;
+
+    float yawradius;
+
+    float radius;
     vec3_t v;
 
     // clear out all data
@@ -2970,7 +3118,9 @@ mdl
 */
 void Mod_SetExtraFlags(qmodel_t* mod)
 {
-    extern cvar_t r_nolerp_list, r_noshadow_list;
+    extern cvar_t r_nolerp_list;
+
+    extern cvar_t r_noshadow_list;
 
     if(!mod || mod->type != mod_alias)
     {
@@ -3007,15 +3157,23 @@ Mod_LoadAliasModel
 */
 void Mod_LoadAliasModel(qmodel_t* mod, void* buffer)
 {
-    int i, j;
+    int i;
+
+    int j;
     mdl_t* pinmodel;
     stvert_t* pinstverts;
     dtriangle_t* pintriangles;
-    int version, numframes;
+    int version;
+
+    int numframes;
     int size;
     daliasframetype_t* pframetype;
     daliasskintype_t* pskintype;
-    int start, end, total;
+    int start;
+
+    int end;
+
+    int total;
 
     start = Hunk_LowMark();
 
@@ -3198,7 +3356,13 @@ void* Mod_LoadSpriteFrame(void* pin, mspriteframe_t** ppframe, int framenum)
 {
     dspriteframe_t* pinframe;
     mspriteframe_t* pspriteframe;
-    int width, height, size, origin[2];
+    int width;
+
+    int height;
+
+    int size;
+
+    int origin[2];
     char name[64];
     src_offset_t offset; // johnfitz
 
@@ -3246,7 +3410,9 @@ void* Mod_LoadSpriteGroup(void* pin, mspriteframe_t** ppframe, int framenum)
 {
     dspritegroup_t* pingroup;
     mspritegroup_t* pspritegroup;
-    int i, numframes;
+    int i;
+
+    int numframes;
     dspriteinterval_t* pin_intervals;
     float* poutintervals;
     void* ptemp;

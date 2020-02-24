@@ -27,7 +27,7 @@ int wad_numlumps;
 lumpinfo_t* wad_lumps;
 byte* wad_base = nullptr;
 
-void SwapPic(qpic_t* pic);
+
 
 /*
 ==================

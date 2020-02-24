@@ -33,7 +33,7 @@ void (*vid_menukeyfn)(int key);
 
 enum m_state_e m_state;
 
-void M_Menu_Main_f();
+
 void M_Menu_SinglePlayer_f();
 void M_Menu_Load_f();
 void M_Menu_Save_f();
@@ -44,7 +44,7 @@ void M_Menu_LanConfig_f();
 void M_Menu_GameOptions_f();
 void M_Menu_Search_f();
 void M_Menu_ServerList_f();
-void M_Menu_Options_f();
+
 void M_Menu_Keys_f();
 void M_Menu_Video_f();
 void M_Menu_VR_f();
@@ -52,7 +52,7 @@ void M_Menu_WpnOffset_f();
 void M_Menu_SbarOffset_f();
 void M_Menu_MapMenu_f();
 void M_Menu_Help_f();
-void M_Menu_Quit_f();
+
 
 void M_Main_Draw();
 void M_SinglePlayer_Draw();
@@ -164,7 +164,9 @@ void M_DrawTransPicTranslate(int x, int y, qpic_t* pic, int top,
 void M_DrawTextBox(int x, int y, int width, int lines)
 {
     qpic_t* p;
-    int cx, cy;
+    int cx;
+
+    int cy;
     int n;
 
     // draw left side
@@ -440,7 +442,9 @@ int loadable[MAX_SAVEGAMES];
 
 void M_ScanSaves()
 {
-    int i, j;
+    int i;
+
+    int j;
     char name[MAX_OSPATH];
     FILE* f;
     int version;
@@ -1121,8 +1125,12 @@ void M_Menu_Options_f()
 
 void M_AdjustSliders(int dir)
 {
-    int curr_alwaysrun, target_alwaysrun;
-    float f, l;
+    int curr_alwaysrun;
+
+    int target_alwaysrun;
+    float f;
+
+    float l;
 
     S_LocalSound("misc/menu3.wav");
 
@@ -1335,7 +1343,9 @@ void M_DrawCheckbox(int x, int y, int on)
 
 void M_Options_Draw()
 {
-    float r, l;
+    float r;
+
+    float l;
     qpic_t* p;
 
     M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
@@ -1617,7 +1627,11 @@ extern qpic_t *pic_up, *pic_down;
 
 void M_Keys_Draw()
 {
-    int i, x, y;
+    int i;
+
+    int x;
+
+    int y;
     int keys[3];
     const char* name;
     qpic_t* p;

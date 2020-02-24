@@ -199,7 +199,9 @@ GLSLGamma_GammaCorrect
 */
 void GLSLGamma_GammaCorrect()
 {
-    float smax, tmax;
+    float smax;
+
+    float tmax;
 
     if(!gl_glsl_gamma_able)
     {
@@ -379,7 +381,9 @@ R_CullModelForEntity -- johnfitz -- uses correct bounds based on rotation
 */
 qboolean R_CullModelForEntity(entity_t* e)
 {
-    vec3_t mins, maxs;
+    vec3_t mins;
+
+    vec3_t maxs;
 
     if(e->angles[0] || e->angles[2]) // pitch or roll
     {
@@ -450,7 +454,9 @@ void GL_PolygonOffset(int offset)
 
 int SignbitsForPlane(mplane_t* out)
 {
-    int bits, j;
+    int bits;
+
+    int j;
 
     // for fast box on planeside test
 
@@ -479,7 +485,9 @@ to turn away from side, use a negative angle
 void TurnVector(
     vec3_t out, const vec3_t forward, const vec3_t side, float angle)
 {
-    float scale_forward, scale_side;
+    float scale_forward;
+
+    float scale_side;
 
     scale_forward = cos(DEG2RAD(angle));
     scale_side = sin(DEG2RAD(angle));
@@ -532,7 +540,9 @@ GL_SetFrustum -- johnfitz -- written to replace MYgluPerspective
 float frustum_skew = 0.0; // used by r_stereo
 void GL_SetFrustum(float fovx, float fovy)
 {
-    float xmax, ymax;
+    float xmax;
+
+    float ymax;
     xmax = NEARCLIP * tan((double)fovx * M_PI / 360.0);
     ymax = NEARCLIP * tan((double)fovy * M_PI / 360.0);
     glFrustum(-xmax + frustum_skew, xmax + frustum_skew, -ymax, ymax, NEARCLIP,
@@ -864,8 +874,10 @@ draw bounding boxes -- the server-side boxes, not the renderer cullboxes
 */
 void R_ShowBoundingBoxes()
 {
-    extern edict_t* sv_player;
-    vec3_t mins, maxs;
+
+    vec3_t mins;
+
+    vec3_t maxs;
     edict_t* ed;
     int i;
 
@@ -1130,9 +1142,17 @@ or possibly as a perforance boost on slow graphics cards.
 */
 void R_ScaleView()
 {
-    float smax, tmax;
+    float smax;
+
+    float tmax;
     int scale;
-    int srcx, srcy, srcw, srch;
+    int srcx;
+
+    int srcy;
+
+    int srcw;
+
+    int srch;
 
     // copied from R_SetupGL()
     scale = CLAMP(1, (int)r_scale.value, 4);
@@ -1220,7 +1240,9 @@ R_RenderView
 */
 void R_RenderView()
 {
-    double time1, time2;
+    double time1;
+
+    double time2;
 
     if(r_norefresh.value)
     {

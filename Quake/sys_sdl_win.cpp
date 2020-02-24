@@ -72,7 +72,9 @@ static int findhandle()
 
 long Sys_filelength(FILE* f)
 {
-    long pos, end;
+    long pos;
+
+    long end;
 
     pos = ftell(f);
     fseek(f, 0, SEEK_END);
@@ -85,7 +87,9 @@ long Sys_filelength(FILE* f)
 int Sys_FileOpenRead(const char* path, int* hndl)
 {
     FILE* f;
-    int i, retval;
+    int i;
+
+    int retval;
 
     i = findhandle();
     f = fopen(path, "rb");
@@ -199,7 +203,9 @@ typedef HRESULT(WINAPI* SetProcessDPIAwarenessFunc)(dpi_awareness value);
 
 static void Sys_SetDPIAware()
 {
-    HMODULE hUser32, hShcore;
+    HMODULE hUser32;
+
+    HMODULE hShcore;
     SetProcessDPIAwarenessFunc setDPIAwareness;
     SetProcessDPIAwareFunc setDPIAware;
 
@@ -415,7 +421,11 @@ const char* Sys_ConsoleInput()
     static int textlen;
     INPUT_RECORD recs[1024];
     int ch;
-    DWORD dummy, numread, numevents;
+    DWORD dummy;
+
+    DWORD numread;
+
+    DWORD numevents;
 
     for(;;)
     {

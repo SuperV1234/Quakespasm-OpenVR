@@ -57,7 +57,9 @@ cvar_t gl_subdivide_size = {"gl_subdivide_size", "128", CVAR_ARCHIVE};
 
 void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
 {
-    int i, j;
+    int i;
+
+    int j;
     float* v;
 
     mins[0] = mins[1] = mins[2] = 999999999;
@@ -81,16 +83,28 @@ void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
 
 void SubdividePolygon(int numverts, float* verts)
 {
-    int i, j, k;
-    vec3_t mins, maxs;
+    int i;
+
+    int j;
+
+    int k;
+    vec3_t mins;
+
+    vec3_t maxs;
     float m;
     float* v;
-    vec3_t front[64], back[64];
-    int f, b;
+    vec3_t front[64];
+
+    vec3_t back[64];
+    int f;
+
+    int b;
     float dist[64];
     float frac;
     glpoly_t* poly;
-    float s, t;
+    float s;
+
+    float t;
 
     if(numverts > 60)
     {
@@ -244,7 +258,13 @@ void R_UpdateWarpTextures()
 {
     texture_t* tx;
     int i;
-    float x, y, x2, warptess;
+    float x;
+
+    float y;
+
+    float x2;
+
+    float warptess;
 
     if(r_oldwater.value || cl.paused || r_drawflat_cheatsafe ||
         r_lightmap_cheatsafe)

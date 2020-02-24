@@ -344,7 +344,9 @@ void NET_SlistSort()
 {
     if(hostCacheCount > 1)
     {
-        int i, j;
+        int i;
+
+        int j;
         hostcache_t temp;
         for(i = 0; i < hostCacheCount; i++)
         {
@@ -1008,7 +1010,9 @@ void NET_Poll()
 
 void SchedulePollProcedure(PollProcedure* proc, double timeOffset)
 {
-    PollProcedure *pp, *prev;
+    PollProcedure* pp;
+
+    PollProcedure* prev;
 
     proc->nextTime = Sys_DoubleTime() + timeOffset;
     for(pp = pollProcedureList, prev = nullptr; pp; pp = pp->next)

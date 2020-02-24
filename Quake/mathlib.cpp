@@ -114,7 +114,9 @@ Returns 1, 2, or 1 + 2
 */
 int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, mplane_t* p)
 {
-    float dist1, dist2;
+    float dist1;
+
+    float dist2;
     int sides;
 
 #if 0 // this is done by the BOX_ON_PLANE_SIDE macro before calling this
@@ -248,7 +250,17 @@ void VectorAngles(const vec3_t forward, vec3_t angles)
 void AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 {
     float angle;
-    float sr, sp, sy, cr, cp, cy;
+    float sr;
+
+    float sp;
+
+    float sy;
+
+    float cr;
+
+    float cp;
+
+    float cy;
 
     angle = angles[YAW] * (M_PI * 2 / 360);
     sy = sin(angle);
@@ -334,7 +346,9 @@ vec_t VectorLength(vec3_t v)
 
 float VectorNormalize(vec3_t v)
 {
-    float length, ilength;
+    float length;
+
+    float ilength;
 
     length = sqrt(DotProduct(v, v));
 
@@ -485,7 +499,9 @@ quotient must fit in 32 bits.
 
 void FloorDivMod(double numer, double denom, int* quotient, int* rem)
 {
-    int q, r;
+    int q;
+
+    int r;
     double x;
 
 #ifndef PARANOID
@@ -542,14 +558,15 @@ int GreatestCommonDivisor(int i1, int i2)
         }
         return GreatestCommonDivisor(i2, i1 % i2);
     }
-    else
+
+    if(i1 == 0)
+
     {
-        if(i1 == 0)
-        {
-            return (i2);
-        }
-        return GreatestCommonDivisor(i1, i2 % i1);
+
+        return (i2);
     }
+
+    return GreatestCommonDivisor(i1, i2 % i1);
 }
 
 

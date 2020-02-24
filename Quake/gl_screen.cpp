@@ -168,7 +168,9 @@ void SCR_DrawCenterString() // actually do the drawing
     char* start;
     int l;
     int j;
-    int x, y;
+    int x;
+
+    int y;
     int remaining;
 
     GL_SetCanvas(CANVAS_MENU); // johnfitz
@@ -270,7 +272,9 @@ scaling: 2.0 * atan(width / height * 3.0 / 4.0 * tan(fov_x / 2.0))
 */
 float AdaptFovx(float fov_x, float width, float height)
 {
-    float a, x;
+    float a;
+
+    float x;
 
     if(fov_x < 1 || fov_x > 179)
     {
@@ -297,7 +301,9 @@ CalcFovy
 */
 float CalcFovy(float fov_x, float width, float height)
 {
-    float a, x;
+    float a;
+
+    float x;
 
     if(fov_x < 1 || fov_x > 179)
     {
@@ -320,7 +326,9 @@ Internal use only
 */
 static void SCR_CalcRefdef()
 {
-    float size, scale; // johnfitz -- scale
+    float size;
+
+    float scale; // johnfitz -- scale
 
     // force the status bar to redraw
     Sbar_Changed();
@@ -531,7 +539,9 @@ void SCR_DrawFPS()
     if(scr_showfps.value)
     {
         char st[16];
-        int x, y;
+        int x;
+
+        int y;
         sprintf(st, "%4.0f fps", lastfps);
         x = 320 - (strlen(st) << 3);
         y = 200 - 8;
@@ -556,7 +566,9 @@ void SCR_DrawClock()
 
     if(scr_clock.value == 1)
     {
-        int minutes, seconds;
+        int minutes;
+
+        int seconds;
 
         minutes = cl.time / 60;
         seconds = ((int)cl.time) % 60;
@@ -883,7 +895,6 @@ static void SCR_ScreenShot_Usage()
     Con_Printf("usage: screenshot <format> <quality>\n");
     Con_Printf("   format must be \"png\" or \"tga\" or \"jpg\"\n");
     Con_Printf("   quality must be 1-100\n");
-    return;
 }
 
 /*
@@ -897,7 +908,9 @@ void SCR_ScreenShot_f()
     char ext[4];
     char imagename[16]; // johnfitz -- was [80]
     char checkname[MAX_OSPATH];
-    int i, quality;
+    int i;
+
+    int quality;
     qboolean ok;
 
     Q_strncpy(ext, "png", sizeof(ext));
@@ -1050,7 +1063,9 @@ void SCR_DrawNotifyString()
     const char* start;
     int l;
     int j;
-    int x, y;
+    int x;
+
+    int y;
 
     GL_SetCanvas(CANVAS_MENU); // johnfitz
 
@@ -1099,8 +1114,12 @@ N keypress.
 */
 int SCR_ModalMessage(const char* text, float timeout) // johnfitz -- timeout
 {
-    double time1, time2; // johnfitz -- timeout
-    int lastkey, lastchar;
+    double time1;
+
+    double time2; // johnfitz -- timeout
+    int lastkey;
+
+    int lastchar;
 
     if(cls.state == ca_dedicated)
     {

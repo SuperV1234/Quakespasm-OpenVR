@@ -480,7 +480,11 @@ void ED_Print(edict_t* ed)
 {
     ddef_t* d;
     int* v;
-    int i, j, l;
+    int i;
+
+    int j;
+
+    int l;
     const char* name;
     int type;
 
@@ -541,7 +545,9 @@ void ED_Write(FILE* f, edict_t* ed)
 {
     ddef_t* d;
     int* v;
-    int i, j;
+    int i;
+
+    int j;
     const char* name;
     int type;
 
@@ -657,7 +663,15 @@ For debugging
 static void ED_Count()
 {
     edict_t* ent;
-    int i, active, models, solid, step;
+    int i;
+
+    int active;
+
+    int models;
+
+    int solid;
+
+    int step;
 
     if(!sv.active)
     {
@@ -803,7 +817,9 @@ ED_NewString
 static string_t ED_NewString(const char* string)
 {
     char* new_p;
-    int i, l;
+    int i;
+
+    int l;
     string_t num;
 
     l = strlen(string) + 1;
@@ -846,7 +862,9 @@ static qboolean ED_ParseEpair(void* base, ddef_t* key, const char* s)
     int i;
     char string[128];
     ddef_t* def;
-    char *v, *w;
+    char* v;
+
+    char* w;
     char* end;
     void* d;
     dfunction_t* func;
@@ -936,7 +954,9 @@ const char* ED_ParseEdict(const char* data, edict_t* ent)
 {
     ddef_t* key;
     char keyname[256];
-    qboolean anglehack, init;
+    qboolean anglehack;
+
+    qboolean init;
     int n;
 
     init = false;
@@ -1357,19 +1377,30 @@ const char* PR_GetString(int num)
     {
         return pr_strings + num;
     }
-    else if(num < 0 && num >= -pr_numknownstrings)
+    if(num < 0 && num >= -pr_numknownstrings)
+
     {
+
         if(!pr_knownstrings[-1 - num])
+
         {
+
             Host_Error(
+
                 "PR_GetString: attempt to get a non-existant string %d\n", num);
+
             return "";
         }
+
         return pr_knownstrings[-1 - num];
     }
+
     else
+
     {
+
         Host_Error("PR_GetString: invalid string offset %d\n", num);
+
         return "";
     }
 }

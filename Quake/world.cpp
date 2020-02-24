@@ -136,7 +136,9 @@ hull_t* SV_HullForEntity(edict_t* ent, vec3_t mins, vec3_t maxs, vec3_t offset)
 {
     qmodel_t* model;
     vec3_t size;
-    vec3_t hullmins, hullmaxs;
+    vec3_t hullmins;
+
+    vec3_t hullmaxs;
     hull_t* hull;
 
     // decide which clipping hull to use, based on the size
@@ -223,7 +225,13 @@ areanode_t* SV_CreateAreaNode(int depth, vec3_t mins, vec3_t maxs)
 {
     areanode_t* anode;
     vec3_t size;
-    vec3_t mins1, maxs1, mins2, maxs2;
+    vec3_t mins1;
+
+    vec3_t maxs1;
+
+    vec3_t mins2;
+
+    vec3_t maxs2;
 
     anode = &sv_areanodes[sv_numareanodes];
     sv_numareanodes++;
@@ -306,7 +314,9 @@ them and risking the list getting corrupt.
 static void SV_AreaTriggerEdicts(edict_t* ent, areanode_t* node, edict_t** list,
     int* listcount, const int listspace)
 {
-    link_t *l, *next;
+    link_t* l;
+
+    link_t* next;
     edict_t* touch;
 
     // touch linked edicts
@@ -373,8 +383,12 @@ void SV_TouchLinks(edict_t* ent)
 {
     edict_t** list;
     edict_t* touch;
-    int old_self, old_other;
-    int i, listcount;
+    int old_self;
+
+    int old_other;
+    int i;
+
+    int listcount;
     int mark;
 
     mark = Hunk_LowMark();
@@ -698,7 +712,9 @@ qboolean SV_RecursiveHullCheck(hull_t* hull, int num, float p1f, float p2f,
 {
     mclipnode_t* node; // johnfitz -- was dclipnode_t
     mplane_t* plane;
-    float t1, t2;
+    float t1;
+
+    float t2;
     float frac;
     int i;
     vec3_t mid;
@@ -876,7 +892,9 @@ trace_t SV_ClipMoveToEntity(
 {
     trace_t trace;
     vec3_t offset;
-    vec3_t start_l, end_l;
+    vec3_t start_l;
+
+    vec3_t end_l;
     hull_t* hull;
 
     // fill in a default trace
@@ -918,7 +936,9 @@ Mins and maxs enclose the entire area swept by the move
 */
 void SV_ClipToLinks(areanode_t* node, moveclip_t* clip)
 {
-    link_t *l, *next;
+    link_t* l;
+
+    link_t* next;
     edict_t* touch;
     trace_t trace;
 

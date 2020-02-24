@@ -88,8 +88,12 @@ void R_MarkSurfaces()
     byte* vis;
     mleaf_t* leaf;
     mnode_t* node;
-    msurface_t *surf, **mark;
-    int i, j;
+    msurface_t* surf;
+
+    msurface_t** mark;
+    int i;
+
+    int j;
     qboolean nearwaterportal;
 
     // clear lightmap chains
@@ -609,7 +613,9 @@ R_DrawTextureChains_Multitexture -- johnfitz
 void R_DrawTextureChains_Multitexture(
     qmodel_t* model, entity_t* ent, texchain_t chain)
 {
-    int i, j;
+    int i;
+
+    int j;
     msurface_t* s;
     texture_t* t;
     float* v;
@@ -925,7 +931,9 @@ nothing
 */
 void R_DrawLightmapChains()
 {
-    int i, j;
+    int i;
+
+    int j;
     glpoly_t* p;
     float* v;
 

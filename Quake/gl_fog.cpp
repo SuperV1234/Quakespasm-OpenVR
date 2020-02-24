@@ -94,7 +94,15 @@ handle an SVC_FOG message from server
 */
 void Fog_ParseServerMessage()
 {
-    float density, red, green, blue, time;
+    float density;
+
+    float red;
+
+    float green;
+
+    float blue;
+
+    float time;
 
     density = MSG_ReadByte() / 255.0;
     red = MSG_ReadByte() / 255.0;
@@ -165,7 +173,9 @@ called at map load
 */
 void Fog_ParseWorldspawn()
 {
-    char key[128], value[4096];
+    char key[128];
+
+    char value[4096];
     const char* data;
 
     // initially no fog
@@ -284,10 +294,8 @@ float Fog_GetDensity()
         f = (fade_done - cl.time) / fade_time;
         return f * old_density + (1.0 - f) * fog_density;
     }
-    else
-    {
-        return fog_density;
-    }
+
+    return fog_density;
 }
 
 /*

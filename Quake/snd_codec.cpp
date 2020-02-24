@@ -229,36 +229,54 @@ snd_stream_t* S_CodecOpenStreamAny(const char* filename)
 
         return nullptr;
     }
-    else /* use the name as is */
+    /* use the name as is */
+    codec = codecs;
+
+    while(codec)
+
     {
-        codec = codecs;
-        while(codec)
+
+        if(!q_strcasecmp(ext, codec->ext))
+
         {
-            if(!q_strcasecmp(ext, codec->ext))
-            {
-                break;
-            }
-            codec = codec->next;
+
+            break;
         }
-        if(!codec)
-        {
-            Con_Printf("Unknown extension for %s\n", filename);
-            return nullptr;
-        }
-        stream = S_CodecUtilOpen(filename, codec);
-        if(stream)
-        {
-            if(codec->codec_open(stream))
-            {
-                stream->status = STREAM_PLAY;
-            }
-            else
-            {
-                S_CodecUtilClose(&stream);
-            }
-        }
-        return stream;
+
+        codec = codec->next;
     }
+
+    if(!codec)
+
+    {
+
+        Con_Printf("Unknown extension for %s\n", filename);
+
+        return nullptr;
+    }
+
+    stream = S_CodecUtilOpen(filename, codec);
+
+    if(stream)
+
+    {
+
+        if(codec->codec_open(stream))
+
+        {
+
+            stream->status = STREAM_PLAY;
+        }
+
+        else
+
+        {
+
+            S_CodecUtilClose(&stream);
+        }
+    }
+
+    return stream;
 }
 
 qboolean S_CodecForwardStream(snd_stream_t* stream, unsigned int type)

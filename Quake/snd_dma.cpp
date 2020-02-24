@@ -32,7 +32,7 @@ static void S_Play();
 static void S_PlayVol();
 static void S_SoundList();
 static void S_Update_();
-void S_StopAllSounds(qboolean clear);
+
 static void S_StopAllSoundsC();
 
 // =======================================================================
@@ -428,7 +428,11 @@ void SND_Spatialize(channel_t* ch)
 {
     vec_t dot;
     vec_t dist;
-    vec_t lscale, rscale, scale;
+    vec_t lscale;
+
+    vec_t rscale;
+
+    vec_t scale;
     vec3_t source_vec;
 
     // anything coming from the view entity will always be full volume
@@ -479,7 +483,9 @@ void SND_Spatialize(channel_t* ch)
 void S_StartSound(int entnum, int entchannel, sfx_t* sfx, vec3_t origin,
     float fvol, float attenuation)
 {
-    channel_t *target_chan, *check;
+    channel_t* target_chan;
+
+    channel_t* check;
     sfxcache_t* sc;
     int ch_idx;
     int skip;
@@ -702,7 +708,9 @@ S_UpdateAmbientSounds
 static void S_UpdateAmbientSounds()
 {
     mleaf_t* l;
-    int vol, ambient_channel;
+    int vol;
+
+    int ambient_channel;
     channel_t* chan;
 
     // no ambients when disconnected
@@ -776,7 +784,9 @@ void S_RawSamples(
     int samples, int rate, int width, int channels, byte* data, float volume)
 {
     int i;
-    int src, dst;
+    int src;
+
+    int dst;
     float scale;
     int intVolume;
 
@@ -872,7 +882,9 @@ Called once each time through the main loop
 */
 void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 {
-    int i, j;
+    int i;
+
+    int j;
     int total;
     channel_t* ch;
     channel_t* combine;
@@ -1134,7 +1146,9 @@ static void S_SoundList()
     int i;
     sfx_t* sfx;
     sfxcache_t* sc;
-    int size, total;
+    int size;
+
+    int total;
 
     total = 0;
     for(sfx = known_sfx, i = 0; i < num_sfx; i++, sfx++)

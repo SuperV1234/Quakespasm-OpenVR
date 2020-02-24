@@ -118,8 +118,14 @@ keyname_t keynames[] = {{"TAB", K_TAB}, {"ENTER", K_ENTER},
 
 static void PasteToConsole()
 {
-    char *cbd, *p, *workline;
-    int mvlen, inslen;
+    char* cbd;
+
+    char* p;
+
+    char* workline;
+    int mvlen;
+
+    int inslen;
 
     if(key_linepos == MAXCMDLINE - 1)
     {
@@ -262,7 +268,9 @@ void Key_Console(int key)
             if(keydown[K_CTRL])
             {
                 // skip initial empty lines
-                int i, x;
+                int i;
+
+                int x;
                 char* line;
 
                 for(i = con_current - con_totallines + 1; i <= con_current; i++)
@@ -677,7 +685,9 @@ Key_Bindlist_f -- johnfitz
 */
 void Key_Bindlist_f()
 {
-    int i, count;
+    int i;
+
+    int count;
 
     count = 0;
     for(i = 0; i < MAX_KEYS; i++)
@@ -699,7 +709,11 @@ Key_Bind_f
 */
 void Key_Bind_f()
 {
-    int i, c, b;
+    int i;
+
+    int c;
+
+    int b;
     char cmd[1024];
 
     c = Cmd_Argc();
@@ -772,7 +786,9 @@ void Key_WriteBindings(FILE* f)
 
 void History_Init()
 {
-    int i, c;
+    int i;
+
+    int c;
     FILE* hf;
 
     for(i = 0; i < CMDLINES; i++)

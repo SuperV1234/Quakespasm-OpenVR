@@ -710,8 +710,10 @@ Host_ServerFrame
 */
 void Host_ServerFrame()
 {
-    int i, active; // johnfitz
-    edict_t* ent;  // johnfitz
+    int i;
+
+    int active;   // johnfitz
+    edict_t* ent; // johnfitz
 
     // run the world state
     pr_global_struct->frametime = host_frametime;
@@ -770,7 +772,11 @@ void _Host_Frame(float time)
     static double time1 = 0;
     static double time2 = 0;
     static double time3 = 0;
-    int pass1, pass2, pass3;
+    int pass1;
+
+    int pass2;
+
+    int pass3;
 
     if(setjmp(host_abortserver))
     {
@@ -882,10 +888,16 @@ void _Host_Frame(float time)
 
 void Host_Frame(float time)
 {
-    double time1, time2;
+    double time1;
+
+    double time2;
     static double timetotal;
     static int timecount;
-    int i, c, m;
+    int i;
+
+    int c;
+
+    int m;
 
     if(!serverprofile.value)
     {

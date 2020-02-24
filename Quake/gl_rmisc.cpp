@@ -37,9 +37,9 @@ extern cvar_t gl_overbright;
 extern cvar_t gl_overbright_models;
 extern cvar_t r_waterquality;
 extern cvar_t r_oldwater;
-extern cvar_t r_waterwarp;
+
 extern cvar_t r_oldskyleaf;
-extern cvar_t r_drawworld;
+
 extern cvar_t r_showtris;
 extern cvar_t r_showbboxes;
 extern cvar_t r_lerpmodels;
@@ -170,16 +170,24 @@ float GL_WaterAlphaForSurface(msurface_t* fa)
     {
         return map_lavaalpha > 0 ? map_lavaalpha : map_wateralpha;
     }
-    else if(fa->flags & SURF_DRAWTELE)
+    if(fa->flags & SURF_DRAWTELE)
+
     {
+
         return map_telealpha > 0 ? map_telealpha : map_wateralpha;
     }
+
     else if(fa->flags & SURF_DRAWSLIME)
+
     {
+
         return map_slimealpha > 0 ? map_slimealpha : map_wateralpha;
     }
+
     else
+
     {
+
         return map_wateralpha;
     }
 }
@@ -275,7 +283,9 @@ not new skins
 */
 void R_TranslatePlayerSkin(int playernum)
 {
-    int top, bottom;
+    int top;
+
+    int bottom;
 
     top = (cl.scores[playernum].colors & 0xf0) >> 4;
     bottom = cl.scores[playernum].colors & 15;
@@ -366,7 +376,9 @@ called at map load
 */
 static void R_ParseWorldspawn()
 {
-    char key[128], value[4096];
+    char key[128];
+
+    char value[4096];
     const char* data;
 
     map_wateralpha = r_wateralpha.value;
@@ -488,7 +500,11 @@ For program optimization
 void R_TimeRefresh_f()
 {
     int i;
-    float start, stop, time;
+    float start;
+
+    float stop;
+
+    float time;
 
     if(cls.state != ca_connected)
     {
@@ -590,7 +606,11 @@ GLuint GL_CreateProgram(const GLchar* vertSource, const GLchar* fragSource,
     int numbindings, const glsl_attrib_binding_t* bindings)
 {
     int i;
-    GLuint program, vertShader, fragShader;
+    GLuint program;
+
+    GLuint vertShader;
+
+    GLuint fragShader;
 
     if(!gl_glsl_able)
     {
@@ -635,18 +655,23 @@ GLuint GL_CreateProgram(const GLchar* vertSource, const GLchar* fragSource,
         GL_DeleteProgramFunc(program);
         return 0;
     }
-    else
+
+    if(gl_num_programs == (sizeof(gl_programs) / sizeof(GLuint)))
+
     {
-        if(gl_num_programs == (sizeof(gl_programs) / sizeof(GLuint)))
-        {
-            Host_Error("gl_programs overflow");
-        }
 
-        gl_programs[gl_num_programs] = program;
-        gl_num_programs++;
-
-        return program;
+        Host_Error("gl_programs overflow");
     }
+
+
+
+    gl_programs[gl_num_programs] = program;
+
+    gl_num_programs++;
+
+
+
+    return program;
 }
 
 /*
