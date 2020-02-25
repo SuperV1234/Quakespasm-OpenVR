@@ -474,6 +474,8 @@ float	AS_MISSILE		= 4;
 .float 		offhand_attack_finished;
 .float		in_melee;
 .float		offhand_in_melee;
+.float		melee_hit_sound_played;
+.float		offhand_melee_hit_sound_played;
 .float		pain_finished;
 
 .float		invincible_finished;

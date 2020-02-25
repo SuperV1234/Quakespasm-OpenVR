@@ -1211,12 +1211,11 @@ void VR_UpdateScreenContent()
                 auto fy = ny;
                 auto fz = nz;
 
-                if (oy > 90)
+                if (oy > 90.f)
                 {
-                    fx += 180.f;
+                    fx -= 180.f;
                     fy -= 180.f;
                     fy *= -1.f;
-                    fx -= 360.f;
                     fz += 180.f;
 
                     if (ox > 0.f)

@@ -272,7 +272,7 @@ void() monster_army =
 	setmodel (self, "progs/soldier.mdl");
 
 	//setsize (self, '-16 -16 -24', '16 16 40');
-	setsize (self, '-12 -12 -24', '12 12 24');
+	setsize (self, '-12 -12 -24', '12 12 26');
 	self.health = 30;
 
 	self.th_stand = army_stand1;

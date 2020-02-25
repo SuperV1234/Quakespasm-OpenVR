@@ -397,7 +397,7 @@ void() monster_wizard =
 	setmodel (self, "progs/wizard.mdl");
 
 	// setsize (self, '-16 -16 -24', '16 16 40');
-	setsize (self, '-12 -12 -24', '12 12 30');
+	setsize (self, '-12 -12 -24', '12 12 40');
 	self.health = 80;
 
 	self.th_stand = wiz_stand1;

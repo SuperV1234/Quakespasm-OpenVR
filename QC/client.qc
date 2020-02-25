@@ -1160,6 +1160,11 @@ void() PlayerPostThink =
 		self.in_melee = time + 0.02;
 	}
 
+	if(self.handvelmag <= vr_melee_threshold)
+	{
+		self.melee_hit_sound_played = FALSE;
+	}
+
 	// vr off hand melee attack
 	if (cvar("vr_enabled") == 1 && time >= self.offhand_in_melee && self.offhandvelmag > vr_melee_threshold)
 	{
@@ -1173,6 +1178,11 @@ void() PlayerPostThink =
 
 		self.offhand_attack_finished = time + 0.1;
 		self.offhand_in_melee = time + 0.02;
+	}
+
+	if(self.offhandvelmag <= vr_melee_threshold)
+	{
+		self.offhand_melee_hit_sound_played = FALSE;
 	}
 
 	W_WeaponFrame ();

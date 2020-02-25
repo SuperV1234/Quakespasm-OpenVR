@@ -42,6 +42,7 @@ void() W_FireAxe =
 	local	vector	org;
 	local	float	xdmg;
 	local	string	s;
+	local	float	playedsound;
 
 	// TODO VR: add damage multiplier cvar
 	xdmg = 0.73 * self.handvelmag;
@@ -65,15 +66,30 @@ void() W_FireAxe =
 		trace_ent.axhitme = 1;
 		SpawnBlood (org, '0 0 0', xdmg);
 		T_Damage (trace_ent, self, self, xdmg);
+
+		if (self.melee_hit_sound_played == FALSE)
+		{
+			sound (self, CHAN_WEAPON, "fisthit.wav", 1.0, ATTN_NORM);
+		}
 	}
 	else
-	{	// hit wall
-		sound (self, CHAN_WEAPON, "player/axhit2.wav", 1, ATTN_NORM);
+	{
+		// hit wall
+		if (self.melee_hit_sound_played == FALSE)
+		{
+			sound (self, CHAN_WEAPON, "player/axhit2.wav", 1, ATTN_NORM);
+		}
+
 		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
 		WriteByte (MSG_BROADCAST, TE_GUNSHOT);
 		WriteCoord (MSG_BROADCAST, org_x);
 		WriteCoord (MSG_BROADCAST, org_y);
 		WriteCoord (MSG_BROADCAST, org_z);
+	}
+
+	if (playedsound)
+	{
+		self.melee_hit_sound_played = TRUE;
 	}
 };
 
@@ -91,6 +107,7 @@ void() W_GunMelee =
 	local	vector	org;
 	local	float	xdmg;
 	local	string	s;
+	local	float	playedsound;
 
 	xdmg = 0.43 * self.handvelmag;
 
@@ -112,16 +129,32 @@ void() W_GunMelee =
 		trace_ent.axhitme = 1;
 		SpawnBlood (org, '0 0 0', xdmg);
 		T_Damage (trace_ent, self, self, xdmg);
-		sound (self, CHAN_WEAPON, "fisthit.wav", 1.0, ATTN_NORM);
+
+		if (self.melee_hit_sound_played == FALSE)
+		{
+			sound (self, CHAN_WEAPON, "fisthit.wav", 1.0, ATTN_NORM);
+			playedsound = TRUE;
+		}
 	}
 	else
-	{	// hit wall
-		sound (self, CHAN_WEAPON, "player/axhit2.wav", 1, ATTN_NORM);
+	{
+		// hit wall
+		if (self.melee_hit_sound_played == FALSE)
+		{
+			sound (self, CHAN_WEAPON, "player/axhit2.wav", 1, ATTN_NORM);
+			playedsound = TRUE;
+		}
+
 		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
 		WriteByte (MSG_BROADCAST, TE_GUNSHOT);
 		WriteCoord (MSG_BROADCAST, org_x);
 		WriteCoord (MSG_BROADCAST, org_y);
 		WriteCoord (MSG_BROADCAST, org_z);
+	}
+
+	if (playedsound)
+	{
+		self.melee_hit_sound_played = TRUE;
 	}
 };
 
@@ -140,6 +173,7 @@ void() W_FistMelee =
 	local	vector	org;
 	local	float	xdmg;
 	local	string	s;
+	local	float	playedsound;
 
 	xdmg = 0.53 * self.offhandvelmag;
 
@@ -155,7 +189,12 @@ void() W_FistMelee =
 		return;
 
 	org = trace_endpos - v_forward*4;
-	sound (self, CHAN_WEAPON, "fisthit.wav", 1.0, ATTN_NORM);
+
+	if (self.offhand_melee_hit_sound_played == FALSE)
+	{
+		sound (self, CHAN_WEAPON, "fisthit.wav", 1.0, ATTN_NORM);
+		playedsound = TRUE;
+	}
 
 	if (trace_ent.takedamage)
 	{
@@ -164,15 +203,25 @@ void() W_FistMelee =
 		T_Damage (trace_ent, self, self, xdmg);
 	}
 	else
-	{	// hit wall
-		PainSound();
-		SpawnBlood (org, '0 0 0', xdmg);
+	{
+		// hit wall
+		if (self.offhand_melee_hit_sound_played == FALSE)
+		{
+			PainSound();
+			SpawnBlood(org, '0 0 0', xdmg);
+			playedsound = TRUE;
+		}
 
 		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
 		WriteByte (MSG_BROADCAST, TE_GUNSHOT);
 		WriteCoord (MSG_BROADCAST, org_x);
 		WriteCoord (MSG_BROADCAST, org_y);
 		WriteCoord (MSG_BROADCAST, org_z);
+	}
+
+	if (playedsound)
+	{
+		self.offhand_melee_hit_sound_played = TRUE;
 	}
 };
 
@@ -758,7 +807,7 @@ void(vector org, vector dir) launch_spike =
 	setsize (newmis, VEC_ORIGIN, VEC_ORIGIN);
 	setorigin (newmis, org);
 
-	newmis.velocity = dir * 1500;
+	newmis.velocity = dir * 1750;
 };
 
 void() W_FireSuperSpikes =
