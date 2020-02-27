@@ -9,6 +9,7 @@
 #include <gtx/quaternion.hpp>
 #include <gtx/euler_angles.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <vector>
 

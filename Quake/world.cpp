@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.hpp"
 #include "util.hpp"
 
+extern cvar_t vr_enabled;
+
 /*
 
 entities never clip against themselves, or their owner
@@ -332,7 +334,7 @@ static void SV_AreaTriggerEdicts(edict_t* ent, areanode_t* node, edict_t** list,
         const bool canBeTouched = (target->v.touch || target->v.handtouch) &&
                                   target->v.solid == SOLID_TRIGGER;
 
-        // TODO VR:
+        // TODO VR: re-enable check
         if(false || !canBeTouched ||
             !quake::util::boxIntersection(ent->v.absmin, ent->v.absmax,
                 target->v.absmin, target->v.absmax))
@@ -421,7 +423,7 @@ void SV_TouchLinks(edict_t* ent)
         pr_global_struct->other = old_other;
     }
 
-    // TODO VR: code repetition with above
+    // TODO VR: code repetition with above, also a hack (checks for player...)
     for(int i = 0; i < listcount; i++)
     {
         edict_t* target = list[i]; // thing that's being touched
@@ -446,10 +448,12 @@ void SV_TouchLinks(edict_t* ent)
         vec3_t offhandposmax{o, o, o};
         VectorAdd(offhandposmax, ent->v.offhandpos, offhandposmax);
 
-        const bool canBeTouched =
-            target->v.handtouch;
-            // TODO VR: restore
-            // && target->v.solid == SOLID_TRIGGER;
+        const bool canBeHandTouched = target->v.handtouch;
+        // TODO VR: restore
+        // && target->v.solid == SOLID_TRIGGER;
+
+        const bool entIntersects = !quake::util::boxIntersection(
+            ent->v.absmin, ent->v.absmax, target->v.absmin, target->v.absmax);
 
         const bool anyHandIntersects =
             quake::util::boxIntersection(
@@ -457,7 +461,10 @@ void SV_TouchLinks(edict_t* ent)
             quake::util::boxIntersection(offhandposmin, offhandposmax,
                 target->v.absmin, target->v.absmax);
 
-        if(!canBeTouched || !anyHandIntersects)
+        const bool anyIntersection =
+            vr_enabled.value ? anyHandIntersects : entIntersects;
+
+        if(!canBeHandTouched || !anyIntersection)
         {
             continue;
         }
@@ -540,7 +547,7 @@ SV_LinkEdict
 
 ===============
 */
-void SV_LinkEdict(edict_t* ent, qboolean touch_triggers)
+void SV_LinkEdict(edict_t* ent, bool touch_triggers)
 {
     areanode_t* node;
 
@@ -594,7 +601,7 @@ void SV_LinkEdict(edict_t* ent, qboolean touch_triggers)
 
     if(ent->v.solid == SOLID_NOT)
     {
-        // TODO VR:
+        // TODO VR: re-enable
         // return;
     }
 
@@ -622,6 +629,8 @@ void SV_LinkEdict(edict_t* ent, qboolean touch_triggers)
 
     // link it in
 
+    // TODO VR: possible place to try changing the SOLID_ thing to bsp
+    // TODO VR: also grep for SV_Impact, check those places
     if(ent->v.solid == SOLID_TRIGGER)
     {
         InsertLinkBefore(&ent->area, &node->trigger_edicts);
@@ -1026,46 +1035,39 @@ Mins and maxs enclose the entire area swept by the move
 */
 void SV_ClipToLinks(areanode_t* node, moveclip_t* clip)
 {
-    link_t* l;
-
     link_t* next;
-    edict_t* touch;
-    trace_t trace;
 
     // touch linked edicts
-    for(l = node->solid_edicts.next; l != &node->solid_edicts; l = next)
+    for(link_t* l = node->solid_edicts.next; l != &node->solid_edicts; l = next)
     {
         next = l->next;
-        touch = EDICT_FROM_AREA(l);
-        if(touch->v.solid == SOLID_NOT)
+        edict_t* target = EDICT_FROM_AREA(l);
+        if(target->v.solid == SOLID_NOT || target == clip->passedict)
         {
             continue;
         }
-        if(touch == clip->passedict)
-        {
-            continue;
-        }
-        if(touch->v.solid == SOLID_TRIGGER)
+
+        if(target->v.solid == SOLID_TRIGGER)
         {
             Sys_Error("Trigger in clipping list");
         }
 
-        if(clip->type == MOVE_NOMONSTERS && touch->v.solid != SOLID_BSP)
+        if(clip->type == MOVE_NOMONSTERS && target->v.solid != SOLID_BSP)
         {
             continue;
         }
 
-        if(clip->boxmins[0] > touch->v.absmax[0] ||
-            clip->boxmins[1] > touch->v.absmax[1] ||
-            clip->boxmins[2] > touch->v.absmax[2] ||
-            clip->boxmaxs[0] < touch->v.absmin[0] ||
-            clip->boxmaxs[1] < touch->v.absmin[1] ||
-            clip->boxmaxs[2] < touch->v.absmin[2])
+        if(clip->boxmins[0] > target->v.absmax[0] ||
+            clip->boxmins[1] > target->v.absmax[1] ||
+            clip->boxmins[2] > target->v.absmax[2] ||
+            clip->boxmaxs[0] < target->v.absmin[0] ||
+            clip->boxmaxs[1] < target->v.absmin[1] ||
+            clip->boxmaxs[2] < target->v.absmin[2])
         {
             continue;
         }
 
-        if(clip->passedict && clip->passedict->v.size[0] && !touch->v.size[0])
+        if(clip->passedict && clip->passedict->v.size[0] && !target->v.size[0])
         {
             continue; // points never interact
         }
@@ -1075,33 +1077,37 @@ void SV_ClipToLinks(areanode_t* node, moveclip_t* clip)
         {
             return;
         }
+
         if(clip->passedict)
         {
-            if(PROG_TO_EDICT(touch->v.owner) == clip->passedict)
+            if(PROG_TO_EDICT(target->v.owner) == clip->passedict)
             {
                 continue; // don't clip against own missiles
             }
-            if(PROG_TO_EDICT(clip->passedict->v.owner) == touch)
+
+            if(PROG_TO_EDICT(clip->passedict->v.owner) == target)
             {
                 continue; // don't clip against owner
             }
         }
 
         // TODO VR: this is also causing spikes to be bigger.
-        if((int)touch->v.flags & FL_MONSTER)
+        trace_t trace;
+        if((int)target->v.flags & FL_MONSTER)
         {
             trace = SV_ClipMoveToEntity(
-                touch, clip->start, clip->mins2, clip->maxs2, clip->end);
+                target, clip->start, clip->mins2, clip->maxs2, clip->end);
         }
         else
         {
             trace = SV_ClipMoveToEntity(
-                touch, clip->start, clip->mins, clip->maxs, clip->end);
+                target, clip->start, clip->mins, clip->maxs, clip->end);
         }
+
         if(trace.allsolid || trace.startsolid ||
             trace.fraction < clip->trace.fraction)
         {
-            trace.ent = touch;
+            trace.ent = target;
             if(clip->trace.startsolid)
             {
                 clip->trace = trace;
@@ -1128,6 +1134,7 @@ void SV_ClipToLinks(areanode_t* node, moveclip_t* clip)
     {
         SV_ClipToLinks(node->children[0], clip);
     }
+
     if(clip->boxmins[node->axis] < node->dist)
     {
         SV_ClipToLinks(node->children[1], clip);

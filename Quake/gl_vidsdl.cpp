@@ -570,7 +570,7 @@ static SDL_DisplayMode* VID_SDL2_GetDisplayMode(
         }
 
         if(mode.w == width && mode.h == height &&
-            SDL_BITSPERPIXEL(mode.format) == bpp &&
+            static_cast<int>(SDL_BITSPERPIXEL(mode.format)) == bpp &&
             mode.refresh_rate == refreshrate)
         {
             return &mode;

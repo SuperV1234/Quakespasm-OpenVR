@@ -90,18 +90,23 @@ void MapMenu_MenuKey(int key)
         case K_UPARROW:
         {
             S_LocalSound("misc/menu1.wav");
-            mapmenu_cursor--;
-            if(mapmenu_cursor < 0)
+
+            if(mapmenu_cursor == 0)
             {
                 mapmenu_cursor = maps.size() - 1;
             }
+            else
+            {
+                --mapmenu_cursor;
+            }
+
             break;
         }
 
         case K_DOWNARROW:
         {
             S_LocalSound("misc/menu1.wav");
-            mapmenu_cursor++;
+            ++mapmenu_cursor;
             if(mapmenu_cursor >= maps.size())
             {
                 mapmenu_cursor = 0;

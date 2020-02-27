@@ -12,7 +12,7 @@
 #define __wsaerr_static static
 #endif /* static */
 
-__wsaerr_static const char* __WSAE_StrError(int err)
+[[maybe_unused]] __wsaerr_static const char* __WSAE_StrError(int err)
 {
     switch(err)
     {

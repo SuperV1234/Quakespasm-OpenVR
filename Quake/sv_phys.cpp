@@ -351,6 +351,11 @@ int SV_FlyMove(edict_t* ent, float time, trace_t* steptrace)
         // run the impact function
         //
         SV_Impact(ent, trace.ent, &entvars_t::touch);
+        if(!vr_enabled.value)
+        {
+            SV_Impact(ent, trace.ent, &entvars_t::handtouch);
+        }
+
         if(ent->free)
         {
             break; // removed by the impact function
@@ -481,6 +486,7 @@ trace_t SV_PushEntity(edict_t* ent, vec3_t push)
         trace = SV_Move(
             ent->v.origin, ent->v.mins, ent->v.maxs, end, MOVE_MISSILE, ent);
     }
+    // TODO VR: another possible place to check for button bug
     else if(ent->v.solid == SOLID_TRIGGER || ent->v.solid == SOLID_NOT)
     {
         // only clip against bmodels
@@ -499,6 +505,10 @@ trace_t SV_PushEntity(edict_t* ent, vec3_t push)
     if(trace.ent)
     {
         SV_Impact(ent, trace.ent, &entvars_t::touch);
+        if(!vr_enabled.value)
+        {
+            SV_Impact(ent, trace.ent, &entvars_t::handtouch);
+        }
     }
 
     return trace;
@@ -1076,7 +1086,7 @@ void SV_Physics_Client(edict_t* ent, int num)
     //
     SV_CheckVelocity(ent);
 
-    // TODO VR: test
+    // TODO VR: test, what is this one for? How does it differ from world.cpp?
     auto doHandTouch = [&](vec3_t handpos, vec3_t handrot, int type) {
         vec3_t fwd, right, up, end;
         AngleVectors(handrot, fwd, right, up);
@@ -1114,7 +1124,7 @@ void SV_Physics_Client(edict_t* ent, int num)
             return;
         }
 
-        Con_Printf("running handtouch impact\n");
+        // Con_Printf("running handtouch impact\n");
         SV_Impact(ent, trace.ent, &entvars_t::handtouch);
     };
     doHandTouch(ent->v.handpos, ent->v.handrot, MOVE_NORMAL);

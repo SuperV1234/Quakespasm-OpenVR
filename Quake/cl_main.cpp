@@ -883,7 +883,7 @@ CL_Viewpos_f -- johnfitz
 display client's position and angles
 =============
 */
-void CL_Viewpos_f(refdef_t& refdef)
+void CL_Viewpos_f([[maybe_unused]] refdef_t& refdef)
 {
     if(cls.state != ca_connected)
     {

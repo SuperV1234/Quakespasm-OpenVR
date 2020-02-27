@@ -54,11 +54,11 @@ void SV_UnlinkEdict(edict_t* ent);
 // so it doesn't clip against itself
 // flags ent->v.modified
 
-void SV_LinkEdict(edict_t* ent, qboolean touch_triggers);
+void SV_LinkEdict(edict_t* ent, bool touch_triggers);
 // Needs to be called any time an entity changes origin, mins, maxs, or solid
 // flags ent->v.modified
 // sets ent->v.absmin and ent->v.absmax
-// if touchtriggers, calls prog functions for the intersected triggers
+// if touch_triggers, calls prog functions for the intersected triggers
 
 int SV_PointContents(vec3_t p);
 int SV_TruePointContents(vec3_t p);

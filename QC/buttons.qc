@@ -113,7 +113,8 @@ local float		gtemp, ftemp;
 
 	self.movetype = MOVETYPE_PUSH;
 	// TODO VR: this fixes e1m1, but breaks shootable bullets. grep for this trigger
-	self.solid = SOLID_TRIGGER;
+	// self.solid = SOLID_TRIGGER;
+	self.solid = SOLID_BSP;
 	setmodel (self, self.model);
 
 	self.blocked = button_blocked;
