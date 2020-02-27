@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.hpp"
 #include "vr.hpp"
+#include "world.hpp"
 
 /*
 
@@ -188,30 +189,24 @@ SV_Impact
 Two entities have touched, so run their touch functions
 ==================
 */
-void SV_Impact(edict_t* e1, edict_t* e2)
+void SV_Impact(edict_t* e1, edict_t* e2, func_t entvars_t::*impactFunc)
 {
-    // TODO VR: implement handtouch to press buttons?
-
-    int old_self;
-
-    int old_other;
-
-    old_self = pr_global_struct->self;
-    old_other = pr_global_struct->other;
+    const int old_self = pr_global_struct->self;
+    const int old_other = pr_global_struct->other;
 
     pr_global_struct->time = sv.time;
-    if(e1->v.touch && e1->v.solid != SOLID_NOT)
+    if(e1->v.*impactFunc && e1->v.solid != SOLID_NOT)
     {
         pr_global_struct->self = EDICT_TO_PROG(e1);
         pr_global_struct->other = EDICT_TO_PROG(e2);
-        PR_ExecuteProgram(e1->v.touch);
+        PR_ExecuteProgram(e1->v.*impactFunc);
     }
 
-    if(e2->v.touch && e2->v.solid != SOLID_NOT)
+    if(e2->v.*impactFunc && e2->v.solid != SOLID_NOT)
     {
         pr_global_struct->self = EDICT_TO_PROG(e2);
         pr_global_struct->other = EDICT_TO_PROG(e1);
-        PR_ExecuteProgram(e2->v.touch);
+        PR_ExecuteProgram(e2->v.*impactFunc);
     }
 
     pr_global_struct->self = old_self;
@@ -278,48 +273,37 @@ If steptrace is not nullptr, the trace of any vertical wall hit will be stored
 #define MAX_CLIP_PLANES 5
 int SV_FlyMove(edict_t* ent, float time, trace_t* steptrace)
 {
-    int bumpcount;
+    constexpr int numbumps = 4;
 
-    int numbumps;
-    vec3_t dir;
-    float d;
-    int numplanes;
     vec3_t planes[MAX_CLIP_PLANES];
+
     vec3_t primal_velocity;
+    VectorCopy(ent->v.velocity, primal_velocity);
 
     vec3_t original_velocity;
+    VectorCopy(ent->v.velocity, original_velocity);
 
     vec3_t new_velocity;
-    int i;
 
-    int j;
-    trace_t trace;
-    vec3_t end;
-    float time_left;
-    int blocked;
+    float time_left = time;
 
-    numbumps = 4;
+    int blocked = 0;
+    int numplanes = 0;
 
-    blocked = 0;
-    VectorCopy(ent->v.velocity, original_velocity);
-    VectorCopy(ent->v.velocity, primal_velocity);
-    numplanes = 0;
-
-    time_left = time;
-
-    for(bumpcount = 0; bumpcount < numbumps; bumpcount++)
+    for(int bumpcount = 0; bumpcount < numbumps; bumpcount++)
     {
         if(!ent->v.velocity[0] && !ent->v.velocity[1] && !ent->v.velocity[2])
         {
             break;
         }
 
-        for(i = 0; i < 3; i++)
+        vec3_t end;
+        for(int i = 0; i < 3; i++)
         {
             end[i] = ent->v.origin[i] + time_left * ent->v.velocity[i];
         }
 
-        trace =
+        trace_t trace =
             SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, end, false, ent);
 
         if(trace.allsolid)
@@ -366,7 +350,7 @@ int SV_FlyMove(edict_t* ent, float time, trace_t* steptrace)
         //
         // run the impact function
         //
-        SV_Impact(ent, trace.ent);
+        SV_Impact(ent, trace.ent, &entvars_t::touch);
         if(ent->free)
         {
             break; // removed by the impact function
@@ -388,6 +372,7 @@ int SV_FlyMove(edict_t* ent, float time, trace_t* steptrace)
         //
         // modify original_velocity so it parallels all of the clip planes
         //
+        int i, j;
         for(i = 0; i < numplanes; i++)
         {
             ClipVelocity(original_velocity, planes[i], new_velocity, 1);
@@ -420,8 +405,10 @@ int SV_FlyMove(edict_t* ent, float time, trace_t* steptrace)
                 VectorCopy(vec3_origin, ent->v.velocity);
                 return 7;
             }
+
+            vec3_t dir;
             CrossProduct(planes[0], planes[1], dir);
-            d = DotProduct(dir, ent->v.velocity);
+            const float d = DotProduct(dir, ent->v.velocity);
             VectorScale(dir, d, ent->v.velocity);
         }
 
@@ -481,6 +468,7 @@ SV_PushEntity
 Does not change the entities velocity at all
 ============
 */
+// TODO VR: possible clue for button bug?
 trace_t SV_PushEntity(edict_t* ent, vec3_t push)
 {
     trace_t trace;
@@ -510,7 +498,7 @@ trace_t SV_PushEntity(edict_t* ent, vec3_t push)
 
     if(trace.ent)
     {
-        SV_Impact(ent, trace.ent);
+        SV_Impact(ent, trace.ent, &entvars_t::touch);
     }
 
     return trace;
@@ -1088,6 +1076,50 @@ void SV_Physics_Client(edict_t* ent, int num)
     //
     SV_CheckVelocity(ent);
 
+    // TODO VR: test
+    auto doHandTouch = [&](vec3_t handpos, vec3_t handrot, int type) {
+        vec3_t fwd, right, up, end;
+        AngleVectors(handrot, fwd, right, up);
+        fwd[0] *= 1.f;
+        fwd[1] *= 1.f;
+        fwd[2] *= 1.f;
+
+        VectorCopy(handpos, end);
+        VectorAdd(end, fwd, end);
+
+        vec3_t mins{-2, -2, -2};
+        vec3_t maxs{2, 2, 2};
+        trace_t trace = SV_Move(handpos, mins, maxs, end, type, ent);
+
+        // vec3_t impact;
+        // trace_t trace = TraceLine(cl.handpos[1], end, impact);
+        // SV_ClipMoveToEntity(sv.edicts, start, mins, maxs, end);
+
+        /* if(trace.allsolid)
+         { // entity is trapped in another solid
+             // Con_Printf("all solid\n");
+             return;
+         }
+
+
+         if(trace.fraction == 1)
+         { // moved the entire distance
+             // Con_Printf("entire dist\n");
+             return;
+         }*/
+
+        if(!trace.ent)
+        {
+            // Con_Printf("no ent\n");
+            return;
+        }
+
+        Con_Printf("running handtouch impact\n");
+        SV_Impact(ent, trace.ent, &entvars_t::handtouch);
+    };
+    doHandTouch(ent->v.handpos, ent->v.handrot, MOVE_NORMAL);
+    doHandTouch(ent->v.offhandpos, ent->v.offhandrot, MOVE_NORMAL);
+
     //
     // decide which move function to call
     //
@@ -1101,6 +1133,7 @@ void SV_Physics_Client(edict_t* ent, int num)
             break;
 
         case MOVETYPE_WALK:
+        {
             if(!SV_RunThink(ent))
             {
                 return;
@@ -1112,7 +1145,9 @@ void SV_Physics_Client(edict_t* ent, int num)
             SV_CheckStuck(ent);
             SV_WalkMove(ent);
 
+
             break;
+        }
 
         case MOVETYPE_TOSS:
         case MOVETYPE_BOUNCE: SV_Physics_Toss(ent); break;

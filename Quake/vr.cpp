@@ -885,25 +885,52 @@ void SetHandPos(int index, entity_t* player)
     Vec3RotateZ(headLocalPreRot, vrYaw * M_PI_DIV_180, headLocal);
     _VectorAdd(headLocal, headOrigin, headLocal);
 
-    vec3_t final;
+    vec3_t finalPre, finalVec;
 
-    final[0] = -headLocal[0] + player->origin[0];
-    final[1] = -headLocal[1] + player->origin[1];
-    final[2] = headLocal[2] + player->origin[2] + vr_floor_offset.value +
-               vr_gun_z_offset.value;
+    finalPre[0] = -headLocal[0] + player->origin[0];
+    finalPre[1] = -headLocal[1] + player->origin[1];
+    finalPre[2] = headLocal[2] + player->origin[2] + vr_floor_offset.value +
+                  vr_gun_z_offset.value;
+
+    // TODO VR:
+
+    vec3_t mins{-4.f, -4.f, -4.f};
+    vec3_t maxs{4.f, 4.f, 4.f};
+
+    trace_t SV_Move2(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
+        int type, edict_t* passedict);
+    // trace_t trace =
+    // SV_Move2(player->origin, mins, maxs, finalPre, MOVE_NORMAL, sv_player);
+
+    // TODO VR: collide with entities
+    vec3_t dummy;
+    trace_t trace = TraceLine(player->origin, finalPre, dummy);
+
+    const auto orig = quake::util::toVec3(player->origin);
+    const auto pre = quake::util::toVec3(finalPre);
+    const auto crop = quake::util::toVec3(trace.endpos);
+
+    if(glm::length(pre - orig) < glm::length(crop - orig))
+    {
+        VectorCopy(finalPre, finalVec);
+    }
+    else
+    {
+        VectorCopy(trace.endpos, finalVec);
+    }
 
     // handpos
     const auto oldx = cl.handpos[index][0];
     const auto oldy = cl.handpos[index][1];
     const auto oldz = cl.handpos[index][2];
-    VectorCopy(final, cl.handpos[index]);
+    VectorCopy(finalVec, cl.handpos[index]);
 
     // TODO VR: adjust weight and add cvar, fix movement
     if(false)
     {
-        cl.handpos[index][0] = lerp(oldx, final[0], 0.05f);
-        cl.handpos[index][1] = lerp(oldy, final[1], 0.05f);
-        cl.handpos[index][2] = lerp(oldz, final[2], 0.05f);
+        cl.handpos[index][0] = lerp(oldx, finalVec[0], 0.05f);
+        cl.handpos[index][1] = lerp(oldy, finalVec[1], 0.05f);
+        cl.handpos[index][2] = lerp(oldz, finalVec[2], 0.05f);
     }
 
     // handrot is set with AngleVectorFromRotMat

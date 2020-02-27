@@ -48,22 +48,26 @@ TraceLine
 TODO: impact on bmodels, monsters
 ==============
 */
-void TraceLine(vec3_t start, vec3_t end, vec3_t impact)
+trace_t TraceLine(vec3_t start, vec3_t end, vec3_t impact)
 {
     trace_t trace;
-
     memset(&trace, 0, sizeof(trace));
-    SV_RecursiveHullCheck(cl.worldmodel->hulls, 0, 0, 1, start, end, &trace);
 
+    SV_RecursiveHullCheck(cl.worldmodel->hulls, 0, 0, 1, start, end, &trace);
     VectorCopy(trace.endpos, impact);
+
+    return trace;
 }
 
-void TraceLineToEntity(vec3_t start, vec3_t end, vec3_t impact, edict_t* ent)
+trace_t TraceLineToEntity(vec3_t start, vec3_t end, vec3_t impact, edict_t* ent)
 {
     trace_t trace;
     memset(&trace, 0, sizeof(trace));
+
     trace = SV_Move(start, vec3_origin, vec3_origin, end, MOVE_NORMAL, ent);
     VectorCopy(trace.endpos, impact);
+
+    return trace;
 }
 
 /*

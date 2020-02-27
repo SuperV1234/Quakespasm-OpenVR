@@ -55,6 +55,17 @@ namespace quake::util
     {
         return std::array{(std::string(24 - strlen(labels), ' ') + labels)...};
     }
+
+    [[nodiscard]] constexpr bool boxIntersection(
+        vec3_t aMin, vec3_t aMax, vec3_t bMin, vec3_t bMax)
+    {
+        return aMin[0] <= bMax[0] && //
+               aMin[1] <= bMax[1] && //
+               aMin[2] <= bMax[2] && //
+               aMax[0] >= bMin[0] && //
+               aMax[1] >= bMin[1] && //
+               aMax[2] >= bMin[2];
+    }
 } // namespace quake::util
 
 namespace std

@@ -82,6 +82,7 @@ typedef struct
 	vec3_t	maxs;
 	vec3_t	size;
 	func_t	touch;
+	func_t	handtouch;
 	func_t	use;
 	func_t	think;
 	func_t	blocked;
@@ -149,4 +150,4 @@ typedef struct
 	float	offhandvelmag;
 } entvars_t;
 
-#define PROGHEADER_CRC 9449
+#define PROGHEADER_CRC 37768

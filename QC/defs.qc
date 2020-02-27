@@ -125,6 +125,7 @@ void		end_sys_globals;		// flag for structure dumping
 .vector		size;			// maxs - mins
 
 .void()		touch;
+.void()		handtouch;		// touched by VR hand
 .void()		use;
 .void()		think;
 .void()		blocked;		// for doors or plats, called when can't push other

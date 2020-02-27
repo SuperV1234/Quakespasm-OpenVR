@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // world.c -- world query functions
 
 #include "quakedef.hpp"
+#include "util.hpp"
 
 /*
 
@@ -314,30 +315,27 @@ them and risking the list getting corrupt.
 static void SV_AreaTriggerEdicts(edict_t* ent, areanode_t* node, edict_t** list,
     int* listcount, const int listspace)
 {
-    link_t* l;
-
     link_t* next;
-    edict_t* touch;
 
     // touch linked edicts
-    for(l = node->trigger_edicts.next; l != &node->trigger_edicts; l = next)
+    for(link_t* l = node->trigger_edicts.next; l != &node->trigger_edicts;
+        l = next)
     {
         next = l->next;
-        touch = EDICT_FROM_AREA(l);
-        if(touch == ent)
+        edict_t* target = EDICT_FROM_AREA(l);
+
+        if(target == ent)
         {
             continue;
         }
-        if(!touch->v.touch || touch->v.solid != SOLID_TRIGGER)
-        {
-            continue;
-        }
-        if(ent->v.absmin[0] > touch->v.absmax[0] ||
-            ent->v.absmin[1] > touch->v.absmax[1] ||
-            ent->v.absmin[2] > touch->v.absmax[2] ||
-            ent->v.absmax[0] < touch->v.absmin[0] ||
-            ent->v.absmax[1] < touch->v.absmin[1] ||
-            ent->v.absmax[2] < touch->v.absmin[2])
+
+        const bool canBeTouched = (target->v.touch || target->v.handtouch) &&
+                                  target->v.solid == SOLID_TRIGGER;
+
+        // TODO VR:
+        if(false || !canBeTouched ||
+            !quake::util::boxIntersection(ent->v.absmin, ent->v.absmax,
+                target->v.absmin, target->v.absmax))
         {
             continue;
         }
@@ -347,7 +345,7 @@ static void SV_AreaTriggerEdicts(edict_t* ent, areanode_t* node, edict_t** list,
             return; // should never happen
         }
 
-        list[*listcount] = touch;
+        list[*listcount] = target;
         (*listcount)++;
     }
 
@@ -362,6 +360,7 @@ static void SV_AreaTriggerEdicts(edict_t* ent, areanode_t* node, edict_t** list,
         SV_AreaTriggerEdicts(
             ent, node->children[0], list, listcount, listspace);
     }
+
     if(ent->v.absmin[node->axis] < node->dist)
     {
         SV_AreaTriggerEdicts(
@@ -381,51 +380,98 @@ Based on code from Spike.
 */
 void SV_TouchLinks(edict_t* ent)
 {
-    edict_t** list;
-    edict_t* touch;
-    int old_self;
+    edict_t** list = (edict_t**)Hunk_Alloc(sv.num_edicts * sizeof(edict_t*));
 
-    int old_other;
-    int i;
+    int mark = Hunk_LowMark();
 
-    int listcount;
-    int mark;
-
-    mark = Hunk_LowMark();
-    list = (edict_t**)Hunk_Alloc(sv.num_edicts * sizeof(edict_t*));
-
-    listcount = 0;
+    int listcount = 0;
     SV_AreaTriggerEdicts(ent, sv_areanodes, list, &listcount, sv.num_edicts);
 
-    for(i = 0; i < listcount; i++)
+    for(int i = 0; i < listcount; i++)
     {
-        touch = list[i];
+        edict_t* target = list[i]; // thing that's being touched
         // re-validate in case of PR_ExecuteProgram having side effects that
         // make edicts later in the list no longer touch
-        if(touch == ent)
+        if(target == ent)
         {
             continue;
         }
-        if(!touch->v.touch || touch->v.solid != SOLID_TRIGGER)
-        {
-            continue;
-        }
-        if(ent->v.absmin[0] > touch->v.absmax[0] ||
-            ent->v.absmin[1] > touch->v.absmax[1] ||
-            ent->v.absmin[2] > touch->v.absmax[2] ||
-            ent->v.absmax[0] < touch->v.absmin[0] ||
-            ent->v.absmax[1] < touch->v.absmin[1] ||
-            ent->v.absmax[2] < touch->v.absmin[2])
-        {
-            continue;
-        }
-        old_self = pr_global_struct->self;
-        old_other = pr_global_struct->other;
 
-        pr_global_struct->self = EDICT_TO_PROG(touch);
+        const bool canBeTouched =
+            target->v.touch && target->v.solid == SOLID_TRIGGER;
+
+        if(!canBeTouched ||
+            !quake::util::boxIntersection(ent->v.absmin, ent->v.absmax,
+                target->v.absmin, target->v.absmax))
+        {
+            continue;
+        }
+
+        const int old_self = pr_global_struct->self;
+        const int old_other = pr_global_struct->other;
+
+        pr_global_struct->self = EDICT_TO_PROG(target);
         pr_global_struct->other = EDICT_TO_PROG(ent);
         pr_global_struct->time = sv.time;
-        PR_ExecuteProgram(touch->v.touch);
+
+        // TODO VR: this is for ammo and slipgates
+        PR_ExecuteProgram(target->v.touch);
+
+        pr_global_struct->self = old_self;
+        pr_global_struct->other = old_other;
+    }
+
+    // TODO VR: code repetition with above
+    for(int i = 0; i < listcount; i++)
+    {
+        edict_t* target = list[i]; // thing that's being touched
+        // re-validate in case of PR_ExecuteProgram having side effects that
+        // make edicts later in the list no longer touch
+        if(target == ent || ent != sv_player)
+        {
+            continue;
+        }
+
+        // TODO VR: code repetition
+        constexpr float o = 1.f;
+        vec3_t handposmin{-o, -o, -o};
+        VectorAdd(handposmin, ent->v.handpos, handposmin);
+
+        vec3_t handposmax{o, o, o};
+        VectorAdd(handposmax, ent->v.handpos, handposmax);
+
+        vec3_t offhandposmin{-o, -o, -o};
+        VectorAdd(offhandposmin, ent->v.offhandpos, offhandposmin);
+
+        vec3_t offhandposmax{o, o, o};
+        VectorAdd(offhandposmax, ent->v.offhandpos, offhandposmax);
+
+        const bool canBeTouched =
+            target->v.handtouch;
+            // TODO VR: restore
+            // && target->v.solid == SOLID_TRIGGER;
+
+        const bool anyHandIntersects =
+            quake::util::boxIntersection(
+                handposmin, handposmax, target->v.absmin, target->v.absmax) ||
+            quake::util::boxIntersection(offhandposmin, offhandposmax,
+                target->v.absmin, target->v.absmax);
+
+        if(!canBeTouched || !anyHandIntersects)
+        {
+            continue;
+        }
+
+        const int old_self = pr_global_struct->self;
+        const int old_other = pr_global_struct->other;
+
+        pr_global_struct->self = EDICT_TO_PROG(target);
+        pr_global_struct->other = EDICT_TO_PROG(ent);
+        pr_global_struct->time = sv.time;
+
+        // TODO VR: this is for ammo and slipgates
+        // Con_Printf("running handtouch\n");
+        PR_ExecuteProgram(target->v.handtouch);
 
         pr_global_struct->self = old_self;
         pr_global_struct->other = old_other;
@@ -548,7 +594,8 @@ void SV_LinkEdict(edict_t* ent, qboolean touch_triggers)
 
     if(ent->v.solid == SOLID_NOT)
     {
-        return;
+        // TODO VR:
+        // return;
     }
 
     // find the first node that the ent's box crosses
@@ -890,21 +937,19 @@ eventually rotation) of the end points
 trace_t SV_ClipMoveToEntity(
     edict_t* ent, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
 {
-    trace_t trace;
     vec3_t offset;
     vec3_t start_l;
-
     vec3_t end_l;
-    hull_t* hull;
 
     // fill in a default trace
+    trace_t trace;
     memset(&trace, 0, sizeof(trace_t));
     trace.fraction = 1;
     trace.allsolid = true;
     VectorCopy(end, trace.endpos);
 
     // get the clipping hull
-    hull = SV_HullForEntity(ent, mins, maxs, offset);
+    hull_t* hull = SV_HullForEntity(ent, mins, maxs, offset);
 
     VectorSubtract(start, offset, start_l);
     VectorSubtract(end, offset, end_l);
@@ -914,7 +959,52 @@ trace_t SV_ClipMoveToEntity(
         hull, hull->firstclipnode, 0, 1, start_l, end_l, &trace);
 
     // fix trace up by the offset
-    if(trace.fraction != 1) VectorAdd(trace.endpos, offset, trace.endpos);
+    if(trace.fraction != 1)
+    {
+        VectorAdd(trace.endpos, offset, trace.endpos);
+    }
+
+    // did we clip the move?
+    if(trace.fraction < 1 || trace.startsolid)
+    {
+        trace.ent = ent;
+    }
+
+    return trace;
+}
+
+// TODO VR:
+trace_t SV_ClipMoveToEntity2(
+    edict_t* ent, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
+{
+    vec3_t offset;
+    vec3_t start_l;
+    vec3_t end_l;
+
+    // fill in a default trace
+    trace_t trace;
+    memset(&trace, 0, sizeof(trace_t));
+    trace.fraction = 1;
+    trace.allsolid = true;
+    VectorCopy(end, trace.endpos);
+
+    // get the clipping hull
+    hull_t* hull = SV_HullForEntity(ent, mins, maxs, offset);
+
+    VectorSubtract(start, offset, start_l);
+    VectorSubtract(end, offset, end_l);
+
+    // trace a line through the apropriate clipping hull
+    // SV_RecursiveHullCheck(cl.worldmodel->hulls, 0, 0, 1, start, end,
+    // &clip.trace);
+    SV_RecursiveHullCheck(
+        hull, hull->firstclipnode, 0, 1, start_l, end_l, &trace);
+
+    // fix trace up by the offset
+    if(trace.fraction != 1)
+    {
+        VectorAdd(trace.endpos, offset, trace.endpos);
+    }
 
     // did we clip the move?
     if(trace.fraction < 1 || trace.startsolid)
@@ -1058,9 +1148,7 @@ void SV_MoveBounds(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
 boxmins[0] = boxmins[1] = boxmins[2] = -9999;
 boxmaxs[0] = boxmaxs[1] = boxmaxs[2] = 9999;
 #else
-    int i;
-
-    for(i = 0; i < 3; i++)
+    for(int i = 0; i < 3; i++)
     {
         if(end[i] > start[i])
         {
@@ -1085,8 +1173,6 @@ trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type,
     edict_t* passedict)
 {
     moveclip_t clip;
-    int i;
-
     memset(&clip, 0, sizeof(moveclip_t));
 
     // clip to world
@@ -1102,7 +1188,7 @@ trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type,
     // TODO VR: is this what makes spikes bigger?
     if(type == MOVE_MISSILE)
     {
-        for(i = 0; i < 3; i++)
+        for(int i = 0; i < 3; i++)
         {
             clip.mins2[i] = -2;
             clip.maxs2[i] = 2;
@@ -1113,6 +1199,38 @@ trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type,
         VectorCopy(mins, clip.mins2);
         VectorCopy(maxs, clip.maxs2);
     }
+
+    // create the bounding box of the entire move
+    SV_MoveBounds(
+        start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
+
+    // clip to entities
+    SV_ClipToLinks(sv_areanodes, &clip);
+
+    return clip.trace;
+}
+
+// TODO VR:
+trace_t SV_Move2(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type,
+    edict_t* passedict)
+{
+    moveclip_t clip;
+    memset(&clip, 0, sizeof(moveclip_t));
+
+    // clip to world
+    // SV_RecursiveHullCheck(cl.worldmodel->hulls, 0, 0, 1, start, end,
+    // &clip.trace);
+    clip.trace = SV_ClipMoveToEntity2(sv.edicts, start, mins, maxs, end);
+
+    clip.start = start;
+    clip.end = end;
+    clip.mins = mins;
+    clip.maxs = maxs;
+    clip.type = type;
+    clip.passedict = passedict;
+
+    VectorCopy(mins, clip.mins2);
+    VectorCopy(maxs, clip.maxs2);
 
     // create the bounding box of the entire move
     SV_MoveBounds(

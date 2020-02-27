@@ -37,7 +37,8 @@ typedef union eval_s
 } eval_t;
 
 #define MAX_ENT_LEAFS 32
-typedef struct edict_s
+
+struct edict_t
 {
     qboolean free;
     link_t area; /* linked to a division node or leaf */
@@ -55,7 +56,7 @@ typedef struct edict_s
     entvars_t v;    /* C exported fields from progs */
 
     /* other fields from progs come immediately after */
-} edict_t;
+};
 
 #define EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l, edict_t, area)
 

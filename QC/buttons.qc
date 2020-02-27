@@ -53,8 +53,9 @@ void() button_use =
 
 void() button_touch =
 {
-	if (other.classname != "player")
+	if (other.classname != "player") {
 		return;
+	}
 	self.enemy = other;
 	button_fire ();
 };
@@ -111,7 +112,8 @@ local float		gtemp, ftemp;
 	SetMovedir ();
 
 	self.movetype = MOVETYPE_PUSH;
-	self.solid = SOLID_BSP;
+	// TODO VR: this fixes e1m1, but breaks shootable bullets. grep for this trigger
+	self.solid = SOLID_TRIGGER;
 	setmodel (self, self.model);
 
 	self.blocked = button_blocked;
@@ -125,7 +127,8 @@ local float		gtemp, ftemp;
 	}
 	else
 	{
-		self.touch = button_touch;
+		// TODO VR: doesnt work in e1m1 with the counter buttons (except first..?)
+		self.handtouch = button_touch;
 	}
 
 	if (!self.speed)

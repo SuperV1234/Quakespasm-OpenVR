@@ -8,6 +8,7 @@
 #include <cassert>
 #include <array>
 
+extern cvar_t r_showbboxes;
 static int vr_options_cursor = 0;
 
 #define VR_MAX_TURN_SPEED 10.0f
@@ -18,9 +19,7 @@ extern void M_DrawSlider(int x, int y, float range);
 
 static void VR_MenuPlaySound(const char* sound, float fvol)
 {
-    sfx_t* sfx = S_PrecacheSound(sound);
-
-    if(sfx)
+    if(sfx_t* sfx = S_PrecacheSound(sound))
     {
         S_StartSound(cl.viewentity, 0, sfx, vec3_origin, fvol, 1);
     }
@@ -41,9 +40,6 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
         value_string = value_buffer;
     };
 
-#ifdef _MSC_VER
-#define snprintf sprintf_s
-#endif
     switch(option)
     {
         default: break;
@@ -187,11 +183,12 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
         case VRMenuOpt::VR_VIEWKICK:
             value_string = vr_viewkick.value == 0 ? "Off" : "On";
             break;
+        case VRMenuOpt::VR_SHOWBBOXES:
+            value_string = r_showbboxes.value == 0 ? "Off" : "On";
+            break;
         case VRMenuOpt::VR_IMPULSE9: break;
     }
-#ifdef _MSC_VER
-#undef snprintf
-#endif
+
     if(value_string)
     {
         M_Print(cx, cy, value_string);
@@ -315,6 +312,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
             break;
         case VRMenuOpt::VR_SBAR_MODE: adjustI(vr_sbar_mode, 1, 0, 1); break;
         case VRMenuOpt::VR_VIEWKICK: adjustI(vr_viewkick, 1, 0, 1); break;
+        case VRMenuOpt::VR_SHOWBBOXES: adjustI(r_showbboxes, 1, 0, 1); break;
         case VRMenuOpt::VR_IMPULSE9:
             VR_MenuPlaySound("items/r_item2.wav", 0.5);
             Cmd_ExecuteString("impulse 9", cmd_source_t::src_command);
@@ -399,7 +397,7 @@ void VR_MenuDraw()
         // TODO VR: consider restoring for custom QC?
         // "Projectile Spawn Z",
         "HUD Scale", "Menu Scale", "Melee Threshold", "Gun Yaw", "Gun Z Offset",
-        "Status Bar Mode", "Viewkick", "Impulse 9");
+        "Status Bar Mode", "Viewkick", "Show BBoxes", "Impulse 9");
 
     static_assert(adjustedLabels.size() == (int)VRMenuOpt::VR_MAX);
 
@@ -434,8 +432,6 @@ void VR_Menu_f()
 // TODO VR:
 // * difficulty options
 // * nicer explosion particles
-// * smaller hitboxes for nails and enemies (make aimign more important) (done?
-// test)
 // * speed adjustment options, sprinting
 // * vignette?
 // * god mode in menu

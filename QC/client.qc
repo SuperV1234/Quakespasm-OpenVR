@@ -531,7 +531,8 @@ void() PutClientInServer =
 	setmodel (self, "progs/player.mdl");
 	modelindex_player = self.modelindex;
 
-	setsize (self, VEC_HULL_MIN, VEC_HULL_MAX);
+	// setsize (self, VEC_HULL_MIN, VEC_HULL_MAX);
+	setsize (self, '-16 -16 -24', '16 16 26');
 
 	self.view_ofs = '0 0 22';
 

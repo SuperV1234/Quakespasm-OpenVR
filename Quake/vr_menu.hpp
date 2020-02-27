@@ -1,8 +1,7 @@
+#pragma once
+
 #include "quakedef.hpp"
 #include "vr.hpp"
-
-#ifndef __R_VR_MENU_H
-#define __R_VR_MENU_H
 
 enum class VRMenuOpt
 {
@@ -35,6 +34,7 @@ enum class VRMenuOpt
     VR_GUN_Z_OFFSET,
     VR_SBAR_MODE,
     VR_VIEWKICK,
+    VR_SHOWBBOXES,
     VR_IMPULSE9,
 
     VR_MAX
@@ -43,5 +43,3 @@ enum class VRMenuOpt
 void VR_Menu_f(void);
 void VR_MenuDraw(void);
 void VR_MenuKey(int key);
-
-#endif

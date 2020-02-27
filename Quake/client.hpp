@@ -379,8 +379,10 @@ void CL_SignonReply(void);
 extern cvar_t chase_active;
 
 void Chase_Init(void);
-void TraceLine(vec3_t start, vec3_t end, vec3_t impact);
-void TraceLineToEntity(vec3_t start, vec3_t end, vec3_t impact, edict_t* ent);
+
+struct trace_t;
+trace_t TraceLine(vec3_t start, vec3_t end, vec3_t impact);
+trace_t TraceLineToEntity(vec3_t start, vec3_t end, vec3_t impact, edict_t* ent);
 void Chase_UpdateForClient(void);                                 // johnfitz
 void Chase_UpdateForDrawing(refdef_t& refdef, entity_t* viewent); // johnfitz
 
