@@ -382,8 +382,8 @@ Based on code from Spike.
 */
 void SV_TouchLinks(edict_t* ent)
 {
-    edict_t** list = (edict_t**)Hunk_Alloc(sv.num_edicts * sizeof(edict_t*));
     const int mark = Hunk_LowMark();
+    edict_t** list = (edict_t**)Hunk_Alloc(sv.num_edicts * sizeof(edict_t*));
 
     int listcount = 0;
     SV_AreaTriggerEdicts(ent, sv_areanodes, list, &listcount, sv.num_edicts);
