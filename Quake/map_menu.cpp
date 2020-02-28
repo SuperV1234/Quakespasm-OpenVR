@@ -66,7 +66,7 @@ static void MapMenu_MenuPrintOptionValue(
     (void)option;
 }
 
-static void MapMenu_MenuKeyOption(const int key, const int option)
+static void M_MapMenu_KeyOption(const int key, const int option)
 {
     (void)key;
 
@@ -74,7 +74,7 @@ static void MapMenu_MenuKeyOption(const int key, const int option)
     Cmd_ExecuteString(va("map %s", mapName.data()), src_command);
 }
 
-void MapMenu_MenuKey(int key)
+void M_MapMenu_Key(int key)
 {
     switch(key)
     {
@@ -118,20 +118,20 @@ void MapMenu_MenuKey(int key)
         case K_RIGHTARROW:
         {
             S_LocalSound("misc/menu3.wav");
-            MapMenu_MenuKeyOption(key, mapmenu_cursor);
+            M_MapMenu_KeyOption(key, mapmenu_cursor);
             break;
         }
 
         case K_ENTER:
         {
             m_entersound = true;
-            MapMenu_MenuKeyOption(key, mapmenu_cursor);
+            M_MapMenu_KeyOption(key, mapmenu_cursor);
             break;
         }
     }
 }
 
-void MapMenu_MenuDraw()
+void M_MapMenu_Draw()
 {
     int y = 4;
 
@@ -167,7 +167,7 @@ void MapMenu_MenuDraw()
     }
 }
 
-void MapMenu_Menu_f()
+void M_Menu_MapMenu_f()
 {
     const char* sound = "items/r_item1.wav";
 

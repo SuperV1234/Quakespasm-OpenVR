@@ -15,6 +15,6 @@ enum class WpnOffsetMenuOpt
     Max
 };
 
-void WpnOffset_Menu_f(void);
-void WpnOffset_MenuDraw(void);
-void WpnOffset_MenuKey(int key);
+void M_Menu_WpnOffset_f(void);
+void M_WpnOffset_Draw(void);
+void M_WpnOffset_Key(int key);

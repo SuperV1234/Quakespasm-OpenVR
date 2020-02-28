@@ -1,5 +1,5 @@
 #pragma once
 
-void MapMenu_Menu_f(void);
-void MapMenu_MenuDraw(void);
-void MapMenu_MenuKey(int key);
+void M_Menu_MapMenu_f(void);
+void M_MapMenu_Draw(void);
+void M_MapMenu_Key(int key);

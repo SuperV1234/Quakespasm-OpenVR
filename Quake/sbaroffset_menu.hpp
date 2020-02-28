@@ -17,8 +17,8 @@ enum class SbarOffsetMenuOpt
     Max
 };
 
-void SbarOffset_Menu_f(void);
-void SbarOffset_MenuDraw(void);
-void SbarOffset_MenuKey(int key);
+void M_Menu_SbarOffset_f(void);
+void M_SbarOffset_Draw(void);
+void M_SbarOffset_Key(int key);
 
 #endif

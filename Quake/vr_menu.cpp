@@ -195,7 +195,7 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
     }
 }
 
-static void VR_MenuKeyOption(int key, VRMenuOpt option)
+static void M_VR_KeyOption(int key, VRMenuOpt option)
 {
 #define _sizeofarray(x) ((sizeof(x) / sizeof(x[0])))
 #define _maxarray(x) (_sizeofarray(x) - 1)
@@ -324,7 +324,7 @@ static void VR_MenuKeyOption(int key, VRMenuOpt option)
 #undef _sizeofarray
 }
 
-void VR_MenuKey(int key)
+void M_VR_Key(int key)
 {
     switch(key)
     {
@@ -356,19 +356,19 @@ void VR_MenuKey(int key)
         case K_LEFTARROW: [[fallthrough]];
         case K_RIGHTARROW:
             S_LocalSound("misc/menu3.wav");
-            VR_MenuKeyOption(key, (VRMenuOpt)vr_options_cursor);
+            M_VR_KeyOption(key, (VRMenuOpt)vr_options_cursor);
             break;
 
         case K_ENTER:
             m_entersound = true;
-            VR_MenuKeyOption(key, (VRMenuOpt)vr_options_cursor);
+            M_VR_KeyOption(key, (VRMenuOpt)vr_options_cursor);
             break;
 
         default: break;
     }
 }
 
-void VR_MenuDraw()
+void M_VR_Draw()
 {
     int y = 4;
 
@@ -417,7 +417,7 @@ void VR_MenuDraw()
     }
 }
 
-void VR_Menu_f()
+void M_Menu_VR_f()
 {
     const char* sound = "items/r_item1.wav";
 

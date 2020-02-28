@@ -1,8 +1,5 @@
 #pragma once
 
-#include "quakedef.hpp"
-#include "vr.hpp"
-
 enum class VRMenuOpt
 {
     VR_ENABLED,
@@ -40,6 +37,6 @@ enum class VRMenuOpt
     VR_MAX
 };
 
-void VR_Menu_f(void);
-void VR_MenuDraw(void);
-void VR_MenuKey(int key);
+void M_Menu_VR_f(void);
+void M_VR_Draw(void);
+void M_VR_Key(int key);

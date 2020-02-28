@@ -53,7 +53,7 @@ static void SbarOffset_MenuPrintOptionValue(
     }
 }
 
-static void SbarOffset_MenuKeyOption(int key, SbarOffsetMenuOpt option)
+static void M_SbarOffset_KeyOption(int key, SbarOffsetMenuOpt option)
 {
     const bool isLeft = (key == K_LEFTARROW);
 
@@ -92,7 +92,7 @@ static void SbarOffset_MenuKeyOption(int key, SbarOffsetMenuOpt option)
     }
 }
 
-void SbarOffset_MenuKey(int key)
+void M_SbarOffset_Key(int key)
 {
     switch(key)
     {
@@ -124,19 +124,19 @@ void SbarOffset_MenuKey(int key)
         case K_LEFTARROW: [[fallthrough]];
         case K_RIGHTARROW:
             S_LocalSound("misc/menu3.wav");
-            SbarOffset_MenuKeyOption(key, (SbarOffsetMenuOpt)sbaroff_cursor);
+            M_SbarOffset_KeyOption(key, (SbarOffsetMenuOpt)sbaroff_cursor);
             break;
 
         case K_ENTER:
             m_entersound = true;
-            SbarOffset_MenuKeyOption(key, (SbarOffsetMenuOpt)sbaroff_cursor);
+            M_SbarOffset_KeyOption(key, (SbarOffsetMenuOpt)sbaroff_cursor);
             break;
 
         default: break;
     }
 }
 
-void SbarOffset_MenuDraw()
+void M_SbarOffset_Draw()
 {
     int y = 4;
 
@@ -177,7 +177,7 @@ void SbarOffset_MenuDraw()
     }
 }
 
-void SbarOffset_Menu_f()
+void M_Menu_SbarOffset_f()
 {
     const char* sound = "items/r_item1.wav";
 
