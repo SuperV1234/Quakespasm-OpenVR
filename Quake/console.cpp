@@ -283,61 +283,48 @@ If the line width has changed, reformat the buffer.
 */
 void Con_CheckResize()
 {
-    int i;
-
-    int j;
-
-    int width;
-
-    int oldwidth;
-
-    int oldtotallines;
-
-    int numlines;
-
-    int numchars;
-    char* tbuf; // johnfitz -- tbuf no longer a static array
-    int mark;   // johnfitz
-
-    width = (vid.conwidth >> 3) -
-            2; // johnfitz -- use vid.conwidth instead of vid.width
+    const int width = (vid.conwidth >> 3) -
+                      2; // johnfitz -- use vid.conwidth instead of vid.width
 
     if(width == con_linewidth)
     {
         return;
     }
 
-    oldwidth = con_linewidth;
+    const int oldwidth = con_linewidth;
     con_linewidth = width;
-    oldtotallines = con_totallines;
+
+    const int oldtotallines = con_totallines;
     con_totallines =
         con_buffersize /
         con_linewidth; // johnfitz -- con_buffersize replaces CON_TEXTSIZE
-    numlines = oldtotallines;
+
+    int numlines = oldtotallines;
 
     if(con_totallines < numlines)
     {
         numlines = con_totallines;
     }
 
-    numchars = oldwidth;
+    int numchars = oldwidth;
 
     if(con_linewidth < numchars)
     {
         numchars = con_linewidth;
     }
 
-    mark = Hunk_LowMark();                    // johnfitz
-    tbuf = (char*)Hunk_Alloc(con_buffersize); // johnfitz
+    const int mark = Hunk_LowMark(); // johnfitz
+    // johnfitz -- tbuf no longer a static array
+    char* tbuf = (char*)Hunk_Alloc(con_buffersize); // johnfitz
 
     Q_memcpy(tbuf, con_text,
         con_buffersize); // johnfitz -- con_buffersize replaces CON_TEXTSIZE
     Q_memset(con_text, ' ',
         con_buffersize); // johnfitz -- con_buffersize replaces CON_TEXTSIZE
 
-    for(i = 0; i < numlines; i++)
+    for(int i = 0; i < numlines; i++)
     {
-        for(j = 0; j < numchars; j++)
+        for(int j = 0; j < numchars; j++)
         {
             con_text[(con_totallines - 1 - i) * con_linewidth + j] =
                 tbuf[((con_current - i + oldtotallines) % oldtotallines) *
@@ -859,12 +846,6 @@ static qboolean bash_singlematch;
 
 void AddToTabList(const char* name, const char* type)
 {
-    tab_t* t;
-
-    tab_t* insert;
-    char* i_bash;
-    const char* i_name;
-
     if(!*bash_partial)
     {
         strncpy(bash_partial, name, 79);
@@ -874,8 +855,8 @@ void AddToTabList(const char* name, const char* type)
     {
         bash_singlematch = 0;
         // find max common between bash_partial and name
-        i_bash = bash_partial;
-        i_name = name;
+        char* i_bash = bash_partial;
+        const char* i_name = name;
         while(*i_bash && (*i_bash == *i_name))
         {
             i_bash++;
@@ -884,7 +865,7 @@ void AddToTabList(const char* name, const char* type)
         *i_bash = 0;
     }
 
-    t = (tab_t*)Hunk_Alloc(sizeof(tab_t));
+    tab_t* t = (tab_t*)Hunk_Alloc(sizeof(tab_t));
     t->name = name;
     t->type = type;
 
@@ -904,7 +885,7 @@ void AddToTabList(const char* name, const char* type)
     }
     else // insert later
     {
-        insert = tablist;
+        tab_t* insert = tablist;
         do
         {
             if(strcmp(name, insert->name) < 0)
@@ -1054,7 +1035,6 @@ void Con_TabComplete()
     const char* match;
     static char* c;
     tab_t* t;
-    int mark;
 
     int i;
 
@@ -1145,7 +1125,7 @@ void Con_TabComplete()
     }
 
     // find a match
-    mark = Hunk_LowMark();
+    const int mark = Hunk_LowMark();
     if(!key_tabpartial[0]) // first time through
     {
         q_strlcpy(key_tabpartial, partial, MAXCMDLINE);

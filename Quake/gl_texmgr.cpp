@@ -519,14 +519,8 @@ rewritten
 */
 void TexMgr_LoadPalette()
 {
-    byte* pal;
-
     byte* src;
-
     byte* dst;
-    int i;
-
-    int mark;
     FILE* f;
 
     COM_FOpenFile("gfx/palette.lmp", &f, nullptr);
@@ -535,15 +529,15 @@ void TexMgr_LoadPalette()
         Sys_Error("Couldn't load gfx/palette.lmp");
     }
 
-    mark = Hunk_LowMark();
-    pal = (byte*)Hunk_Alloc(768);
+    const int mark = Hunk_LowMark();
+    byte* pal = (byte*)Hunk_Alloc(768);
     fread(pal, 1, 768, f);
     fclose(f);
 
     // standard palette, 255 is transparent
     dst = (byte*)d_8to24table;
     src = pal;
-    for(i = 0; i < 256; i++)
+    for(int i = 0; i < 256; i++)
     {
         *dst++ = *src++;
         *dst++ = *src++;
@@ -555,14 +549,14 @@ void TexMgr_LoadPalette()
     // fullbright palette, 0-223 are black (for additive blending)
     src = pal + 224 * 3;
     dst = (byte*)&d_8to24table_fbright[224];
-    for(i = 224; i < 256; i++)
+    for(int i = 224; i < 256; i++)
     {
         *dst++ = *src++;
         *dst++ = *src++;
         *dst++ = *src++;
         *dst++ = 255;
     }
-    for(i = 0; i < 224; i++)
+    for(int i = 0; i < 224; i++)
     {
         dst = (byte*)&d_8to24table_fbright[i];
         dst[3] = 255;
@@ -572,14 +566,14 @@ void TexMgr_LoadPalette()
     // nobright palette, 224-255 are black (for additive blending)
     dst = (byte*)d_8to24table_nobright;
     src = pal;
-    for(i = 0; i < 256; i++)
+    for(int i = 0; i < 256; i++)
     {
         *dst++ = *src++;
         *dst++ = *src++;
         *dst++ = *src++;
         *dst++ = 255;
     }
-    for(i = 224; i < 256; i++)
+    for(int i = 224; i < 256; i++)
     {
         dst = (byte*)&d_8to24table_nobright[i];
         dst[3] = 255;
@@ -623,9 +617,6 @@ choose safe warpimage size and resize existing warpimage textures
 void TexMgr_RecalcWarpImageSize()
 {
     //	int	oldsize = gl_warpimagesize;
-    int mark;
-    gltexture_t* glt;
-    byte* dummy;
 
     //
     // find the new correct size
@@ -649,10 +640,10 @@ void TexMgr_RecalcWarpImageSize()
     //
     // resize the textures in opengl
     //
-    mark = Hunk_LowMark();
-    dummy = (byte*)Hunk_Alloc(gl_warpimagesize * gl_warpimagesize * 4);
+    const int mark = Hunk_LowMark();
+    byte* dummy = (byte*)Hunk_Alloc(gl_warpimagesize * gl_warpimagesize * 4);
 
-    for(glt = active_gltextures; glt; glt = glt->next)
+    for(gltexture_t* glt = active_gltextures; glt; glt = glt->next)
     {
         if(glt->flags & TEXPREF_WARPIMAGE)
         {
@@ -1503,7 +1494,6 @@ gltexture_t* TexMgr_LoadImage(qmodel_t* owner, const char* name, int width,
 {
     unsigned short crc;
     gltexture_t* glt;
-    int mark;
 
     if(isDedicated)
     {
@@ -1548,7 +1538,7 @@ gltexture_t* TexMgr_LoadImage(qmodel_t* owner, const char* name, int width,
     glt->source_crc = crc;
 
     // upload it
-    mark = Hunk_LowMark();
+    const int mark = Hunk_LowMark();
 
     switch(glt->source_format)
     {
@@ -1585,15 +1575,13 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
     byte* data = nullptr;
 
     byte* translated;
-    int mark;
 
     int size;
 
-    int i;
     //
     // get source data
     //
-    mark = Hunk_LowMark();
+    const int mark = Hunk_LowMark();
 
     if(glt->source_file[0] && glt->source_offset)
     {
@@ -1665,7 +1653,7 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
     if(glt->shirt > -1 && glt->pants > -1)
     {
         // create new translation table
-        for(i = 0; i < 256; i++)
+        for(int i = 0; i < 256; i++)
         {
             translation[i] = i;
         }
@@ -1673,14 +1661,14 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
         shirt = glt->shirt * 16;
         if(shirt < 128)
         {
-            for(i = 0; i < 16; i++)
+            for(int i = 0; i < 16; i++)
             {
                 translation[TOP_RANGE + i] = shirt + i;
             }
         }
         else
         {
-            for(i = 0; i < 16; i++)
+            for(int i = 0; i < 16; i++)
             {
                 translation[TOP_RANGE + i] = shirt + 15 - i;
             }
@@ -1689,14 +1677,14 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
         pants = glt->pants * 16;
         if(pants < 128)
         {
-            for(i = 0; i < 16; i++)
+            for(int i = 0; i < 16; i++)
             {
                 translation[BOTTOM_RANGE + i] = pants + i;
             }
         }
         else
         {
-            for(i = 0; i < 16; i++)
+            for(int i = 0; i < 16; i++)
             {
                 translation[BOTTOM_RANGE + i] = pants + 15 - i;
             }
@@ -1707,7 +1695,7 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
         dst = translated = (byte*)Hunk_Alloc(size);
         src = data;
 
-        for(i = 0; i < size; i++)
+        for(int i = 0; i < size; i++)
         {
             *dst++ = translation[*src++];
         }

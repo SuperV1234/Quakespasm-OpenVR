@@ -160,10 +160,6 @@ Sky_LoadSkyBox
 const char* suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
 void Sky_LoadSkyBox(const char* name)
 {
-    int i;
-
-    int mark;
-
     int width;
 
     int height;
@@ -177,7 +173,7 @@ void Sky_LoadSkyBox(const char* name)
     }
 
     // purge old textures
-    for(i = 0; i < 6; i++)
+    for(int i = 0; i < 6; i++)
     {
         if(skybox_textures[i] && skybox_textures[i] != notexture)
         {
@@ -194,9 +190,9 @@ void Sky_LoadSkyBox(const char* name)
     }
 
     // load textures
-    for(i = 0; i < 6; i++)
+    for(int i = 0; i < 6; i++)
     {
-        mark = Hunk_LowMark();
+        const int mark = Hunk_LowMark();
         q_snprintf(filename, sizeof(filename), "gfx/env/%s%s", name, suf[i]);
         data = Image_LoadImage(filename, &width, &height);
         if(data)
@@ -215,7 +211,7 @@ void Sky_LoadSkyBox(const char* name)
 
     if(nonefound) // go back to scrolling sky if skybox is totally missing
     {
-        for(i = 0; i < 6; i++)
+        for(int i = 0; i < 6; i++)
         {
             if(skybox_textures[i] && skybox_textures[i] != notexture)
             {

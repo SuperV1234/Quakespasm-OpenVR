@@ -367,18 +367,15 @@ void GL_MakeAliasModelDisplayLists(qmodel_t* m, aliashdr_t* hdr)
     int i;
 
     int j;
-    int* cmds;
-    trivertx_t* verts;
-    float hscale;
-
-    float vscale;  // johnfitz -- padded skins
     int count;     // johnfitz -- precompute texcoords for padded skins
     int* loadcmds; // johnfitz
 
     // johnfitz -- padded skins
-    hscale =
+    const float hscale =
         (float)hdr->skinwidth / (float)TexMgr_PadConditional(hdr->skinwidth);
-    vscale =
+
+    // johnfitz -- padded skins
+    const float vscale =
         (float)hdr->skinheight / (float)TexMgr_PadConditional(hdr->skinheight);
     // johnfitz
 
@@ -393,7 +390,7 @@ void GL_MakeAliasModelDisplayLists(qmodel_t* m, aliashdr_t* hdr)
 
     paliashdr->poseverts = numorder;
 
-    cmds = (int*)Hunk_Alloc(numcommands * 4);
+    int* cmds = (int*)Hunk_Alloc(numcommands * 4);
     paliashdr->commands = (byte*)cmds - (byte*)paliashdr;
 
     // johnfitz -- precompute texcoords for padded skins
@@ -420,7 +417,7 @@ void GL_MakeAliasModelDisplayLists(qmodel_t* m, aliashdr_t* hdr)
     }
     // johnfitz
 
-    verts = (trivertx_t*)Hunk_Alloc(
+    trivertx_t* verts = (trivertx_t*)Hunk_Alloc(
         paliashdr->numposes * paliashdr->poseverts * sizeof(trivertx_t));
     paliashdr->posedata = (byte*)verts - (byte*)paliashdr;
     for(i = 0; i < paliashdr->numposes; i++)

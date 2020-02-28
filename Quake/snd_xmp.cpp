@@ -59,17 +59,12 @@ static qboolean S_XMP_CodecOpenStream(snd_stream_t* stream)
      * using xmp_load_module_from_memory() which requires libxmp >= 4.2.
      * libxmp-4.0/4.1 only have xmp_load_module() which accepts a file
      * name which isn't good with files in containers like paks, etc. */
-    xmp_context c;
-    byte* moddata;
-    long len;
-    int mark;
-
-    c = xmp_create_context();
+    xmp_context c = xmp_create_context();
     if(c == nullptr) return false;
 
-    len = FS_filelength(&stream->fh);
-    mark = Hunk_LowMark();
-    moddata = (byte*)Hunk_Alloc(len);
+    const long len = FS_filelength(&stream->fh);
+    const int mark = Hunk_LowMark();
+    byte* moddata = (byte*)Hunk_Alloc(len);
     FS_fread(moddata, 1, len, &stream->fh);
     if(xmp_load_module_from_memory(c, moddata, len) != 0)
     {

@@ -61,13 +61,10 @@ static void S_MODPLUG_CodecShutdown(void)
 static qboolean S_MODPLUG_CodecOpenStream(snd_stream_t* stream)
 {
     /* need to load the whole file into memory and pass it to libmodplug */
-    byte* moddata;
-    long len;
-    int mark;
+    const long len = FS_filelength(&stream->fh);
+    const int mark = Hunk_LowMark();
+    byte* moddata = (byte*)Hunk_Alloc(len);
 
-    len = FS_filelength(&stream->fh);
-    mark = Hunk_LowMark();
-    moddata = (byte*)Hunk_Alloc(len);
     FS_fread(moddata, 1, len, &stream->fh);
 
     S_MODPLUG_SetSettings(stream);

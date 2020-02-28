@@ -363,12 +363,12 @@ Draw_MakePic -- johnfitz -- generate pics from internal data
 */
 qpic_t* Draw_MakePic(const char* name, int width, int height, byte* data)
 {
-    int flags = TEXPREF_NEAREST | TEXPREF_ALPHA | TEXPREF_PERSIST |
-                TEXPREF_NOPICMIP | TEXPREF_PAD;
-    qpic_t* pic;
+    const int flags = TEXPREF_NEAREST | TEXPREF_ALPHA | TEXPREF_PERSIST |
+                      TEXPREF_NOPICMIP | TEXPREF_PAD;
+
     glpic_t gl;
 
-    pic = (qpic_t*)Hunk_Alloc(sizeof(qpic_t) - 4 + sizeof(glpic_t));
+    qpic_t* pic = (qpic_t*)Hunk_Alloc(sizeof(qpic_t) - 4 + sizeof(glpic_t));
     pic->width = width;
     pic->height = height;
 

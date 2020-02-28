@@ -279,17 +279,14 @@ Cmd_Exec_f
 */
 void Cmd_Exec_f()
 {
-    char* f;
-    int mark;
-
     if(Cmd_Argc() != 2)
     {
         Con_Printf("exec <filename> : execute a script file\n");
         return;
     }
 
-    mark = Hunk_LowMark();
-    f = (char*)COM_LoadHunkFile(Cmd_Argv(1), nullptr);
+    const int mark = Hunk_LowMark();
+    char* f = (char*)COM_LoadHunkFile(Cmd_Argv(1), nullptr);
     if(!f)
     {
         Con_Printf("couldn't exec %s\n", Cmd_Argv(1));
