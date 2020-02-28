@@ -993,9 +993,9 @@ void R_ShowTris()
             glDepthRange(0, 1);
         }
 
-        // TODO VR:
+        // TODO VR: not needed?
         // offhand viewmodel
-        currententity = &cl.offhand_viewent;
+     /*    currententity = &cl.offhand_viewent;
         if(r_drawviewmodel.value && !chase_active.value &&
             cl.stats[STAT_HEALTH] > 0 && !(cl.items & IT_INVISIBILITY) &&
             currententity->model && currententity->model->type == mod_alias)
@@ -1003,7 +1003,7 @@ void R_ShowTris()
             glDepthRange(0, 0.3);
             R_DrawAliasModel_ShowTris(currententity);
             glDepthRange(0, 1);
-        }
+        } */
     }
 
     if(r_particles.value)

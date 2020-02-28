@@ -476,7 +476,6 @@ SV_PushEntity
 Does not change the entities velocity at all
 ============
 */
-// TODO VR: possible clue for button bug?
 trace_t SV_PushEntity(edict_t* ent, vec3_t push)
 {
     trace_t trace;
@@ -489,7 +488,6 @@ trace_t SV_PushEntity(edict_t* ent, vec3_t push)
         trace = SV_Move(
             ent->v.origin, ent->v.mins, ent->v.maxs, end, MOVE_MISSILE, ent);
     }
-    // TODO VR: another possible place to check for button bug
     else if(ent->v.solid == SOLID_TRIGGER || ent->v.solid == SOLID_NOT)
     {
         // only clip against bmodels
@@ -1121,7 +1119,6 @@ void SV_Handtouch(edict_t* ent)
     vec3_t qMaxs;
     toQuakeVec3(qMaxs, maxs);
 
-    vec3_t end;
 
     const auto traceCheck = [&](const trace_t& trace) {
         if(!trace.ent)
@@ -1146,12 +1143,33 @@ void SV_Handtouch(edict_t* ent)
         handCollisionCheck(ent->v.offhandpos);
     };
 
+    const auto endHandPosition = [&](vec3_t out, vec3_t handPos,
+                                     vec3_t handRot) {
+        vec3_t fwd, right, up;
+        AngleVectors(handRot, fwd, right, up);
+        fwd[0] *= 1.f;
+        fwd[1] *= 1.f;
+        fwd[2] *= 1.f;
+
+        VectorCopy(handPos, out);
+        VectorAdd(out, fwd, out);
+    };
+
+    vec3_t mainHandEnd;
+    endHandPosition(mainHandEnd, ent->v.handpos, ent->v.handrot);
+
+    vec3_t offHandEnd;
+    endHandPosition(offHandEnd, ent->v.offhandpos, ent->v.offhandrot);
+
+    traceCheck(SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, mainHandEnd,
+        MOVE_NORMAL, ent));
+    traceCheck(SV_Move(qOrigin, qMins, qMaxs, mainHandEnd, MOVE_NORMAL, ent));
     traceCheck(SV_Move(
-        ent->v.origin, ent->v.mins, ent->v.maxs, end, MOVE_NORMAL, ent));
-    traceCheck(SV_Move(qOrigin, qMins, qMaxs, end, MOVE_NORMAL, ent));
+        ent->v.origin, ent->v.mins, ent->v.maxs, offHandEnd, MOVE_NORMAL, ent));
+    traceCheck(SV_Move(qOrigin, qMins, qMaxs, offHandEnd, MOVE_NORMAL, ent));
 
     const auto traceForHand = [&](vec3_t handPos, vec3_t handRot) {
-        vec3_t fwd, right, up;
+        vec3_t fwd, right, up, end;
         AngleVectors(handRot, fwd, right, up);
         fwd[0] *= 1.f;
         fwd[1] *= 1.f;

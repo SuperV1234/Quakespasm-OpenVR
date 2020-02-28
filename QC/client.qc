@@ -509,7 +509,8 @@ void() PutClientInServer =
 	W_SetCurrentAmmo ();
 
 	self.attack_finished = time;
-	self.offhand_attack_finished = time;
+	self.mainhand_melee_attack_finished = time;
+	self.offhand_melee_attack_finished = time;
 	self.th_pain = player_pain;
 	self.th_die = PlayerDie;
 
@@ -1140,7 +1141,7 @@ void() PlayerPostThink =
 	{
 		if (self.weapon == IT_AXE)
 		{
-			if (time >= self.attack_finished)
+			if (time >= self.mainhand_melee_attack_finished)
 			{
 				sound (self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);
 			}
@@ -1149,7 +1150,7 @@ void() PlayerPostThink =
 		}
 		else
 		{
-			if (time >= self.attack_finished)
+			if (time >= self.mainhand_melee_attack_finished)
 			{
 				sound (self, CHAN_WEAPON, "knight/sword1.wav", 1, ATTN_NORM);
 			}
@@ -1157,7 +1158,7 @@ void() PlayerPostThink =
 			W_GunMelee();
 		}
 
-		self.attack_finished = time + 0.1;
+		self.mainhand_melee_attack_finished = time + 0.1;
 		self.in_melee = time + 0.02;
 	}
 
@@ -1170,14 +1171,14 @@ void() PlayerPostThink =
 	if (cvar("vr_enabled") == 1 && time >= self.offhand_in_melee && self.offhandvelmag > vr_melee_threshold)
 	{
 		// TODO VR: assuming fist
-		if (time >= self.offhand_attack_finished)
+		if (time >= self.offhand_melee_attack_finished)
 		{
 			sound (self, CHAN_WEAPON, "knight/sword1.wav", 1, ATTN_NORM);
 		}
 
 		W_FistMelee();
 
-		self.offhand_attack_finished = time + 0.1;
+		self.offhand_melee_attack_finished = time + 0.1;
 		self.offhand_in_melee = time + 0.02;
 	}
 

@@ -70,6 +70,7 @@ void() W_FireAxe =
 		if (self.melee_hit_sound_played == FALSE)
 		{
 			sound (self, CHAN_WEAPON, "fisthit.wav", 1.0, ATTN_NORM);
+			playedsound = TRUE;
 		}
 	}
 	else
@@ -78,6 +79,7 @@ void() W_FireAxe =
 		if (self.melee_hit_sound_played == FALSE)
 		{
 			sound (self, CHAN_WEAPON, "player/axhit2.wav", 1, ATTN_NORM);
+			playedsound = TRUE;
 		}
 
 		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
@@ -569,6 +571,7 @@ W_FireRocket
 void() W_FireRocket =
 {
 	local	entity missile, mpuff;
+	local	vector handv;
 
 	self.currentammo = self.ammo_rockets = self.ammo_rockets - 1;
 
@@ -590,6 +593,18 @@ void() W_FireRocket =
 	missile.angles = vectoangles(missile.velocity);
 
 	missile.touch = T_MissileTouch;
+
+	if (cvar("vr_enabled") == 1)
+	{
+		// TODO VR: repetition
+
+		// VR: add hand velocity and player velocity to the final projectile
+		// velocity, in order to carry momentum
+		handv_x = self.handvel_x;
+		handv_y = self.handvel_z  * -1;
+		handv_z = self.handvel_y;
+		missile.velocity = missile.velocity + (handv * 50) + (self.velocity);
+	}
 
 // set missile duration
 	missile.nextthink = time + 5;
@@ -735,6 +750,7 @@ W_FireGrenade
 void() W_FireGrenade =
 {
 	local	entity missile, mpuff;
+	local 	vector handv;
 
 	self.currentammo = self.ammo_rockets = self.ammo_rockets - 1;
 
@@ -752,13 +768,40 @@ void() W_FireGrenade =
 
 	makevectors (self.v_angle);
 
-	if (self.v_angle_x)
-		missile.velocity = v_forward*600 + v_up * 200 + crandom()*v_right*10 + crandom()*v_up*10;
+	if (cvar("vr_enabled") == 1)
+	{
+		if (self.v_angle_x)
+		{
+			missile.velocity = v_forward*600 + crandom()*v_right*10 + crandom()*v_up*10;
+		}
+		else
+		{
+			missile.velocity = aim(self, 10000);
+			missile.velocity = missile.velocity * 600;
+		}
+
+		// TODO VR: repetition
+
+		// VR: add hand velocity and player velocity to the final projectile
+		// velocity, in order to carry momentum
+		handv_x = self.handvel_x;
+		handv_y = self.handvel_z  * -1;
+		handv_z = self.handvel_y;
+
+		missile.velocity = missile.velocity + (handv * 50) + (self.velocity);
+	}
 	else
 	{
-		missile.velocity = aim(self, 10000);
-		missile.velocity = missile.velocity * 600;
-		missile.velocity_z = 200;
+		if (self.v_angle_x)
+		{
+			missile.velocity = v_forward*600 + v_up * 200 + crandom()*v_right*10 + crandom()*v_up*10;
+		}
+		else
+		{
+			missile.velocity = aim(self, 10000);
+			missile.velocity = missile.velocity * 600;
+			missile.velocity_z = 200;
+		}
 	}
 
 	missile.avelocity = '300 300 300';
@@ -814,6 +857,7 @@ void() W_FireSuperSpikes =
 {
 	local vector	dir;
 	local entity	old;
+	local vector	handv;
 
 	sound (self, CHAN_WEAPON, "weapons/spike2.wav", 1, ATTN_NORM);
 	self.attack_finished = time + 0.2;
@@ -824,6 +868,19 @@ void() W_FireSuperSpikes =
 	newmis.touch = superspike_touch;
 	setmodel (newmis, "progs/s_spike.mdl");
 	setsize (newmis, VEC_ORIGIN, VEC_ORIGIN);
+
+	if (cvar("vr_enabled") == 1)
+	{
+		// TODO VR: repetition
+
+		// VR: add hand velocity and player velocity to the final projectile
+		// velocity, in order to carry momentum
+		handv_x = self.handvel_x;
+		handv_y = self.handvel_z  * -1;
+		handv_z = self.handvel_y;
+		newmis.velocity = newmis.velocity + (handv * 50) + (self.velocity);
+	}
+
 	self.punchangle_x = -2;
 };
 
@@ -831,6 +888,7 @@ void(float ox) W_FireSpikes =
 {
 	local vector	dir;
 	local entity	old;
+	local vector	handv;
 
 	makevectors (self.v_angle);
 
@@ -853,6 +911,18 @@ void(float ox) W_FireSpikes =
 	dir = aim (self, 1000);
 	// launch_spike (self.handpos + '0 0 16' + v_right*ox, dir);
 	launch_spike (self.handpos + '0 0 0' + v_right*ox, dir);
+
+	if (cvar("vr_enabled") == 1)
+	{
+		// TODO VR: repetition
+
+		// VR: add hand velocity and player velocity to the final projectile
+		// velocity, in order to carry momentum
+		handv_x = self.handvel_x;
+		handv_y = self.handvel_z  * -1;
+		handv_z = self.handvel_y;
+		newmis.velocity = newmis.velocity + (handv * 50) + (self.velocity);
+	}
 
 	self.punchangle_x = -2;
 };

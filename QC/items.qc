@@ -123,6 +123,7 @@ void() item_health =
 		self.noise = "items/r_item1.wav";
 		self.healamount = 15;
 		self.healtype = 0;
+		setsize (self, '0 0 0', '32 32 16');
 	}
 	else
 	if (self.spawnflags & H_MEGA)
@@ -133,6 +134,7 @@ void() item_health =
 		self.noise = "items/r_item2.wav";
 		self.healamount = 100;
 		self.healtype = 2;
+		setsize (self, '0 0 0', '32 32 32');
 	}
 	else
 	{
@@ -142,9 +144,10 @@ void() item_health =
 		self.noise = "items/health1.wav";
 		self.healamount = 25;
 		self.healtype = 1;
+		setsize (self, '0 0 0', '32 32 16');
 	}
 	// setsize (self, '0 0 0', '32 32 56');
-	setsize (self, '0 0 0', '32 32 16');
+
 	StartItem ();
 };
 

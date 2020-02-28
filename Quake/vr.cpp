@@ -940,11 +940,12 @@ void SetHandPos(int index, entity_t* player)
     VectorCopy(controllers[index].velocity, cl.handvel[index]);
 
     // handvelmag
+    // TODO VR: document
     const auto length = VectorLength(controllers[index].velocity);
     const auto bestSingle = std::max({std::abs(controllers[index].velocity[0]),
                                 std::abs(controllers[index].velocity[1]),
                                 std::abs(controllers[index].velocity[2])}) *
-                            1.5f;
+                            1.75f;
     cl.handvelmag[index] = std::max(length, bestSingle);
 }
 
@@ -1280,6 +1281,11 @@ void VR_UpdateScreenContent()
             {
                 auto* hdr = (aliashdr_t*)Mod_Extradata(cl.viewent.model);
                 Mod_Weapon(cl.viewent.model->name, hdr);
+
+                // BModels cannot be scaled, doesnt work
+                // qmodel_t* test = Mod_ForName("maps/b_shell1.bsp", true);
+                // auto* testhdr = (aliashdr_t*)Mod_Extradata(test);
+                // VectorScale(testhdr->scale_origin, 0.5f, testhdr->scale_origin);
             }
 
             if(cl.offhand_viewent.model)

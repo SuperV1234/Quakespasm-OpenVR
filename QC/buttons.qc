@@ -36,7 +36,9 @@ void() button_blocked =
 void() button_fire =
 {
 	if (self.state == STATE_UP || self.state == STATE_TOP)
+	{
 		return;
+	}
 
 	sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
 
@@ -53,9 +55,11 @@ void() button_use =
 
 void() button_touch =
 {
-	if (other.classname != "player") {
+	if (other.classname != "player")
+	{
 		return;
 	}
+
 	self.enemy = other;
 	button_fire ();
 };
@@ -112,8 +116,6 @@ local float		gtemp, ftemp;
 	SetMovedir ();
 
 	self.movetype = MOVETYPE_PUSH;
-	// TODO VR: this fixes e1m1, but breaks shootable bullets. grep for this trigger
-	// self.solid = SOLID_TRIGGER;
 	self.solid = SOLID_BSP;
 	setmodel (self, self.model);
 
@@ -128,7 +130,13 @@ local float		gtemp, ftemp;
 	}
 	else
 	{
-		// TODO VR: doesnt work in e1m1 with the counter buttons (except first..?)
+		// VR: For vertical button, let's enable normal touch as well so that
+		// they can activated by stepping on them.
+		if (self.movedir_z == -1 || self.movedir_z == -2)
+		{
+			self.touch = button_touch;
+		}
+
 		self.handtouch = button_touch;
 	}
 

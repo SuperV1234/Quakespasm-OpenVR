@@ -472,7 +472,8 @@ float	AS_MISSILE		= 4;
 .float		walkframe;
 
 .float 		attack_finished;
-.float 		offhand_attack_finished;
+.float 		mainhand_melee_attack_finished;
+.float 		offhand_melee_attack_finished;
 .float		in_melee;
 .float		offhand_in_melee;
 .float		melee_hit_sound_played;

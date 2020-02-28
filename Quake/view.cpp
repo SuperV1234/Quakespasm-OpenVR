@@ -105,7 +105,7 @@ float V_CalcRoll(vec3_t angles, vec3_t velocity)
     sign = side < 0 ? -1 : 1;
     side = fabs(side);
 
-    // Don't roll view in VR
+    // VR: Don't roll view in VR.
     if(vr_enabled.value /* TODO VR: create CVAR */)
     {
         value = 0;
@@ -143,7 +143,7 @@ float V_CalcBob()
     float bob;
     float cycle;
 
-    // Don't bob if we're in VR
+    // VR: Don't bob if we're in VR.
     if(vr_enabled.value /* TODO VR: create CVAR */)
     {
         return 0.f;
@@ -1060,7 +1060,7 @@ void V_CalcRefdef()
                                                   // the weapon is rendered?
                                                   // got through
                                                   // .weaponmodel from QC
-    // TODO VR: think about offhand weapon? dual wielding? flashlight?
+
     view->frame = cl.stats[STAT_WEAPONFRAME];
     view->colormap = vid.colormap;
 
@@ -1134,6 +1134,7 @@ void V_CalcRefdef()
     }
 }
 
+// TODO VR: hack
 void V_CalcRefdef2Test()
 {
     // view is the weapon model (only visible from inside body)
@@ -1142,7 +1143,7 @@ void V_CalcRefdef2Test()
     // set up gun position
     VectorCopy(cl.viewangles, view->angles);
 
-    // TODO VR: hardcoded fist cvar entry
+    // TODO VR: hardcoded fist cvar entry (16)
     CalcGunAngle(16, view, cl.handrot[0]);
 
     // VR controller aiming configuration
@@ -1179,13 +1180,6 @@ void V_CalcRefdef2Test()
     }
 
     view->model = Mod_ForName("progs/hand.mdl", true);
-    /*cl.model_precache[cl.stats[STAT_WEAPON]]; // TODO VR: this is where
-       the
-                                              // weapon is rendered? got
-                                              // through .weaponmodel from
-                                              // QC*/
-
-    // TODO VR: think about offhand weapon? dual wielding? flashlight?
     view->frame = cl.stats[STAT_WEAPONFRAME];
     view->colormap = vid.colormap;
 

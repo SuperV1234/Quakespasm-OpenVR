@@ -365,7 +365,7 @@ void Sys_Error(const char* error, ...)
     {
         PL_ErrorDialog(text);
     }
-    else
+    else 
     {
         WriteFile(houtput, errortxt2, strlen(errortxt2), &dummy, nullptr);
         WriteFile(houtput, text, strlen(text), &dummy, nullptr);
