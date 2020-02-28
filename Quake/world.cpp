@@ -383,8 +383,7 @@ Based on code from Spike.
 void SV_TouchLinks(edict_t* ent)
 {
     edict_t** list = (edict_t**)Hunk_Alloc(sv.num_edicts * sizeof(edict_t*));
-
-    int mark = Hunk_LowMark();
+    const int mark = Hunk_LowMark();
 
     int listcount = 0;
     SV_AreaTriggerEdicts(ent, sv_areanodes, list, &listcount, sv.num_edicts);
@@ -416,7 +415,6 @@ void SV_TouchLinks(edict_t* ent)
         pr_global_struct->other = EDICT_TO_PROG(ent);
         pr_global_struct->time = sv.time;
 
-        // TODO VR: this is for ammo and slipgates
         PR_ExecuteProgram(target->v.touch);
 
         pr_global_struct->self = old_self;
@@ -448,9 +446,8 @@ void SV_TouchLinks(edict_t* ent)
         vec3_t offhandposmax{o, o, o};
         VectorAdd(offhandposmax, ent->v.offhandpos, offhandposmax);
 
-        const bool canBeHandTouched = target->v.handtouch;
-        // TODO VR: restore
-        // && target->v.solid == SOLID_TRIGGER;
+        const bool canBeHandTouched =
+            target->v.handtouch && target->v.solid == SOLID_TRIGGER;
 
         const bool entIntersects = !quake::util::boxIntersection(
             ent->v.absmin, ent->v.absmax, target->v.absmin, target->v.absmax);
@@ -476,8 +473,7 @@ void SV_TouchLinks(edict_t* ent)
         pr_global_struct->other = EDICT_TO_PROG(ent);
         pr_global_struct->time = sv.time;
 
-        // TODO VR: this is for ammo and slipgates
-        // Con_Printf("running handtouch\n");
+        // TODO VR: this is for ammo and slipgates, I think...
         PR_ExecuteProgram(target->v.handtouch);
 
         pr_global_struct->self = old_self;
@@ -601,8 +597,7 @@ void SV_LinkEdict(edict_t* ent, bool touch_triggers)
 
     if(ent->v.solid == SOLID_NOT)
     {
-        // TODO VR: re-enable
-        // return;
+        return;
     }
 
     // find the first node that the ent's box crosses
@@ -874,6 +869,7 @@ qboolean SV_RecursiveHullCheck(hull_t* hull, int num, float p1f, float p2f,
         return false;
     }
 
+#if 0
 #ifdef PARANOID
     if(SV_HullPointContents(sv_hullmodel, mid, node->children[side]) ==
         CONTENTS_SOLID)
@@ -881,6 +877,7 @@ qboolean SV_RecursiveHullCheck(hull_t* hull, int num, float p1f, float p2f,
         Con_Printf("mid PointInHullSolid\n");
         return false;
     }
+#endif
 #endif
 
     if(SV_HullPointContents(hull, node->children[side ^ 1], mid) !=
@@ -1192,9 +1189,11 @@ trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type,
     clip.type = type;
     clip.passedict = passedict;
 
-    // TODO VR: is this what makes spikes bigger?
     if(type == MOVE_MISSILE)
     {
+        // VR: This is an hardcoded hack to increase the size of projectiles
+        // for the purpose of collision detection. It used to be 15, now it's
+        // 2 to make aiming more important.
         for(int i = 0; i < 3; i++)
         {
             clip.mins2[i] = -2;

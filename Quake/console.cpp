@@ -621,13 +621,13 @@ for developers targetting vanilla engines
 */
 void Con_DWarning(const char* fmt, ...)
 {
-    va_list argptr;
-    char msg[MAXPRINTMSG];
-
     if(!developer.value)
     {
         return; // don't confuse non-developers with techie stuff...
     }
+
+    va_list argptr;
+    char msg[MAXPRINTMSG];
 
     va_start(argptr, fmt);
     q_vsnprintf(msg, sizeof(msg), fmt, argptr);
@@ -664,13 +664,13 @@ A Con_Printf that only shows up if the "developer" cvar is set
 */
 void Con_DPrintf(const char* fmt, ...)
 {
-    va_list argptr;
-    char msg[MAXPRINTMSG];
-
     if(!developer.value)
     {
         return; // don't confuse non-developers with techie stuff...
     }
+
+    va_list argptr;
+    char msg[MAXPRINTMSG];
 
     va_start(argptr, fmt);
     q_vsnprintf(msg, sizeof(msg), fmt, argptr);

@@ -39,21 +39,18 @@ void CFG_ReadCvars(const char** vars, int num_vars)
 {
     char buff[1024];
 
-    char* tmp;
-    int i;
 
-    int j;
 
     if(!cfg_file || num_vars < 1)
     {
         return;
     }
 
-    j = 0;
+    int j = 0;
 
     do
     {
-        i = 0;
+        int i = 0;
         memset(buff, 0, sizeof(buff));
         // we expect a line in the format that Cvar_WriteVariables
         // writes to the config file. although I'm trying to be as
@@ -104,7 +101,7 @@ void CFG_ReadCvars(const char** vars, int num_vars)
             for(i = 0; i < num_vars && vars[i]; i++)
             {
                 // look for the cvar name + one space
-                tmp = strstr(buff, va("%s ", vars[i]));
+                char* tmp = strstr(buff, va("%s ", vars[i]));
                 if(tmp != buff)
                 {
                     continue;
@@ -142,9 +139,6 @@ the config file.
 void CFG_ReadCvarOverrides(const char** vars, int num_vars)
 {
     char buff[64];
-    int i;
-
-    int j;
 
     if(num_vars < 1)
     {
@@ -153,10 +147,10 @@ void CFG_ReadCvarOverrides(const char** vars, int num_vars)
 
     buff[0] = '+';
 
-    for(i = 0; i < num_vars; i++)
+    for(int i = 0; i < num_vars; i++)
     {
         q_strlcpy(&buff[1], vars[i], sizeof(buff) - 1);
-        j = COM_CheckParm(buff);
+        int j = COM_CheckParm(buff);
         if(j != 0 && j < com_argc - 1)
         {
             if(com_argv[j + 1][0] != '-' && com_argv[j + 1][0] != '+')

@@ -1222,9 +1222,9 @@ void V_RenderView()
         V_CalcRefdef();
         R_RenderView();
 
+        // VR: This is what draws the offhand.
         V_CalcRefdef2Test();
-        R_DrawViewModel(
-            &cl.offhand_viewent, true); // TODO VR: change to offhand entity
+        R_DrawViewModel(&cl.offhand_viewent, true);
     }
 
     // johnfitz -- removed lcd code

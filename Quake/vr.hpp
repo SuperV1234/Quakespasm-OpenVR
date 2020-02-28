@@ -117,8 +117,8 @@ extern cvar_t vr_sbar_offset_pitch;
 extern cvar_t vr_sbar_offset_yaw;
 extern cvar_t vr_sbar_offset_roll;
 
-#define MAX_WEAPONS \
-    20 // TODO VR: not sure what this number should actually be...
+// TODO VR: not sure what this number should actually be...
+#define MAX_WEAPONS 20
 #define VARS_PER_WEAPON 8
 
 extern cvar_t vr_weapon_offset[MAX_WEAPONS * VARS_PER_WEAPON];

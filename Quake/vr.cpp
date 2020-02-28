@@ -1492,7 +1492,7 @@ void VR_ShowCrosshair()
 
 void VR_Draw2D()
 {
-    qboolean draw_sbar = false;
+    bool draw_sbar = false;
     vec3_t menu_angles;
 
     vec3_t forward;
@@ -1550,7 +1550,8 @@ void VR_Draw2D()
 
         AngleVectors(menu_angles, forward, right, up);
 
-        VectorMA(r_refdef.vieworg, 48, forward, target);
+        // TODO VR: make the distance a cvar
+        VectorMA(r_refdef.vieworg, 96, forward, target);
     }
 
     // TODO VR: control smoothing with cvar

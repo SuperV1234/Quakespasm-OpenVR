@@ -24,6 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.hpp"
 #include "vr.hpp"
 #include "world.hpp"
+#include "util.hpp"
+
+#include <tuple>
 
 /*
 
@@ -351,6 +354,7 @@ int SV_FlyMove(edict_t* ent, float time, trace_t* steptrace)
         // run the impact function
         //
         SV_Impact(ent, trace.ent, &entvars_t::touch);
+
         if(!vr_enabled.value)
         {
             SV_Impact(ent, trace.ent, &entvars_t::handtouch);
@@ -360,7 +364,6 @@ int SV_FlyMove(edict_t* ent, float time, trace_t* steptrace)
         {
             break; // removed by the impact function
         }
-
 
         time_left -= time_left * trace.fraction;
 
@@ -505,6 +508,7 @@ trace_t SV_PushEntity(edict_t* ent, vec3_t push)
     if(trace.ent)
     {
         SV_Impact(ent, trace.ent, &entvars_t::touch);
+
         if(!vr_enabled.value)
         {
             SV_Impact(ent, trace.ent, &entvars_t::handtouch);
@@ -539,7 +543,6 @@ void SV_PushMove(edict_t* pusher, float movetime)
     int num_moved;
     edict_t** moved_edict; // johnfitz -- dynamically allocate
     vec3_t* moved_from;    // johnfitz -- dynamically allocate
-    int mark;              // johnfitz
 
     if(!pusher->v.velocity[0] && !pusher->v.velocity[1] &&
         !pusher->v.velocity[2])
@@ -564,7 +567,7 @@ void SV_PushMove(edict_t* pusher, float movetime)
     SV_LinkEdict(pusher, false);
 
     // johnfitz -- dynamically allocate
-    mark = Hunk_LowMark();
+    const int mark = Hunk_LowMark(); // johnfitz
     moved_edict = (edict_t**)Hunk_Alloc(sv.num_edicts * sizeof(edict_t*));
     moved_from = (vec3_t*)Hunk_Alloc(sv.num_edicts * sizeof(vec3_t));
     // johnfitz
@@ -947,31 +950,20 @@ Only used by players
 #define STEPSIZE 18
 void SV_WalkMove(edict_t* ent)
 {
-    vec3_t upmove;
-
-    vec3_t downmove;
-    vec3_t oldorg;
-
-    vec3_t oldvel;
-    vec3_t nosteporg;
-
-    vec3_t nostepvel;
-    int clip;
-    int oldonground;
-    trace_t steptrace;
-
-    trace_t downtrace;
-
     //
     // do a regular slide move unless it looks like you ran into a step
     //
-    oldonground = (int)ent->v.flags & FL_ONGROUND;
+    const int oldonground = (int)ent->v.flags & FL_ONGROUND;
     ent->v.flags = (int)ent->v.flags & ~FL_ONGROUND;
 
+    vec3_t oldorg;
     VectorCopy(ent->v.origin, oldorg);
+
+    vec3_t oldvel;
     VectorCopy(ent->v.velocity, oldvel);
 
-    clip = SV_FlyMove(ent, host_frametime, &steptrace);
+    trace_t steptrace;
+    int clip = SV_FlyMove(ent, host_frametime, &steptrace);
 
     if(!(clip & 2))
     {
@@ -998,7 +990,10 @@ void SV_WalkMove(edict_t* ent)
         return;
     }
 
+    vec3_t nosteporg;
     VectorCopy(ent->v.origin, nosteporg);
+
+    vec3_t nostepvel;
     VectorCopy(ent->v.velocity, nostepvel);
 
     //
@@ -1006,9 +1001,12 @@ void SV_WalkMove(edict_t* ent)
     //
     VectorCopy(oldorg, ent->v.origin); // back to start pos
 
+    vec3_t upmove;
     VectorCopy(vec3_origin, upmove);
-    VectorCopy(vec3_origin, downmove);
     upmove[2] = STEPSIZE;
+
+    vec3_t downmove;
+    VectorCopy(vec3_origin, downmove);
     downmove[2] = -STEPSIZE + oldvel[2] * host_frametime;
 
     // move up
@@ -1038,7 +1036,7 @@ void SV_WalkMove(edict_t* ent)
     }
 
     // move down
-    downtrace = SV_PushEntity(ent, downmove); // FIXME: don't link?
+    trace_t downtrace = SV_PushEntity(ent, downmove); // FIXME: don't link?
 
     if(downtrace.plane.normal[2] > 0.7)
     {
@@ -1058,6 +1056,117 @@ void SV_WalkMove(edict_t* ent)
         VectorCopy(nostepvel, ent->v.velocity);
     }
 }
+
+/*
+================
+SV_Handtouch
+
+Trigger hand-touching actions (e.g. pick up an item, press a button)
+================
+*/
+void SV_Handtouch(edict_t* ent)
+{
+    // TODO VR: this is still fucking broken, buttons don't work sometimes
+
+    using namespace quake::util;
+
+    // Utility constants
+    const auto handMins = glm::vec3{-2.f, -2.f, -2.f};
+    const auto handMaxs = glm::vec3{2.f, 2.f, 2.f};
+
+    vec3_t qHandMins;
+    toQuakeVec3(qHandMins, handMins);
+
+    vec3_t qHandMaxs;
+    toQuakeVec3(qHandMaxs, handMaxs);
+
+    // Figure out tracing boundaries
+    // (Largest possible volume containing the hands and the player)
+    const auto [origin, mins, maxs] = [&] {
+        const auto playerOrigin = toVec3(ent->v.origin);
+        const auto playerMins = toVec3(ent->v.mins);
+        const auto playerMaxs = toVec3(ent->v.maxs);
+        const auto playerAbsMin = playerOrigin + playerMins;
+        const auto playerAbsMax = playerOrigin + playerMaxs;
+
+        const auto mainHandOrigin = toVec3(ent->v.handpos);
+        const auto mainHandAbsMin = mainHandOrigin + handMins;
+        const auto mainHandAbsMax = mainHandOrigin + handMaxs;
+
+        const auto offHandOrigin = toVec3(ent->v.offhandpos);
+        const auto offHandAbsMin = offHandOrigin + handMins;
+        const auto offHandAbsMax = offHandOrigin + handMaxs;
+
+        const auto minBound = glm::vec3{
+            std::min({playerAbsMin.x, mainHandAbsMin.x, offHandAbsMin.x}),
+            std::min({playerAbsMin.y, mainHandAbsMin.y, offHandAbsMin.y}),
+            std::min({playerAbsMin.z, mainHandAbsMin.z, offHandAbsMin.z})};
+
+        const auto maxBound = glm::vec3{
+            std::max({playerAbsMax.x, mainHandAbsMax.x, offHandAbsMax.x}),
+            std::max({playerAbsMax.y, mainHandAbsMax.y, offHandAbsMax.y}),
+            std::max({playerAbsMax.z, mainHandAbsMax.z, offHandAbsMax.z})};
+
+        const auto halfSize = (maxBound - minBound) / 2.f;
+        const auto origin = minBound + halfSize;
+        return std::tuple{origin, -halfSize, +halfSize};
+    }();
+
+    vec3_t qOrigin;
+    toQuakeVec3(qOrigin, origin);
+
+    vec3_t qMins;
+    toQuakeVec3(qMins, mins);
+
+    vec3_t qMaxs;
+    toQuakeVec3(qMaxs, maxs);
+
+    vec3_t end;
+
+    const auto traceCheck = [&](const trace_t& trace) {
+        if(!trace.ent)
+        {
+            return;
+        }
+
+        const auto handCollisionCheck = [&](vec3_t handPos) {
+            vec3_t aMin, aMax, bMin, bMax;
+            VectorAdd(trace.ent->v.origin, trace.ent->v.mins, aMin);
+            VectorAdd(trace.ent->v.origin, trace.ent->v.maxs, aMax);
+            VectorAdd(handPos, handMins, bMin);
+            VectorAdd(handPos, handMaxs, bMax);
+
+            if(quake::util::boxIntersection(aMin, aMax, bMin, bMax))
+            {
+                SV_Impact(ent, trace.ent, &entvars_t::handtouch);
+            }
+        };
+
+        handCollisionCheck(ent->v.handpos);
+        handCollisionCheck(ent->v.offhandpos);
+    };
+
+    traceCheck(SV_Move(
+        ent->v.origin, ent->v.mins, ent->v.maxs, end, MOVE_NORMAL, ent));
+    traceCheck(SV_Move(qOrigin, qMins, qMaxs, end, MOVE_NORMAL, ent));
+
+    const auto traceForHand = [&](vec3_t handPos, vec3_t handRot) {
+        vec3_t fwd, right, up;
+        AngleVectors(handRot, fwd, right, up);
+        fwd[0] *= 1.f;
+        fwd[1] *= 1.f;
+        fwd[2] *= 1.f;
+
+        VectorCopy(handPos, end);
+        VectorAdd(end, fwd, end);
+
+        return SV_Move(handPos, qHandMins, qHandMaxs, end, MOVE_NORMAL, ent);
+    };
+
+    traceCheck(traceForHand(ent->v.handpos, ent->v.handrot));
+    traceCheck(traceForHand(ent->v.offhandpos, ent->v.offhandrot));
+}
+
 
 
 /*
@@ -1086,49 +1195,10 @@ void SV_Physics_Client(edict_t* ent, int num)
     //
     SV_CheckVelocity(ent);
 
-    // TODO VR: test, what is this one for? How does it differ from world.cpp?
-    auto doHandTouch = [&](vec3_t handpos, vec3_t handrot, int type) {
-        vec3_t fwd, right, up, end;
-        AngleVectors(handrot, fwd, right, up);
-        fwd[0] *= 1.f;
-        fwd[1] *= 1.f;
-        fwd[2] *= 1.f;
-
-        VectorCopy(handpos, end);
-        VectorAdd(end, fwd, end);
-
-        vec3_t mins{-2, -2, -2};
-        vec3_t maxs{2, 2, 2};
-        trace_t trace = SV_Move(handpos, mins, maxs, end, type, ent);
-
-        // vec3_t impact;
-        // trace_t trace = TraceLine(cl.handpos[1], end, impact);
-        // SV_ClipMoveToEntity(sv.edicts, start, mins, maxs, end);
-
-        /* if(trace.allsolid)
-         { // entity is trapped in another solid
-             // Con_Printf("all solid\n");
-             return;
-         }
-
-
-         if(trace.fraction == 1)
-         { // moved the entire distance
-             // Con_Printf("entire dist\n");
-             return;
-         }*/
-
-        if(!trace.ent)
-        {
-            // Con_Printf("no ent\n");
-            return;
-        }
-
-        // Con_Printf("running handtouch impact\n");
-        SV_Impact(ent, trace.ent, &entvars_t::handtouch);
-    };
-    doHandTouch(ent->v.handpos, ent->v.handrot, MOVE_NORMAL);
-    doHandTouch(ent->v.offhandpos, ent->v.offhandrot, MOVE_NORMAL);
+    //
+    // VR hands
+    //
+    SV_Handtouch(ent);
 
     //
     // decide which move function to call
@@ -1148,6 +1218,7 @@ void SV_Physics_Client(edict_t* ent, int num)
             {
                 return;
             }
+
             if(!SV_CheckWater(ent) && !((int)ent->v.flags & FL_WATERJUMP))
             {
                 SV_AddGravity(ent);

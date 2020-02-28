@@ -97,22 +97,12 @@ TODO: stay at least 8 units away from all walls in this leaf
 */
 void Chase_UpdateForDrawing(refdef_t& refdef, entity_t* viewent)
 {
-    int i;
-    vec3_t forward;
-
-    vec3_t up;
-
-    vec3_t right;
-    vec3_t ideal;
-
-    vec3_t crosshair;
-
-    vec3_t temp;
-
+    vec3_t forward, right, up;
     AngleVectors(cl.viewangles, forward, right, up);
 
     // calc ideal camera location before checking for walls
-    for(i = 0; i < 3; i++)
+    vec3_t ideal;
+    for(int i = 0; i < 3; i++)
     {
         ideal[i] = viewent->origin[i] - forward[i] * chase_back.value +
                    right[i] * chase_right.value;
@@ -121,6 +111,7 @@ void Chase_UpdateForDrawing(refdef_t& refdef, entity_t* viewent)
     ideal[2] = viewent->origin[2] + chase_up.value;
 
     // make sure camera is not in or behind a wall
+    vec3_t temp;
     TraceLine(refdef.vieworg, ideal, temp);
     if(VectorLength(temp) != 0) VectorCopy(temp, ideal);
 
@@ -129,6 +120,8 @@ void Chase_UpdateForDrawing(refdef_t& refdef, entity_t* viewent)
 
     // find the spot the player is looking at
     VectorMA(viewent->origin, 4096, forward, temp);
+
+    vec3_t crosshair;
     TraceLine(viewent->origin, temp, crosshair);
 
     // calculate camera angles to look at the same spot

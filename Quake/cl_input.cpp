@@ -304,17 +304,10 @@ Returns 0.25 if a key was pressed and released during the frame,
 */
 float CL_KeyState(kbutton_t* key)
 {
-    float val;
-    qboolean impulsedown;
-
-    qboolean impulseup;
-
-    qboolean down;
-
-    impulsedown = key->state & 2;
-    impulseup = key->state & 4;
-    down = key->state & 1;
-    val = 0;
+    bool impulsedown = key->state & 2;
+    bool impulseup = key->state & 4;
+    bool down = key->state & 1;
+    float val = 0;
 
     if(impulsedown && !impulseup)
     {
@@ -394,9 +387,6 @@ Moves the local angle positions
 void CL_AdjustAngles()
 {
     float speed;
-    float up;
-
-    float down;
 
     if((in_speed.state & 1) ^ (cl_alwaysrun.value != 0.0))
     {
@@ -422,8 +412,8 @@ void CL_AdjustAngles()
             speed * cl_pitchspeed.value * CL_KeyState(&in_back);
     }
 
-    up = CL_KeyState(&in_lookup);
-    down = CL_KeyState(&in_lookdown);
+    float up = CL_KeyState(&in_lookup);
+    float down = CL_KeyState(&in_lookdown);
 
     cl.aimangles[PITCH] -= speed * cl_pitchspeed.value * up;
     cl.aimangles[PITCH] += speed * cl_pitchspeed.value * down;

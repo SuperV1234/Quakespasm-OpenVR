@@ -45,9 +45,16 @@ namespace quake::util
         OutputDebugStringA(stringCatSeparated(separator, xs...).data());
     }
 
-    [[nodiscard]] constexpr glm::vec3 toVec3(vec3_t v) noexcept
+    [[nodiscard]] constexpr glm::vec3 toVec3(const vec3_t& v) noexcept
     {
         return {v[0], v[1], v[2]};
+    }
+
+    constexpr void toQuakeVec3(vec3_t out, const glm::vec3& v) noexcept
+    {
+        out[0] = v[0];
+        out[1] = v[1];
+        out[2] = v[2];
     }
 
     template <typename... Ts>
@@ -56,8 +63,8 @@ namespace quake::util
         return std::array{(std::string(24 - strlen(labels), ' ') + labels)...};
     }
 
-    [[nodiscard]] constexpr bool boxIntersection(
-        vec3_t aMin, vec3_t aMax, vec3_t bMin, vec3_t bMax)
+    [[nodiscard]] constexpr bool boxIntersection(const vec3_t& aMin,
+        const vec3_t& aMax, const vec3_t& bMin, const vec3_t& bMax)
     {
         return aMin[0] <= bMax[0] && //
                aMin[1] <= bMax[1] && //

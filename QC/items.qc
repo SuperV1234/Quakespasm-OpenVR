@@ -619,13 +619,10 @@ void() ammo_touch =
 local entity	stemp;
 local float		best;
 
-	sprint (self, "yeet\n");
-	sprint (other, "otheryeet\n");
-
-	//if (other.classname != "player")
-	//	return;
-	//if (other.health <= 0)
-	//	return;
+	if (other.classname != "player")
+		return;
+	if (other.health <= 0)
+		return;
 
 // if the player was using his best weapon, change up to the new one if better
 	stemp = self;

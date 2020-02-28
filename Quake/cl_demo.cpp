@@ -75,17 +75,15 @@ Dumps the current net message, prefixed by the length and view angles
 */
 static void CL_WriteDemoMessage()
 {
-    int len;
-    int i;
-    float f;
-
-    len = LittleLong(net_message.cursize);
+    int len = LittleLong(net_message.cursize);
     fwrite(&len, 4, 1, cls.demofile);
-    for(i = 0; i < 3; i++)
+
+    for(int i = 0; i < 3; i++)
     {
-        f = LittleFloat(cl.viewangles[i]);
+        float f = LittleFloat(cl.viewangles[i]);
         fwrite(&f, 4, 1, cls.demofile);
     }
+
     fwrite(net_message.data, net_message.cursize, 1, cls.demofile);
     fflush(cls.demofile);
 }
@@ -93,9 +91,6 @@ static void CL_WriteDemoMessage()
 static int CL_GetDemoMessage()
 {
     int r;
-
-    int i;
-    float f;
 
     if(cls.demopaused)
     {
@@ -128,8 +123,9 @@ static int CL_GetDemoMessage()
     // get the next message
     fread(&net_message.cursize, 4, 1, cls.demofile);
     VectorCopy(cl.mviewangles[0], cl.mviewangles[1]);
-    for(i = 0; i < 3; i++)
+    for(int i = 0; i < 3; i++)
     {
+        float f;
         r = fread(&f, 4, 1, cls.demofile);
         cl.mviewangles[0][i] = LittleFloat(f);
     }

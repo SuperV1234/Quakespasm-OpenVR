@@ -123,7 +123,7 @@ void* Cache_Check(cache_user_t* c);
 // if present, otherwise returns nullptr
 
 void Cache_Free(cache_user_t* c,
-    qboolean freetextures); // johnfitz -- added second argument
+    bool freetextures); // johnfitz -- added second argument
 
 void* Cache_Alloc(cache_user_t* c, int size, const char* name);
 // Returns nullptr if all purgable data was tossed and there still

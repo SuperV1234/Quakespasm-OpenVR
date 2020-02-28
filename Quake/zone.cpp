@@ -360,7 +360,7 @@ int hunk_size;
 int hunk_low_used;
 int hunk_high_used;
 
-qboolean hunk_tempactive;
+bool hunk_tempactive;
 int hunk_tempmark;
 
 /*
@@ -397,7 +397,7 @@ If "all" is specified, every single allocation is printed.
 Otherwise, allocations with the same name will be totaled up before printing.
 ==============
 */
-void Hunk_Print(qboolean all)
+void Hunk_Print(bool all)
 {
     hunk_t* h;
 
@@ -428,7 +428,7 @@ void Hunk_Print(qboolean all)
 
     while(true)
     {
-        //
+        // 
         // skip to the high hunk if done with low hunk
         //
         if(h == endlow)
@@ -697,7 +697,7 @@ typedef struct cache_system_s
     struct cache_system_s *lru_prev, *lru_next; // for LRU flushing
 } cache_system_t;
 
-cache_system_t* Cache_TryAlloc(int size, qboolean nobottom);
+cache_system_t* Cache_TryAlloc(int size, bool nobottom);
 
 cache_system_t cache_head;
 
@@ -829,7 +829,7 @@ Looks for a free block of memory between the high and low hunk marks
 Size should already include the header and padding
 ============
 */
-cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
+cache_system_t* Cache_TryAlloc(int size, bool nobottom)
 {
     cache_system_t* cs;
 
@@ -841,7 +841,7 @@ cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
     {
         if(hunk_size - hunk_high_used - hunk_low_used < size)
         {
-            Sys_Error("Cache_TryAlloc: %i is greater then free hunk", size);
+            Sys_Error("Cache_TryAlloc: %i is greater than free hunk", size);
         }
 
         new_cs = (cache_system_t*)(hunk_base + hunk_low_used);
@@ -971,7 +971,7 @@ Frees the memory and removes it from the LRU list
 ==============
 */
 void Cache_Free(
-    cache_user_t* c, qboolean freetextures) // johnfitz -- added second argument
+    cache_user_t* c, bool freetextures) // johnfitz -- added second argument
 {
     cache_system_t* cs;
 
