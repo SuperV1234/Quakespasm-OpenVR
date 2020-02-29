@@ -138,9 +138,10 @@ void R_MarkSurfaces()
                 {
                     R_StoreEfrags(&leaf->efrags);
                 }
-                return;
             }
         }
+
+        return;
     }
 
     vis_changed = false;
