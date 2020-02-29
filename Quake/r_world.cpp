@@ -166,7 +166,6 @@ void R_MarkSurfaces()
                 // add static models
                 if(leaf->efrags)
                 {
-                    // TODO VR: this is it
                     R_StoreEfrags(&leaf->efrags);
                 }
             }

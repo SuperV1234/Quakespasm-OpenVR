@@ -114,8 +114,6 @@ void R_SplitEntityOnNode(mnode_t* node)
 
         leaf = (mleaf_t*)node;
 
-        // TODO VR: this is it (2)
-
         // grab an efrag off the free list
         ef = R_GetEfrag();
         ef->entity = r_addent;

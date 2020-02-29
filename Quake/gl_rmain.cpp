@@ -746,9 +746,6 @@ void R_DrawEntitiesOnList(qboolean alphapass) // johnfitz -- added parameter
     }
 
     // johnfitz -- sprites are not a special case
-    
-    // TODO VR: this is part of the torch bug, it increases when they are visible
-    // Con_Printf("%d\n", cl_numvisedicts);
 
     for(int i = 0; i < cl_numvisedicts; i++)
     {

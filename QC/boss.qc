@@ -12,7 +12,7 @@ $skin skin
 $scale 5
 
 $frame rise1 rise2 rise3 rise4 rise5 rise6 rise7 rise8 rise9 rise10
-$frame rise11 rise12 rise13 rise14 rise15 rise16 rise17 
+$frame rise11 rise12 rise13 rise14 rise15 rise16 rise17
 
 $frame walk1 walk2 walk3 walk4 walk5 walk6 walk7 walk8
 $frame walk9 walk10 walk11 walk12 walk13 walk14 walk15
@@ -27,19 +27,19 @@ $frame attack16 attack17 attack18 attack19 attack20 attack21 attack22
 $frame attack23
 
 $frame shocka1 shocka2 shocka3 shocka4 shocka5 shocka6 shocka7 shocka8
-$frame shocka9 shocka10 
+$frame shocka9 shocka10
 
 $frame shockb1 shockb2 shockb3 shockb4 shockb5 shockb6
 
-$frame shockc1 shockc2 shockc3 shockc4 shockc5 shockc6 shockc7 shockc8 
+$frame shockc1 shockc2 shockc3 shockc4 shockc5 shockc6 shockc7 shockc8
 $frame shockc9 shockc10
 
 
-void(vector p) boss_missile;
+void(float r, vector p) boss_missile;
 
 void() boss_face =
 {
-	
+
 // go for another player if multi player
 	if (self.enemy.health <= 0 || random() < 0.02)
 	{
@@ -115,9 +115,9 @@ void() boss_missile5	=[	$attack5, boss_missile6 ] {boss_face();};
 void() boss_missile6	=[	$attack6, boss_missile7 ] {boss_face();};
 void() boss_missile7	=[	$attack7, boss_missile8 ] {boss_face();};
 void() boss_missile8	=[	$attack8, boss_missile9 ] {boss_face();};
-void() boss_missile9	=[	$attack9, boss_missile10 ] {boss_missile('100 100 200');};
+void() boss_missile9	=[	$attack9, boss_missile10 ] {boss_missile(0, '100 100 200');};
 void() boss_missile10	=[	$attack10, boss_missile11 ] {boss_face();};
-void() boss_missile11	=[	$attack11, boss_missile12 ] {boss_face();};
+void() boss_missile11	=[	$attack11, boss_missile12 ] {boss_missile(1, '100 100 200');};
 void() boss_missile12	=[	$attack12, boss_missile13 ] {boss_face();};
 void() boss_missile13	=[	$attack13, boss_missile14 ] {boss_face();};
 void() boss_missile14	=[	$attack14, boss_missile15 ] {boss_face();};
@@ -126,9 +126,9 @@ void() boss_missile16	=[	$attack16, boss_missile17 ] {boss_face();};
 void() boss_missile17	=[	$attack17, boss_missile18 ] {boss_face();};
 void() boss_missile18	=[	$attack18, boss_missile19 ] {boss_face();};
 void() boss_missile19	=[	$attack19, boss_missile20 ] {boss_face();};
-void() boss_missile20	=[	$attack20, boss_missile21 ] {boss_missile('100 -100 200');};
+void() boss_missile20	=[	$attack20, boss_missile21 ] {boss_missile(0, '100 -100 200');};
 void() boss_missile21	=[	$attack21, boss_missile22 ] {boss_face();};
-void() boss_missile22	=[	$attack22, boss_missile23 ] {boss_face();};
+void() boss_missile22	=[	$attack22, boss_missile23 ] {boss_missile(1, '100 -100 200');};
 void() boss_missile23	=[	$attack23, boss_missile1 ] {boss_face();};
 
 void() boss_shocka1 =[	$shocka1, boss_shocka2 ] {};
@@ -192,37 +192,61 @@ void() boss_death10 = [$death9, boss_death10]
 	remove (self);
 };
 
-void(vector p) boss_missile =
+void(float r, vector p) boss_missile =
 {
 	local	vector	offang;
 	local	vector	org, vec, d;
 	local	float	t;
+	local	float	vel;
 
-	offang = vectoangles (self.enemy.origin - self.origin);	
+	// VR: Predicted direction attack.
+	if (r == 0)
+	{
+		vel = 700 + random() * 200;
+	}
+	else
+	{
+		vel = 300 + random() * 200;
+	}
+
+	offang = vectoangles (self.enemy.origin - self.origin);
 	makevectors (offang);
 
 	org = self.origin + p_x*v_forward + p_y*v_right + p_z*'0 0 1';
-	
+
 // lead the player on hard mode
 	if (skill > 1)
 	{
-		t = vlen(self.enemy.origin - org) / 300;
-		vec = self.enemy.velocity;
-		vec_z = 0;
-		d = self.enemy.origin + t * vec;		
+		// VR: Predicted direction attack.
+		if (r == 0)
+		{
+			t = vlen(self.enemy.origin - org) / vel;
+			vec = self.enemy.velocity;
+			vec_z = 0;
+			d = self.enemy.origin + t * vec;
+		}
 	}
 	else
 	{
 		d = self.enemy.origin;
 	}
-	
+
 	vec = normalize (d - org);
 
 	launch_spike (org, vec);
 	setmodel (newmis, "progs/lavaball.mdl");
 	newmis.avelocity = '200 100 300';
-	setsize (newmis, VEC_ORIGIN, VEC_ORIGIN);		
-	newmis.velocity = vec*300;
+	setsize (newmis, VEC_ORIGIN, VEC_ORIGIN);
+	newmis.velocity = vec * vel;
+
+	// VR: Randomized direction attack.
+	if (r == 1)
+	{
+		newmis.velocity_x = newmis.velocity_x + crandom() * 100;
+		newmis.velocity_y = newmis.velocity_y + crandom() * 100;
+		newmis.velocity_z = newmis.velocity_z + crandom() * 100;
+	}
+
 	newmis.touch = T_MissileTouch; // rocket explosion
 	sound (self, CHAN_WEAPON, "boss1/throw.wav", 1, ATTN_NORM);
 
@@ -237,10 +261,10 @@ void() boss_awake =
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_STEP;
 	self.takedamage = DAMAGE_NO;
-	
+
 	setmodel (self, "progs/boss.mdl");
 	setsize (self, '-128 -128 -24', '128 128 256');
-	
+
 	if (skill == 0)
 		self.health = 1;
 	else
@@ -292,7 +316,7 @@ float	lightning_end;
 void() lightning_fire =
 {
 	local vector p1, p2;
-	
+
 	if (time >= lightning_end)
 	{	// done here, put the terminals back up
 		self = le1;
@@ -301,13 +325,13 @@ void() lightning_fire =
 		door_go_down ();
 		return;
 	}
-	
+
 	p1 = (le1.mins + le1.maxs) * 0.5;
 	p1_z = le1.absmin_z - 16;
-	
+
 	p2 = (le2.mins + le2.maxs) * 0.5;
 	p2_z = le2.absmin_z - 16;
-	
+
 	// compensate for length of bolt
 	p2 = p2 - normalize(p2-p1)*100;
 
@@ -337,7 +361,7 @@ void() lightning_use =
 		dprint ("missing lightning targets\n");
 		return;
 	}
-	
+
 	if (
 	 (le1.state != STATE_TOP && le1.state != STATE_BOTTOM)
 	|| (le2.state != STATE_TOP && le2.state != STATE_BOTTOM)
@@ -353,7 +377,7 @@ void() lightning_use =
 	lightning_end = time + 1;
 
 	sound (self, CHAN_VOICE, "misc/power.wav", 1, ATTN_NORM);
-	lightning_fire ();		
+	lightning_fire ();
 
 // advance the boss pain if down
 	self = find (world, classname, "monster_boss");
@@ -370,7 +394,7 @@ void() lightning_use =
 			boss_shockb1();
 		else if (self.health == 0)
 			boss_shockc1();
-	}	
+	}
 };
 
 
