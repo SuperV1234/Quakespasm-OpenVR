@@ -449,38 +449,25 @@ CL_RelinkEntities
 */
 void CL_RelinkEntities()
 {
-    entity_t* ent;
-    int i;
-
-    int j;
-    float frac;
-
-    float f;
-
-    float d;
-    vec3_t delta;
-    float bobjrotate;
-    vec3_t oldorg;
-    dlight_t* dl;
-
     // determine partial update time
-    frac = CL_LerpPoint();
+    const float frac = CL_LerpPoint();
 
     cl_numvisedicts = 0;
 
     //
     // interpolate player info
     //
-    for(i = 0; i < 3; i++)
+    for(int i = 0; i < 3; i++)
     {
         cl.velocity[i] = cl.mvelocity[1][i] +
                          frac * (cl.mvelocity[0][i] - cl.mvelocity[1][i]);
     }
 
+    float d;
     if(cls.demoplayback)
     {
         // interpolate the angles
-        for(j = 0; j < 3; j++)
+        for(int j = 0; j < 3; j++)
         {
             d = cl.mviewangles[0][j] - cl.mviewangles[1][j];
             if(d > 180)
@@ -495,9 +482,11 @@ void CL_RelinkEntities()
         }
     }
 
-    bobjrotate = anglemod(100 * cl.time);
+    const float bobjrotate = anglemod(100 * cl.time);
 
     // start on the entity after the world
+    int i;
+    entity_t* ent;
     for(i = 1, ent = cl_entities + 1; i < cl.num_entities; i++, ent++)
     {
         if(!ent->model)
@@ -521,6 +510,7 @@ void CL_RelinkEntities()
             continue;
         }
 
+        vec3_t oldorg;
         VectorCopy(ent->origin, oldorg);
 
         if(ent->forcelink)
@@ -531,8 +521,10 @@ void CL_RelinkEntities()
         }
         else
         { // if the delta is large, assume a teleport and don't lerp
-            f = frac;
-            for(j = 0; j < 3; j++)
+            float f = frac;
+            vec3_t delta;
+
+            for(int j = 0; j < 3; j++)
             {
                 delta[j] = ent->msg_origins[0][j] - ent->msg_origins[1][j];
                 if(delta[j] > 100 || delta[j] < -100)
@@ -555,7 +547,7 @@ void CL_RelinkEntities()
             // johnfitz
 
             // interpolate the origin and angles
-            for(j = 0; j < 3; j++)
+            for(int j = 0; j < 3; j++)
             {
                 ent->origin[j] = ent->msg_origins[1][j] + f * delta[j];
 
@@ -583,6 +575,7 @@ void CL_RelinkEntities()
             R_EntityParticles(ent);
         }
 
+        dlight_t* dl;
         if(ent->effects & EF_MUZZLEFLASH)
         {
             vec3_t fv;
@@ -671,6 +664,7 @@ void CL_RelinkEntities()
 
         ent->forcelink = false;
 
+        // TODO VR: this hides the player model in first person view
         if(i == cl.viewentity && !chase_active.value)
         {
             continue;

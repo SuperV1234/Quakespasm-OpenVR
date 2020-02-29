@@ -1413,7 +1413,7 @@ void VR_ShowCrosshair()
     glDisable(GL_CULL_FACE);
 
     // calc the line and draw
-    // TODO: Make the laser align correctly
+    // VR TODO: Make the laser align correctly
     if(vr_aimmode.value == VrAimMode::e_CONTROLLER)
     {
         VectorCopy(cl.handpos[1], start);
@@ -1557,7 +1557,7 @@ void VR_Draw2D()
         AngleVectors(menu_angles, forward, right, up);
 
         // TODO VR: make the distance a cvar
-        VectorMA(r_refdef.vieworg, 96, forward, target);
+        VectorMA(r_refdef.vieworg, 76, forward, target);
     }
 
     // TODO VR: control smoothing with cvar

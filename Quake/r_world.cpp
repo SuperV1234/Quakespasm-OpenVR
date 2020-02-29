@@ -85,19 +85,11 @@ chains
 */
 void R_MarkSurfaces()
 {
-    byte* vis;
-    mleaf_t* leaf;
-    mnode_t* node;
-    msurface_t* surf;
-
     msurface_t** mark;
-    int i;
-
-    int j;
-    qboolean nearwaterportal;
+    bool nearwaterportal;
 
     // clear lightmap chains
-    for(i = 0; i < lightmap_count; i++)
+    for(int i = 0; i < lightmap_count; i++)
     {
         lightmap[i].polys = nullptr;
     }
@@ -105,16 +97,20 @@ void R_MarkSurfaces()
     // check this leaf for water portals
     // TODO: loop through all water surfs and use distance to leaf cullbox
     nearwaterportal = false;
-    for(i = 0, mark = r_viewleaf->firstmarksurface;
-        i < r_viewleaf->nummarksurfaces; i++, mark++)
     {
-        if((*mark)->flags & SURF_DRAWTURB)
+        int i = 0;
+        for(i = 0, mark = r_viewleaf->firstmarksurface;
+            i < r_viewleaf->nummarksurfaces; i++, mark++)
         {
-            nearwaterportal = true;
+            if((*mark)->flags & SURF_DRAWTURB)
+            {
+                nearwaterportal = true;
+            }
         }
     }
 
     // choose vis data
+    byte* vis;
     if(r_novis.value || r_viewleaf->contents == CONTENTS_SOLID ||
         r_viewleaf->contents == CONTENTS_SKY)
     {
@@ -133,8 +129,8 @@ void R_MarkSurfaces()
     // return
     if(r_oldviewleaf == r_viewleaf && !vis_changed && !nearwaterportal)
     {
-        leaf = &cl.worldmodel->leafs[1];
-        for(i = 0; i < cl.worldmodel->numleafs; i++, leaf++)
+        mleaf_t* leaf = &cl.worldmodel->leafs[1];
+        for(int i = 0; i < cl.worldmodel->numleafs; i++, leaf++)
         {
             if(vis[i >> 3] & (1 << (i & 7)))
             {
@@ -152,13 +148,14 @@ void R_MarkSurfaces()
     r_oldviewleaf = r_viewleaf;
 
     // iterate through leaves, marking surfaces
-    leaf = &cl.worldmodel->leafs[1];
-    for(i = 0; i < cl.worldmodel->numleafs; i++, leaf++)
+    mleaf_t* leaf = &cl.worldmodel->leafs[1];
+    for(int i = 0; i < cl.worldmodel->numleafs; i++, leaf++)
     {
         if(vis[i >> 3] & (1 << (i & 7)))
         {
             if(r_oldskyleaf.value || leaf->contents != CONTENTS_SKY)
             {
+                int j;
                 for(j = 0, mark = leaf->firstmarksurface;
                     j < leaf->nummarksurfaces; j++, mark++)
                 {
@@ -168,6 +165,7 @@ void R_MarkSurfaces()
                 // add static models
                 if(leaf->efrags)
                 {
+                    // TODO VR: this is it
                     R_StoreEfrags(&leaf->efrags);
                 }
             }
@@ -175,7 +173,7 @@ void R_MarkSurfaces()
     }
 
     // set all chains to null
-    for(i = 0; i < cl.worldmodel->numtextures; i++)
+    for(int i = 0; i < cl.worldmodel->numtextures; i++)
     {
         if(cl.worldmodel->textures[i])
         {
@@ -184,6 +182,7 @@ void R_MarkSurfaces()
     }
 
     // rebuild chains
+    msurface_t* surf;
 
 #if 1
     // iterate through surfaces one node at a time to rebuild chains
@@ -191,6 +190,10 @@ void R_MarkSurfaces()
     // becuase his tool doesn't actually remove the surfaces from the bsp
     // surfaces lump nor does it remove references to them in each leaf's
     // marksurfaces list
+    mnode_t* node;
+    int i;
+    int j;
+
     for(i = 0, node = cl.worldmodel->nodes; i < cl.worldmodel->numnodes;
         i++, node++)
     {
@@ -207,7 +210,7 @@ void R_MarkSurfaces()
 #else
     // the old way
     surf = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];
-    for(i = 0; i < cl.worldmodel->nummodelsurfaces; i++, surf++)
+    for(int i = 0; i < cl.worldmodel->nummodelsurfaces; i++, surf++)
     {
         if(surf->visframe == r_visframecount)
         {

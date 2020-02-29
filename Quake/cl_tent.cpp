@@ -290,18 +290,15 @@ CL_NewTempEntity
 */
 entity_t* CL_NewTempEntity()
 {
-    entity_t* ent;
+    if(cl_numvisedicts == MAX_VISEDICTS ||
+        num_temp_entities == MAX_TEMP_ENTITIES)
+    {
+        return nullptr;
+    }
 
-    if(cl_numvisedicts == MAX_VISEDICTS)
-    {
-        return nullptr;
-    }
-    if(num_temp_entities == MAX_TEMP_ENTITIES)
-    {
-        return nullptr;
-    }
-    ent = &cl_temp_entities[num_temp_entities];
+    entity_t* const ent = &cl_temp_entities[num_temp_entities];
     memset(ent, 0, sizeof(*ent));
+
     num_temp_entities++;
     cl_visedicts[cl_numvisedicts] = ent;
     cl_numvisedicts++;

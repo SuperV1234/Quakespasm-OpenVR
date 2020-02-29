@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.hpp"
 #include "bgmusic.hpp"
 #include "vr_menu.hpp"
+#include "vrgameplay_menu.hpp"
+#include "debug_menu.hpp"
 #include "wpnoffset_menu.hpp"
 #include "sbaroffset_menu.hpp"
 #include "map_menu.hpp"
@@ -47,10 +49,6 @@ void M_Menu_ServerList_f();
 
 void M_Menu_Keys_f();
 void M_Menu_Video_f();
-void M_Menu_VR_f();
-void M_Menu_WpnOffset_f();
-void M_Menu_SbarOffset_f();
-void M_Menu_MapMenu_f();
 void M_Menu_Help_f();
 
 
@@ -68,9 +66,6 @@ void M_ServerList_Draw();
 void M_Options_Draw();
 void M_Keys_Draw();
 void M_Video_Draw();
-void M_VR_Draw();
-void M_WpnOffset_Draw();
-void M_SbarOffset_Draw();
 void M_Help_Draw();
 void M_Quit_Draw();
 
@@ -88,18 +83,15 @@ void M_ServerList_Key(int key);
 void M_Options_Key(int key);
 void M_Keys_Key(int key);
 void M_Video_Key(int key);
-void M_VR_Key(int key);
-void M_WpnOffset_Key(int key);
-void M_SbarOffset_Key(int key);
 void M_Help_Key(int key);
 void M_Quit_Key(int key);
 
-qboolean m_entersound; // play after drawing a frame, so caching
-                       // won't disrupt the sound
-qboolean m_recursiveDraw;
+bool m_entersound; // play after drawing a frame, so caching
+                   // won't disrupt the sound
+bool m_recursiveDraw;
 
 enum m_state_e m_return_state;
-qboolean m_return_onerror;
+bool m_return_onerror;
 char m_return_reason[32];
 
 #define StartingGame (m_multiplayer_cursor == 1)
@@ -945,7 +937,7 @@ void M_Setup_Char(int k)
 }
 
 
-qboolean M_Setup_TextEntry()
+bool M_Setup_TextEntry()
 {
     return (setup_cursor == 0 || setup_cursor == 1);
 }
@@ -1096,9 +1088,12 @@ enum
     //#endif
     OPT_VIDEO, // This is the last before OPTIONS_ITEMS
     OPT_VR,
+    OPT_VRGAMEPLAY,
     OPT_WPN_OFFSET,
     OPT_SBAR_OFFSET,
     OPT_MAP_MENU,
+    OPT_DEBUG,
+
     OPTIONS_ITEMS
 };
 
@@ -1442,29 +1437,14 @@ void M_Options_Draw()
         M_Print(16, 32 + 8 * OPT_VIDEO, "         Video Options");
     }
 
-    // OPT_VR:
-    if(vid_menudrawfn)
-    {
-        M_Print(16, 32 + 8 * OPT_VR, "         VR Options");
-    }
-
-    // OPT_WPN_OFFSET:
-    if(vid_menudrawfn)
-    {
-        M_Print(16, 32 + 8 * OPT_WPN_OFFSET, "     Weapon Offsets");
-    }
-
-    // OPT_SBAR_OFFSET:
-    if(vid_menudrawfn)
-    {
-        M_Print(16, 32 + 8 * OPT_SBAR_OFFSET, "  Status Bar Offset");
-    }
-
-    // OPT_MAP_MENU:
-    if(vid_menudrawfn)
-    {
-        M_Print(16, 32 + 8 * OPT_MAP_MENU, "               Maps");
-    }
+    // clang-format off
+    M_Print(16, 32 + 8 * OPT_VR,          "         VR Options");
+    M_Print(16, 32 + 8 * OPT_VRGAMEPLAY,  "VR Gameplay Options");
+    M_Print(16, 32 + 8 * OPT_WPN_OFFSET,  "     Weapon Offsets");
+    M_Print(16, 32 + 8 * OPT_SBAR_OFFSET, "  Status Bar Offset");
+    M_Print(16, 32 + 8 * OPT_MAP_MENU,    "               Maps");
+    M_Print(16, 32 + 8 * OPT_DEBUG,       "              Debug");
+    // clang-format on
 
     // cursor
     M_DrawCharacter(
@@ -1501,9 +1481,11 @@ void M_Options_Key(int k)
                     break;
                 case OPT_VIDEO: M_Menu_Video_f(); break;
                 case OPT_VR: M_Menu_VR_f(); break;
+                case OPT_VRGAMEPLAY: M_Menu_VRGameplay_f(); break;
                 case OPT_WPN_OFFSET: M_Menu_WpnOffset_f(); break;
                 case OPT_SBAR_OFFSET: M_Menu_SbarOffset_f(); break;
                 case OPT_MAP_MENU: M_Menu_MapMenu_f(); break;
+                case OPT_DEBUG: M_Menu_Debug_f(); break;
                 default: M_AdjustSliders(1); break;
             }
             return;
@@ -1560,7 +1542,7 @@ const char* bindnames[][2] = {{"+attack", "attack"},
 #define NUMCOMMANDS (sizeof(bindnames) / sizeof(bindnames[0]))
 
 static int keys_cursor;
-static qboolean bind_grab;
+static bool bind_grab;
 
 void M_Menu_Keys_f()
 {
@@ -1837,7 +1819,7 @@ void M_Help_Key(int key)
 
 int msgNumber;
 enum m_state_e m_quit_prevstate;
-qboolean wasInMenus;
+bool wasInMenus;
 
 void M_Menu_Quit_f()
 {
@@ -1905,7 +1887,7 @@ void M_Quit_Char(int key)
 }
 
 
-qboolean M_Quit_TextEntry()
+bool M_Quit_TextEntry()
 {
     return true;
 }
@@ -2203,7 +2185,7 @@ void M_LanConfig_Char(int key)
 }
 
 
-qboolean M_LanConfig_TextEntry()
+bool M_LanConfig_TextEntry()
 {
     return (lanConfig_cursor == 0 || lanConfig_cursor == 2);
 }
@@ -2305,7 +2287,7 @@ episode_t rogueepisodes[] = {{"Introduction", 0, 1}, {"Hell's Fortress", 1, 7},
 int startepisode;
 int startlevel;
 int maxplayers;
-qboolean m_serverInfoMessage = false;
+bool m_serverInfoMessage = false;
 double m_serverInfoMessageTime;
 
 void M_Menu_GameOptions_f()
@@ -2725,7 +2707,7 @@ void M_GameOptions_Key(int key)
 //=============================================================================
 /* SEARCH MENU */
 
-qboolean searchComplete = false;
+bool searchComplete = false;
 double searchCompleteTime;
 
 void M_Menu_Search_f()
@@ -2789,7 +2771,7 @@ void M_Search_Key(int key)
 /* SLIST MENU */
 
 int slist_cursor;
-qboolean slist_sorted;
+bool slist_sorted;
 
 void M_Menu_ServerList_f()
 {
@@ -2938,9 +2920,11 @@ void M_Draw()
         case m_keys: M_Keys_Draw(); break;
         case m_video: M_Video_Draw(); break;
         case m_vr: M_VR_Draw(); break;
+        case m_vrgameplay: M_VRGameplay_Draw(); break;
         case m_wpn_offset: M_WpnOffset_Draw(); return;
         case m_sbar_offset: M_SbarOffset_Draw(); return;
         case m_map: M_MapMenu_Draw(); return;
+        case m_debug: M_Debug_Draw(); return;
         case m_help: M_Help_Draw(); break;
         case m_lanconfig: M_LanConfig_Draw(); break;
         case m_gameoptions: M_GameOptions_Draw(); break;
@@ -2984,9 +2968,11 @@ void M_Keydown(int key)
         case m_keys: M_Keys_Key(key); return;
         case m_video: M_Video_Key(key); return;
         case m_vr: M_VR_Key(key); return;
+        case m_vrgameplay: M_VRGameplay_Key(key); return;
         case m_wpn_offset: M_WpnOffset_Key(key); return;
         case m_sbar_offset: M_SbarOffset_Key(key); return;
         case m_map: M_MapMenu_Key(key); return;
+        case m_debug: M_Debug_Key(key); return;
         case m_help: M_Help_Key(key); return;
         case m_quit: M_Quit_Key(key); return;
         case m_lanconfig: M_LanConfig_Key(key); return;
@@ -3009,7 +2995,7 @@ void M_Charinput(int key)
 }
 
 
-qboolean M_TextEntry()
+bool M_TextEntry()
 {
     switch(m_state)
     {

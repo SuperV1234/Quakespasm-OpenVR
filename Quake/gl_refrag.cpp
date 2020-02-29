@@ -71,31 +71,18 @@ static efrag_t* R_GetEfrag()
         return ef;
     }
 
-    int i;
-
-
-
     cl.free_efrags =
-
         (efrag_t*)Hunk_AllocName(EXTRA_EFRAGS * sizeof(efrag_t), "efrags");
 
-
-
+    int i;
     for(i = 0; i < EXTRA_EFRAGS - 1; i++)
-
     {
-
         cl.free_efrags[i].leafnext = &cl.free_efrags[i + 1];
     }
 
-
-
     cl.free_efrags[i].leafnext = nullptr;
 
-
-
     // call recursively to get a newly allocated free efrag
-
     return R_GetEfrag();
 }
 
@@ -126,6 +113,8 @@ void R_SplitEntityOnNode(mnode_t* node)
         }
 
         leaf = (mleaf_t*)node;
+
+        // TODO VR: this is it (2)
 
         // grab an efrag off the free list
         ef = R_GetEfrag();
@@ -195,9 +184,6 @@ R_AddEfrags
 */
 void R_AddEfrags(entity_t* ent)
 {
-    qmodel_t* entmodel;
-    int i;
-
     if(!ent->model)
     {
         return;
@@ -207,9 +193,9 @@ void R_AddEfrags(entity_t* ent)
 
     r_pefragtopnode = nullptr;
 
-    entmodel = ent->model;
+    qmodel_t* entmodel = ent->model;
 
-    for(i = 0; i < 3; i++)
+    for(int i = 0; i < 3; i++)
     {
         r_emins[i] = ent->origin[i] + entmodel->mins[i];
         r_emaxs[i] = ent->origin[i] + entmodel->maxs[i];
@@ -230,12 +216,11 @@ R_StoreEfrags -- johnfitz -- pointless switch statement removed.
 */
 void R_StoreEfrags(efrag_t** ppefrag)
 {
-    entity_t* pent;
     efrag_t* pefrag;
 
     while((pefrag = *ppefrag) != nullptr)
     {
-        pent = pefrag->entity;
+        entity_t* const pent = pefrag->entity;
 
         if((pent->visframe != r_framecount) &&
             (cl_numvisedicts < MAX_VISEDICTS))

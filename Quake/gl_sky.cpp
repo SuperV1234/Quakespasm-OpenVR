@@ -674,7 +674,6 @@ void Sky_ProcessEntities()
     entity_t* e;
     msurface_t* s;
     glpoly_t* p;
-    int i;
 
     int j;
 
@@ -682,7 +681,7 @@ void Sky_ProcessEntities()
 
     int mark;
     float dot;
-    qboolean rotated;
+    bool rotated;
     vec3_t temp;
 
     vec3_t forward;
@@ -696,7 +695,7 @@ void Sky_ProcessEntities()
         return;
     }
 
-    for(i = 0; i < cl_numvisedicts; i++)
+    for(int i = 0; i < cl_numvisedicts; i++)
     {
         e = cl_visedicts[i];
 

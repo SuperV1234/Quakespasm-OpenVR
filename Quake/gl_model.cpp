@@ -1962,36 +1962,28 @@ void Mod_ProcessLeafs_L1(dl1leaf_t* in, int filelen)
 
 void Mod_ProcessLeafs_L2(dl2leaf_t* in, int filelen)
 {
-    mleaf_t* out;
-    int i;
-
-    int j;
-
-    int count;
-
-    int p;
 
     if(filelen % sizeof(*in))
     {
         Sys_Error("Mod_ProcessLeafs: funny lump size in %s", loadmodel->name);
     }
 
-    count = filelen / sizeof(*in);
+    int count = filelen / sizeof(*in);
 
-    out = (mleaf_t*)Hunk_AllocName(count * sizeof(*out), loadname);
+    mleaf_t* out = (mleaf_t*)Hunk_AllocName(count * sizeof(*out), loadname);
 
     loadmodel->leafs = out;
     loadmodel->numleafs = count;
 
-    for(i = 0; i < count; i++, in++, out++)
+    for(int i = 0; i < count; i++, in++, out++)
     {
-        for(j = 0; j < 3; j++)
+        for(int j = 0; j < 3; j++)
         {
             out->minmaxs[j] = LittleFloat(in->mins[j]);
             out->minmaxs[3 + j] = LittleFloat(in->maxs[j]);
         }
 
-        p = LittleLong(in->contents);
+        int p = LittleLong(in->contents);
         out->contents = p;
 
         out->firstmarksurface =
@@ -2011,7 +2003,7 @@ void Mod_ProcessLeafs_L2(dl2leaf_t* in, int filelen)
         }
         out->efrags = nullptr;
 
-        for(j = 0; j < 4; j++)
+        for(int j = 0; j < 4; j++)
         {
             out->ambient_sound_level[j] = in->ambient_level[j];
         }

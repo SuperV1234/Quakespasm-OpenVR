@@ -36,9 +36,11 @@ enum m_state_e
     m_options,
     m_video,
     m_vr,
+    m_vrgameplay,
     m_wpn_offset,
     m_sbar_offset,
     m_map,
+    m_debug,
     m_keys,
     m_help,
     m_quit,
@@ -51,7 +53,7 @@ enum m_state_e
 extern enum m_state_e m_state;
 extern enum m_state_e m_return_state;
 
-extern qboolean m_entersound;
+extern bool m_entersound;
 
 //
 // menus
@@ -59,7 +61,7 @@ extern qboolean m_entersound;
 void M_Init(void);
 void M_Keydown(int key);
 void M_Charinput(int key);
-qboolean M_TextEntry(void);
+bool M_TextEntry(void);
 void M_ToggleMenu_f(void);
 
 void M_Menu_Main_f(void);

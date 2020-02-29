@@ -8,7 +8,6 @@
 #include <cassert>
 #include <array>
 
-extern cvar_t r_showbboxes;
 static int vr_options_cursor = 0;
 
 #define VR_MAX_TURN_SPEED 10.0f
@@ -42,8 +41,6 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
 
     switch(option)
     {
-        default: break;
-
         case VRMenuOpt::VR_ENABLED:
             M_DrawCheckbox(cx, cy, (int)vr_enabled.value);
             break;
@@ -175,18 +172,12 @@ static void VR_MenuPrintOptionValue(int cx, int cy, VRMenuOpt option)
         // printAsStr(vr_projectilespawn_z_offset); break;
         case VRMenuOpt::VR_HUD_SCALE: printAsStr(vr_hud_scale); break;
         case VRMenuOpt::VR_MENU_SCALE: printAsStr(vr_menu_scale); break;
-        case VRMenuOpt::VR_MELEE_THRESHOLD:
-            printAsStr(vr_melee_threshold);
-            break;
         case VRMenuOpt::VR_GUNYAW: printAsStr(vr_gunyaw); break;
         case VRMenuOpt::VR_GUN_Z_OFFSET: printAsStr(vr_gun_z_offset); break;
         case VRMenuOpt::VR_VIEWKICK:
             value_string = vr_viewkick.value == 0 ? "Off" : "On";
             break;
-        case VRMenuOpt::VR_SHOWBBOXES:
-            value_string = r_showbboxes.value == 0 ? "Off" : "On";
-            break;
-        case VRMenuOpt::VR_IMPULSE9: break;
+        default: assert(false); break;
     }
 
     if(value_string)
@@ -200,7 +191,7 @@ static void M_VR_KeyOption(int key, VRMenuOpt option)
 #define _sizeofarray(x) ((sizeof(x) / sizeof(x[0])))
 #define _maxarray(x) (_sizeofarray(x) - 1)
 
-    qboolean isLeft = (key == K_LEFTARROW);
+    const bool isLeft = (key == K_LEFTARROW);
     int intValue = 0;
 
     int aimmode[] = {1, 2, 3, 4, 5, 6, 7};
@@ -259,7 +250,7 @@ static void M_VR_KeyOption(int key, VRMenuOpt option)
             adjustF(vr_world_scale, crosshairAlphaDiff, 0.f, 2.f);
             break;
         case VRMenuOpt::VR_MOVEMENT_MODE:
-            adjustI(vr_movement_mode, 1, 0, VrMovementMode::k_MAX);
+            adjustI(vr_movement_mode, 1, 0, VrMovementMode::k_Max);
             break;
         case VRMenuOpt::VR_ENABLE_JOYSTICK_TURN:
             adjustI(vr_enable_joystick_turn, 1, 0, 1);
@@ -301,9 +292,6 @@ static void M_VR_KeyOption(int key, VRMenuOpt option)
         case VRMenuOpt::VR_MENU_SCALE:
             adjustF(vr_menu_scale, 0.01f, 0.05f, 0.6f);
             break;
-        case VRMenuOpt::VR_MELEE_THRESHOLD:
-            adjustF(vr_melee_threshold, 0.5f, 4.f, 18.f);
-            break;
         case VRMenuOpt::VR_GUNYAW:
             adjustF(vr_gunyaw, 0.25f, -90.f, 90.f);
             break;
@@ -312,11 +300,6 @@ static void M_VR_KeyOption(int key, VRMenuOpt option)
             break;
         case VRMenuOpt::VR_SBAR_MODE: adjustI(vr_sbar_mode, 1, 0, 1); break;
         case VRMenuOpt::VR_VIEWKICK: adjustI(vr_viewkick, 1, 0, 1); break;
-        case VRMenuOpt::VR_SHOWBBOXES: adjustI(r_showbboxes, 1, 0, 1); break;
-        case VRMenuOpt::VR_IMPULSE9:
-            VR_MenuPlaySound("items/r_item2.wav", 0.5);
-            Cmd_ExecuteString("impulse 9", cmd_source_t::src_command);
-            break;
         default: assert(false); break;
     }
 
@@ -382,7 +365,7 @@ void M_VR_Draw()
     y += 28;
 
     // title
-    const char* title = "VR/HMD OPTIONS";
+    const char* title = "VR OPTIONS";
     M_PrintWhite((320 - 8 * strlen(title)) / 2, y, title);
 
     y += 16;
@@ -396,8 +379,8 @@ void M_VR_Draw()
         "Gun Model Z Offset", "Crosshair Z Offset",
         // TODO VR: consider restoring for custom QC?
         // "Projectile Spawn Z",
-        "HUD Scale", "Menu Scale", "Melee Threshold", "Gun Yaw", "Gun Z Offset",
-        "Status Bar Mode", "Viewkick", "Show BBoxes", "Impulse 9");
+        "HUD Scale", "Menu Scale", "Gun Yaw", "Gun Z Offset",
+        "Status Bar Mode", "Viewkick");
 
     static_assert(adjustedLabels.size() == (int)VRMenuOpt::VR_MAX);
 
@@ -434,4 +417,3 @@ void M_Menu_VR_f()
 // * nicer explosion particles
 // * speed adjustment options, sprinting
 // * vignette?
-// * god mode in menu

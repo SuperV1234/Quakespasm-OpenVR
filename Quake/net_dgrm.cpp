@@ -52,7 +52,7 @@ static struct
 
 static int myDriverLevel;
 
-extern qboolean m_return_onerror;
+extern bool m_return_onerror;
 extern char m_return_reason[32];
 
 

@@ -54,7 +54,7 @@ struct VrMovementMode
     {
         e_FOLLOW_HAND = 0,
         e_RAW_INPUT = 1,
-        k_MAX
+        k_Max
     };
 };
 

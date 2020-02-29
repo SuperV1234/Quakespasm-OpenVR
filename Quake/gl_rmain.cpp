@@ -514,7 +514,8 @@ void R_SetFrustum(float fovx, float fovy)
 
     if(vr_enabled.value)
     {
-        fovx += 25; // meh
+        // VR: Hack to avoid culling polygons in VR view.
+        fovx += 25;
     }
 
     TurnVector(frustum[0].normal, vpn, vright, fovx / 2 - 90); // left plane
@@ -739,15 +740,17 @@ R_DrawEntitiesOnList
 */
 void R_DrawEntitiesOnList(qboolean alphapass) // johnfitz -- added parameter
 {
-    int i;
-
     if(!r_drawentities.value)
     {
         return;
     }
 
     // johnfitz -- sprites are not a special case
-    for(i = 0; i < cl_numvisedicts; i++)
+    
+    // TODO VR: this is part of the torch bug, it increases when they are visible
+    // Con_Printf("%d\n", cl_numvisedicts);
+
+    for(int i = 0; i < cl_numvisedicts; i++)
     {
         currententity = cl_visedicts[i];
 
@@ -939,7 +942,6 @@ R_ShowTris -- johnfitz
 void R_ShowTris()
 {
     extern cvar_t r_particles;
-    int i;
 
     if(r_showtris.value < 1 || r_showtris.value > 2 || cl.maxclients > 1)
     {
@@ -964,7 +966,7 @@ void R_ShowTris()
 
     if(r_drawentities.value)
     {
-        for(i = 0; i < cl_numvisedicts; i++)
+        for(int i = 0; i < cl_numvisedicts; i++)
         {
             currententity = cl_visedicts[i];
 
@@ -995,15 +997,15 @@ void R_ShowTris()
 
         // TODO VR: not needed?
         // offhand viewmodel
-     /*    currententity = &cl.offhand_viewent;
-        if(r_drawviewmodel.value && !chase_active.value &&
-            cl.stats[STAT_HEALTH] > 0 && !(cl.items & IT_INVISIBILITY) &&
-            currententity->model && currententity->model->type == mod_alias)
-        {
-            glDepthRange(0, 0.3);
-            R_DrawAliasModel_ShowTris(currententity);
-            glDepthRange(0, 1);
-        } */
+        /*    currententity = &cl.offhand_viewent;
+           if(r_drawviewmodel.value && !chase_active.value &&
+               cl.stats[STAT_HEALTH] > 0 && !(cl.items & IT_INVISIBILITY) &&
+               currententity->model && currententity->model->type == mod_alias)
+           {
+               glDepthRange(0, 0.3);
+               R_DrawAliasModel_ShowTris(currententity);
+               glDepthRange(0, 1);
+           } */
     }
 
     if(r_particles.value)
@@ -1032,8 +1034,6 @@ R_DrawShadows
 */
 void R_DrawShadows()
 {
-    int i;
-
     if(!r_shadows.value || !r_drawentities.value || r_drawflat_cheatsafe ||
         r_lightmap_cheatsafe)
     {
@@ -1050,7 +1050,7 @@ void R_DrawShadows()
         glEnable(GL_STENCIL_TEST);
     }
 
-    for(i = 0; i < cl_numvisedicts; i++)
+    for(int i = 0; i < cl_numvisedicts; i++)
     {
         currententity = cl_visedicts[i];
 

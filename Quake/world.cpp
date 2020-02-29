@@ -334,8 +334,8 @@ static void SV_AreaTriggerEdicts(edict_t* ent, areanode_t* node, edict_t** list,
         const bool canBeTouched = (target->v.touch || target->v.handtouch) &&
                                   target->v.solid == SOLID_TRIGGER;
 
-        // TODO VR: re-enable check
-        if(false || !canBeTouched ||
+        // TODO VR: re-enabled check, testing... (remove comment if it works)
+        if(!canBeTouched ||
             !quake::util::boxIntersection(ent->v.absmin, ent->v.absmax,
                 target->v.absmin, target->v.absmax))
         {
@@ -623,9 +623,6 @@ void SV_LinkEdict(edict_t* ent, bool touch_triggers)
     }
 
     // link it in
-
-    // TODO VR: possible place to try changing the SOLID_ thing to bsp
-    // TODO VR: also grep for SV_Impact, check those places
     if(ent->v.solid == SOLID_TRIGGER)
     {
         InsertLinkBefore(&ent->area, &node->trigger_edicts);
@@ -704,13 +701,12 @@ SV_PointContents
 */
 int SV_PointContents(vec3_t p)
 {
-    int cont;
-
-    cont = SV_HullPointContents(&sv.worldmodel->hulls[0], 0, p);
+    const int cont = SV_HullPointContents(&sv.worldmodel->hulls[0], 0, p);
     if(cont <= CONTENTS_CURRENT_0 && cont >= CONTENTS_CURRENT_DOWN)
     {
-        cont = CONTENTS_WATER;
+        return CONTENTS_WATER;
     }
+
     return cont;
 }
 
@@ -1088,10 +1084,12 @@ void SV_ClipToLinks(areanode_t* node, moveclip_t* clip)
             }
         }
 
-        // TODO VR: this is also causing spikes to be bigger.
         trace_t trace;
         if((int)target->v.flags & FL_MONSTER)
         {
+            // VR: This branch here is also a hack in the original source code,
+            // taken only for projectiles.
+
             trace = SV_ClipMoveToEntity(
                 target, clip->start, clip->mins2, clip->maxs2, clip->end);
         }
